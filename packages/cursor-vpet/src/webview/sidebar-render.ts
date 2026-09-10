@@ -4,6 +4,15 @@ const NEXT_CHECK_PREFIX = "Next check: "
 const NEXT_CHECK_BAR_WIDTH = 20
 const URL_LABEL = "Encyclopedia entry"
 
+export const MIN_ARTWORK_WIDTH = 16
+export const DEFAULT_ARTWORK_WIDTH = 32
+
+export const pixelWidthToArtworkColumns = (pixelWidth: number, charWidthPx: number): number => {
+  if (!Number.isFinite(pixelWidth) || pixelWidth <= 0) return DEFAULT_ARTWORK_WIDTH
+  if (!Number.isFinite(charWidthPx) || charWidthPx <= 0) return DEFAULT_ARTWORK_WIDTH
+  return Math.max(MIN_ARTWORK_WIDTH, Math.floor(pixelWidth / charWidthPx))
+}
+
 const formatCount = (value: number): string => value.toLocaleString("en-US")
 
 export const buildNextCheckLine = (model: SidebarCardModel): string => {
@@ -81,6 +90,7 @@ export const buildSidebarWebviewHtml = (nonce: string): string => `<!DOCTYPE htm
     .artwork-wrap {
       width: 100%;
       min-height: 8em;
+      overflow: hidden;
     }
     .artwork {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -120,11 +130,29 @@ export const buildSidebarWebviewHtml = (nonce: string): string => `<!DOCTYPE htm
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;");
 
+    const MIN_ARTWORK_WIDTH = ${MIN_ARTWORK_WIDTH};
+    let cachedCharWidth = 0;
+
+    const measureCharWidth = () => {
+      if (cachedCharWidth > 0) return cachedCharWidth;
+      const probe = document.createElement("span");
+      probe.className = "artwork";
+      probe.textContent = "MMMMMMMMMM";
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      document.body.appendChild(probe);
+      cachedCharWidth = probe.getBoundingClientRect().width / 10;
+      probe.remove();
+      return cachedCharWidth;
+    };
+
     const reportArtworkWidth = () => {
-      const width = content.querySelector(".artwork-wrap")?.clientWidth ?? content.clientWidth;
-      if (width > 0) {
-        vscode.postMessage({ type: "artwork-width", width });
-      }
+      const pixelWidth = content.querySelector(".artwork-wrap")?.clientWidth ?? content.clientWidth;
+      if (pixelWidth <= 0) return;
+      const charWidth = measureCharWidth();
+      if (charWidth <= 0) return;
+      const width = Math.max(MIN_ARTWORK_WIDTH, Math.floor(pixelWidth / charWidth));
+      vscode.postMessage({ type: "artwork-width", width });
     };
 
     const renderPartnerCard = () => {

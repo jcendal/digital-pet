@@ -1,8 +1,19 @@
 import { describe, expect, test } from "bun:test"
 
-import { buildGaugeLine, buildNextCheckLine, toSidebarWebviewPayload } from "../src/webview/sidebar-render.ts"
+import {
+  buildGaugeLine,
+  buildNextCheckLine,
+  pixelWidthToArtworkColumns,
+  toSidebarWebviewPayload,
+} from "../src/webview/sidebar-render.ts"
 
 describe("sidebar render", () => {
+  test("converts pixel width to monospace artwork columns", () => {
+    expect(pixelWidthToArtworkColumns(250, 7.5)).toBe(33)
+    expect(pixelWidthToArtworkColumns(120, 7.5)).toBe(16)
+    expect(pixelWidthToArtworkColumns(10, 7.5)).toBe(16)
+  })
+
   test("builds next check bar for partner progress", () => {
     const line = buildNextCheckLine({
       kind: "partner",

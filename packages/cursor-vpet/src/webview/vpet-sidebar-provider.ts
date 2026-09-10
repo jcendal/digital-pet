@@ -8,10 +8,15 @@ import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/port
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 import { renderPositionedArtwork } from "./animated-artwork.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./monster-animation.ts"
-import { buildSidebarWebviewHtml, toSidebarWebviewPayload, type SidebarWebviewPayload } from "./sidebar-render.ts"
+import {
+  buildSidebarWebviewHtml,
+  DEFAULT_ARTWORK_WIDTH,
+  MIN_ARTWORK_WIDTH,
+  toSidebarWebviewPayload,
+  type SidebarWebviewPayload,
+} from "./sidebar-render.ts"
 
 const VISUAL_INTERVAL_MS = 500
-const DEFAULT_ARTWORK_WIDTH = 32
 
 export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "cursorVpet.sidebar"
@@ -47,7 +52,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
         return
       }
       if (message.type === "artwork-width" && typeof message.width === "number" && Number.isFinite(message.width)) {
-        this.artworkWidth = Math.max(16, Math.floor(message.width))
+        this.artworkWidth = Math.max(MIN_ARTWORK_WIDTH, Math.floor(message.width))
         this.syncAnimationViewport()
         void this.postAnimationFrame()
       }
