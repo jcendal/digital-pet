@@ -12,9 +12,7 @@ type PathApi = Readonly<{
 }>
 
 export type GlobalVpetConfigOptions = Readonly<{
-  readonly env?: Readonly<{
-    readonly APPDATA?: string
-  }>
+  readonly env?: NodeJS.ProcessEnv
   readonly home?: string
   readonly pathApi?: PathApi
   readonly platform?: NodeJS.Platform

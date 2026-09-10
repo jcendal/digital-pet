@@ -359,7 +359,7 @@ process.exit(Number(process.env.OPENCODE_FAKE_EXIT ?? "0"))
       OPENCODE_CONFIG_DIR: join(fixture.root, "opencode"),
       OPENCODE_FAKE_CALLS: callsPath,
       OPENCODE_FAKE_EXIT: String(exitCode),
-      PATH: `${fakeBinDirectory}:${process.env.PATH ?? ""}`,
+      PATH: `${fakeBinDirectory}:${process.env["PATH"] ?? ""}`,
     })
     const runCli = (arguments_: readonly string[], exitCode = 0) =>
       Bun.spawnSync([process.execPath, cliPath, ...arguments_], {

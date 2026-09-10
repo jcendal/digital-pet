@@ -74,23 +74,23 @@ describe("global VPet configuration paths", () => {
   )
 
   test.each([
-    ["missing", async (_root: string) => undefined],
+    ["missing", async (_root: string): Promise<void> => undefined],
     [
       "unreadable directory",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await mkdir(resolveConfigPath(root), { recursive: true })
       },
     ],
     [
       "malformed",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await createConfigDirectory(root)
         await writeFile(resolveConfigPath(root), "{")
       },
     ],
     [
       "scalar root",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await createConfigDirectory(root)
         await writeFile(resolveConfigPath(root), '"jp"')
       },
@@ -167,23 +167,23 @@ describe("global VPet configuration loading", () => {
   )
 
   test.each([
-    ["missing", async (_root: string) => undefined],
+    ["missing", async (_root: string): Promise<void> => undefined],
     [
       "unreadable directory",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await mkdir(resolveConfigPath(root), { recursive: true })
       },
     ],
     [
       "malformed",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await createConfigDirectory(root)
         await writeFile(resolveConfigPath(root), "{")
       },
     ],
     [
       "scalar root",
-      async (root: string) => {
+      async (root: string): Promise<void> => {
         await createConfigDirectory(root)
         await writeFile(resolveConfigPath(root), '"jp"')
       },

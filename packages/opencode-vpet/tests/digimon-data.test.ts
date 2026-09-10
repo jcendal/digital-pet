@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { DIGIMON_DATA } from "@sbugallo/vpet-core/data/digimon-data"
+import { DIGIMON_DATA } from "@sbugallo/vpet-core/data/digimon-data.ts"
 
 const RAW_RECORD_KEYS = ["id", "name_en", "name_jp", "next_evolutions", "sprite", "stage", "url"]
 

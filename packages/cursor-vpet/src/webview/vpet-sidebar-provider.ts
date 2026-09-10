@@ -26,10 +26,8 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private cachedArtwork = ""
   private artworkWidth = DEFAULT_ARTWORK_WIDTH
   private visualInterval?: ReturnType<typeof setInterval>
-  private readonly animation = new MonsterAnimationController(
-    MONSTER_FRAME_CATALOG,
-    Math.random,
-    () => performance.now(),
+  private readonly animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG, Math.random, () =>
+    performance.now(),
   )
 
   constructor(
@@ -46,17 +44,19 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = buildSidebarWebviewHtml(String(Date.now()))
 
-    webviewView.webview.onDidReceiveMessage((message: { readonly type?: string; readonly url?: string; readonly width?: number }) => {
-      if (message.type === "open-url" && typeof message.url === "string" && message.url.length > 0) {
-        void vscode.env.openExternal(vscode.Uri.parse(message.url))
-        return
-      }
-      if (message.type === "artwork-width" && typeof message.width === "number" && Number.isFinite(message.width)) {
-        this.artworkWidth = Math.max(MIN_ARTWORK_WIDTH, Math.floor(message.width))
-        this.syncAnimationViewport()
-        void this.postAnimationFrame()
-      }
-    })
+    webviewView.webview.onDidReceiveMessage(
+      (message: { readonly type?: string; readonly url?: string; readonly width?: number }) => {
+        if (message.type === "open-url" && typeof message.url === "string" && message.url.length > 0) {
+          void vscode.env.openExternal(vscode.Uri.parse(message.url))
+          return
+        }
+        if (message.type === "artwork-width" && typeof message.width === "number" && Number.isFinite(message.width)) {
+          this.artworkWidth = Math.max(MIN_ARTWORK_WIDTH, Math.floor(message.width))
+          this.syncAnimationViewport()
+          void this.postAnimationFrame()
+        }
+      },
+    )
 
     webviewView.onDidChangeVisibility(() => {
       if (webviewView.visible) {
@@ -102,10 +102,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private syncAnimationPartner(model: ReturnType<typeof buildSidebarCardModel>): void {
     this.animation.dispatch({
       kind: "partner_changed",
-      partner:
-        model.kind === "partner"
-          ? { sprite: model.sprite, isDigitama: model.stageNumber === 0 }
-          : undefined,
+      partner: model.kind === "partner" ? { sprite: model.sprite, isDigitama: model.stageNumber === 0 } : undefined,
     })
   }
 

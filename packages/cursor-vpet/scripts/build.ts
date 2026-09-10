@@ -2,7 +2,7 @@ import { copyFile, mkdir, rm } from "node:fs/promises"
 import { createRequire } from "node:module"
 import { resolve } from "node:path"
 
-import { stageChangelog } from "../../../scripts/stage-changelog.ts"
+import { stageChangelog } from "./stage-changelog.ts"
 
 const require = createRequire(import.meta.url)
 const packageRoot = resolve(import.meta.dir, "..")

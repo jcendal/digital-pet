@@ -232,7 +232,7 @@ export class TuiCompositionHarness {
     for (const layer of this.layers) {
       if (!this.#activeLayers.has(layer) || layer.commands === undefined) continue
       for (const cmd of layer.commands) {
-        if (cmd.name === name || cmd.slashName === name) {
+        if (cmd["name"] === name || cmd["slashName"] === name) {
           if (cmd.run) {
             type RunFn = (context?: typeof ctx) => void
             const run = cmd.run as RunFn

@@ -26,9 +26,7 @@ const isRecoverableSqliteReadError = (error: unknown): boolean =>
   error instanceof Error &&
   (error.message.includes("sqlite") || error.message.includes("database") || error.message.includes("no such table"))
 
-export const readSidebarSnapshotFromExecutor = (
-  executor: Pick<SqliteExecutor, "get">,
-): SidebarSnapshot | null => {
+export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "get">): SidebarSnapshot | null => {
   const trainer = executor.get<TrainerStateRow>(TRAINER_STATE_SELECT)
   const control = executor.get<ControlStateRow>(CONTROL_STATE_SELECT)
   if (control?.cheat_node_id !== null && control?.cheat_node_id !== undefined) {

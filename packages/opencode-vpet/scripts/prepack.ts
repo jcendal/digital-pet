@@ -1,7 +1,7 @@
 import { rm, writeFile } from "node:fs/promises"
 import { resolve } from "node:path"
 
-import { removeStagedChangelog, stageChangelog } from "../../../scripts/stage-changelog.ts"
+import { removeStagedChangelog, stageChangelog } from "./stage-changelog.ts"
 import { restorePackageJson, stripWorkspaceDependencies } from "./strip-workspace-deps.ts"
 
 type JsonObject = { readonly [key: string]: unknown }

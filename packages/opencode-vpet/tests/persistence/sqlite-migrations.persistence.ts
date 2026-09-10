@@ -6,9 +6,8 @@ import { Database } from "bun:sqlite"
 
 import { createExecutor } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import { runMigrations } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-migrations.ts"
+import type { QueryValue } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
 import { isBunSqliteAvailable } from "../sqlite-capability.ts"
-
-type QueryValue = string | number | null
 
 type MigrationExecutor = {
   readonly statements: string[]

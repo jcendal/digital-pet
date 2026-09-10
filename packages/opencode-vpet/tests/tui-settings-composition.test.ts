@@ -194,10 +194,10 @@ describe("TUI settings composition", () => {
   })
 
   test.each([
-    ["missing", async (_configPath: string) => undefined],
+    ["missing", async (_configPath: string): Promise<void> => undefined],
     [
       "invalid",
-      async (configPath: string) =>
+      async (configPath: string): Promise<void> =>
         writeFile(configPath, JSON.stringify({ language: "fr", stageThresholds: { adult: 0 } })),
     ],
   ] as const)(

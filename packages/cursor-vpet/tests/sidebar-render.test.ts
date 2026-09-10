@@ -52,18 +52,20 @@ describe("sidebar render", () => {
     expect(payload.name).toBe("Agumon")
     expect(payload.stage).toBe("Rookie")
     expect("artwork" in payload).toBe(false)
-    expect(buildGaugeLine({
-      kind: "partner",
-      name: "Agumon",
-      sprite: "agumon",
-      stage: "Rookie",
-      stageNumber: 3,
-      url: "https://example.com/agumon",
-      gauge: 10,
-      threshold: 100,
-      isTerminal: false,
-      frozen: false,
-      isSetOverride: false,
-    })).toBe("10/100")
+    expect(
+      buildGaugeLine({
+        kind: "partner",
+        name: "Agumon",
+        sprite: "agumon",
+        stage: "Rookie",
+        stageNumber: 3,
+        url: "https://example.com/agumon",
+        gauge: 10,
+        threshold: 100,
+        isTerminal: false,
+        frozen: false,
+        isSetOverride: false,
+      }),
+    ).toBe("10/100")
   })
 })

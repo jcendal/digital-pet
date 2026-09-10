@@ -4,6 +4,7 @@ import { basename, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const PROJECT_ROOT = fileURLToPath(new URL("../", import.meta.url))
+const MONOREPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url))
 const REQUIRED_ARTIFACTS = ["index.js", "index.d.ts", "tui.js", "tui.d.ts", "cli.js"] as const
 const EXCLUDED_COPY_DIRECTORIES = new Set([".git", ".omo", "node_modules"])
 
@@ -32,12 +33,14 @@ const runCommand = (command: Command): string => {
 }
 
 const copyPackage = async (root: string): Promise<string> => {
-  const packageDirectory = join(root, "package")
+  await cp(join(MONOREPO_ROOT, "CHANGELOG.md"), join(root, "CHANGELOG.md"))
+  const packagesDirectory = join(root, "packages")
+  const packageDirectory = join(packagesDirectory, "opencode-vpet")
   await cp(PROJECT_ROOT, packageDirectory, {
     recursive: true,
     filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
   })
-  await cp(join(PROJECT_ROOT, "../vpet-core"), join(packageDirectory, "../vpet-core"), {
+  await cp(join(PROJECT_ROOT, "../vpet-core"), join(packagesDirectory, "vpet-core"), {
     recursive: true,
     filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
   })

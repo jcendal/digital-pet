@@ -87,10 +87,10 @@ describe("TUI composition", () => {
 
     expect(
       commands.map((command) => ({
-        name: command.name,
-        slashName: command.slashName,
-        namespace: command.namespace,
-        category: command.category,
+        name: command["name"],
+        slashName: command["slashName"],
+        namespace: command["namespace"],
+        category: command["category"],
       })),
     ).toEqual([
       { name: "vpet.dex", slashName: "vpet-dex", namespace: "palette", category: "VPet" },
@@ -140,8 +140,8 @@ describe("TUI composition", () => {
 
     expect(harness.layers).toHaveLength(1)
     const layer = harness.layers[0]
-    expect(layer?.name).toBe("opencode-vpet.layer")
-    expect(layer?.namespace).toBe("opencode-vpet")
+    expect(layer?.["name"]).toBe("opencode-vpet.layer")
+    expect(layer?.["namespace"]).toBe("opencode-vpet")
     expect(layer?.commands).toEqual([])
 
     let testCommandRun = 0
