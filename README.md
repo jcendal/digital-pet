@@ -17,6 +17,8 @@
     <a href="#settings">Settings</a> | 
     <a href="#storage">Storage</a> | 
     <a href="#partner-list">Partner list</a> |
+    <a href="#author">Author</a> |
+    <a href="#contributors">Contributors</a> |
     <a href="#license">License</a> |
     <a href="#attributions">Attributions</a>
 
@@ -818,6 +820,14 @@ To persist your partner, history, and control state, VPet uses a SQLite database
 
 Check out the [Digimon Data List](packages/vpet-core/src/data/digimon-data.ts) for more information about evolution
 lines.
+
+## Author
+
+- [Sergio Bugallo](https://github.com/sbugallo)
+
+## Contributors
+
+- [Jorge Cendal](https://github.com/jcendal)
 
 ## License
 
