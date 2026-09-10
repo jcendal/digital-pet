@@ -21,7 +21,7 @@ describe("sidebar render", () => {
     expect(line).toBe("Next check: [██████████░░░░░░░░░░]")
   })
 
-  test("maps partner model to static artwork payload", () => {
+  test("maps partner model to sidebar payload without artwork", () => {
     const payload = toSidebarWebviewPayload({
       kind: "partner",
       name: "Agumon",
@@ -38,8 +38,9 @@ describe("sidebar render", () => {
 
     expect(payload.kind).toBe("partner")
     if (payload.kind !== "partner") return
-    expect(payload.artwork.length).toBeGreaterThan(0)
-    expect(payload.artwork).not.toBe("agumon")
+    expect(payload.name).toBe("Agumon")
+    expect(payload.stage).toBe("Rookie")
+    expect("artwork" in payload).toBe(false)
     expect(buildGaugeLine({
       kind: "partner",
       name: "Agumon",

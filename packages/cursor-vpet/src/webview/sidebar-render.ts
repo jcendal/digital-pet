@@ -1,5 +1,4 @@
 import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
-import { resolveStaticMonsterArtwork } from "./static-monster-artwork.ts"
 
 const NEXT_CHECK_PREFIX = "Next check: "
 const NEXT_CHECK_BAR_WIDTH = 20
@@ -28,13 +27,17 @@ export type SidebarWebviewPayload =
       readonly kind: "partner"
       readonly name: string
       readonly stage: string
-      readonly artwork: string
       readonly nextCheck: string
       readonly gauge: string
       readonly url: string
       readonly urlLabel: string
       readonly frozen: boolean
     }
+
+export type AnimationFramePayload = {
+  readonly type: "animation-frame"
+  readonly artwork: string
+}
 
 export const toSidebarWebviewPayload = (model: SidebarCardModel): SidebarWebviewPayload => {
   if (model.kind === "no_partner") {
@@ -46,7 +49,6 @@ export const toSidebarWebviewPayload = (model: SidebarCardModel): SidebarWebview
     kind: "partner",
     name: model.isSetOverride ? `${model.name} (set)` : model.name,
     stage: model.frozen ? `${model.stage} (frozen)` : model.stage,
-    artwork: resolveStaticMonsterArtwork(model.sprite),
     nextCheck: buildNextCheckLine(model),
     gauge: buildGaugeLine(model),
     url: model.url,
@@ -76,12 +78,16 @@ export const buildSidebarWebviewHtml = (nonce: string): string => `<!DOCTYPE htm
       border-bottom: 1px solid var(--vscode-panel-border);
       padding: 8px 0;
     }
+    .artwork-wrap {
+      width: 100%;
+      min-height: 8em;
+    }
     .artwork {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 11px;
       line-height: 1;
       white-space: pre;
-      min-height: 8em;
+      margin: 0;
       image-rendering: pixelated;
     }
     .name { font-weight: 600; }
@@ -104,6 +110,8 @@ export const buildSidebarWebviewHtml = (nonce: string): string => `<!DOCTYPE htm
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     const content = document.getElementById("content");
+    let currentModel = null;
+    let currentArtwork = "";
 
     const escapeHtml = (value) =>
       String(value)
@@ -112,33 +120,66 @@ export const buildSidebarWebviewHtml = (nonce: string): string => `<!DOCTYPE htm
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;");
 
-    const renderModel = (model) => {
-      if (!model || model.type !== "sidebar-model") return;
-      if (model.kind === "no_partner") {
-        content.className = "empty";
-        content.textContent = model.messageLine;
-        return;
+    const reportArtworkWidth = () => {
+      const width = content.querySelector(".artwork-wrap")?.clientWidth ?? content.clientWidth;
+      if (width > 0) {
+        vscode.postMessage({ type: "artwork-width", width });
       }
+    };
 
+    const renderPartnerCard = () => {
+      if (!currentModel || currentModel.kind !== "partner") return;
       content.className = "card";
       content.innerHTML = \`
-        <pre class="artwork">\${escapeHtml(model.artwork)}</pre>
-        <div class="name">\${escapeHtml(model.name)}</div>
-        <div class="stage">\${escapeHtml(model.stage)}</div>
-        <div class="next-check">\${escapeHtml(model.nextCheck)}</div>
-        <div class="gauge">\${escapeHtml(model.gauge)}</div>
-        <button type="button" class="url" data-url="\${escapeHtml(model.url)}">\${escapeHtml(model.urlLabel)}</button>
+        <div class="artwork-wrap"><pre class="artwork">\${escapeHtml(currentArtwork)}</pre></div>
+        <div class="name">\${escapeHtml(currentModel.name)}</div>
+        <div class="stage">\${escapeHtml(currentModel.stage)}</div>
+        <div class="next-check">\${escapeHtml(currentModel.nextCheck)}</div>
+        <div class="gauge">\${escapeHtml(currentModel.gauge)}</div>
+        <button type="button" class="url" data-url="\${escapeHtml(currentModel.url)}">\${escapeHtml(currentModel.urlLabel)}</button>
       \`;
 
       const link = content.querySelector(".url");
       link?.addEventListener("click", () => {
-        vscode.postMessage({ type: "open-url", url: model.url });
+        vscode.postMessage({ type: "open-url", url: currentModel.url });
       });
+      reportArtworkWidth();
+    };
+
+    const render = () => {
+      if (!currentModel || currentModel.type !== "sidebar-model") return;
+      if (currentModel.kind === "no_partner") {
+        content.className = "empty";
+        content.textContent = currentModel.messageLine;
+        return;
+      }
+      renderPartnerCard();
     };
 
     window.addEventListener("message", (event) => {
-      renderModel(event.data);
+      const message = event.data;
+      if (!message || typeof message.type !== "string") return;
+      if (message.type === "sidebar-model") {
+        currentModel = message;
+        render();
+        return;
+      }
+      if (message.type === "animation-frame" && typeof message.artwork === "string") {
+        currentArtwork = message.artwork;
+        if (currentModel?.kind === "partner") {
+          const artwork = content.querySelector(".artwork");
+          if (artwork) {
+            artwork.textContent = message.artwork;
+          } else {
+            renderPartnerCard();
+          }
+        }
+      }
     });
+
+    const resizeObserver = new ResizeObserver(() => reportArtworkWidth());
+    resizeObserver.observe(document.body);
+    window.addEventListener("load", reportArtworkWidth);
   </script>
 </body>
 </html>`

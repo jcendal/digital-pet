@@ -20,3 +20,5 @@ Thumbs.db
 *.vsix
 npm-pack.json
 .package.json.publish.bak
+packages/opencode-vpet/CHANGELOG.md
+packages/cursor-vpet/CHANGELOG.md

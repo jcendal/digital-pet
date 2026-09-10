@@ -9,5 +9,5 @@
     "rootDir": "scripts",
     "skipLibCheck": true
   },
-  "include": ["scripts/release-metadata.ts"]
+  "include": ["scripts/release-metadata.ts", "scripts/stage-changelog.ts"]
 }

@@ -10,6 +10,7 @@ import { createCursorUsageEventSource } from "./adapters/cursor/cursor-usage-eve
 import { installVpetHooks, uninstallVpetHooks } from "./adapters/cursor/install-hooks.ts"
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { configureSqlJsWasmPath } from "./adapters/sqlite/sqljs-config.ts"
+import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
 import { getVpetExtensionSettings, toDatabaseOptions } from "./config/extension-settings.ts"
 import { openDexPanel } from "./webview/dex-panel.ts"
@@ -50,8 +51,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const repository = await createSqliteVpetRepository(databaseOptions())
   context.subscriptions.push({ dispose: () => repository.close() })
 
-  sidebarProvider = new VpetSidebarProvider(context.extensionUri, databaseOptions())
-  context.subscriptions.push(vscode.window.registerWebviewViewProvider(VpetSidebarProvider.viewType, sidebarProvider))
+  const snapshotReader = await createSqliteSidebarSnapshotReader(databaseOptions())
+  sidebarProvider = new VpetSidebarProvider(context.extensionUri, snapshotReader)
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(VpetSidebarProvider.viewType, sidebarProvider, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
+    { dispose: () => sidebarProvider?.dispose() },
+  )
 
   const refreshSidebar = (): void => {
     void sidebarProvider?.refresh()

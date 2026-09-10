@@ -1,6 +1,8 @@
 import { copyFile, mkdir, rm } from "node:fs/promises"
 import { createRequire } from "node:module"
-import { dirname, resolve } from "node:path"
+import { resolve } from "node:path"
+
+import { stageChangelog } from "../../../scripts/stage-changelog.ts"
 
 const require = createRequire(import.meta.url)
 const packageRoot = resolve(import.meta.dir, "..")
@@ -9,6 +11,7 @@ const wasmSource = require.resolve("sql.js/dist/sql-wasm.wasm")
 
 await rm(distDirectory, { recursive: true, force: true })
 await mkdir(distDirectory, { recursive: true })
+await stageChangelog(packageRoot)
 
 const result = await Bun.build({
   entrypoints: ["./src/extension.ts"],

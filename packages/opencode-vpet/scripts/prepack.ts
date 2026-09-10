@@ -1,6 +1,7 @@
 import { rm, writeFile } from "node:fs/promises"
 import { resolve } from "node:path"
 
+import { removeStagedChangelog, stageChangelog } from "../../../scripts/stage-changelog.ts"
 import { restorePackageJson, stripWorkspaceDependencies } from "./strip-workspace-deps.ts"
 
 type JsonObject = { readonly [key: string]: unknown }
@@ -26,6 +27,7 @@ if (!(await Bun.file(backupPath).exists())) {
 }
 
 try {
+  await stageChangelog(packageRoot)
   await Bun.$`bun run build`
 
   const packageJson: unknown = JSON.parse(await Bun.file(resolve(packageRoot, "package.json")).text())
@@ -58,5 +60,6 @@ try {
 } catch (error) {
   await restorePackageJson(packageRoot, originalSource)
   await rm(backupPath, { force: true })
+  await removeStagedChangelog(packageRoot)
   throw error
 }
