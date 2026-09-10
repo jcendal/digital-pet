@@ -21,7 +21,11 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private cachedArtwork = ""
   private artworkWidth = DEFAULT_ARTWORK_WIDTH
   private visualInterval?: ReturnType<typeof setInterval>
-  private readonly animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG)
+  private readonly animation = new MonsterAnimationController(
+    MONSTER_FRAME_CATALOG,
+    Math.random,
+    () => performance.now(),
+  )
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -80,8 +84,8 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     const model = buildSidebarCardModel(inputs, DEFAULT_VPET_SETTINGS)
     const payload = toSidebarWebviewPayload(model)
     this.cachedPayload = payload
-    this.syncAnimationPartner(model)
     await this.view.webview.postMessage(payload)
+    this.syncAnimationPartner(model)
     await this.postAnimationFrame()
   }
 

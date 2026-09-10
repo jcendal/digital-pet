@@ -112,7 +112,11 @@ export class MonsterAnimationController {
   #latestViewportWidth: number | undefined
   #state: MonsterAnimationState = { kind: "blank" }
 
-  constructor(catalog: MonsterFrameCatalog, random: () => number = Math.random, nowMs: () => number = performance.now) {
+  constructor(
+    catalog: MonsterFrameCatalog,
+    random: () => number = Math.random,
+    nowMs: () => number = () => performance.now(),
+  ) {
     this.#catalog = catalog
     this.#random = random
     this.#nowMs = nowMs
