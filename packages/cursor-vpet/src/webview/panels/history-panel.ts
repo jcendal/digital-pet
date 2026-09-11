@@ -3,8 +3,9 @@ import * as vscode from "vscode"
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { buildHistoryViewModel } from "@sbugallo/vpet-core/view-models/history-view-model.ts"
-import type { CreateSqliteVpetArchiveReaderOptions } from "../adapters/sqlite/sqlite-vpet-archive-reader.ts"
-import { readArchive } from "../adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import type { CreateSqliteVpetArchiveReaderOptions } from "../../adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import { readArchive } from "../../adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import { escapeHtml } from "../../shared/escape-html.ts"
 
 export const openHistoryPanel = async (
   context: vscode.ExtensionContext,
@@ -15,7 +16,8 @@ export const openHistoryPanel = async (
 
   const panel = vscode.window.createWebviewPanel("cursorVpetHistory", "VPet History", vscode.ViewColumn.One, {})
   if (model.kind !== "available") {
-    panel.webview.html = `<!DOCTYPE html><html><body>${model.kind === "empty" ? "No history yet." : model.message}</body></html>`
+    const message = model.kind === "empty" ? "No history yet." : escapeHtml(model.message)
+    panel.webview.html = `<!DOCTYPE html><html><body>${message}</body></html>`
     context.subscriptions.push(panel)
     return
   }
@@ -23,7 +25,7 @@ export const openHistoryPanel = async (
   const rows = model.generations
     .map(
       (generation) =>
-        `<tr><td>Gen ${generation.generation}</td><td>${generation.path.join(" → ")}</td><td>${generation.createdAt}</td></tr>`,
+        `<tr><td>Gen ${generation.generation}</td><td>${escapeHtml(generation.path.join(" → "))}</td><td>${escapeHtml(generation.createdAt)}</td></tr>`,
     )
     .join("")
   panel.webview.html = `<!DOCTYPE html><html><body style="font-family:var(--vscode-font-family);color:var(--vscode-foreground)">

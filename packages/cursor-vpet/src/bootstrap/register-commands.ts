@@ -6,8 +6,8 @@ import { freezeVpet } from "@sbugallo/vpet-core/application/use-cases/freeze-vpe
 import { unfreezeVpet } from "@sbugallo/vpet-core/application/use-cases/unfreeze-vpet.ts"
 import { setVpetCheatNode } from "@sbugallo/vpet-core/application/use-cases/set-vpet-cheat-node.ts"
 import { installVpetHooks, uninstallVpetHooks } from "../adapters/cursor/install-hooks.ts"
-import { openDexPanel } from "../webview/dex-panel.ts"
-import { openHistoryPanel } from "../webview/history-panel.ts"
+import { openDexPanel } from "../webview/panels/dex-panel.ts"
+import { openHistoryPanel } from "../webview/panels/history-panel.ts"
 import type { VpetContainer } from "./container.ts"
 
 export const registerCommands = (context: vscode.ExtensionContext, container: VpetContainer): void => {
