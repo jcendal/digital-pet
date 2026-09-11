@@ -14,13 +14,12 @@ import type {
 import type { VpetArchiveReader } from "@sbugallo/vpet-core/application/ports/vpet-archive.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
 
+import { UNAVAILABLE_ARCHIVE_MESSAGE } from "../../shared/constants/sqlite.ts"
 import { isRecoverableSqliteReadError } from "./errors.ts"
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { openReadonlySqlJsDatabase } from "./sqljs-driver.ts"
 
 export type CreateSqliteVpetArchiveReaderOptions = SqliteDatabaseOptions
-
-const UNAVAILABLE_ARCHIVE_MESSAGE = "VPet archive is unavailable."
 
 const toArchiveEvent = (row: PersistedPartnerEventRow): VpetArchiveEvent => ({
   eventId: row.event_id,

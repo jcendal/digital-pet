@@ -103,7 +103,7 @@
   },
   "scripts": {
     "build": "bun scripts/build.ts",
-    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.scripts.json",
+    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p tsconfig.scripts.json",
     "test": "bun test",
     "package": "npx @vscode/vsce package --no-dependencies",
     "publish:openvsx": "npx ovsx publish *.vsix -p \"$OVSX_PAT\"",

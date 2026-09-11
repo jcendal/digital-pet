@@ -1,9 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
 
+import { VPET_HOOK_MARKER } from "../../shared/constants/cursor.ts"
 import { resolveHooksJsonPath } from "./paths.ts"
-
-const VPET_MARKER = "hook-bridge.js"
 
 export type HooksJson = {
   readonly version: number
@@ -18,7 +17,7 @@ const parseHooksJson = (raw: string): HooksJson => {
   return parsed
 }
 
-const isVpetHook = (entry: { readonly command: string }): boolean => entry.command.includes(VPET_MARKER)
+const isVpetHook = (entry: { readonly command: string }): boolean => entry.command.includes(VPET_HOOK_MARKER)
 
 export const installVpetHooks = (bridgePath: string): { readonly hooksPath: string } => {
   const hooksPath = resolveHooksJsonPath()

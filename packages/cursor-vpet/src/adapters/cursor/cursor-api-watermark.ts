@@ -1,10 +1,9 @@
 import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 
+import { CURSOR_USAGE_EVENTS_URL } from "../../shared/constants/cursor.ts"
 import { sleep } from "../../shared/sleep.ts"
 import { readCursorAccessToken } from "./cursor-auth.ts"
 import type { UsageApiEvent, UsageApiResponse, UsageWatermark } from "./types.ts"
-
-const USAGE_EVENTS_URL = "https://cursor.com/api/dashboard/get-filtered-usage-events"
 
 export const fingerprintEvent = (event: UsageApiEvent | undefined): string => {
   if (event === undefined) return "none"
@@ -42,7 +41,7 @@ const fetchUsagePage = async (
   accessToken: string,
   body: Record<string, string | number>,
 ): Promise<UsageApiResponse> => {
-  const response = await fetch(USAGE_EVENTS_URL, {
+  const response = await fetch(CURSOR_USAGE_EVENTS_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

@@ -10,14 +10,12 @@ import {
 import type { SidebarSnapshot, SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
 
+import { CONTROL_STATE_SELECT, TRAINER_STATE_SELECT } from "../../shared/constants/sqlite.ts"
 import { isRecoverableSqliteReadError } from "./errors.ts"
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { getSqlRuntime } from "./sqljs-config.ts"
 
 export type CreateSqliteSidebarSnapshotReaderOptions = SqliteDatabaseOptions
-
-const TRAINER_STATE_SELECT = "SELECT total_tokens FROM trainer_state WHERE trainer_id = 1"
-const CONTROL_STATE_SELECT = "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1"
 
 type ControlStateRow = {
   readonly frozen: number

@@ -1,21 +1,24 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
+import {
+  BATTLE_GAP_COLUMNS,
+  BATTLE_SCORE_HIT_PIP,
+  BATTLE_SCORE_MISS_PIP,
+  EVOLUTION_BATTLE_HITS_TO_WIN,
+  EVOLUTION_BATTLE_MAX_SHOTS,
+} from "../../shared/constants/evolution-battle.ts"
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
+import {
+  EVOLUTION_BATTLE_IMPACT_MS,
+  EVOLUTION_BATTLE_INTRO_MS,
+  EVOLUTION_BATTLE_OUTCOME_MS,
+  EVOLUTION_BATTLE_PAUSE_MS,
+  EVOLUTION_BATTLE_TICK_MS,
+  EVOLUTION_BATTLE_TRAVEL_MS,
+} from "../../shared/constants/presentation-timing.ts"
 import { sleep } from "../../shared/sleep.ts"
 import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
-
-const FRAME_ROWS = 8
-const FRAME_COLUMNS = 16
-const BATTLE_GAP_COLUMNS = 12
-
-export const EVOLUTION_BATTLE_HITS_TO_WIN = 3
-export const EVOLUTION_BATTLE_MAX_SHOTS = 24
-export const EVOLUTION_BATTLE_INTRO_MS = 1600
-export const EVOLUTION_BATTLE_TRAVEL_MS = 900
-export const EVOLUTION_BATTLE_PAUSE_MS = 550
-export const EVOLUTION_BATTLE_IMPACT_MS = 650
-export const EVOLUTION_BATTLE_OUTCOME_MS = 1400
-export const EVOLUTION_BATTLE_TICK_MS = 70
 
 /** FIGlet-style BATTLE banner. */
 export const BATTLE_FIGLET_LINES = Object.freeze([
@@ -34,7 +37,7 @@ export const FIREBALL_LINES = Object.freeze([" ▄▀▄ ", "▄█▀▀█", "
 
 const FIREBALL_ROWS = FIREBALL_LINES.length
 const FIREBALL_COLUMNS = FIREBALL_LINES[0]?.length ?? 0
-const FIREBALL_START_ROW = Math.floor((FRAME_ROWS - FIREBALL_ROWS) / 2)
+const FIREBALL_START_ROW = Math.floor((MONSTER_FRAME_ROWS - FIREBALL_ROWS) / 2)
 
 const IMPACT_LINES = Object.freeze([" ▄█▄ ", " █▀█ ", " ▀▀▀ "])
 const IMPACT_ROWS = IMPACT_LINES.length
@@ -85,7 +88,7 @@ const frameLines = (
 ): string[] => {
   const frameName = poseToFrame(pose, injuredAlt)
   const frame = catalog.get(sprite, frameName) ?? catalog.get(sprite, "walk_1")
-  if (frame === undefined) return Array.from({ length: FRAME_ROWS }, () => " ".repeat(FRAME_COLUMNS))
+  if (frame === undefined) return Array.from({ length: MONSTER_FRAME_ROWS }, () => " ".repeat(MONSTER_FRAME_COLUMNS))
   if (facing === "right") {
     const mirrored = mirrorMonsterFrame(frame)
     if (mirrored.kind === "mirrored") return mirrored.frame.content.split("\n")
@@ -110,9 +113,6 @@ const centerText = (width: number, text: string): string => {
   const start = Math.max(0, Math.floor((width - text.length) / 2))
   return `${" ".repeat(start)}${text}`.padEnd(width, " ").slice(0, width)
 }
-
-export const BATTLE_SCORE_HIT_PIP = "█"
-export const BATTLE_SCORE_MISS_PIP = "░"
 
 export const buildBattleScorePips = (hits: number, total: number = EVOLUTION_BATTLE_HITS_TO_WIN): string =>
   Array.from({ length: total }, (_, index) => (index < hits ? BATTLE_SCORE_HIT_PIP : BATTLE_SCORE_MISS_PIP)).join("")
@@ -141,7 +141,7 @@ const fireballColumn = (shooter: EvolutionBattleShooter, progress: number): numb
 }
 
 const impactColumn = (shooter: EvolutionBattleShooter): number => {
-  if (shooter === "player") return BATTLE_GAP_COLUMNS - IMPACT_LINES[0]!.length
+  if (shooter === "player") return BATTLE_GAP_COLUMNS - (IMPACT_LINES[0]?.length ?? 0)
   return 0
 }
 
@@ -167,9 +167,9 @@ const renderImpactInGap = (gapRows: string[], shooter: EvolutionBattleShooter): 
 const renderHudInGap = (gapRows: string[], scene: EvolutionBattleScene): void => {
   gapRows[0] = buildBattleScoreRow(scene.playerHits, scene.opponentHits)
   if (scene.outcomeLabel !== null) {
-    gapRows[FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.outcomeLabel)
+    gapRows[MONSTER_FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.outcomeLabel)
   } else if (scene.lastResult !== null) {
-    gapRows[FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.lastResult === "hit" ? "HIT!" : "MISS")
+    gapRows[MONSTER_FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.lastResult === "hit" ? "HIT!" : "MISS")
   }
 }
 
@@ -266,7 +266,7 @@ export const renderEvolutionBattleArtwork = (
   const playerLines = frameLines(catalog, playerSprite, "right", scene.playerPose, scene.playerInjuredAlt)
   const opponentLines = frameLines(catalog, opponentSprite, "left", scene.opponentPose, scene.opponentInjuredAlt)
 
-  const gapRows = Array.from({ length: FRAME_ROWS }, () => " ".repeat(BATTLE_GAP_COLUMNS))
+  const gapRows = Array.from({ length: MONSTER_FRAME_ROWS }, () => " ".repeat(BATTLE_GAP_COLUMNS))
   renderHudInGap(gapRows, scene)
 
   if (scene.shooter !== null) {
@@ -276,11 +276,11 @@ export const renderEvolutionBattleArtwork = (
     renderImpactInGap(gapRows, scene.shooter)
   }
 
-  const battleWidth = FRAME_COLUMNS + BATTLE_GAP_COLUMNS + FRAME_COLUMNS
-  const rows = Array.from({ length: FRAME_ROWS }, (_, rowIndex) => {
-    const left = padRow(playerLines[rowIndex] ?? "", FRAME_COLUMNS)
+  const battleWidth = MONSTER_FRAME_COLUMNS + BATTLE_GAP_COLUMNS + MONSTER_FRAME_COLUMNS
+  const rows = Array.from({ length: MONSTER_FRAME_ROWS }, (_, rowIndex) => {
+    const left = padRow(playerLines[rowIndex] ?? "", MONSTER_FRAME_COLUMNS)
     const gap = gapRows[rowIndex] ?? " ".repeat(BATTLE_GAP_COLUMNS)
-    const right = padRow(opponentLines[rowIndex] ?? "", FRAME_COLUMNS)
+    const right = padRow(opponentLines[rowIndex] ?? "", MONSTER_FRAME_COLUMNS)
     return `${left}${gap}${right}`
   })
 

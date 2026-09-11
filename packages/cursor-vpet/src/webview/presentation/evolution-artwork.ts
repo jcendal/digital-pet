@@ -1,16 +1,15 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
+import {
+  EVOLUTION_GLOW_MS,
+  EVOLUTION_MORPH_MS,
+  EVOLUTION_PRE_ANIMATION_MS,
+  EVOLUTION_REVEAL_MS,
+  EVOLUTION_TICK_MS,
+} from "../../shared/constants/presentation-timing.ts"
 import { sleep } from "../../shared/sleep.ts"
-
-const FRAME_ROWS = 8
-const FRAME_COLUMNS = 16
-
-export const EVOLUTION_PRE_ANIMATION_MS = 400
-export const EVOLUTION_GLOW_MS = 700
-export const EVOLUTION_MORPH_MS = 1300
-export const EVOLUTION_REVEAL_MS = 1500
-export const EVOLUTION_TICK_MS = 70
 
 const GLOW_GLYPHS = "▄▀█░"
 
@@ -23,19 +22,19 @@ export type EvolutionArtworkScene = {
 
 const frameLines = (catalog: MonsterFrameCatalog, sprite: string, frameName: MonsterFrameName): string[] => {
   const frame = catalog.get(sprite, frameName) ?? catalog.get(sprite, "walk_1")
-  if (frame === undefined) return Array.from({ length: FRAME_ROWS }, () => " ".repeat(FRAME_COLUMNS))
+  if (frame === undefined) return Array.from({ length: MONSTER_FRAME_ROWS }, () => " ".repeat(MONSTER_FRAME_COLUMNS))
   return frame.content.split("\n")
 }
 
 const padRow = (row: string, width: number): string => row.padEnd(width, " ").slice(0, width)
 
 const centerArtwork = (rows: readonly string[], viewportWidth: number): string => {
-  const padding = Math.max(Math.floor((viewportWidth - FRAME_COLUMNS) / 2), 0)
+  const padding = Math.max(Math.floor((viewportWidth - MONSTER_FRAME_COLUMNS) / 2), 0)
   return rows.map((row) => `${" ".repeat(padding)}${row}`).join("\n")
 }
 
 const glowRow = (row: string, intensity: number, tick: number): string => {
-  const cells = Array.from(padRow(row, FRAME_COLUMNS))
+  const cells = Array.from(padRow(row, MONSTER_FRAME_COLUMNS))
   return cells
     .map((cell, column) => {
       if (cell === " ") return cell
@@ -48,12 +47,12 @@ const glowRow = (row: string, intensity: number, tick: number): string => {
 }
 
 const morphRow = (fromRow: string, toRow: string, progress: number, rowIndex: number): string => {
-  const from = Array.from(padRow(fromRow, FRAME_COLUMNS))
-  const to = Array.from(padRow(toRow, FRAME_COLUMNS))
+  const from = Array.from(padRow(fromRow, MONSTER_FRAME_COLUMNS))
+  const to = Array.from(padRow(toRow, MONSTER_FRAME_COLUMNS))
   return from
     .map((fromCell, column) => {
       const toCell = to[column] ?? " "
-      const threshold = (column / FRAME_COLUMNS) * 0.65 + (rowIndex / FRAME_ROWS) * 0.35
+      const threshold = (column / MONSTER_FRAME_COLUMNS) * 0.65 + (rowIndex / MONSTER_FRAME_ROWS) * 0.35
       if (progress >= threshold) return toCell === " " ? fromCell : toCell
       return fromCell
     })

@@ -58,7 +58,7 @@ describe("sidebar provider", () => {
       { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
       { scheduler: { start: () => () => undefined } },
     )
-    provider.resolveWebviewView(stub.webviewView as import("vscode").WebviewView)
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     expect(stub.webviewView.webview.html).toContain("Content-Security-Policy")
     expect(stub.webviewView.webview.html).toMatch(/script nonce="[^"]+"/)
   })
@@ -73,7 +73,7 @@ describe("sidebar provider", () => {
       { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
       { scheduler: { start: () => () => undefined } },
     )
-    provider.resolveWebviewView(stub.webviewView as import("vscode").WebviewView)
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     stub.sendMessage({ type: "open-url", url: "https://example.com/agumon" })
     await Promise.resolve()
     expect(openedUrls).toEqual(["https://example.com/agumon"])
@@ -88,7 +88,7 @@ describe("sidebar provider", () => {
       { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
       { scheduler: { start: () => () => undefined } },
     )
-    provider.resolveWebviewView(stub.webviewView as import("vscode").WebviewView)
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     stub.sendMessage({ type: "unknown" })
     expect(stub.posted).toHaveLength(0)
   })
@@ -114,7 +114,7 @@ describe("sidebar provider", () => {
       { scheduler: { start: () => () => undefined } },
     )
     await provider.refresh()
-    provider.resolveWebviewView(stub.webviewView as import("vscode").WebviewView)
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     await Promise.resolve()
     expect(stub.posted.some((message) => (message as { kind?: string }).kind === "partner")).toBe(true)
   })
@@ -134,7 +134,7 @@ describe("sidebar provider", () => {
       { scheduler },
     )
     const stub = createStubWebviewView()
-    provider.resolveWebviewView(stub.webviewView as import("vscode").WebviewView)
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     provider.dispose()
     expect(state.stopped).toBe(true)
   })

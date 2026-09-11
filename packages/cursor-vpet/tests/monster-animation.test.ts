@@ -4,7 +4,7 @@ import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-ca
 
 import { MonsterAnimationController } from "../src/webview/presentation/monster-animation.ts"
 
-const SLEEP_AFTER_MS = 300_000
+import { MONSTER_SLEEP_AFTER_MS } from "../src/shared/constants/presentation-timing.ts"
 
 describe("monster animation", () => {
   test("returns blank when partner is cleared", () => {
@@ -84,7 +84,7 @@ describe("monster animation", () => {
       () => now,
     )
     controller.dispatch({ kind: "partner_changed", partner: { sprite: "agumon", isDigitama: false } })
-    now = SLEEP_AFTER_MS
+    now = MONSTER_SLEEP_AFTER_MS
     const output = controller.dispatch({ kind: "tick" })
     expect(output.kind).toBe("sleeping")
   })
@@ -97,9 +97,9 @@ describe("monster animation", () => {
       () => now,
     )
     controller.dispatch({ kind: "partner_changed", partner: { sprite: "agumon", isDigitama: false } })
-    now = SLEEP_AFTER_MS
+    now = MONSTER_SLEEP_AFTER_MS
     controller.dispatch({ kind: "tick" })
-    now = SLEEP_AFTER_MS + 1
+    now = MONSTER_SLEEP_AFTER_MS + 1
     const output = controller.dispatch({ kind: "activity" })
     expect(output.kind).toBe("walking")
   })

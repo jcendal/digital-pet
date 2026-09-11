@@ -5,6 +5,7 @@ import type {
 } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 import { assertNever } from "../../shared/assert-never.ts"
+import { MONSTER_SLEEP_AFTER_MS } from "../../shared/constants/presentation-timing.ts"
 import {
   resolveCosmeticActions,
   resolveSleepClip,
@@ -96,7 +97,6 @@ type SleepingState = {
 
 type MonsterAnimationState = BlankState | UnavailableState | DigitamaState | WalkingState | ActionState | SleepingState
 const ORIGIN = { offset: 0, facing: "left" } as const
-const SLEEP_AFTER_MS = 300_000
 
 const sameIdentity = (left: MonsterAnimationIdentity, right: MonsterAnimationIdentity): boolean =>
   left.sprite === right.sprite && left.isDigitama === right.isDigitama
@@ -269,7 +269,7 @@ export class MonsterAnimationController {
 
   #inactive(): boolean {
     const baseline = this.#lastActivityMs
-    return baseline !== undefined && this.#nowMs() - baseline >= SLEEP_AFTER_MS
+    return baseline !== undefined && this.#nowMs() - baseline >= MONSTER_SLEEP_AFTER_MS
   }
 
   #sleep(identity: MonsterAnimationIdentity, boundary: ActionBoundaryState): SleepingState {

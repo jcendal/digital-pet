@@ -1,15 +1,15 @@
 import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 
-import type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"
+import {
+  DEFAULT_ARTWORK_WIDTH,
+  MIN_ARTWORK_WIDTH,
+  NEXT_CHECK_BAR_WIDTH,
+  NEXT_CHECK_PREFIX,
+  SIDEBAR_URL_LABEL,
+} from "../../shared/constants/sidebar-ui.ts"
+import type { SidebarWebviewPayload } from "./webview-messages.ts"
 
 export type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"
-
-const NEXT_CHECK_PREFIX = "Next check: "
-const NEXT_CHECK_BAR_WIDTH = 20
-const URL_LABEL = "Encyclopedia entry"
-
-export const MIN_ARTWORK_WIDTH = 16
-export const DEFAULT_ARTWORK_WIDTH = 32
 
 export const pixelWidthToArtworkColumns = (pixelWidth: number, charWidthPx: number): number => {
   if (!Number.isFinite(pixelWidth) || pixelWidth <= 0) return DEFAULT_ARTWORK_WIDTH
@@ -47,7 +47,7 @@ export const toSidebarWebviewPayload = (model: SidebarCardModel): SidebarWebview
     nextCheck: buildNextCheckLine(model),
     gauge: buildGaugeLine(model),
     url: model.url,
-    urlLabel: URL_LABEL,
+    urlLabel: SIDEBAR_URL_LABEL,
     frozen: model.frozen,
   }
 }

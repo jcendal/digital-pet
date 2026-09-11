@@ -8,9 +8,8 @@ import {
   type MonsterAnimationIdentity,
   type MonsterAnimationOutput,
 } from "../presentation/monster-animation.ts"
-import { DEFAULT_ARTWORK_WIDTH, MIN_ARTWORK_WIDTH } from "./sidebar-render.ts"
-
-const VISUAL_INTERVAL_MS = 500
+import { DEFAULT_ARTWORK_WIDTH, MIN_ARTWORK_WIDTH } from "../../shared/constants/sidebar-ui.ts"
+import { SIDEBAR_VISUAL_INTERVAL_MS } from "../../shared/constants/presentation-timing.ts"
 
 export type SidebarAnimationHost = {
   setArtworkWidth(width: number): void
@@ -70,7 +69,7 @@ export const createSidebarAnimationHost = ({
         if (!isVisible() || presentationBlocked) return
         const nextAnimation = animation.dispatch({ kind: "tick" })
         void postCurrentFrame(nextAnimation)
-      }, VISUAL_INTERVAL_MS)
+      }, SIDEBAR_VISUAL_INTERVAL_MS)
     },
     stop(): void {
       stopInterval?.()

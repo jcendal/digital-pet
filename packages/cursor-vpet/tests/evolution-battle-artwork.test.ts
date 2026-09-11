@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
+import { EVOLUTION_BATTLE_HITS_TO_WIN } from "../src/shared/constants/evolution-battle.ts"
 import {
   buildBattleIntroTextLines,
   buildBattleScorePips,
   buildBattleScoreRow,
   defaultBattleScene,
-  EVOLUTION_BATTLE_HITS_TO_WIN,
   FIREBALL_LINES,
   planEvolutionBattle,
   renderBattleIntroArtwork,

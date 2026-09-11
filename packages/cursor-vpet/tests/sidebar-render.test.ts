@@ -8,6 +8,21 @@ import {
   toSidebarWebviewPayload,
 } from "../src/webview/sidebar/sidebar-render.ts"
 
+const partnerCard = {
+  kind: "partner" as const,
+  name: "Agumon",
+  sprite: "agumon",
+  stage: "Rookie",
+  stageNumber: 3,
+  url: "https://example.com",
+  gauge: 50,
+  threshold: 100,
+  isTerminal: false,
+  frozen: false,
+  isSetOverride: false,
+  evolutionBattlePending: false,
+}
+
 describe("sidebar render", () => {
   test("converts pixel width to monospace artwork columns", () => {
     expect(pixelWidthToArtworkColumns(250, 7.5)).toBe(33)
@@ -16,19 +31,7 @@ describe("sidebar render", () => {
   })
 
   test("builds next check bar for partner progress", () => {
-    const line = buildNextCheckLine({
-      kind: "partner",
-      name: "Agumon",
-      sprite: "agumon",
-      stage: "Rookie",
-      stageNumber: 3,
-      url: "https://example.com",
-      gauge: 50,
-      threshold: 100,
-      isTerminal: false,
-      frozen: false,
-      isSetOverride: false,
-    })
+    const line = buildNextCheckLine(partnerCard)
 
     expect(line).toBe("Next check: [██████████░░░░░░░░░░]")
   })
@@ -41,17 +44,10 @@ describe("sidebar render", () => {
 
   test("maps partner model to sidebar payload without artwork", () => {
     const payload = toSidebarWebviewPayload({
-      kind: "partner",
-      name: "Agumon",
-      sprite: "agumon",
-      stage: "Rookie",
-      stageNumber: 3,
+      ...partnerCard,
       url: "https://example.com/agumon",
       gauge: 10,
       threshold: 100,
-      isTerminal: false,
-      frozen: false,
-      isSetOverride: false,
     })
 
     expect(payload.kind).toBe("partner")
@@ -61,17 +57,10 @@ describe("sidebar render", () => {
     expect("artwork" in payload).toBe(false)
     expect(
       buildGaugeLine({
-        kind: "partner",
-        name: "Agumon",
-        sprite: "agumon",
-        stage: "Rookie",
-        stageNumber: 3,
+        ...partnerCard,
         url: "https://example.com/agumon",
         gauge: 10,
         threshold: 100,
-        isTerminal: false,
-        frozen: false,
-        isSetOverride: false,
       }),
     ).toBe("10/100")
   })

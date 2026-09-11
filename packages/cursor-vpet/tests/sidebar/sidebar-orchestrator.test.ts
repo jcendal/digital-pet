@@ -78,19 +78,48 @@ describe("sidebar orchestrator", () => {
     expect(notification.messages.some((message) => message.includes("Victory"))).toBe(true)
   })
 
+  test("pending battle resolves with defeat notification when the player loses", async () => {
+    const { sink } = createCaptureSink()
+    const notification = createCaptureNotification()
+    const orchestrator = createSidebarOrchestrator({
+      snapshotReader: { getSidebarSnapshot: battleSidebarSnapshot },
+      battleRepository: createBattleRepository("lost"),
+      animationHost: createSpyAnimationHost(),
+      notification,
+      random: sequenceRandom([0.99]),
+    })
+    orchestrator.setSink(sink)
+    await orchestrator.refresh()
+    expect(notification.messages.some((message) => message.includes("Defeat"))).toBe(true)
+  })
+
   test("queueEvolutionReveal plays reveal on next refresh", async () => {
     const { sink, artworks } = createCaptureSink()
+    const notification = createCaptureNotification()
     const evolution: UsageEvolutionTransition = { fromNodeId: "3-001", toNodeId: "4-017" }
+    const orchestrator = createSidebarOrchestrator({
+      snapshotReader: { getSidebarSnapshot: partnerSidebarSnapshot },
+      battleRepository: createBattleRepository(),
+      animationHost: createSpyAnimationHost(),
+      notification,
+    })
+    orchestrator.setSink(sink)
+    orchestrator.queueEvolutionReveal(evolution)
+    await orchestrator.refresh()
+    expect(artworks.length).toBeGreaterThan(0)
+    expect(notification.messages.some((message) => message.includes("Your partner evolved!"))).toBe(true)
+  })
+
+  test("isPresentationInProgress is false after refresh completes", async () => {
     const orchestrator = createSidebarOrchestrator({
       snapshotReader: { getSidebarSnapshot: partnerSidebarSnapshot },
       battleRepository: createBattleRepository(),
       animationHost: createSpyAnimationHost(),
       notification: createCaptureNotification(),
     })
-    orchestrator.setSink(sink)
-    orchestrator.queueEvolutionReveal(evolution)
+    orchestrator.setSink(createCaptureSink().sink)
     await orchestrator.refresh()
-    expect(artworks.length).toBeGreaterThan(0)
+    expect(orchestrator.isPresentationInProgress()).toBe(false)
   })
 
   test("onPresentationEnd callback runs after battle", async () => {

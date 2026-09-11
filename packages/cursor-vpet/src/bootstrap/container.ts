@@ -1,5 +1,5 @@
 import { join } from "node:path"
-import * as vscode from "vscode"
+import type * as vscode from "vscode"
 
 import { createDatabaseChangeWatcher } from "../adapters/sqlite/database-change-watcher.ts"
 import {

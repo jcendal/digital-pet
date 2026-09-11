@@ -102,6 +102,9 @@ export const createSpyAnimationHost = (): SidebarAnimationHost & {
     get blocked(): boolean {
       return state.blocked
     },
+    get artworkWidth(): number {
+      return state.artworkWidth
+    },
     get started(): boolean {
       return state.started
     },

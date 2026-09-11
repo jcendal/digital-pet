@@ -1,14 +1,9 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
+import { DEFEAT_CYCLE_MS, DEFEAT_CYCLES, DEFEAT_PRE_ANIMATION_MS } from "../../shared/constants/presentation-timing.ts"
 import { sleep } from "../../shared/sleep.ts"
-
-const FRAME_ROWS = 8
-const FRAME_COLUMNS = 16
-
-export const DEFEAT_CYCLE_MS = 550
-export const DEFEAT_CYCLES = 5
-export const DEFEAT_PRE_ANIMATION_MS = 300
 
 const NORMAL_FRAME: MonsterFrameName = "walk_1"
 const SAD_FRAMES: readonly MonsterFrameName[] = ["refuse", "injured_1"]
@@ -20,7 +15,7 @@ export type DefeatArtworkScene = {
 
 const frameLines = (catalog: MonsterFrameCatalog, sprite: string, frameName: MonsterFrameName): string[] => {
   const frame = catalog.get(sprite, frameName) ?? catalog.get(sprite, "walk_1")
-  if (frame === undefined) return Array.from({ length: FRAME_ROWS }, () => " ".repeat(FRAME_COLUMNS))
+  if (frame === undefined) return Array.from({ length: MONSTER_FRAME_ROWS }, () => " ".repeat(MONSTER_FRAME_COLUMNS))
   return frame.content.split("\n")
 }
 
@@ -32,7 +27,7 @@ const sadFrameFor = (catalog: MonsterFrameCatalog, sprite: string, sadAlt: boole
 }
 
 const centerArtwork = (rows: readonly string[], viewportWidth: number): string => {
-  const padding = Math.max(Math.floor((viewportWidth - FRAME_COLUMNS) / 2), 0)
+  const padding = Math.max(Math.floor((viewportWidth - MONSTER_FRAME_COLUMNS) / 2), 0)
   return rows.map((row) => `${" ".repeat(padding)}${row}`).join("\n")
 }
 
