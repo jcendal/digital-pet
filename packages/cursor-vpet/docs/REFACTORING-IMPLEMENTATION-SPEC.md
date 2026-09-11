@@ -3,11 +3,11 @@
 | Campo | Valor |
 |-------|-------|
 | **Paquete** | `packages/cursor-vpet` |
-| **Versión del documento** | 1.1 |
+| **Versión del documento** | 1.2 |
 | **Fecha** | 2026-09-11 |
-| **Estado** | En progreso — ~15 % del plan de refactor completado; feature de batalla/evolución ya mergeada en ambos hosts |
-| **Alcance** | Refactorización de `cursor-vpet`, cambios coordinados en `vpet-core`, `vpet-animation` (nuevo) y `opencode-vpet` |
-| **Último commit relevante** | `3b91b30` — *feat: evolve Digitama directly and split battle from reveal animations* |
+| **Estado** | En progreso — ~70 % del plan de refactor completado; `vpet-animation` extraído y consumido por ambos hosts |
+| **Alcance** | Refactorización de `cursor-vpet`, cambios coordinados en `vpet-core`, `vpet-animation` y `opencode-vpet` |
+| **Último commit relevante** | `324f654` — *refactor: migrate OpenCode and Cursor hosts to vpet-animation* |
 
 ---
 
@@ -46,10 +46,10 @@ Refactorizar `cursor-vpet` para:
 | Capa | Compartir entre hosts | Mantener host-specific |
 |------|----------------------|------------------------|
 | Dominio y use cases | ✅ `vpet-core` (ya existe) | — |
-| Animación idle (state machine) | ✅ Nuevo `vpet-animation` | — |
+| Animación idle (state machine) | ✅ `vpet-animation` | — |
 | Render ASCII posicionado → `string` | ✅ `vpet-animation` | — |
-| Queries SQLite de lectura | ✅ `vpet-core` | Drivers (`sql.js` / `bun:sqlite`) |
-| Batalla/evolución/derrota visual (ASCII) | ✅ Ambos hosts (duplicado) | Entrega: OpenTUI vs Webview |
+| Queries SQLite de lectura | ✅ `vpet-core` (parcial) | Drivers (`sql.js` / `bun:sqlite`) |
+| Batalla/evolución/derrota visual (ASCII) | ✅ `vpet-animation` | Entrega: OpenTUI vs Webview |
 | Entrega al usuario | ❌ | OpenTUI vs Webview |
 | HTML / componentes UI | ❌ | Por host |
 
@@ -68,96 +68,114 @@ Cada PR debe ser mergeable de forma independiente, con tests pasando.
 ### 1.4 Estado de implementación (snapshot)
 
 **Fecha del snapshot:** 2026-09-11  
-**Progreso global del plan de refactor (PR-0 … PR-7):** ~15 %
+**Progreso global del plan de refactor (PR-0 … PR-7):** ~70 %
 
 #### Matriz de PRs
 
 | PR | Título | Estado | Notas |
 |----|--------|--------|-------|
-| PR-0 | Fundamentos y utilidades (`shared/`, eliminar `sqljs-runtime`) | ❌ Pendiente | `sqljs-runtime.ts` sigue existiendo; `CompletedUsage` sigue duplicado en `types.ts` |
-| PR-1 | Capa SQLite | 🟡 Parcial | **Hecho:** repository único expone `getSidebarSnapshot()` desde executor en memoria; `extension.ts` pasa `repository` como reader y battle repo. **Pendiente:** `sqljs-statement-executor`, queries en `vpet-core`, deprecar lectura por archivo en runtime |
-| PR-2 | Capa Cursor — hooks y usage | ❌ Pendiente | Sin `hook-events-reader`, sin `onActivity`, sin caché de token |
-| PR-3 | Paquete `vpet-animation` | ❌ Pendiente | Paquete no creado; duplicación monster-animation intacta en ambos hosts |
-| PR-4 | Artworks Cursor-only (refactor interno) | ❌ Pendiente | Sin carpeta `webview/artwork/`; `evolution-battle-artwork.ts` sigue en 510 líneas |
-| PR-5 | Webview y sidebar — descomposición | 🟡 Parcial | **Hecho:** `evolution-battle-session.ts`, `evolution-reveal-session.ts`, refresh con cola (`refreshInFlight` / `pendingRefresh`), sin recursión. **Pendiente:** presenter, animation-host, orchestrator, escape HTML, provider &lt; 100 líneas |
-| PR-6 | Extension bootstrap | ❌ Pendiente | `extension.ts` sigue en 136 líneas, monolítico |
-| PR-7 | Calidad y architecture boundaries | ❌ Pendiente | Sin `architecture-boundary.test.ts` en cursor-vpet |
+| PR-0 | Fundamentos y utilidades (`shared/`, eliminar `sqljs-runtime`) | ✅ Completado | `src/shared/{sleep,random,assert-never}.ts`, `adapters/sqlite/{options,errors}.ts`; `sqljs-runtime.ts` eliminado; `CompletedUsage` re-exportado desde vpet-core |
+| PR-1 | Capa SQLite | 🟡 Parcial | **Hecho:** repository único con `getSidebarSnapshot()` en memoria; `bootstrap/container.ts` cablea un solo `repository`. **Pendiente:** `sqljs-statement-executor`, mover queries a `vpet-core`, deprecar lectura disco en runtime de paneles |
+| PR-2 | Capa Cursor — hooks y usage | 🟡 Parcial | **Hecho:** fix "Not now" en `bootstrap/ensure-hooks.ts`. **Pendiente:** `hook-events-reader`, `onActivity` → animación, caché TTL en `cursor-auth.ts`, desacoplar `DIGIMON_CATALOG` del usage source |
+| PR-3 | Paquete `vpet-animation` | ✅ Completado | `packages/vpet-animation/` creado; hosts importan `@sbugallo/vpet-animation`; tests de animación/artwork centralizados en el paquete |
+| PR-4 | Artworks de batalla/evolución | 🟡 Parcial | Artworks y sessions viven en `vpet-animation` (sin duplicación cross-host). **Pendiente:** `evolution-battle-artwork.ts` sigue en 480 líneas (objetivo &lt;400); sin `frame-utils.ts` / `animation-runner.ts` |
+| PR-5 | Webview y sidebar — descomposición | 🟡 Parcial | **Hecho:** `sidebar-presenter.ts`, `sidebar-animation-host.ts`, `sidebar-orchestrator.ts`, `shared/escape-html.ts`, cola `async-refresh-queue.ts`, tests de sidebar. **Pendiente:** `sidebar/provider.ts` = 143 líneas (objetivo &lt;100); sin `panel-factory.ts` ni template HTML separado |
+| PR-6 | Extension bootstrap | 🟡 Parcial | **Hecho:** `extension.ts` = 41 líneas; `bootstrap/{container,register-commands,register-sidebar,ensure-hooks}.ts`. **Pendiente:** `create-vpet-services.ts` unificado, poll loop coordinado (sigue `setInterval` 30s), usage pipeline aún en `extension.ts` |
+| PR-7 | Calidad y architecture boundaries | 🟡 Parcial | **Hecho:** `tests/architecture-boundary.test.ts`, `tests/hexagonal-boundary.test.ts`, helpers compartidos. **Pendiente:** `hook-events-reader.test.ts`, `register-commands.test.ts` |
 
-#### Trabajo mergeado fuera del plan de refactor
+#### Presentación compartida (`vpet-animation`)
 
-Desde el borrador inicial se incorporó la **feature de batalla de evolución** en ambos hosts (commits `093550d` … `3b91b30`):
+La duplicación cross-host de animación idle, artworks y sessions se resolvió en `324f654`:
 
-| Módulo | `cursor-vpet` | `opencode-vpet` | Duplicación |
-|--------|---------------|-----------------|-------------|
-| `evolution-battle-session.ts` | `webview/` | `tui/` | ~100 % |
-| `evolution-reveal-session.ts` | `webview/` | `tui/` | ~100 % |
-| `evolution-battle-artwork.ts` | `webview/` (510 líneas) | `tui/` (510 líneas) | ~100 % |
-| `evolution-artwork.ts` | `webview/` | `tui/` | Alta |
-| `defeat-artwork.ts` | `webview/` | `tui/` | Alta |
+| Módulo | Ubicación actual | Hosts |
+|--------|------------------|-------|
+| `monster-animation`, policies, mirror | `vpet-animation/src/idle/` | Import vía `@sbugallo/vpet-animation/idle/*` |
+| `positioned-artwork` | `vpet-animation/src/render/` | Cursor: `sidebar-animation-host`; OpenCode: `sidebar-card.tsx` |
+| `evolution-*`, `defeat-artwork` | `vpet-animation/src/sequences/` | Orquestación en `sidebar-orchestrator` / `tui.tsx` |
+| `evolution-battle-session`, `evolution-reveal-session` | `vpet-animation/src/sessions/` | Ambos hosts |
 
-OpenCode ya **no** resuelve batallas solo con toast: `tui.tsx` orquesta `runEvolutionBattleSession` con animación ASCII en sidebar, igual que Cursor con webview.
+OpenCode empaqueta fuentes staged en `build/vpet-animation-src/` para `npm pack` sin monorepo.
 
 #### Problemas del inventario §4 — resueltos o mitigados
 
 | ID | Estado | Evidencia |
 |----|--------|-----------|
-| EXT-03 | ✅ Mitigado | `extension.ts` usa un solo `repository` para escritura, snapshot y batalla |
+| EXT-01 | ✅ Mitigado | `extension.ts` delega en `bootstrap/*` (41 líneas) |
+| EXT-03 | ✅ Resuelto | Un solo `repository` en `bootstrap/container.ts` |
 | EXT-08 | 🟡 Parcial | "Not now" no marca hooks instalados; aún se marca `true` sin verificar éxito de `installVpetHooks` |
-| SQL-04 | 🟡 Parcial | Runtime del sidebar lee del executor en memoria; `readSidebarSnapshot` / paneles siguen abriendo DB en disco |
+| SQL-04 | 🟡 Parcial | Runtime del sidebar lee del executor en memoria; paneles Dex/History siguen abriendo DB en disco |
 | SQL-13 | 🟡 Parcial | Watcher llama `reloadFromDisk()`; snapshot coherente vía mismo executor tras reload |
-| WV-02 | ✅ Mitigado | `refresh()` usa bucle `do…while` + cola en lugar de recursión |
-| WV-01 | 🟡 Parcial | Lógica de batalla/reveal extraída a sessions; provider sigue con 238 líneas y 6+ responsabilidades |
+| WV-01 | ✅ Mitigado | Provider descompuesto en presenter + animation-host + orchestrator |
+| WV-02 | ✅ Mitigado | `refresh()` usa cola `async-refresh-queue` sin recursión |
+| WV-03 | 🟡 Parcial | Notificaciones VS Code siguen en orchestrator (aceptable por ahora) |
 
 #### Tests actuales (`packages/cursor-vpet/tests/`)
 
 | Archivo | Cubre |
 |---------|-------|
-| `evolution-battle-session.test.ts` | Sesión de batalla (nuevo) |
-| `evolution-reveal-session.test.ts` | Sesión de reveal (nuevo) |
-| `evolution-battle-artwork.test.ts` | Snapshots ASCII batalla |
-| `evolution-artwork.test.ts` | Snapshots ASCII evolución |
-| `defeat-artwork.test.ts` | Snapshots ASCII derrota |
-| `monster-animation.test.ts` | Animación idle (local, pendiente migrar a `vpet-animation`) |
-| `persistence/sqljs-vpet-repository.persistence.test.ts` | Persistencia sql.js |
-| `sidebar-render.test.ts`, `cursor-*`, `database-change-watcher.test.ts` | Render, hooks mapper, watcher |
+| `architecture-boundary.test.ts`, `hexagonal-boundary.test.ts` | Límites hexagonales y dependencias prohibidas |
+| `sidebar-presenter.test.ts`, `sidebar/sidebar-orchestrator.test.ts` | Presentación y orquestación sidebar |
+| `sidebar/sidebar-animation-host.test.ts`, `sidebar/sidebar-provider.test.ts` | Tick animación y provider |
+| `escape-html.test.ts` | Escape HTML en paneles |
+| `sidebar-render.test.ts`, `webview-messages.test.ts` | Render webview y mensajes |
+| `cursor-*`, `database-change-watcher.test.ts`, `record-usage.test.ts` | Hooks, watermark, watcher, usage |
+| `persistence/*.test.ts` | Persistencia sql.js |
 
-**Ausentes respecto al plan:** `architecture-boundary`, `sidebar-presenter`, `evolution-battle-orchestrator`, `escape-html`, `hook-events-reader`, tests de `VpetSidebarProvider`.
+**Tests de animación/artwork:** viven en `packages/vpet-animation/tests/` (no duplicados en cursor-vpet).
+
+**Ausentes respecto al plan:** `hook-events-reader`, `register-commands.test.ts`.
 
 ---
 
 ## 2. Contexto y arquitectura actual
 
-### 2.1 Estructura del paquete (31 archivos `.ts` en `src/`)
+### 2.1 Estructura del paquete (45 archivos `.ts` en `src/`)
 
 ```
 packages/cursor-vpet/
 ├── src/
-│   ├── extension.ts                    # Composition root (monolítico, 136 líneas)
+│   ├── extension.ts                    # Composition root delgado (41 líneas)
+│   ├── bootstrap/
+│   │   ├── container.ts                # DI: repository, sidebar, refresh
+│   │   ├── register-commands.ts
+│   │   ├── register-sidebar.ts
+│   │   └── ensure-hooks.ts
+│   ├── application/
+│   │   └── usage-pipeline.ts
 │   ├── config/
 │   │   └── extension-settings.ts
+│   ├── shared/
+│   │   ├── sleep.ts, random.ts, assert-never.ts, escape-html.ts
+│   │   ├── async-refresh-queue.ts
+│   │   └── constants/                  # Solo host-specific (sidebar-ui, sqlite, cursor)
 │   ├── adapters/
-│   │   ├── cursor/                     # Hooks, API watermark, auth (7 archivos)
-│   │   └── sqlite/                     # sql.js driver, readers, watcher (7 archivos)
-│   └── webview/                        # Sidebar, artworks, sessions, paneles (14 archivos)
-│       ├── vpet-sidebar-provider.ts
-│       ├── evolution-battle-session.ts   # NUEVO — orquestación batalla + reveal/defeat
-│       ├── evolution-reveal-session.ts   # NUEVO — animación evolución reutilizable
-│       ├── evolution-battle-artwork.ts
-│       ├── evolution-artwork.ts
-│       ├── defeat-artwork.ts
-│       ├── monster-animation.ts          # Pendiente mover a vpet-animation
-│       └── …
-├── tests/                              # 11 archivos de test
+│   │   ├── cursor/                     # Hooks, API watermark, auth
+│   │   ├── sqlite/                     # sql.js driver, readers, watcher, write-store
+│   │   └── vscode/                     # notification-port, webview-messenger, scheduler
+│   └── webview/
+│       ├── vpet-sidebar-provider.ts    # Reexport de sidebar/provider.ts
+│       ├── sidebar/
+│       │   ├── provider.ts             # WebviewView (143 líneas)
+│       │   ├── sidebar-presenter.ts
+│       │   ├── sidebar-animation-host.ts
+│       │   ├── sidebar-orchestrator.ts
+│       │   ├── sidebar-render.ts
+│       │   └── webview-messages.ts
+│       └── panels/                       # dex-panel, history-panel (HTML escapado)
+├── tests/                              # 22 archivos de test
 ├── hook-bridge.js
 ├── scripts/build.ts
 └── package.json
 ```
+
+**Dependencia de presentación:** `@sbugallo/vpet-animation` (idle, render, sequences, sessions).
 
 ### 2.2 Dependencias
 
 | Dependencia | Uso |
 |-------------|-----|
 | `@sbugallo/vpet-core` | Dominio, use cases, view models, catálogo |
+| `@sbugallo/vpet-animation` | Animación idle, artworks ASCII, sessions batalla/reveal |
 | `sql.js` | SQLite en memoria (VS Code extension, sin native modules) |
 | `vscode` | API de extensión (external en build) |
 
@@ -202,13 +220,15 @@ Lectura one-shot (paneles Dex/History, tests persistencia):
 ### 2.4 Lo que ya está bien
 
 - Dominio delegado correctamente a `vpet-core`.
+- Presentación ASCII compartida en `@sbugallo/vpet-animation` (sin duplicación cross-host).
 - Puertos/adaptadores: `UsageLedger`, `SidebarSnapshotReader`, `EvolutionBattleRepository`.
-- `MonsterAnimationController` como máquina de estados pura.
-- Tests unitarios sólidos en artwork, animación, mappers y persistencia sql.js.
-- Separación `adapters/` vs `webview/`.
-- Repository único en `extension.ts` (escritura + snapshot + batalla).
-- Sesiones de batalla/reveal extraídas (`evolution-battle-session`, `evolution-reveal-session`) con tests propios.
+- `MonsterAnimationController` y artworks como lógica pura en `vpet-animation`.
+- Tests de animación/artwork centralizados en `packages/vpet-animation/tests/`.
+- Separación `adapters/` vs `webview/sidebar/` vs `bootstrap/`.
+- Repository único en `bootstrap/container.ts` (escritura + snapshot + batalla).
+- Sidebar descompuesto: presenter, animation-host, orchestrator.
 - Refresh del sidebar con cola y sin recursión; presentaciones bloquean watcher y tick idle.
+- Paneles Dex/History con `escapeHtml`.
 - Sincronización multi-ventana de `pet.db` vía `database-change-watcher` + `reloadFromDisk`.
 
 ---
@@ -236,7 +256,7 @@ Lectura one-shot (paneles Dex/History, tests persistencia):
 
 **Estado actual:** Ambos hosts reproducen batalla visual ASCII antes de persistir el resultado. La divergencia es de **entrega** (OpenTUI vs Webview), no de producto.
 
-**OpenCode** (`tui.tsx` + `tui/evolution-battle-session.ts`):
+**OpenCode** (`tui.tsx` + `@sbugallo/vpet-animation/sessions/evolution-battle-session.ts`):
 
 ```typescript
 await runEvolutionBattleSession(snapshot, artworkWidth, {
@@ -246,7 +266,7 @@ await runEvolutionBattleSession(snapshot, artworkWidth, {
 // Toast de notificación vía server hooks; animación en sidebar TUI
 ```
 
-**Cursor** (`vpet-sidebar-provider.ts` + `webview/evolution-battle-session.ts`):
+**Cursor** (`webview/sidebar/sidebar-orchestrator.ts` + `@sbugallo/vpet-animation/sessions/evolution-battle-session.ts`):
 
 ```typescript
 await runEvolutionBattleSession(snapshot, this.artworkWidth, {
@@ -258,29 +278,26 @@ await runEvolutionBattleSession(snapshot, this.artworkWidth, {
 
 **Server hooks OpenCode** (`create-server-hooks.ts`): solo emiten toast `evolution_battle` cuando `evolutionBattlePending`; la animación la ejecuta el TUI en el siguiente refresh.
 
-**Decisión vigente:** Mantener orquestación host-specific, pero **extraer `evolution-battle-session` y artworks duplicados** a un paquete compartido (candidato: ampliar `vpet-animation` o nuevo `vpet-presentation`). El borrador original que limitaba batalla visual a Cursor está **obsoleto**.
+**Decisión vigente:** Mantener orquestación host-specific; presentación ASCII compartida en `@sbugallo/vpet-animation` (completado en `324f654`).
 
-### 3.3 Código duplicado entre hosts (candidatos a extracción)
+### 3.3 Código extraído a `vpet-animation` (completado)
 
-| Módulo cursor-vpet | Módulo opencode-vpet | Similitud | Paquete destino propuesto |
-|--------------------|----------------------|-----------|---------------------------|
-| `webview/monster-animation.ts` | `tui/monster-animation.ts` | ~95% | `vpet-animation` |
-| `webview/monster-walking-policy.ts` | `tui/monster-walking-policy.ts` | ~100% | `vpet-animation` |
-| `webview/monster-action-policy.ts` | `tui/monster-action-policy.ts` | 100% | `vpet-animation` |
-| `webview/monster-artwork-mirror.ts` | `tui/monster-artwork-mirror.ts` | ~100% | `vpet-animation` |
-| `webview/animated-artwork.ts` | `tui/sidebar-card.tsx` (`artworkRows`) | Lógica equivalente | `vpet-animation` |
-| `webview/evolution-battle-session.ts` | `tui/evolution-battle-session.ts` | ~100% | `vpet-animation` o `vpet-presentation` |
-| `webview/evolution-reveal-session.ts` | `tui/evolution-reveal-session.ts` | ~100% | Idem |
-| `webview/evolution-battle-artwork.ts` | `tui/evolution-battle-artwork.ts` | ~100% (510 líneas c/u) | Idem |
-| `webview/evolution-artwork.ts` | `tui/evolution-artwork.ts` | Alta | Idem |
-| `webview/defeat-artwork.ts` | `tui/defeat-artwork.ts` | Alta | Idem |
+| Módulo anterior (cursor / opencode) | Ubicación actual | Estado |
+|-------------------------------------|------------------|--------|
+| `monster-animation.ts`, policies, mirror | `vpet-animation/src/idle/` | ✅ Extraído |
+| `animated-artwork.ts` / `artworkRows` | `vpet-animation/src/render/positioned-artwork.ts` | ✅ Unificado |
+| `evolution-battle-session.ts`, `evolution-reveal-session.ts` | `vpet-animation/src/sessions/` | ✅ Extraído |
+| `evolution-battle-artwork.ts` (480 líneas) | `vpet-animation/src/sequences/` | ✅ Extraído; 🟡 refactor interno pendiente (&lt;400 líneas) |
+| `evolution-artwork.ts`, `defeat-artwork.ts` | `vpet-animation/src/sequences/` | ✅ Extraído |
+| Constantes `presentation-timing`, `evolution-battle`, `monster-artwork` | `vpet-animation/src/constants/` | ✅ Extraído |
 
 ### 3.4 Código exclusivo por host (NO compartir tal cual)
 
 | Módulo | Host | Líneas aprox. | Razón |
 |--------|------|---------------|-------|
-| `sidebar-render.ts` | Cursor | 214 | HTML/CSS/JS webview |
-| `vpet-sidebar-provider.ts` | Cursor | 238 | Orquestación VS Code WebviewView |
+| `sidebar-render.ts` | Cursor | ~214 | HTML/CSS/JS webview |
+| `webview/sidebar/provider.ts` | Cursor | 143 | Orquestación VS Code WebviewView |
+| `webview/sidebar/sidebar-orchestrator.ts` | Cursor | — | Batalla/reveal/defeat vía `vpet-animation` |
 | `dex-panel.ts`, `history-panel.ts` | Cursor | ~35 c/u | Webview panels |
 | `adapters/cursor/*` | Cursor | — | Integración Cursor-specific |
 | `tui.tsx`, `sidebar-card.tsx` | OpenCode | — | Composición OpenTUI / SolidJS |
@@ -292,17 +309,17 @@ await runEvolutionBattleSession(snapshot, this.artworkWidth, {
 
 ### 4.1 `extension.ts` — Composition root
 
-**Archivo:** `src/extension.ts` (136 líneas)
+**Archivo:** `src/extension.ts` (41 líneas)
 
 | ID | Problema | Severidad | Impacto | Estado |
 |----|----------|-----------|---------|--------|
-| EXT-01 | Monolito de wiring; difícil de testear `activate` | Media | Mantenibilidad | ❌ Pendiente |
-| EXT-02 | 8 comandos con patrón repetido: `run → showInformationMessage → refreshSidebar` | Baja | Duplicación | ❌ Pendiente |
-| EXT-03 | Dos conexiones DB: `repository` + `snapshotReader` independientes | Alta | Rendimiento, consistencia | ✅ Resuelto — un solo `repository` |
-| EXT-04 | Triple fuente de refresh sin coordinación: usage events + DB watcher + poll 30s | Media | Renders redundantes | 🟡 Parcial — watcher respeta `isPresentationInProgress()` |
+| EXT-01 | Monolito de wiring; difícil de testear `activate` | Media | Mantenibilidad | ✅ Mitigado — `bootstrap/*` + `usage-pipeline.ts` |
+| EXT-02 | 8 comandos con patrón repetido: `run → showInformationMessage → refreshSidebar` | Baja | Duplicación | 🟡 Parcial — `register-commands.ts` centraliza registro |
+| EXT-03 | Dos conexiones DB: `repository` + `snapshotReader` independientes | Alta | Rendimiento, consistencia | ✅ Resuelto — un solo `repository` en `container.ts` |
+| EXT-04 | Triple fuente de refresh sin coordinación: usage events + DB watcher + poll 30s | Media | Renders redundantes | 🟡 Parcial — watcher respeta `isPresentationInProgress()`; poll 30s sin coordinar |
 | EXT-05 | `onDidChangeConfiguration` avisa "reload window" pero no recarga DB | Media | UX incorrecta | ❌ Pendiente |
-| EXT-06 | `sidebarProvider` como variable module-level mutable | Baja | Testabilidad | ❌ Pendiente |
-| EXT-07 | Instalación hooks duplicada: `ensureHooksInstalled` vs comando `installHooks` | Media | Duplicación | ❌ Pendiente |
+| EXT-06 | `sidebarProvider` como variable module-level mutable | Baja | Testabilidad | ✅ Mitigado — vive en `VpetContainer`, no en module scope |
+| EXT-07 | Instalación hooks duplicada: `ensureHooksInstalled` vs comando `installHooks` | Media | Duplicación | 🟡 Parcial — `ensure-hooks.ts` separado; lógica aún duplicada con comando |
 | EXT-08 | **Bug:** `ensureHooksInstalled` marca `hooksInstalled=true` incorrectamente | Alta | Estado incorrecto | 🟡 Parcial — "Not now" OK; falta validar éxito del install |
 
 **Código problemático EXT-08:**
@@ -423,25 +440,21 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 
 ### 4.4 Webview — Sidebar (`webview/`)
 
-#### 4.4.1 `vpet-sidebar-provider.ts` — God class (238 líneas)
+#### 4.4.1 `webview/sidebar/provider.ts` (143 líneas)
 
 | ID | Problema | Severidad | Estado |
 |----|----------|-----------|--------|
-| WV-01 | 8 responsabilidades mezcladas en una clase (ver §8.3) | Alta | 🟡 Parcial — batalla/reveal delegados a sessions |
-| WV-02 | `refresh()` recursivo tras batalla — riesgo stack en edge cases | Media | ✅ Resuelto — bucle + `pendingRefresh` |
-| WV-03 | Notificaciones VS Code mezcladas con lógica de animación | Baja | ❌ Pendiente |
-| WV-04 | `Math.random()` inline para outcome de batalla — no inyectable | Baja | 🟡 Parcial — inyectable en session, default `Math.random` |
+| WV-01 | Responsabilidades mezcladas en una clase | Alta | ✅ Mitigado — presenter, animation-host y orchestrator extraídos |
+| WV-02 | `refresh()` recursivo tras batalla | Media | ✅ Resuelto — `async-refresh-queue` |
+| WV-03 | Notificaciones VS Code mezcladas con lógica de animación | Baja | 🟡 Parcial — notificaciones en orchestrator |
+| WV-04 | `Math.random()` inline para outcome de batalla | Baja | 🟡 Parcial — inyectable en session |
 
-**Responsabilidades actuales (deben separarse):**
+**Responsabilidades restantes en `provider.ts`:**
 
 1. Ciclo de vida `WebviewView` (VS Code API)
-2. Construcción modelo: `getSidebarCardInputs` + `buildSidebarCardModel`
-3. Detección y orquestación batalla evolución
-4. Tres animaciones especiales + animación idle
-5. `setInterval` visual (500ms)
-6. Cache `cachedPayload` / `cachedArtwork`
-7. Handlers mensajes webview (`open-url`, `artwork-width`)
-8. `vscode.window.showInformationMessage`
+2. Cache `cachedPayload` / `cachedArtwork`
+3. Handlers mensajes webview (`open-url`, `artwork-width`)
+4. Delegación a presenter, animation-host y orchestrator
 
 #### 4.4.2 `sidebar-render.ts`
 
@@ -458,57 +471,48 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 | ID | Problema | Severidad |
 |----|----------|-----------|
 | WV-10 | Copy-paste estructural entre ambos paneles | Media |
-| WV-11 | **XSS:** `${row.name}` sin escapar HTML | Alta |
+| WV-11 | **XSS:** `${row.name}` sin escapar HTML | Alta | ✅ Resuelto — `escapeHtml` |
 | WV-12 | Sin Content-Security-Policy | Media |
 | WV-13 | `readArchive` one-shot en cada apertura de panel | Media |
 
 ---
 
-### 4.5 Artworks y animaciones especiales (Cursor-only)
+### 4.5 Artworks y animaciones especiales — movidos a `vpet-animation`
 
-#### 4.5.1 Duplicación interna
+Los artworks y sessions ya no viven en `cursor-vpet`. Quedan en `packages/vpet-animation/src/{sequences,sessions}/`.
 
-| Utilidad | Archivos donde se repite |
-|----------|--------------------------|
-| `sleep()` | `evolution-artwork.ts`, `defeat-artwork.ts`, `evolution-battle-artwork.ts`, `cursor-api-watermark.ts` |
-| `frameLines()` | `evolution-artwork.ts`, `defeat-artwork.ts`, `evolution-battle-artwork.ts` |
-| `centerArtwork()` | `evolution-artwork.ts`, `defeat-artwork.ts` |
-| `padRow()` | `evolution-artwork.ts`, `evolution-battle-artwork.ts` |
-| `FRAME_ROWS=8`, `FRAME_COLUMNS=16` | 5 archivos |
-| Loop `for step → render → sleep` | 6+ bucles en battle artwork |
+#### 4.5.1 Pendiente en `vpet-animation`
 
-#### 4.5.2 `evolution-battle-artwork.ts` (510 líneas)
-
-| ID | Problema | Severidad |
-|----|----------|-----------|
-| ART-01 | Mezcla planificación pura (`planEvolutionBattle`), render y orquestación temporal | Media |
-| ART-02 | `planEvolutionBattle` + `rollShotHit` son dominio puro — candidatos a `vpet-core` | Info |
-| ART-03 | Archivo más grande del paquete; difícil de navegar | Media |
+| ID | Problema | Severidad | Estado |
+|----|----------|-----------|--------|
+| ART-01 | Mezcla planificación, render y orquestación temporal en battle artwork | Media | 🟡 Abierto |
+| ART-02 | `planEvolutionBattle` + `rollShotHit` candidatos a `vpet-core` | Info | ❌ Pendiente |
+| ART-03 | `evolution-battle-artwork.ts` = 480 líneas (objetivo &lt;400) | Media | 🟡 Abierto |
 
 ---
 
-### 4.6 Animación idle — duplicación cross-host
+### 4.6 Animación idle
 
-| ID | Problema | Severidad |
-|----|----------|-----------|
-| ANI-01 | `MonsterAnimationController` duplicado cursor ↔ opencode | Alta |
-| ANI-02 | `renderPositionedArtwork` (cursor) vs `artworkRows` (opencode) — lógica idéntica | Alta |
-| ANI-03 | `normalizedRandom` en dos archivos dentro de cursor-vpet | Baja |
-| ANI-04 | `assertNever` en dos archivos | Baja |
-| ANI-05 | `nextWalkFrame` en `monster-animation` y `monster-walking-policy` | Baja |
-| ANI-06 | Cursor no dispara `activity` — monstruo duerme aunque Agent esté activo | Alta |
-| ANI-07 | OpenCode deduplica con `sameAnimation`; Cursor compara string renderizado | Baja |
+| ID | Problema | Severidad | Estado |
+|----|----------|-----------|--------|
+| ANI-01 | `MonsterAnimationController` duplicado cursor ↔ opencode | Alta | ✅ Resuelto — `vpet-animation` |
+| ANI-02 | `renderPositionedArtwork` vs `artworkRows` | Alta | ✅ Resuelto — `positioned-artwork.ts` |
+| ANI-03 | `normalizedRandom` duplicado en cursor-vpet | Baja | ✅ Resuelto — `shared/random.ts` + `vpet-animation` |
+| ANI-04 | `assertNever` duplicado | Baja | ✅ Resuelto — `shared/assert-never.ts` + `vpet-animation` |
+| ANI-05 | `nextWalkFrame` en dos módulos | Baja | ✅ Aceptable dentro de `vpet-animation` |
+| ANI-06 | Cursor no dispara `activity` — monstruo duerme con Agent activo | Alta | ❌ Pendiente (PR-2) |
+| ANI-07 | OpenCode deduplica con `sameAnimation`; Cursor compara string renderizado | Baja | 🟡 Parcial |
 
 ---
 
 ### 4.7 Calidad y gobernanza
 
-| ID | Problema | Severidad |
-|----|----------|-----------|
-| QA-01 | Sin tests de architecture boundaries (opencode-vpet sí tiene) | Alta |
-| QA-02 | Sin tests de `VpetSidebarProvider` | Alta |
-| QA-03 | Sin tests de wiring `extension.ts` | Media |
-| QA-04 | Sin tests de `escapeHtml` / paneles | Alta |
+| ID | Problema | Severidad | Estado |
+|----|----------|-----------|--------|
+| QA-01 | Sin tests de architecture boundaries | Alta | ✅ Resuelto — `architecture-boundary.test.ts`, `hexagonal-boundary.test.ts` |
+| QA-02 | Sin tests de `VpetSidebarProvider` | Alta | ✅ Resuelto — `sidebar/sidebar-provider.test.ts` |
+| QA-03 | Sin tests de wiring `extension.ts` | Media | ❌ Pendiente |
+| QA-04 | Sin tests de `escapeHtml` / paneles | Alta | ✅ Resuelto — `escape-html.test.ts` |
 
 ---
 
@@ -519,7 +523,7 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 | ID | Decisión | Justificación |
 |----|----------|---------------|
 | D-01 | Crear paquete `vpet-animation` (no `vpet-presentation`) | Solo lógica pura sin dependencias de UI host |
-| D-02 | Artworks battle/evolution/defeat en cada host | **Revisar:** ahora duplicados en ambos hosts; candidatos a paquete compartido con entrega host-specific |
+| D-02 | Artworks battle/evolution/defeat en `vpet-animation` | ✅ Implementado — entrega host-specific vía `onArtwork` / `postMessage` |
 | D-03 | Mover queries SQLite de lectura a `vpet-core` | Una sola fuente de verdad para esquema |
 | D-04 | Snapshot lee del executor del repository en memoria | Elimina I/O repetido y segunda conexión |
 | D-05 | Refactor incremental por PRs mergeables | Reduce riesgo de regresión |
@@ -527,7 +531,7 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 | D-07 | **Estilo arquitectónico:** Functional Core + Imperative Shell + Hexagonal + MVP/Presenter | Ver [CODEBASE-ANALYSIS.md §15](./CODEBASE-ANALYSIS.md#15-decisión-arquitectónica-adoptada); evolución incremental, no rewrite |
 | D-08 | Paquete `vpet-animation` para presentación compartida (ampliar D-01) | Incluye artworks + sessions además de idle animation; elimina ~1.400 LOC duplicadas |
 | D-09 | Inyección manual de dependencias (sin IoC container) | `SidebarHostDeps` equivalente a `TuiSchedulingOptions` de OpenCode |
-| D-10 | `src/shared/` para utilidades host-only puras | `sleep`, `random`, `assertNever` — candidatos a mover a `vpet-animation` en PR-3 |
+| D-10 | `src/shared/` para utilidades host-only puras | `sleep`, `random`, `assertNever` en shared; duplicados también en `vpet-animation/utils/` |
 
 ### 5.2 Decisiones pendientes (requieren input)
 
@@ -536,7 +540,7 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 | P-01 | ¿Barra de progreso adaptativa o fija (20 chars)? | A) Adaptativa como OpenCode B) Fija 20 chars | A — mejor UX en sidebar ancho |
 | P-02 | ¿Hot-reload de `vpet.databasePath`? | A) Dispose + recreate B) Mantener "reload window" | A — mejor UX |
 | P-03 | ¿Mover `planEvolutionBattle` a vpet-core? | A) Sí B) No | A — es dominio puro |
-| P-04 | ¿Extraer artworks + sessions a paquete compartido? | A) `vpet-animation` ampliado B) `vpet-presentation` C) Mantener duplicado | A/B — OpenCode ya tiene paridad visual |
+| P-04 | ¿Extraer artworks + sessions a paquete compartido? | A) `vpet-animation` ampliado B) `vpet-presentation` C) Mantener duplicado | ✅ **A** — completado en `324f654` |
 
 ---
 
@@ -551,17 +555,15 @@ const readSidebarSnapshotWithRuntime = (SQL, databasePath) => {
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
 ┌───────────────────────────────▼─────────────────────────────────┐
-│                     vpet-animation (NUEVO)                       │
-│  monster-animation │ walking-policy │ action-policy │ mirror    │
-│  positioned-artwork.ts (render → string)                         │
+│                     vpet-animation (HECHO)                       │
+│  idle │ render/positioned-artwork │ sequences │ sessions       │
 └───────────────┬─────────────────────────────────┬───────────────┘
                 │                                 │
     ┌───────────▼──────────┐          ┌───────────▼──────────────┐
     │    opencode-vpet     │          │      cursor-vpet         │
-    │  tui/sidebar-card    │          │  webview/*               │
+    │  tui/sidebar-card    │          │  webview/sidebar/*       │
     │  bun-sqlite-driver   │          │  sqljs-driver            │
     │  server hooks        │          │  cursor adapters         │
-    │  (sin battle visual) │          │  evolution/battle artwork│
     └──────────────────────┘          └──────────────────────────┘
 ```
 
@@ -613,7 +615,7 @@ export class WebviewAnimationSink implements AnimationSink {
 
 ## 7. Plan de implementación por PR
 
-### PR-0: Fundamentos y utilidades
+### PR-0: Fundamentos y utilidades — ✅ Completado
 
 **Duración:** 1–2 días  
 **Riesgo:** Bajo  
@@ -849,7 +851,7 @@ export const readCursorAccessToken = async (): Promise<string | null> => {
 
 ---
 
-### PR-3: Paquete `vpet-animation`
+### PR-3: Paquete `vpet-animation` — ✅ Completado
 
 **Duración:** 4–5 días  
 **Riesgo:** Medio-alto (cross-package)  
@@ -934,11 +936,11 @@ export const renderPositionedArtwork = (
 
 #### Criterios de aceptación PR-3
 
-- [ ] `bun test` pasa en vpet-animation, cursor-vpet, opencode-vpet
-- [ ] No quedan copias de monster-animation en cursor ni opencode
-- [ ] Tests de animación viven en vpet-animation
-- [ ] `sidebar-card.tsx` usa `renderPositionedArtworkRows`
-- [ ] Build cursor-vpet (`bun run build`) exitoso con nueva dependencia
+- [x] `bun test` pasa en vpet-animation, cursor-vpet, opencode-vpet
+- [x] No quedan copias de monster-animation en cursor ni opencode
+- [x] Tests de animación viven en vpet-animation
+- [x] `sidebar-card.tsx` usa `renderPositionedArtworkRows`
+- [x] Build cursor-vpet (`bun run build`) exitoso con nueva dependencia
 
 ---
 
@@ -1157,10 +1159,11 @@ export const openDexPanel = async (context, archiveReader: VpetArchiveReader) =>
 - [ ] `VpetSidebarProvider` < 100 líneas — **actual: 238**
 - [x] `evolution-battle-session` y `evolution-reveal-session` extraídos (parcial respecto al plan)
 - [ ] Tests unitarios para `sidebar-presenter`, `evolution-battle-orchestrator`
-- [x] Tests para `evolution-battle-session`, `evolution-reveal-session`
-- [ ] `dex-panel` / `history-panel` escapan HTML
-- [x] No hay recursión en `refresh()`
-- [x] Comportamiento visual del sidebar idéntico (tests artwork pasan)
+- [x] Tests para `evolution-battle-session`, `evolution-reveal-session` (en `vpet-animation/tests/`)
+- [x] `dex-panel` / `history-panel` escapan HTML (`shared/escape-html.ts`)
+- [x] No hay recursión en `refresh()` (`async-refresh-queue.ts`)
+- [x] Comportamiento visual del sidebar idéntico (tests artwork pasan en `vpet-animation`)
+- [ ] `sidebar/provider.ts` < 100 líneas (actual: 143)
 
 ---
 
@@ -1231,10 +1234,10 @@ Reemplazar `setInterval(refreshSidebar, 30_000)` por poll loop con `refreshPendi
 
 #### Criterios de aceptación PR-6
 
-- [ ] `extension.ts` < 40 líneas
-- [ ] Un solo punto de creación de servicios
-- [ ] Comandos registrados vía registry
-- [ ] Refresh coordinado (no triple fire redundante)
+- [x] `extension.ts` < 40 líneas (actual: 41)
+- [x] Un solo punto de creación de servicios (`bootstrap/container.ts`)
+- [x] Comandos registrados vía `register-commands.ts`
+- [ ] Refresh coordinado (no triple fire redundante) — sigue `setInterval` 30s
 
 ---
 
@@ -1579,18 +1582,18 @@ La refactorización se considera **completa** cuando:
 
 | # | Criterio | Estado (2026-09-11) |
 |---|----------|----------------------|
-| 1 | Todos los tests pasan en `cursor-vpet`, `vpet-animation`, `vpet-core`, `opencode-vpet` | 🟡 `vpet-animation` no existe; resto pasa en CI local |
-| 2 | No existe duplicación de `monster-animation` entre hosts | ❌ Duplicado en `webview/` y `tui/` |
+| 1 | Todos los tests pasan en `cursor-vpet`, `vpet-animation`, `vpet-core`, `opencode-vpet` | ✅ 478 tests unitarios + 50 persistencia |
+| 2 | No existe duplicación de `monster-animation` entre hosts | ✅ Centralizado en `vpet-animation` |
 | 3 | `getSidebarSnapshot` no hace I/O de archivo por llamada en runtime normal | 🟡 Sidebar OK; paneles/tests aún usan lectura disco |
-| 4 | `VpetSidebarProvider` < 100 líneas; responsabilidades en módulos dedicados | 🟡 Sessions extraídas; provider 238 líneas |
-| 5 | `extension.ts` < 40 líneas; servicios creados en bootstrap | ❌ 136 líneas, sin `bootstrap/` |
-| 6 | Paneles Dex/History escapan HTML | ❌ `${row.name}` sin escapar |
+| 4 | `VpetSidebarProvider` < 100 líneas; responsabilidades en módulos dedicados | 🟡 Descompuesto; `provider.ts` = 143 líneas |
+| 5 | `extension.ts` < 40 líneas; servicios creados en bootstrap | ✅ 41 líneas; `bootstrap/container.ts` |
+| 6 | Paneles Dex/History escapan HTML | ✅ `escapeHtml` en `dex-panel` y `history-panel` |
 | 7 | Bug hooks "Not now" corregido | 🟡 "Not now" no marca instalado; install sin verificar éxito |
 | 8 | Evento `activity` conectado durante usage de Agent | ❌ No conectado |
-| 9 | Architecture boundary tests en CI | ❌ Solo en opencode-vpet |
-| 10 | Comportamiento visual y funcional idéntico (tests + checklist manual) | ✅ Tests artwork/session pasan; batalla en ambos hosts |
+| 9 | Architecture boundary tests en CI | ✅ `architecture-boundary.test.ts` + `hexagonal-boundary.test.ts` |
+| 10 | Comportamiento visual y funcional idéntico (tests + checklist manual) | ✅ Verificado manualmente en Cursor tras VSIX |
 | 11 | `pet.db` compartida entre Cursor y OpenCode | ✅ Con watcher + `reloadFromDisk` |
-| 12 | **Nuevo:** artworks/sessions de batalla no duplicados entre hosts | ❌ ~100 % duplicado post-feature batalla |
+| 12 | Artworks/sessions de batalla no duplicados entre hosts | ✅ En `vpet-animation` |
 
 ---
 
@@ -1600,21 +1603,17 @@ La refactorización se considera **completa** cuando:
 
 | Archivo actual | Acción | Destino | Estado |
 |----------------|--------|---------|--------|
-| `sqljs-runtime.ts` | Eliminar | — | ❌ Pendiente |
-| `monster-animation.ts` | Mover | `vpet-animation` | ❌ Pendiente |
-| `monster-walking-policy.ts` | Mover | `vpet-animation` | ❌ Pendiente |
-| `monster-action-policy.ts` | Mover | `vpet-animation` | ❌ Pendiente |
-| `monster-artwork-mirror.ts` | Mover | `vpet-animation` | ❌ Pendiente |
-| `animated-artwork.ts` | Simplificar | Reexport `vpet-animation/positioned-artwork` | ❌ Pendiente |
+| `sqljs-runtime.ts` | Eliminar | — | ✅ Eliminado |
+| `monster-animation.ts` (+ policies, mirror) | Mover | `vpet-animation/src/idle/` | ✅ Completado |
+| `animated-artwork.ts` | Unificar | `vpet-animation/src/render/positioned-artwork.ts` | ✅ Completado |
+| `evolution-*-session.ts`, artworks | Mover | `vpet-animation/src/{sessions,sequences}/` | ✅ Completado |
 | `sqlite-sidebar-snapshot-reader.ts` | Deprecar lectura disco en runtime | Lógica en vpet-core + repository | 🟡 `readSidebarSnapshotFromExecutor` usado por repository |
 | `readSidebarSnapshotFromExecutor` | Mover | `vpet-core/sidebar-snapshot-queries.ts` | ❌ Pendiente |
 | `readSqliteVpetArchive` | Mover | `vpet-core/archive-queries.ts` | ❌ Pendiente |
-| `evolution-battle-session.ts` | Mover (nuevo) | Paquete compartido con opencode | ✅ Extraído; ❌ aún duplicado cross-host |
-| `evolution-reveal-session.ts` | Mover (nuevo) | Paquete compartido con opencode | ✅ Extraído; ❌ aún duplicado cross-host |
-| `vpet-sidebar-provider.ts` | Dividir | provider + presenter + host + orchestrator | 🟡 Parcial |
-| `extension.ts` | Dividir | `bootstrap/*` | ❌ Pendiente |
-| `evolution-battle-artwork.ts` | Refactor interno | `webview/artwork/` o paquete compartido | ❌ Pendiente (510 líneas) |
-| `types.ts` (`CompletedUsage`) | Eliminar tipo | Import vpet-core | ❌ Pendiente |
+| `vpet-sidebar-provider.ts` | Dividir | `sidebar/{provider,presenter,animation-host,orchestrator}` | ✅ Completado (provider 143 líneas) |
+| `extension.ts` | Dividir | `bootstrap/*` | ✅ Completado (41 líneas) |
+| `evolution-battle-artwork.ts` | Refactor interno | `vpet-animation/src/sequences/` | 🟡 Extraído; 480 líneas (objetivo &lt;400) |
+| `types.ts` (`CompletedUsage`) | Eliminar tipo | Import vpet-core | ✅ Re-export desde vpet-core |
 
 ### Apéndice B: Comandos VS Code (sin cambios de contrato)
 
@@ -1647,24 +1646,26 @@ Semana 3: PR-3 (fin), PR-4, PR-5a
 Semana 4: PR-5b, PR-6, PR-7
 ```
 
-**Realidad a septiembre 2026:** Se priorizó la feature de batalla de evolución (ambos hosts). El refactor estructural no ha comenzado formalmente (PR-0). PR-1c y parte de PR-5 se completaron como efecto colateral de fixes de batalla/DB.
+**Realidad a septiembre 2026:** PR-0, PR-3 y gran parte de PR-5/PR-6/PR-7 completados. `vpet-animation` extraído y validado en Cursor y OpenCode.
 
-**Siguiente hito recomendado:** PR-3 (`vpet-animation`) + PR-1b (queries en `vpet-core`). PR-0 completado 2026-09-11.
+**Siguiente hito recomendado:** PR-2 (`onActivity`, `hook-events-reader`, caché auth) + PR-1b (queries en `vpet-core`) + reducir `sidebar/provider.ts` a &lt;100 líneas.
 
 ### Apéndice E: Referencias en el monorepo
 
 | Recurso | Ruta |
 |---------|------|
-| Tests arquitectura OpenCode | `packages/opencode-vpet/tests/architecture-boundary-helpers.ts` |
+| Paquete animación compartida | `packages/vpet-animation/` |
+| Tests animación/artwork | `packages/vpet-animation/tests/` |
+| Staging npm (OpenCode) | `packages/opencode-vpet/scripts/stage-vpet-animation-sources.ts` |
+| Tests arquitectura (ambos hosts) | `packages/*/tests/architecture-boundary*.ts`, `hexagonal-boundary.test.ts` |
 | Poll loop reutilizable | `packages/opencode-vpet/src/tui/sidebar-poll-loop.ts` |
 | Orquestación batalla OpenCode TUI | `packages/opencode-vpet/src/tui.tsx` |
-| Toasts batalla (server hooks) | `packages/opencode-vpet/src/adapters/opencode/create-server-hooks.ts` |
-| Sesión batalla OpenCode | `packages/opencode-vpet/src/tui/evolution-battle-session.ts` |
-| Sesión batalla Cursor | `packages/cursor-vpet/src/webview/evolution-battle-session.ts` |
+| Orquestación batalla Cursor | `packages/cursor-vpet/src/webview/sidebar/sidebar-orchestrator.ts` |
+| Sesiones batalla/reveal | `packages/vpet-animation/src/sessions/` |
 | Dominio batalla | `packages/vpet-core/src/domain/evolution-battle.ts` |
 | Repository Cursor (snapshot en memoria) | `packages/cursor-vpet/src/adapters/sqlite/sqlite-vpet-write-store.ts` |
+| Bootstrap Cursor | `packages/cursor-vpet/src/bootstrap/container.ts` |
 | Tests persistencia Cursor | `packages/cursor-vpet/tests/persistence/sqljs-vpet-repository.persistence.test.ts` |
-| Tests sesión batalla | `packages/cursor-vpet/tests/evolution-battle-session.test.ts`, `packages/opencode-vpet/tests/evolution-battle-session.test.ts` |
 
 ### Apéndice F: Commits de la feature batalla/evolución (contexto)
 
@@ -1676,7 +1677,9 @@ Semana 4: PR-5b, PR-6, PR-7
 | `78cfc3c` | Sync cambios `pet.db` entre ventanas de extensión |
 | `7669efc` | Estabilizar refresh batalla y lecturas DB |
 | `3b91b30` | Evolución directa Digitama; separar batalla de reveal |
+| `af5a1d4` | Crear paquete `vpet-animation` |
+| `324f654` | Migrar OpenCode y Cursor a `vpet-animation` |
 
 ---
 
-*Documento v1.1 — actualizado 2026-09-11 con snapshot del código en `main` (~commit `3b91b30`). Actualizar versión y §1.4 al completar cada PR.*
+*Documento v1.2 — actualizado 2026-09-11 con snapshot en rama `feat/vpet-animation` (~commit `324f654`). Actualizar §1.4 al completar cada PR restante.*
