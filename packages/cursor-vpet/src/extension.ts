@@ -22,8 +22,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const usageSource = createUsagePipeline(
     container.repository,
     (result) => {
-      if (result.kind === "applied" && result.evolution !== undefined) {
-        container.sidebarProvider.queueEvolutionReveal(result.evolution)
+      if (result.kind === "applied") {
+        container.sidebarProvider.playFeedAnimation()
+        if (result.evolution !== undefined) {
+          container.sidebarProvider.queueEvolutionReveal(result.evolution)
+        }
       }
       container.refreshSidebar()
     },

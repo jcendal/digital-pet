@@ -88,6 +88,11 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     this.orchestrator.queueEvolutionReveal(evolution)
   }
 
+  playFeedAnimation(): void {
+    if (this.orchestrator.isPresentationInProgress()) return
+    this.animationHost.playFeedAnimation()
+  }
+
   async refresh(): Promise<void> {
     await this.orchestrator.refresh()
   }

@@ -28,6 +28,18 @@ export const selectCosmeticAction = (
   return actions[Math.floor(normalizedRandom(random) * actions.length)]
 }
 
+export const resolveEatClip = (
+  sprite: string,
+  catalog: MonsterFrameCatalog,
+): CosmeticActionClip | undefined => {
+  const first = catalog.get(sprite, "eat_1") === undefined ? undefined : "eat_1"
+  const second = catalog.get(sprite, "eat_2") === undefined ? undefined : "eat_2"
+  if (first !== undefined && second !== undefined) return [first, second]
+  if (first !== undefined) return [first, first]
+  if (second !== undefined) return [second, second]
+  return undefined
+}
+
 export const resolveSleepClip = (
   sprite: string,
   fallback: MonsterFrameName,

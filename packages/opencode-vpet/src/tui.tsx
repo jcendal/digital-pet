@@ -246,6 +246,11 @@ export const createTui =
         )(callback, intervalMs),
       clear: (stop) => stop(),
     })
+    const publishAnimation = (nextAnimation: MonsterAnimationOutput): void => {
+      if (!publish(nextAnimation)) return
+      scheduling.onAnimation?.(nextAnimation)
+      api.renderer.requestRender()
+    }
     const stopVisualInterval = (
       scheduling.scheduleVisualInterval ??
       ((callback, intervalMs) => {
@@ -254,16 +259,18 @@ export const createTui =
       })
     )(() => {
       if (disposed || battleInProgress) return
-      const nextAnimation = controller.dispatch({ kind: "tick" })
-      publish(nextAnimation)
-      scheduling.onAnimation?.(nextAnimation)
-      api.renderer.requestRender()
+      publishAnimation(controller.dispatch({ kind: "tick" }))
     }, VISUAL_INTERVAL_MS)
 
+    let sessionWasBusy = false
     const activity = (): void => {
       if (disposed) return
       poller.refresh()
-      if (publish(controller.dispatch({ kind: "activity" }))) api.renderer.requestRender()
+      publishAnimation(controller.dispatch({ kind: "activity" }))
+    }
+    const feed = (): void => {
+      if (disposed || battleInProgress) return
+      publishAnimation(controller.dispatch({ kind: "feed" }))
     }
     const unsubscribes = [
       api.event.on("message.updated", activity),
@@ -272,9 +279,14 @@ export const createTui =
         switch (event.properties.status.type) {
           case "busy":
           case "retry":
+            sessionWasBusy = true
             activity()
             return
           case "idle":
+            if (sessionWasBusy) {
+              sessionWasBusy = false
+              feed()
+            }
             return
           default: {
             const unexpectedStatus: never = event.properties.status

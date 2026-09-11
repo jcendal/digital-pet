@@ -8,6 +8,7 @@ import { MONSTER_SLEEP_AFTER_MS } from "../constants/presentation-timing.ts"
 import { assertNever } from "../utils/assert-never.ts"
 import {
   resolveCosmeticActions,
+  resolveEatClip,
   resolveSleepClip,
   selectCosmeticAction,
   type CosmeticActionClip,
@@ -35,6 +36,7 @@ export type MonsterAnimationEvent =
   | { readonly kind: "partner_changed"; readonly partner: MonsterAnimationIdentity | undefined }
   | { readonly kind: "tick" }
   | { readonly kind: "activity" }
+  | { readonly kind: "feed" }
   | { readonly kind: "viewport_resized"; readonly width: number }
 
 export type MonsterAnimationResult =
@@ -130,6 +132,9 @@ export class MonsterAnimationController {
         break
       case "activity":
         this.#state = this.#activity()
+        break
+      case "feed":
+        this.#state = this.#feed()
         break
       case "viewport_resized":
         this.#latestViewportWidth = event.width
@@ -294,6 +299,29 @@ export class MonsterAnimationController {
       identity: state.identity,
       policy: restartWalkingPolicy(state.boundary, frameName, this.#random),
     }
+  }
+
+  #feed(): MonsterAnimationState {
+    const state = this.#state
+    if (state.kind === "blank" || state.kind === "unavailable" || state.kind === "digitama") return state
+
+    this.#lastActivityMs = this.#nowMs()
+    const identity = state.identity
+    const boundary: ActionBoundaryState =
+      state.kind === "walking"
+        ? {
+            frameName: state.policy.frameName,
+            offset: state.policy.offset,
+            facing: state.policy.facing,
+            bounds: state.policy.bounds,
+          }
+        : state.boundary
+    const clip = resolveEatClip(identity.sprite, this.#catalog)
+    if (clip === undefined) {
+      if (state.kind === "sleeping") return this.#activity()
+      return state
+    }
+    return { kind: "action", identity, boundary, clip, phase: 0 }
   }
 
   #currentIdentity(): MonsterAnimationIdentity | undefined {

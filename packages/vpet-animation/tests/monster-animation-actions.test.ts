@@ -175,6 +175,35 @@ describe("MonsterAnimationController actions and inactivity", () => {
     expect(moved).toMatchObject({ kind: "walking", offset: -2, facing: "left" })
   })
 
+  test("Given a walking partner with eat frames When feed is dispatched Then it plays the eat clip", () => {
+    const controller = new MonsterAnimationController(
+      catalogFor(new Map([["agumon", ["eat_1", "eat_2", "walk_1", "walk_2"]]])),
+      sequenceRandom(0).random,
+      controlledClock().nowMs,
+    )
+    controller.dispatch(partnerChanged({ sprite: "agumon", isDigitama: false }))
+    controller.dispatch({ kind: "viewport_resized", width: 40 })
+
+    const eating = controller.dispatch({ kind: "feed" })
+    const secondBite = controller.dispatch({ kind: "tick" })
+
+    expect(eating).toMatchObject({ kind: "action" })
+    expect([frameContent(eating), frameContent(secondBite)]).toEqual(["agumon:eat_1", "agumon:eat_2"])
+  })
+
+  test("Given Digitama mode When feed is dispatched Then the frame stays unchanged", () => {
+    const controller = new MonsterAnimationController(
+      catalogFor(new Map([["egg", ["eat_1", "eat_2", "walk_1", "walk_2"]]])),
+      sequenceRandom(0).random,
+      controlledClock().nowMs,
+    )
+    controller.dispatch(partnerChanged({ sprite: "egg", isDigitama: true }))
+
+    const fed = controller.dispatch({ kind: "feed" })
+
+    expect(fed.kind).toBe("digitama")
+  })
+
   test("Given Digitama mode When time, activity, viewport, and ticks advance Then clock and RNG sleep/action behavior remain unused", () => {
     const source = sequenceRandom(0)
     const clock = controlledClock()

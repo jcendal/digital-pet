@@ -281,7 +281,7 @@ describe("TUI composition", () => {
     await harness.dispose?.()
   })
 
-  test("Given project-wide activity events When parent and child sessions wake a sleeping partner Then all accepted events are equivalent and idle is inert", async () => {
+  test("Given project-wide activity events When parent and child sessions wake a sleeping partner Then all accepted events are equivalent and idle plays feed", async () => {
     const harness = new TuiCompositionHarness()
     await harness.start(() => partnerInputs("agumon"))
     const accepted = [
@@ -304,8 +304,8 @@ describe("TUI composition", () => {
 
     harness.eventBus.emit(sessionStatus("parent", { type: "idle" }))
 
-    expect(lastKind(harness)).toBe("sleeping")
-    expect(harness.renderRequests).toBe(rendersBeforeIdle)
+    expect(lastKind(harness)).toBe("action")
+    expect(harness.renderRequests).toBe(rendersBeforeIdle + 1)
     expect(harness.eventBus.subscriptions).toEqual(["message.updated", "message.part.updated", "session.status"])
     await harness.dispose?.()
   })

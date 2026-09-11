@@ -18,6 +18,7 @@ export type SidebarAnimationHost = {
   stop(): void
   clearArtwork(): void
   postCurrentFrame(animation?: MonsterAnimationOutput): Promise<void>
+  playFeedAnimation(): void
   isPresentationBlocked(): boolean
   setPresentationBlocked(blocked: boolean): void
   getArtworkWidth(): number
@@ -79,6 +80,11 @@ export const createSidebarAnimationHost = ({
       cachedArtwork = ""
     },
     postCurrentFrame,
+    playFeedAnimation(): void {
+      if (presentationBlocked) return
+      const nextAnimation = animation.dispatch({ kind: "feed" })
+      void postCurrentFrame(nextAnimation)
+    },
     isPresentationBlocked(): boolean {
       return presentationBlocked
     },

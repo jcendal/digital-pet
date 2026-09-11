@@ -61,6 +61,22 @@ describe("sidebar animation host", () => {
     expect(artworks).toHaveLength(0)
   })
 
+  test("playFeedAnimation posts eat frames for a partner with eat clips", async () => {
+    const { sink, artworks } = createCaptureSink()
+    const host = createSidebarAnimationHost({
+      frameCatalog: MONSTER_FRAME_CATALOG,
+      sink,
+      scheduler: createManualScheduler(),
+      random: sequenceRandom([0.5]),
+    })
+    host.syncPartner({ sprite: "agumon", isDigitama: false })
+    host.setArtworkWidth(40)
+    host.playFeedAnimation()
+    await Promise.resolve()
+    expect(artworks.length).toBe(1)
+    expect(artworks[0]?.trim().length).toBeGreaterThan(0)
+  })
+
   test("presentation blocked suppresses tick posts", async () => {
     const { sink, artworks } = createCaptureSink()
     const scheduler = createManualScheduler()
