@@ -1,5 +1,6 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { sleep } from "../shared/sleep.ts"
 
 const FRAME_ROWS = 8
 const FRAME_COLUMNS = 16
@@ -44,11 +45,6 @@ export const renderDefeatArtwork = (
   const spriteRows = frameLines(catalog, sprite, frameName)
   return centerArtwork(spriteRows, viewportWidth)
 }
-
-export const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
 
 export const runDefeatAnimation = async (
   catalog: MonsterFrameCatalog,

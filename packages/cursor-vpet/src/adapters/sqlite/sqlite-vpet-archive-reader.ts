@@ -7,7 +7,8 @@ import type {
 } from "@sbugallo/vpet-core/application/models/vpet-archive.ts"
 import type { VpetArchiveReader } from "@sbugallo/vpet-core/application/ports/vpet-archive.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
-import { resolveHostDatabasePath, type HostPathOptions } from "@sbugallo/vpet-core/adapters/sqlite/app-data-path.ts"
+import { isRecoverableSqliteReadError } from "./errors.ts"
+import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { openReadonlySqlJsDatabase } from "./sqljs-driver.ts"
 import {
   ARCHIVE_PARTNER_EVENTS_SELECT,
@@ -16,13 +17,9 @@ import {
   type PersistedPartnerRow,
 } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-schema.ts"
 
-export type CreateSqliteVpetArchiveReaderOptions = HostPathOptions & { readonly databasePath?: string }
+export type CreateSqliteVpetArchiveReaderOptions = SqliteDatabaseOptions
 
 const UNAVAILABLE_ARCHIVE_MESSAGE = "VPet archive is unavailable."
-
-const isRecoverableSqliteReadError = (error: unknown): boolean =>
-  error instanceof Error &&
-  (error.message.includes("sqlite") || error.message.includes("database") || error.message.includes("no such table"))
 
 const toArchiveEvent = (row: PersistedPartnerEventRow): VpetArchiveEvent => ({
   eventId: row.event_id,
@@ -69,7 +66,7 @@ export const readSqliteVpetArchive = (executor: Pick<SqliteExecutor, "all">): Vp
 export const createSqliteVpetArchiveReader = async (
   options: CreateSqliteVpetArchiveReaderOptions = {},
 ): Promise<VpetArchiveReader> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const databasePath = resolveDatabasePath(options)
   if (!existsSync(databasePath)) {
     return { getArchive: () => ({ kind: "empty" }) }
   }
@@ -88,7 +85,7 @@ export const createSqliteVpetArchiveReader = async (
 }
 
 export const readArchive = async (options: CreateSqliteVpetArchiveReaderOptions = {}): Promise<VpetArchiveResult> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const databasePath = resolveDatabasePath(options)
   if (!existsSync(databasePath)) return { kind: "empty" }
 
   try {

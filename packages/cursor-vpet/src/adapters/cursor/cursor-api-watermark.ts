@@ -1,4 +1,6 @@
-import type { CompletedUsage, UsageApiEvent, UsageApiResponse, UsageWatermark } from "./types.ts"
+import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
+import { sleep } from "../../shared/sleep.ts"
+import type { UsageApiEvent, UsageApiResponse, UsageWatermark } from "./types.ts"
 import { readCursorAccessToken } from "./cursor-auth.ts"
 
 const USAGE_EVENTS_URL = "https://cursor.com/api/dashboard/get-filtered-usage-events"
@@ -105,8 +107,6 @@ export const fetchNewEventsSince = async (
 
   return collected.sort((a, b) => Number(a.timestamp) - Number(b.timestamp))
 }
-
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
 
 export type SettleOptions = {
   readonly initialDelayMs: number

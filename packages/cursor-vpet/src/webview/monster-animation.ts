@@ -3,6 +3,7 @@ import type {
   MonsterFrameCatalog,
   MonsterFrameName,
 } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { assertNever } from "../shared/assert-never.ts"
 import {
   resolveCosmeticActions,
   resolveSleepClip,
@@ -95,10 +96,6 @@ type SleepingState = {
 type MonsterAnimationState = BlankState | UnavailableState | DigitamaState | WalkingState | ActionState | SleepingState
 const ORIGIN = { offset: 0, facing: "left" } as const
 const SLEEP_AFTER_MS = 300_000
-
-const assertNever = (value: never): never => {
-  throw new Error(`Unexpected monster animation variant: ${JSON.stringify(value)}`)
-}
 
 const sameIdentity = (left: MonsterAnimationIdentity, right: MonsterAnimationIdentity): boolean =>
   left.sprite === right.sprite && left.isDigitama === right.isDigitama

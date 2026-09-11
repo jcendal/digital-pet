@@ -9,7 +9,8 @@ import { STAGE_GAUGE_THRESHOLDS } from "@sbugallo/vpet-core/domain/evolution.ts"
 import { captureWatermark, settleTurnDelta } from "./cursor-api-watermark.ts"
 import { hasStopTokens, toCompletedUsageFromStop } from "./cursor-stop-mapper.ts"
 import { resolveHookEventsPath } from "./paths.ts"
-import type { CompletedUsage, HookEventRecord, UsageWatermark } from "./types.ts"
+import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
+import type { HookEventRecord, UsageWatermark } from "./types.ts"
 
 type TurnState = {
   watermark: UsageWatermark

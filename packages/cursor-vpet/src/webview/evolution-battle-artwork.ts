@@ -1,5 +1,6 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { sleep } from "../shared/sleep.ts"
 import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
 
 const FRAME_ROWS = 8
@@ -292,11 +293,6 @@ export const renderEvolutionBattleArtwork = (
   const padding = Math.max(Math.floor((viewportWidth - battleWidth) / 2), 0)
   return rows.map((row) => `${" ".repeat(padding)}${row}`).join("\n")
 }
-
-export const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
 
 const postScene = async (
   catalog: MonsterFrameCatalog,

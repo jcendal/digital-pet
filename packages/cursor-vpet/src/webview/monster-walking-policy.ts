@@ -1,4 +1,6 @@
 import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { assertNever } from "../shared/assert-never.ts"
+import { normalizedRandom } from "../shared/random.ts"
 
 export type WalkingFacing = "left" | "right"
 export type WalkFrame = "walk_1" | "walk_2"
@@ -27,10 +29,6 @@ export type ActionBoundaryState = {
 export type WalkingPolicyTick =
   | { readonly kind: "walking"; readonly walking: WalkingPolicyState }
   | { readonly kind: "action"; readonly action: ActionBoundaryState }
-
-const assertNever = (value: never): never => {
-  throw new Error(`Unexpected walking policy variant: ${JSON.stringify(value)}`)
-}
 
 export const initialWalkingPolicy = (frameName: WalkFrame): WalkingPolicyState => ({
   frameName,
@@ -141,10 +139,4 @@ const planBout = (state: WalkingPolicyState, random: () => number): WalkingPolic
   }
   const remaining = available < 5 ? available : 5 + Math.floor(normalizedRandom(random) * (available - 4))
   return { ...state, bout: { kind: "moving", remaining } }
-}
-
-const normalizedRandom = (random: () => number): number => {
-  const sample = random()
-  if (!Number.isFinite(sample) || sample <= 0) return 0
-  return sample >= 1 ? 1 - Number.EPSILON : sample
 }

@@ -1,10 +1,4 @@
-export type CompletedUsage = {
-  readonly receiptKey: string
-  readonly eventId: string
-  readonly tokenDelta: number
-  readonly cost?: number | null
-  readonly createdAt: string
-}
+export type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 
 export type UsageWatermark = {
   readonly timestampMs: number

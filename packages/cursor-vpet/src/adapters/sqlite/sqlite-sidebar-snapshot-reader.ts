@@ -2,8 +2,9 @@ import { existsSync, readFileSync } from "node:fs"
 import type { SqlJsStatic } from "sql.js"
 
 import type { SidebarSnapshot, SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
-import { resolveHostDatabasePath, type HostPathOptions } from "@sbugallo/vpet-core/adapters/sqlite/app-data-path.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
+import { isRecoverableSqliteReadError } from "./errors.ts"
+import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { getSqlRuntime } from "./sqljs-config.ts"
 import {
   ACTIVE_PARTNER_SELECT,
@@ -12,7 +13,7 @@ import {
   type TrainerStateRow,
 } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-schema.ts"
 
-export type CreateSqliteSidebarSnapshotReaderOptions = HostPathOptions & { readonly databasePath?: string }
+export type CreateSqliteSidebarSnapshotReaderOptions = SqliteDatabaseOptions
 
 const TRAINER_STATE_SELECT = "SELECT total_tokens FROM trainer_state WHERE trainer_id = 1"
 const CONTROL_STATE_SELECT = "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1"
@@ -21,10 +22,6 @@ type ControlStateRow = {
   readonly frozen: number
   readonly cheat_node_id: string | null
 }
-
-const isRecoverableSqliteReadError = (error: unknown): boolean =>
-  error instanceof Error &&
-  (error.message.includes("sqlite") || error.message.includes("database") || error.message.includes("no such table"))
 
 export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "get">): SidebarSnapshot | null => {
   const trainer = executor.get<TrainerStateRow>(TRAINER_STATE_SELECT)
@@ -87,7 +84,7 @@ const readSidebarSnapshotWithRuntime = (SQL: SqlJsStatic, databasePath: string):
 export const createSqliteSidebarSnapshotReader = async (
   options: CreateSqliteSidebarSnapshotReaderOptions = {},
 ): Promise<SidebarSnapshotReader> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const databasePath = resolveDatabasePath(options)
   const SQL = await getSqlRuntime()
 
   return {
@@ -100,7 +97,7 @@ export const createSqliteSidebarSnapshotReader = async (
 export const readSidebarSnapshot = async (
   options: CreateSqliteSidebarSnapshotReaderOptions = {},
 ): Promise<SidebarSnapshot | null> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const databasePath = resolveDatabasePath(options)
   const SQL = await getSqlRuntime()
   return readSidebarSnapshotWithRuntime(SQL, databasePath)
 }

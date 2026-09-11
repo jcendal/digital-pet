@@ -1,4 +1,5 @@
 import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { normalizedRandom } from "../shared/random.ts"
 
 export type CosmeticActionClip = readonly [MonsterFrameName, MonsterFrameName]
 export type SleepClip = readonly [MonsterFrameName, MonsterFrameName]
@@ -39,8 +40,3 @@ export const resolveSleepClip = (
   return [fallback, fallback]
 }
 
-const normalizedRandom = (random: () => number): number => {
-  const sample = random()
-  if (!Number.isFinite(sample) || sample <= 0) return 0
-  return sample >= 1 ? 1 - Number.EPSILON : sample
-}

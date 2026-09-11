@@ -1,4 +1,5 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import { sleep } from "../shared/sleep.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 const FRAME_ROWS = 8
@@ -93,11 +94,6 @@ export const renderEvolutionArtwork = (
 
   return centerArtwork(spriteRows, viewportWidth)
 }
-
-export const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
 
 const animatePhase = async (
   catalog: MonsterFrameCatalog,
