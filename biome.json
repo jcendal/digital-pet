@@ -7,6 +7,7 @@
       "package.json",
       "tsconfig*.json",
       "!packages/**/dist/**",
+      "!packages/**/build",
       "!packages/cursor-vpet/hook-bridge.js",
       "!packages/vpet-core/src/data/monster-frame-data.ts",
       "!tests/**/*.jsonc",

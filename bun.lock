@@ -17,6 +17,7 @@
       "name": "cursor-vpet",
       "version": "0.2.0-dev.0",
       "dependencies": {
+        "@sbugallo/vpet-animation": "workspace:*",
         "@sbugallo/vpet-core": "workspace:*",
         "sql.js": "^1.12.0",
       },
@@ -36,6 +37,7 @@
         "opencode-vpet": "./dist/cli.js",
       },
       "dependencies": {
+        "@sbugallo/vpet-animation": "workspace:*",
         "@sbugallo/vpet-core": "workspace:*",
         "solid-js": "^1.9.14",
       },
@@ -57,6 +59,17 @@
         "@opentui/core": ">=0.4.5",
         "@opentui/keymap": ">=0.4.5",
         "@opentui/solid": ">=0.4.5",
+      },
+    },
+    "packages/vpet-animation": {
+      "name": "@sbugallo/vpet-animation",
+      "version": "0.2.0-dev.0",
+      "dependencies": {
+        "@sbugallo/vpet-core": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "1.3.14",
+        "typescript": "5.9.3",
       },
     },
     "packages/vpet-core": {
@@ -220,6 +233,8 @@
     "@opentui/solid": ["@opentui/solid@0.4.5", "", { "dependencies": { "@babel/core": "7.28.0", "@babel/preset-typescript": "7.27.1", "@opentui/core": "0.4.5", "babel-plugin-module-resolver": "5.0.2", "babel-preset-solid": "1.9.12", "entities": "7.0.1", "s-js": "^0.4.9" }, "peerDependencies": { "solid-js": "1.9.12" } }, "sha512-B0RSkXnrtPVfEJOX+Hj+axjLJ3lzbG1BZw5I7Pvb9OPp48Vzg2cW2a3cSa86/q48ndLt647i/XwFPIw/jqnI5g=="],
 
     "@sbugallo/opencode-vpet": ["@sbugallo/opencode-vpet@workspace:packages/opencode-vpet"],
+
+    "@sbugallo/vpet-animation": ["@sbugallo/vpet-animation@workspace:packages/vpet-animation"],
 
     "@sbugallo/vpet-core": ["@sbugallo/vpet-core@workspace:packages/vpet-core"],
 
