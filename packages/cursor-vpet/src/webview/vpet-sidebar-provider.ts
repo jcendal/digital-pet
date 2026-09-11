@@ -2,8 +2,6 @@ import * as vscode from "vscode"
 
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
-import { pickEvolutionTarget, pickRandomSameStageOpponent } from "@sbugallo/vpet-core/domain/evolution-battle.ts"
-import { DEBUG_FORCE_EVOLUTION_BATTLE } from "../config/debug.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/get-sidebar-card-inputs.ts"
 import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
@@ -16,11 +14,7 @@ import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-v
 import { renderPositionedArtwork } from "./animated-artwork.ts"
 import { runDefeatAnimation } from "./defeat-artwork.ts"
 import { runEvolutionAnimation } from "./evolution-artwork.ts"
-import {
-  runEvolutionBattleAnimation,
-  sleep,
-  type EvolutionBattleOutcome,
-} from "./evolution-battle-artwork.ts"
+import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "./evolution-battle-artwork.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./monster-animation.ts"
 import {
   buildSidebarWebviewHtml,
@@ -41,7 +35,6 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private artworkWidth = DEFAULT_ARTWORK_WIDTH
   private visualInterval?: ReturnType<typeof setInterval>
   private battleInProgress = false
-  private debugBattlePlayedThisVisit = false
   private readonly animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG, Math.random, () =>
     performance.now(),
   )
@@ -78,9 +71,8 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.onDidChangeVisibility(() => {
       if (webviewView.visible) {
         this.startVisualInterval()
-        void this.onSidebarShown()
+        void this.refresh()
       } else {
-        this.debugBattlePlayedThisVisit = false
         this.stopVisualInterval()
       }
     })
@@ -94,47 +86,8 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
 
     if (webviewView.visible) {
       this.startVisualInterval()
-      void this.onSidebarShown()
+      void this.refresh()
     }
-  }
-
-  private async onSidebarShown(): Promise<void> {
-    await this.refresh()
-    if (!DEBUG_FORCE_EVOLUTION_BATTLE || this.debugBattlePlayedThisVisit) return
-    await sleep(200)
-    await this.previewEvolutionBattle()
-  }
-
-  resetDebugBattlePreview(): void {
-    this.debugBattlePlayedThisVisit = false
-  }
-
-  async previewEvolutionBattle(): Promise<void> {
-    if (!DEBUG_FORCE_EVOLUTION_BATTLE || this.battleInProgress) return
-
-    const snapshot = this.snapshotReader.getSidebarSnapshot()
-    if (snapshot === null) return
-    if (snapshot.pendingEvolutionTargetId !== null && snapshot.battleOpponentNodeId !== null) return
-
-    const player = DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)
-    if (player === undefined) return
-
-    const opponentId = pickRandomSameStageOpponent(player, DIGIMON_CATALOG.nodes, Math.random)
-    const opponent = DIGIMON_CATALOG.byId.get(opponentId)
-    if (opponent === undefined) return
-
-    const evolutionTargetId =
-      player.nextEvolutions.length > 0 ? pickEvolutionTarget(player, Math.random) : null
-
-    this.debugBattlePlayedThisVisit = true
-    await this.runBattleAnimation({
-      fromSprite: player.sprite,
-      opponentSprite: opponent.sprite,
-      evolutionTargetId,
-      preview: true,
-      opponentName: opponent.nameEn,
-    })
-    await this.refresh()
   }
 
   async refresh(): Promise<void> {
@@ -178,7 +131,6 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
       fromSprite: player.sprite,
       opponentSprite: opponent.sprite,
       evolutionTargetId: snapshot.pendingEvolutionTargetId,
-      preview: false,
     })
     return true
   }
@@ -211,8 +163,6 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     readonly fromSprite: string
     readonly opponentSprite: string
     readonly evolutionTargetId: string | null
-    readonly preview: boolean
-    readonly opponentName?: string
   }): Promise<void> {
     if (this.battleInProgress) return
 
@@ -235,15 +185,6 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
         await this.runEvolutionReveal(context.fromSprite, context.evolutionTargetId)
       } else if (!playerWon) {
         await this.runDefeatReveal(context.fromSprite)
-      }
-
-      if (context.preview) {
-        void vscode.window.showInformationMessage(
-          playerWon
-            ? `Debug victory vs ${context.opponentName ?? "opponent"} (no save).`
-            : `Debug defeat vs ${context.opponentName ?? "opponent"} (no save).`,
-        )
-        return
       }
 
       const result = resolveEvolutionBattleForPartner(

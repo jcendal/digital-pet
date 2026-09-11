@@ -107,11 +107,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       uninstallVpetHooks()
       void context.globalState.update("vpet.hooksInstalled", false)
     }),
-    vscode.commands.registerCommand("cursorVpet.testBattle", async () => {
-      sidebarProvider?.resetDebugBattlePreview()
-      await sidebarProvider?.refresh()
-      await sidebarProvider?.previewEvolutionBattle()
-    }),
   )
 
   const poll = setInterval(refreshSidebar, 30_000)

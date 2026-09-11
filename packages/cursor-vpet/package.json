@@ -83,10 +83,6 @@
       {
         "command": "cursorVpet.uninstallHooks",
         "title": "Cursor VPet: Uninstall Hooks"
-      },
-      {
-        "command": "cursorVpet.testBattle",
-        "title": "Cursor VPet: Test Evolution Battle (debug)"
       }
     ],
     "configuration": {
