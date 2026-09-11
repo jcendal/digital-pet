@@ -4,17 +4,11 @@ import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/get-sidebar-card-inputs.ts"
-import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
-import {
-  resolveEvolutionBattleForPartner,
-  type EvolutionBattleRepository,
-} from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
+import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 import { renderPositionedArtwork } from "./animated-artwork.ts"
-import { runDefeatAnimation } from "./defeat-artwork.ts"
-import { runEvolutionAnimation } from "./evolution-artwork.ts"
-import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "./evolution-battle-artwork.ts"
+import { runEvolutionBattleSession } from "./evolution-battle-session.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./monster-animation.ts"
 import {
   buildSidebarWebviewHtml,
@@ -35,6 +29,8 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private artworkWidth = DEFAULT_ARTWORK_WIDTH
   private visualInterval?: ReturnType<typeof setInterval>
   private battleInProgress = false
+  private refreshInFlight = false
+  private pendingRefresh = false
   private readonly animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG, Math.random, () =>
     performance.now(),
   )
@@ -44,6 +40,10 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     private readonly snapshotReader: SidebarSnapshotReader,
     private readonly battleRepository: EvolutionBattleRepository,
   ) {}
+
+  isBattleInProgress(): boolean {
+    return this.battleInProgress
+  }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
     this.view = webviewView
@@ -92,14 +92,33 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
 
   async refresh(): Promise<void> {
     if (this.view === undefined) return
-
-    const snapshot = this.snapshotReader.getSidebarSnapshot()
-    const battled = await this.tryResolveEvolutionBattle(snapshot)
-    if (battled) {
-      await this.refresh()
+    if (this.refreshInFlight) {
+      this.pendingRefresh = true
       return
     }
 
+    this.refreshInFlight = true
+    try {
+      do {
+        this.pendingRefresh = false
+        await this.resolvePendingBattleIfNeeded()
+        if (this.view === undefined) return
+        await this.publishSidebarModel()
+      } while (this.pendingRefresh)
+    } finally {
+      this.refreshInFlight = false
+    }
+  }
+
+  dispose(): void {
+    this.stopVisualInterval()
+    delete this.view
+  }
+
+  private async publishSidebarModel(): Promise<void> {
+    if (this.view === undefined) return
+
+    const snapshot = this.snapshotReader.getSidebarSnapshot()
     const reader = { getSidebarSnapshot: () => snapshot }
     const inputs = getSidebarCardInputs(reader, DIGIMON_CATALOG)
     const model = buildSidebarCardModel(inputs, DEFAULT_VPET_SETTINGS)
@@ -113,96 +132,40 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     await this.postAnimationFrame()
   }
 
-  dispose(): void {
+  private async resolvePendingBattleIfNeeded(): Promise<void> {
+    if (this.battleInProgress) return
+
+    const snapshot = this.snapshotReader.getSidebarSnapshot()
+    if (snapshot === null) return
+    if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return
+
+    this.battleInProgress = true
     this.stopVisualInterval()
-    delete this.view
-  }
+    this.cachedArtwork = ""
 
-  private async tryResolveEvolutionBattle(snapshot: SidebarSnapshot | null): Promise<boolean> {
-    if (snapshot === null) return false
-    if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return false
-    if (this.battleInProgress) return true
-
-    const player = DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)
-    const opponent = DIGIMON_CATALOG.byId.get(snapshot.battleOpponentNodeId)
-    if (player === undefined || opponent === undefined) return false
-
-    await this.runBattleAnimation({
-      fromSprite: player.sprite,
-      opponentSprite: opponent.sprite,
-      evolutionTargetId: snapshot.pendingEvolutionTargetId,
-    })
-    return true
+    try {
+      await runEvolutionBattleSession(snapshot, this.artworkWidth, {
+        frameCatalog: MONSTER_FRAME_CATALOG,
+        digimonCatalog: DIGIMON_CATALOG,
+        repository: this.battleRepository,
+        onArtwork: async (artwork) => this.postArtwork(artwork),
+        onResolved: async (result) => {
+          if (result.kind === "won") {
+            void vscode.window.showInformationMessage("Victory! Your partner evolved!")
+          } else if (result.kind === "lost") {
+            void vscode.window.showInformationMessage("Defeat! You lost all tokens for this stage.")
+          }
+        },
+      })
+    } finally {
+      this.battleInProgress = false
+      if (this.view?.visible) this.startVisualInterval()
+    }
   }
 
   private async postArtwork(artwork: string): Promise<void> {
     this.cachedArtwork = artwork
     await this.view?.webview.postMessage({ type: "animation-frame", artwork })
-  }
-
-  private async runDefeatReveal(sprite: string): Promise<void> {
-    await runDefeatAnimation(MONSTER_FRAME_CATALOG, sprite, this.artworkWidth, async (artwork) =>
-      this.postArtwork(artwork),
-    )
-  }
-
-  private async runEvolutionReveal(fromSprite: string, evolutionTargetId: string): Promise<void> {
-    const target = DIGIMON_CATALOG.byId.get(evolutionTargetId)
-    if (target === undefined) return
-
-    await runEvolutionAnimation(
-      MONSTER_FRAME_CATALOG,
-      fromSprite,
-      target.sprite,
-      this.artworkWidth,
-      async (artwork) => this.postArtwork(artwork),
-    )
-  }
-
-  private async runBattleAnimation(context: {
-    readonly fromSprite: string
-    readonly opponentSprite: string
-    readonly evolutionTargetId: string | null
-  }): Promise<void> {
-    if (this.battleInProgress) return
-
-    this.battleInProgress = true
-    this.stopVisualInterval()
-
-    try {
-      const outcome: EvolutionBattleOutcome = Math.random() < 0.5 ? "player" : "opponent"
-      const battleOutcome = await runEvolutionBattleAnimation(
-        MONSTER_FRAME_CATALOG,
-        context.fromSprite,
-        context.opponentSprite,
-        this.artworkWidth,
-        outcome,
-        async (artwork) => this.postArtwork(artwork),
-      )
-
-      const playerWon = battleOutcome === "player"
-      if (playerWon && context.evolutionTargetId !== null) {
-        await this.runEvolutionReveal(context.fromSprite, context.evolutionTargetId)
-      } else if (!playerWon) {
-        await this.runDefeatReveal(context.fromSprite)
-      }
-
-      const result = resolveEvolutionBattleForPartner(
-        this.battleRepository,
-        playerWon,
-        DIGIMON_CATALOG.byId,
-        new Date().toISOString(),
-      )
-
-      if (result.kind === "won") {
-        void vscode.window.showInformationMessage("Victory! Your partner evolved!")
-      } else if (result.kind === "lost") {
-        void vscode.window.showInformationMessage("Defeat! You lost all tokens for this stage.")
-      }
-    } finally {
-      this.battleInProgress = false
-      if (this.view?.visible) this.startVisualInterval()
-    }
   }
 
   private syncAnimationPartner(model: ReturnType<typeof buildSidebarCardModel>): void {

@@ -11,7 +11,6 @@ import { installVpetHooks, uninstallVpetHooks } from "./adapters/cursor/install-
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { configureSqlJsWasmPath } from "./adapters/sqlite/sqljs-config.ts"
 import { createDatabaseChangeWatcher } from "./adapters/sqlite/database-change-watcher.ts"
-import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
 import { getVpetExtensionSettings, toDatabaseOptions } from "./config/extension-settings.ts"
 import { openDexPanel } from "./webview/dex-panel.ts"
@@ -52,8 +51,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const repository = await createSqliteVpetRepository(databaseOptions())
   context.subscriptions.push({ dispose: () => repository.close() })
 
-  const snapshotReader = await createSqliteSidebarSnapshotReader(databaseOptions())
-  sidebarProvider = new VpetSidebarProvider(context.extensionUri, snapshotReader, repository)
+  sidebarProvider = new VpetSidebarProvider(context.extensionUri, repository, repository)
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(VpetSidebarProvider.viewType, sidebarProvider, {
       webviewOptions: { retainContextWhenHidden: true },
@@ -74,7 +72,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     ...databaseOptions(),
     onChange: () => {
       repository.reloadFromDisk()
-      refreshSidebar()
+      if (sidebarProvider?.isBattleInProgress() !== true) 
+        refreshSidebar()
     },
   })
   context.subscriptions.push({ dispose: () => databaseWatcher.dispose() })
