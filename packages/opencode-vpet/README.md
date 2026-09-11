@@ -138,14 +138,14 @@ Default values are:
   "notifications": true,
   "language": "jp",
   "stageThresholds": {
-    "egg": 500000,
-    "babyI": 1000000,
-    "babyII": 2000000,
-    "child": 4000000,
-    "adult": 7500000,
-    "perfect": 12500000,
-    "ultimate": 20000000,
-    "superUltimate": 30000000
+    "egg": 5000000,
+    "babyI": 10000000,
+    "babyII": 20000000,
+    "child": 40000000,
+    "adult": 75000000,
+    "perfect": 125000000,
+    "ultimate": 200000000,
+    "superUltimate": 300000000
   }
 }
 ```

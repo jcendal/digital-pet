@@ -32,7 +32,7 @@ const activePartner: Partner = {
   partnerId: "partner-1",
   generation: 1,
   currentNodeId: currentNode.id,
-  gauge: 499_999,
+  gauge: 4_999_999,
   isTerminal: false,
   createdAt: "2026-07-31T00:00:00.000Z",
   retiredAt: null,

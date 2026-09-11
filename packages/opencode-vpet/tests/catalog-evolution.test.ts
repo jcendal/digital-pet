@@ -52,7 +52,7 @@ describe("catalog and evolution", () => {
 
     expect(DIGIMON_STAGES.every(isDigimonStage)).toBeTrue()
     expect(partner.currentNodeId).toBe(progression.currentNodeId)
-    expect(thresholds[node.stage]).toBe(500_000)
+    expect(thresholds[node.stage]).toBe(5_000_000)
   })
 
   test("Given a raw catalog row with a reference URL When parsing Then the normalized node preserves the URL and evolution references are immutable", () => {
@@ -129,7 +129,7 @@ describe("catalog and evolution", () => {
     if (andromon === undefined) throw new Error("Expected Andromon in catalog")
 
     const evolved = applyTokenProgress(
-      { current: andromon, gauge: 12_499_999, isTerminal: false },
+      { current: andromon, gauge: 124_999_999, isTerminal: false },
       1,
       () => 0.5,
       catalog.byId,
@@ -144,7 +144,7 @@ describe("catalog and evolution", () => {
     const lookup = new Map([[controlledTarget.id, controlledTarget]])
 
     const evolved = applyTokenProgress(
-      { current: controlledCurrent, gauge: 499_999, isTerminal: false },
+      { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
       1,
       () => 0,
       lookup,
@@ -157,7 +157,7 @@ describe("catalog and evolution", () => {
   test("Given a controlled lookup missing the selected target When token progress reaches a threshold Then it retains the existing catalog error", () => {
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 499_999, isTerminal: false },
+        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
         1,
         () => 0,
         new Map(),
@@ -186,7 +186,7 @@ describe("catalog and evolution", () => {
   test("Given an invalid selector When token progress reaches a threshold Then the existing selector error is retained", () => {
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 499_999, isTerminal: false },
+        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
         1,
         () => 1,
         new Map([[controlledTarget.id, controlledTarget]]),

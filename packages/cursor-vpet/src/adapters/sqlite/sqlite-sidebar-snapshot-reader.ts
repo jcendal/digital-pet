@@ -1,10 +1,10 @@
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
+import type { SqlJsStatic } from "sql.js"
 
 import type { SidebarSnapshot, SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import { resolveHostDatabasePath, type HostPathOptions } from "@sbugallo/vpet-core/adapters/sqlite/app-data-path.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
-import { openDatabaseFromPath } from "./sqljs-runtime.ts"
-import { openReadonlySqlJsDatabase } from "./sqljs-driver.ts"
+import { getSqlRuntime } from "./sqljs-config.ts"
 import {
   ACTIVE_PARTNER_SELECT,
   toPartner,
@@ -54,34 +54,10 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
   }
 }
 
-export const createSqliteSidebarSnapshotReader = async (
-  options: CreateSqliteSidebarSnapshotReaderOptions = {},
-): Promise<SidebarSnapshotReader> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
-  if (!existsSync(databasePath)) {
-    return { getSidebarSnapshot: () => null }
-  }
-
-  const database = await openReadonlySqlJsDatabase(databasePath)
-  return {
-    getSidebarSnapshot(): SidebarSnapshot | null {
-      try {
-        return readSidebarSnapshotFromExecutor(database.executor)
-      } catch (error) {
-        if (isRecoverableSqliteReadError(error)) return null
-        throw error
-      }
-    },
-  }
-}
-
-export const readSidebarSnapshot = async (
-  options: CreateSqliteSidebarSnapshotReaderOptions = {},
-): Promise<SidebarSnapshot | null> => {
-  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+const readSidebarSnapshotWithRuntime = (SQL: SqlJsStatic, databasePath: string): SidebarSnapshot | null => {
   if (!existsSync(databasePath)) return null
 
-  const database = await openDatabaseFromPath(databasePath)
+  const database = new SQL.Database(readFileSync(databasePath))
   try {
     const statementRunner = {
       get<TRow extends Record<string, unknown>>(sql: string): TRow | null {
@@ -102,4 +78,25 @@ export const readSidebarSnapshot = async (
   } finally {
     database.close()
   }
+}
+
+export const createSqliteSidebarSnapshotReader = async (
+  options: CreateSqliteSidebarSnapshotReaderOptions = {},
+): Promise<SidebarSnapshotReader> => {
+  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const SQL = await getSqlRuntime()
+
+  return {
+    getSidebarSnapshot(): SidebarSnapshot | null {
+      return readSidebarSnapshotWithRuntime(SQL, databasePath)
+    },
+  }
+}
+
+export const readSidebarSnapshot = async (
+  options: CreateSqliteSidebarSnapshotReaderOptions = {},
+): Promise<SidebarSnapshot | null> => {
+  const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
+  const SQL = await getSqlRuntime()
+  return readSidebarSnapshotWithRuntime(SQL, databasePath)
 }

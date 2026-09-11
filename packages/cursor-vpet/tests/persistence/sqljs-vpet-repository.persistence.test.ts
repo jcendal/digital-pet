@@ -2,8 +2,14 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test"
 import { mkdir, mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
 
+import { recordUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import { spawnPartner } from "@sbugallo/vpet-core/application/use-cases/spawn-partner.ts"
-import { readSidebarSnapshot } from "../../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
+import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
+import { STAGE_GAUGE_THRESHOLDS } from "@sbugallo/vpet-core/domain/evolution.ts"
+import {
+  createSqliteSidebarSnapshotReader,
+  readSidebarSnapshot,
+} from "../../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteVpetRepository } from "../../src/adapters/sqlite/sqlite-vpet-write-store.ts"
 
 type TempTestRoot = { readonly root: string; readonly appDataRoot: string }
@@ -28,6 +34,35 @@ afterEach(async () => {
 })
 
 describe("sql.js vpet repository persistence", () => {
+  test("Given usage applied through the write store When reading through the snapshot reader Then it returns fresh gauge", async () => {
+    if (tempRoot === undefined) throw new Error("Missing temp root.")
+
+    const repository = await createSqliteVpetRepository({ appDataRoot: tempRoot.appDataRoot })
+    const reader = await createSqliteSidebarSnapshotReader({ appDataRoot: tempRoot.appDataRoot })
+    try {
+      spawnPartner(repository, "2026-09-09T12:00:00.000Z")
+      expect(reader.getSidebarSnapshot()?.gauge).toBe(0)
+
+      recordUsage({
+        usage: {
+          receiptKey: "receipt-1",
+          eventId: "event-1",
+          tokenDelta: 42,
+          cost: null,
+          createdAt: "2026-09-09T12:01:00.000Z",
+        },
+        ledger: repository,
+        digimonById: DIGIMON_CATALOG.byId,
+        selector: () => 0,
+        thresholds: STAGE_GAUGE_THRESHOLDS,
+      })
+
+      expect(reader.getSidebarSnapshot()?.gauge).toBe(42)
+    } finally {
+      repository.close()
+    }
+  })
+
   test("Given a spawned partner When reading the sidebar snapshot Then it returns the active partner", async () => {
     if (tempRoot === undefined) throw new Error("Missing temp root.")
 

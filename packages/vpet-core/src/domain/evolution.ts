@@ -4,14 +4,14 @@ import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
 export type StageThresholds = Readonly<Record<DigimonStage, number>>
 
 export const STAGE_GAUGE_THRESHOLDS = Object.freeze({
-  0: 500_000,
-  1: 1_000_000,
-  2: 2_000_000,
-  3: 4_000_000,
-  4: 7_500_000,
-  5: 12_500_000,
-  6: 20_000_000,
-  7: 30_000_000,
+  0: 5_000_000,
+  1: 10_000_000,
+  2: 20_000_000,
+  3: 40_000_000,
+  4: 75_000_000,
+  5: 125_000_000,
+  6: 200_000_000,
+  7: 300_000_000,
 } as const satisfies StageThresholds)
 
 export type PartnerEvolutionState = {

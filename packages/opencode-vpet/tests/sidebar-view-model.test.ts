@@ -46,7 +46,7 @@ describe("static sidebar model", () => {
     expect(model.stageNumber).toBe(4)
     expect(model.url).toBe("https://example.test/tailmon")
     expect(model.gauge).toBe(25_000)
-    expect(model.threshold).toBe(7_500_000)
+    expect(model.threshold).toBe(75_000_000)
     expect(model.isTerminal).toBe(false)
     expect(model.frozen).toBe(false)
   })
@@ -121,7 +121,7 @@ describe("static sidebar model", () => {
 
     expect(model.name).toBe("Tailmon")
     expect(model.stage).toBe("Adult")
-    expect(model.threshold).toBe(7_500_000)
+    expect(model.threshold).toBe(75_000_000)
     expect(model.isTerminal).toBe(true)
   })
 

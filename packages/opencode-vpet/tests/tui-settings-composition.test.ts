@@ -225,11 +225,11 @@ describe("TUI settings composition", () => {
               stage: 4,
               url: "https://example.test/tailmon",
             },
-            gauge: 7_500_000,
+            gauge: 75_000_000,
             isTerminal: false,
             frozen: false,
             isSetOverride: false,
-            trainerTotalTokens: 7_500_000,
+            trainerTotalTokens: 75_000_000,
           }),
           settings,
         )
@@ -259,7 +259,7 @@ describe("TUI settings composition", () => {
 
         expect(frame).toContain("Tailmon")
         expect(frame).toContain("Adult")
-        expect(frame).toContain("7,500,000/7,500,000")
+        expect(frame).toContain("75,000,000/75,000,000")
         expect(frame).not.toContain("Gatomon")
         expect(frame).not.toContain("Champion")
         setup.renderer.destroy()
