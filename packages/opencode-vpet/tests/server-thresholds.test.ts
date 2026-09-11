@@ -257,7 +257,9 @@ describe("server threshold policy", () => {
         expect(repository.getActivePartner()).toEqual(
           expect.objectContaining({
             gauge: 1,
-            pendingEvolutionTargetId: "1-001",
+            currentNodeId: "0-001",
+            pendingEvolutionTargetId: expect.any(String),
+            battleOpponentNodeId: expect.any(String),
           }),
         )
       } finally {
@@ -284,7 +286,9 @@ describe("server threshold policy", () => {
         expect(repository.getActivePartner()).toEqual(
           expect.objectContaining({
             gauge: 1,
-            pendingEvolutionTargetId: "1-001",
+            currentNodeId: "0-001",
+            pendingEvolutionTargetId: expect.any(String),
+            battleOpponentNodeId: expect.any(String),
           }),
         )
       } finally {

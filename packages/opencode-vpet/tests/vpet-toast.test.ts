@@ -69,6 +69,16 @@ describe("VPet toast presentation", () => {
       evolution,
       { title: "Digi-evolution", message: "Digitama evolved into Koromon!", variant: "success", duration: 5_000 },
     ],
+    [
+      "defeat",
+      { kind: "defeat" },
+      {
+        title: "Defeat",
+        message: "Defeat! You lost all tokens for this stage.",
+        variant: "info",
+        duration: 5_000,
+      },
+    ],
   ] as const)(
     "Given an English catalog and a %s event When formatting Then it returns the approved payload",
     (_name, event, expected) => {

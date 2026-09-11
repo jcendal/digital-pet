@@ -5,6 +5,8 @@ export type SidebarSnapshot = {
   readonly frozen: boolean
   readonly isSetOverride: boolean
   readonly trainerTotalTokens: number
+  readonly pendingEvolutionTargetId: string | null
+  readonly battleOpponentNodeId: string | null
 }
 
 export type SidebarSnapshotReader = {

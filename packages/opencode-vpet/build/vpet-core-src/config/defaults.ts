@@ -28,14 +28,14 @@ export const VPET_STAGE_LABELS = Object.freeze({
 } as const satisfies VpetStageLabels)
 
 export const DEFAULT_STAGE_THRESHOLDS = Object.freeze({
-  egg: 500_000,
-  babyI: 1_000_000,
-  babyII: 2_000_000,
-  child: 4_000_000,
-  adult: 7_500_000,
-  perfect: 12_500_000,
-  ultimate: 20_000_000,
-  superUltimate: 30_000_000,
+  egg: 5_000_000,
+  babyI: 10_000_000,
+  babyII: 20_000_000,
+  child: 40_000_000,
+  adult: 75_000_000,
+  perfect: 125_000_000,
+  ultimate: 200_000_000,
+  superUltimate: 300_000_000,
 } as const satisfies StageThresholdSettings)
 
 export const DEFAULT_VPET_SETTINGS = Object.freeze({

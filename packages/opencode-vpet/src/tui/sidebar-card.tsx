@@ -27,6 +27,12 @@ const positionedOutput = (animation: MonsterAnimationOutput | MonsterAnimationRe
   }
 }
 
+const customArtworkRows = (artwork: string): readonly string[] => {
+  const rows = artwork.split("\n")
+  if (rows.length >= ARTWORK_ROWS) return rows.slice(0, ARTWORK_ROWS)
+  return [...rows, ...Array.from({ length: ARTWORK_ROWS - rows.length }, () => "")]
+}
+
 const artworkRows = (animation: MonsterAnimationOutput | MonsterAnimationResult, width: number): readonly string[] => {
   const output = positionedOutput(animation)
   switch (output.result.kind) {
@@ -52,6 +58,7 @@ const artworkRows = (animation: MonsterAnimationOutput | MonsterAnimationResult,
 
 const buildNextCheckLine = (model: SidebarCardModel, width: number): string => {
   if (model.kind === "no_partner") return ""
+  if (model.evolutionBattlePending) return `${NEXT_CHECK_PREFIX}Evolution battle!`
   if (model.isTerminal && !model.isSetOverride) return `${NEXT_CHECK_PREFIX}None`
 
   const barWidth = Math.max(width - NEXT_CHECK_PREFIX.length - 2, 0)
@@ -63,6 +70,7 @@ const buildNextCheckLine = (model: SidebarCardModel, width: number): string => {
 export const VpetSidebarCard = (props: {
   readonly model: Accessor<SidebarCardModel>
   readonly animation: Accessor<MonsterAnimationOutput | MonsterAnimationResult>
+  readonly customArtwork?: Accessor<string | undefined>
   readonly onArtworkWidthChange?: (width: number) => void
   readonly onUrlClick?: (url: string) => void
 }) => {
@@ -90,7 +98,11 @@ export const VpetSidebarCard = (props: {
 
   const renderCard = (): void => {
     const model = props.model()
-    for (const [index, content] of artworkRows(props.animation(), Math.floor(artworkWidth?.width ?? 0)).entries()) {
+    const width = Math.floor(artworkWidth?.width ?? 0)
+    const battleArtwork = props.customArtwork?.()
+    const rows =
+      battleArtwork === undefined ? artworkRows(props.animation(), width) : customArtworkRows(battleArtwork)
+    for (const [index, content] of rows.entries()) {
       updateText(artwork[index], content)
     }
 

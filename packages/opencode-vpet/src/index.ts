@@ -8,8 +8,8 @@ import { loadGlobalVpetSettings } from "./config/global-vpet-settings.ts"
 import type { ResolvedVpetSettings } from "@sbugallo/vpet-core/config/types.ts"
 import type { StageThresholds } from "@sbugallo/vpet-core/domain/evolution.ts"
 export { createCommandConfig } from "./adapters/opencode/create-server-hooks.ts"
-export { DIGIMON_DATA } from "@sbugallo/vpet-core/data/digimon-data.js"
-export type { DigimonId, DigimonRecord, DigimonStage } from "@sbugallo/vpet-core/data/digimon-data.js"
+export { DIGIMON_DATA } from "@sbugallo/vpet-core/data/digimon-data.ts"
+export type { DigimonId, DigimonRecord, DigimonStage } from "@sbugallo/vpet-core/data/digimon-data.ts"
 
 const getStringOption = (options: PluginOptions | undefined, name: string): string | undefined => {
   const value = options?.[name]

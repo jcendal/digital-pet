@@ -10,4 +10,5 @@ export type SidebarCardInputs =
       readonly frozen: boolean
       readonly isSetOverride: boolean
       readonly trainerTotalTokens: number
+      readonly evolutionBattlePending: boolean
     }

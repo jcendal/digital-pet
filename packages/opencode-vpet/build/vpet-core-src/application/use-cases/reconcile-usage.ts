@@ -8,6 +8,7 @@ export type ReconcileUsageInput = {
   readonly usages: readonly CompletedUsage[]
   readonly ledger: UsageLedger
   readonly digimonById: ReadonlyMap<string, DigimonNode>
+  readonly catalogNodes: readonly DigimonNode[]
   readonly selector: EvolutionSelector
   readonly thresholds: StageThresholds
 }
@@ -16,12 +17,13 @@ export const reconcileUsage = ({
   usages,
   ledger,
   digimonById,
+  catalogNodes,
   selector,
   thresholds,
 }: ReconcileUsageInput): readonly UsageProcessingResult[] => {
   const outcomes: UsageProcessingResult[] = []
   for (const usage of usages) {
-    outcomes.push(recordUsage({ usage, ledger, digimonById, selector, thresholds }))
+    outcomes.push(recordUsage({ usage, ledger, digimonById, catalogNodes, selector, thresholds }))
   }
   return outcomes
 }

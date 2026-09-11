@@ -15,6 +15,7 @@ export type VpetToastEvent =
   | Readonly<{ readonly kind: "set"; readonly nodeId: string }>
   | Readonly<{ readonly kind: "evolution"; readonly fromNodeId: string; readonly toNodeId: string }>
   | Readonly<{ readonly kind: "evolution_battle"; readonly opponentNodeId: string }>
+  | Readonly<{ readonly kind: "defeat" }>
 
 export type VpetToastNotifier = (payload: VpetToastPayload) => Promise<void>
 
@@ -95,6 +96,13 @@ export const formatVpetToast = (
             duration: 5_000,
           }
     }
+    case "defeat":
+      return {
+        title: "Defeat",
+        message: "Defeat! You lost all tokens for this stage.",
+        variant: "info",
+        duration: 5_000,
+      }
     default:
       return assertNever(event)
   }

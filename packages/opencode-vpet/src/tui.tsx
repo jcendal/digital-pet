@@ -7,18 +7,26 @@ import { createSignal } from "solid-js"
 
 import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteVpetArchiveReader } from "./adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
 import type { SidebarCardInputs } from "@sbugallo/vpet-core/application/models/sidebar-card-inputs.ts"
+import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { VpetArchiveReader } from "@sbugallo/vpet-core/application/ports/vpet-archive.ts"
 import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/get-sidebar-card-inputs.ts"
+import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
 import { loadGlobalVpetSettings } from "./config/global-vpet-settings.ts"
 import type { ResolvedVpetSettings } from "@sbugallo/vpet-core/config/types.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import { VpetSidebarCard } from "./tui/sidebar-card.tsx"
+import {
+  DEFAULT_BATTLE_ARTWORK_WIDTH,
+  runEvolutionBattleSession,
+} from "./tui/evolution-battle-session.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./tui/monster-animation.ts"
 import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 import { registerVpetCommandLayer } from "./tui/vpet-command-layer.tsx"
+import { formatVpetToast, type VpetToastEvent, type VpetToastNotifier } from "./adapters/opencode/vpet-toast.ts"
 
 const VISUAL_INTERVAL_MS = 500
 
@@ -63,6 +71,10 @@ type TuiSchedulingOptions = {
   readonly random?: () => number
   readonly onAnimation?: (output: MonsterAnimationOutput) => void
   readonly archiveReader?: VpetArchiveReader
+  readonly battleRepository?: EvolutionBattleRepository
+  readonly getSnapshot?: () => SidebarSnapshot | null
+  readonly notify?: VpetToastNotifier
+  readonly closeBattleRepository?: () => Promise<void>
 }
 
 const sameAnimation = (left: MonsterAnimationOutput, right: MonsterAnimationOutput): boolean =>
@@ -89,12 +101,65 @@ export const createTui =
       offset: 0,
       facing: "left",
     })
+    const [customArtwork, setCustomArtwork] = createSignal<string | undefined>()
     const controller = new MonsterAnimationController(
       MONSTER_FRAME_CATALOG,
       scheduling.random ?? Math.random,
       scheduling.nowMs,
     )
     let disposed = false
+    let battleInProgress = false
+    let artworkWidth = DEFAULT_BATTLE_ARTWORK_WIDTH
+    const notifyEvent = async (event: VpetToastEvent): Promise<void> => {
+      if (scheduling.notify === undefined) return
+      const payload = formatVpetToast(event, settings.language, DIGIMON_CATALOG)
+      if (payload !== undefined) await scheduling.notify(payload)
+    }
+    const tryResolveEvolutionBattle = async (): Promise<boolean> => {
+      if (
+        disposed ||
+        battleInProgress ||
+        scheduling.battleRepository === undefined ||
+        scheduling.getSnapshot === undefined
+      ) {
+        return false
+      }
+      const snapshot = scheduling.getSnapshot()
+      if (snapshot === null) return false
+      if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return false
+
+      battleInProgress = true
+      try {
+        const battled = await runEvolutionBattleSession(snapshot, artworkWidth, {
+          frameCatalog: MONSTER_FRAME_CATALOG,
+          digimonCatalog: DIGIMON_CATALOG,
+          repository: scheduling.battleRepository,
+          ...(scheduling.random === undefined ? {} : { random: scheduling.random }),
+          onArtwork: async (artwork) => {
+            setCustomArtwork(artwork)
+            api.renderer.requestRender()
+          },
+          onResolved: async (result) => {
+            if (result.kind === "won") {
+              await notifyEvent({ kind: "evolution", ...result.evolution })
+            } else if (result.kind === "lost") {
+              await notifyEvent({ kind: "defeat" })
+            }
+          },
+        })
+        if (battled) {
+          setCustomArtwork(undefined)
+          const nextInputs = await Promise.resolve().then(() => loadInputs())
+          setInputs(nextInputs)
+          syncAnimation(nextInputs)
+          api.renderer.requestRender()
+        }
+        return battled
+      } finally {
+        battleInProgress = false
+        setCustomArtwork(undefined)
+      }
+    }
     const publish = (nextAnimation: MonsterAnimationOutput): boolean => {
       if (sameAnimation(animation(), nextAnimation)) return false
       setAnimation(nextAnimation)
@@ -116,9 +181,17 @@ export const createTui =
       intervalMs: VISUAL_INTERVAL_MS,
       load: async () => loadInputs(),
       apply: (nextInputs) => {
-        setInputs(nextInputs)
-        syncAnimation(nextInputs)
-        api.renderer.requestRender()
+        void (async () => {
+          if (await tryResolveEvolutionBattle()) {
+            if (disposed) return
+            poller.refresh()
+            return
+          }
+          if (disposed || battleInProgress) return
+          setInputs(nextInputs)
+          syncAnimation(nextInputs)
+          api.renderer.requestRender()
+        })()
       },
       schedule: (callback, intervalMs) =>
         (
@@ -137,7 +210,7 @@ export const createTui =
         return () => clearInterval(handle)
       })
     )(() => {
-      if (disposed) return
+      if (disposed || battleInProgress) return
       const nextAnimation = controller.dispatch({ kind: "tick" })
       publish(nextAnimation)
       scheduling.onAnimation?.(nextAnimation)
@@ -194,6 +267,7 @@ export const createTui =
       poller.dispose()
       stopVisualInterval()
       for (const unsubscribe of unsubscribes) unsubscribe()
+      void scheduling.closeBattleRepository?.()
     })
 
     api.slots.register({
@@ -203,8 +277,10 @@ export const createTui =
             <VpetSidebarCard
               model={() => buildSidebarCardModel(inputs(), settings)}
               animation={animation}
+              customArtwork={customArtwork}
               onArtworkWidthChange={(width) => {
                 if (disposed) return
+                artworkWidth = width
                 if (publish(controller.dispatch({ kind: "viewport_resized", width }))) api.renderer.requestRender()
               }}
             />
@@ -215,10 +291,29 @@ export const createTui =
   }
 
 export const tui: TuiPlugin = async (api, options) => {
-  const reader = createSqliteSidebarSnapshotReader(readerOptions(options))
-  const archiveReader = createSqliteVpetArchiveReader(readerOptions(options))
+  const databaseOptions = readerOptions(options)
+  const reader = createSqliteSidebarSnapshotReader(databaseOptions)
+  const battleRepository = await createSqliteVpetRepository(databaseOptions)
+  const archiveReader = createSqliteVpetArchiveReader(databaseOptions)
   const settings = await loadGlobalVpetSettings()
-  await createTui(() => getSidebarCardInputs(reader, DIGIMON_CATALOG), settings, { archiveReader })({
+  await createTui(() => getSidebarCardInputs(reader, DIGIMON_CATALOG), settings, {
+    archiveReader,
+    battleRepository,
+    getSnapshot: () => reader.getSidebarSnapshot(),
+    ...( "client" in api && api.client !== undefined && "tui" in api.client
+      ? {
+          notify: async (payload): Promise<void> => {
+            void api.client.tui.showToast({
+              title: payload.title,
+              message: payload.message,
+              variant: payload.variant,
+              duration: payload.duration,
+            })
+          },
+        }
+      : {}),
+    closeBattleRepository: () => battleRepository.close(),
+  })({
     event: {
       on: (...subscription) => {
         switch (subscription[0]) {

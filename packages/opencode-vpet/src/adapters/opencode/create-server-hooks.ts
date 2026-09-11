@@ -15,10 +15,6 @@ import type { UsageProcessingResult } from "@sbugallo/vpet-core/application/mode
 import { reconcileUsage } from "@sbugallo/vpet-core/application/use-cases/reconcile-usage.ts"
 import { recordUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import {
-  resolveEvolutionBattleForPartner,
-  type EvolutionBattleRepository,
-} from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
-import {
   STAGE_GAUGE_THRESHOLDS,
   type EvolutionSelector,
   type StageThresholds,
@@ -85,14 +81,10 @@ const requiresCatalog = (event: VpetToastEvent): boolean => {
       return true
     case "freeze":
     case "unfreeze":
+    case "defeat":
       return false
   }
 }
-
-const isEvolutionBattleRepository = (
-  repository: ServerHookDependencies["repository"],
-): repository is ServerHookDependencies["repository"] & EvolutionBattleRepository =>
-  "resolveEvolutionBattle" in repository && typeof repository.resolveEvolutionBattle === "function"
 
 export const createCommandConfig = () => ({
   "vpet-spawn": { template: "Spawn a new virtual pet." },
@@ -120,19 +112,6 @@ export const createServerHooks = ({
     if (result.evolutionBattlePending !== undefined) {
       const battleToast = toToastEvent(result)
       if (battleToast !== undefined) await notifyEvent(battleToast, catalog)
-
-      if (isEvolutionBattleRepository(repository)) {
-        const won = evolutionSelector() < 0.5
-        const resolved = resolveEvolutionBattleForPartner(
-          repository,
-          won,
-          catalog.byId,
-          new Date().toISOString(),
-        )
-        if (resolved.kind === "won") {
-          await notifyEvent({ kind: "evolution", ...resolved.evolution }, catalog)
-        }
-      }
       return
     }
 

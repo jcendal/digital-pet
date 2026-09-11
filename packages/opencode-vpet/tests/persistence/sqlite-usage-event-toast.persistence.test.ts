@@ -73,9 +73,14 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
 
       expect(delivered).toEqual([
         expect.objectContaining({ title: "Evolution battle", variant: "info", duration: 5_000 }),
-        expect.objectContaining({ title: "Digi-evolution", variant: "success", duration: 5_000 }),
       ])
-      expect(repository.getActivePartner()).toEqual(expect.objectContaining({ currentNodeId: "1-001", gauge: 0 }))
+      expect(repository.getActivePartner()).toEqual(
+        expect.objectContaining({
+          currentNodeId: "0-001",
+          pendingEvolutionTargetId: "1-001",
+          battleOpponentNodeId: expect.any(String),
+        }),
+      )
       expect(repository.listUsageReceipts().map((receipt) => receipt.receiptKey)).toEqual(["message:direct-only"])
       expect(repository.getTrainerState()).toEqual({ totalTokens: 1 })
     } finally {
@@ -91,8 +96,14 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
       spawn(repository)
       await dispatch(createHooks(repository, delivered, [completedMessage("idle-only")]), idleEvent)
 
-      expect(delivered).toHaveLength(2)
-      expect(repository.getActivePartner()).toEqual(expect.objectContaining({ currentNodeId: "1-001", gauge: 0 }))
+      expect(delivered).toHaveLength(1)
+      expect(repository.getActivePartner()).toEqual(
+        expect.objectContaining({
+          currentNodeId: "0-001",
+          pendingEvolutionTargetId: "1-001",
+          battleOpponentNodeId: expect.any(String),
+        }),
+      )
       expect(repository.listUsageReceipts().map((receipt) => receipt.receiptKey)).toEqual(["message:idle-only"])
       expect(repository.getTrainerState()).toEqual({ totalTokens: 1 })
     } finally {
@@ -112,7 +123,7 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
       const trainer = repository.getTrainerState()
       await dispatch(createHooks(repository, delivered, [completedMessage("direct-then-idle")]), idleEvent)
 
-      expect(delivered).toHaveLength(2)
+      expect(delivered).toHaveLength(1)
       expect(repository.getActivePartner()).toEqual(partner)
       expect(repository.listUsageReceipts()).toEqual(receipts)
       expect(repository.getTrainerState()).toEqual(trainer)
@@ -133,7 +144,7 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
       const trainer = repository.getTrainerState()
       await dispatch(createHooks(repository, delivered), directEvent("idle-then-direct"))
 
-      expect(delivered).toHaveLength(2)
+      expect(delivered).toHaveLength(1)
       expect(repository.getActivePartner()).toEqual(partner)
       expect(repository.listUsageReceipts()).toEqual(receipts)
       expect(repository.getTrainerState()).toEqual(trainer)
@@ -158,7 +169,7 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
     try {
       await dispatch(createHooks(reopenedRepository, delivered, [completedMessage("reopen-replay")]), idleEvent)
 
-      expect(delivered).toHaveLength(2)
+      expect(delivered).toHaveLength(1)
       expect(reopenedRepository.getActivePartner()).toEqual(expectedPartner)
       expect(reopenedRepository.listUsageReceipts()).toEqual(expectedReceipts)
       expect(reopenedRepository.getTrainerState()).toEqual(expectedTrainer)
@@ -190,7 +201,7 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
     try {
       await dispatch(createHooks(reopenedRepository, delivered, [completedMessage("notifier-failure")]), idleEvent)
 
-      expect(attempts).toBe(2)
+      expect(attempts).toBe(1)
       expect(delivered).toEqual([])
       expect(reopenedRepository.getActivePartner()).toEqual(expectedPartner)
       expect(reopenedRepository.listUsageReceipts()).toEqual(expectedReceipts)
@@ -215,7 +226,7 @@ describe.if(isBunSqliteAvailable)("sqlite usage event toast persistence", () => 
         idleEvent,
       )
 
-      expect(delivered.map((payload) => payload.title)).toEqual(["Evolution battle", "Digi-evolution"])
+      expect(delivered.map((payload) => payload.title)).toEqual(["Evolution battle"])
       expect(repository.listUsageReceipts().map((receipt) => receipt.receiptKey)).toEqual([
         "message:ordered-first",
         "message:ordered-second",

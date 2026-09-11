@@ -106,6 +106,13 @@ const MIGRATIONS = [
       `,
     ],
   },
+  {
+    version: 4,
+    sql: [
+      "ALTER TABLE partners ADD COLUMN pending_evolution_target_id TEXT",
+      "ALTER TABLE partners ADD COLUMN battle_opponent_node_id TEXT",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

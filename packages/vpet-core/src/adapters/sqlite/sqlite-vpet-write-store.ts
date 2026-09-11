@@ -137,7 +137,14 @@ export const createSqliteVpetWriteStore = (options: CreateSqliteVpetWriteStoreOp
             input.createdAt,
           ],
         )
-        return { partnerId, generation: generationRow.generation, ...input, retiredAt: null }
+        return {
+          partnerId,
+          generation: generationRow.generation,
+          ...input,
+          pendingEvolutionTargetId: null,
+          battleOpponentNodeId: null,
+          retiredAt: null,
+        }
       })
     },
     listPartnerEvents(partnerId: string) {
