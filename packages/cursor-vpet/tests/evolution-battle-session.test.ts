@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { runEvolutionBattleSession } from "../src/webview/evolution-battle-session.ts"
+import { runEvolutionBattleSession } from "../src/webview/presentation/evolution-battle-session.ts"
 
 describe("evolution battle session", () => {
   test("Given a snapshot without a pending battle When running the session Then it is a no-op", async () => {

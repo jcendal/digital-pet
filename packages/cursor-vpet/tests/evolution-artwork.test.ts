@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { renderEvolutionArtwork } from "../src/webview/evolution-artwork.ts"
+import { renderEvolutionArtwork } from "../src/webview/presentation/evolution-artwork.ts"
 
 describe("evolution artwork", () => {
   test("Given glow phase When rendering Then the sprite is still the current partner", () => {

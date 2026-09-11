@@ -3,7 +3,7 @@ import type {
   MonsterFrameCatalog,
   MonsterFrameName,
 } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { assertNever } from "../shared/assert-never.ts"
+import { assertNever } from "../../shared/assert-never.ts"
 import {
   resolveCosmeticActions,
   resolveSleepClip,

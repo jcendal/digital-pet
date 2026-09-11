@@ -1,6 +1,6 @@
 import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { assertNever } from "../shared/assert-never.ts"
-import { normalizedRandom } from "../shared/random.ts"
+import { assertNever } from "../../shared/assert-never.ts"
+import { normalizedRandom } from "../../shared/random.ts"
 
 export type WalkingFacing = "left" | "right"
 export type WalkFrame = "walk_1" | "walk_2"

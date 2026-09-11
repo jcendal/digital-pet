@@ -1,5 +1,5 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { sleep } from "../shared/sleep.ts"
+import { sleep } from "../../shared/sleep.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 const FRAME_ROWS = 8

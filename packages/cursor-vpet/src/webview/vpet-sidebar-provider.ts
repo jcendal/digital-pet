@@ -8,10 +8,10 @@ import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/
 import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
-import { renderPositionedArtwork } from "./animated-artwork.ts"
-import { runEvolutionBattleSession } from "./evolution-battle-session.ts"
-import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
-import { MonsterAnimationController, type MonsterAnimationOutput } from "./monster-animation.ts"
+import { renderPositionedArtwork } from "./presentation/animated-artwork.ts"
+import { runEvolutionBattleSession } from "./presentation/evolution-battle-session.ts"
+import { runEvolutionRevealSession } from "./presentation/evolution-reveal-session.ts"
+import { MonsterAnimationController, type MonsterAnimationOutput } from "./presentation/monster-animation.ts"
 import {
   buildSidebarWebviewHtml,
   DEFAULT_ARTWORK_WIDTH,

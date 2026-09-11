@@ -11,7 +11,7 @@ import {
   planEvolutionBattle,
   renderBattleIntroArtwork,
   renderEvolutionBattleArtwork,
-} from "../src/webview/evolution-battle-artwork.ts"
+} from "../src/webview/presentation/evolution-battle-artwork.ts"
 
 const countHits = (shots: readonly { readonly shooter: "player" | "opponent"; readonly hit: boolean }[]) => ({
   playerHits: shots.filter((shot) => shot.shooter === "player" && shot.hit).length,

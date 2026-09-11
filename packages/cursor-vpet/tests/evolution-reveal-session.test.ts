@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { runEvolutionRevealSession } from "../src/webview/evolution-reveal-session.ts"
+import { runEvolutionRevealSession } from "../src/webview/presentation/evolution-reveal-session.ts"
 
 describe("evolution reveal session", () => {
   test("Given a valid evolution transition When running the session Then it renders evolution artwork", async () => {

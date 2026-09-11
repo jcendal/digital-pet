@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { renderDefeatArtwork } from "../src/webview/defeat-artwork.ts"
+import { renderDefeatArtwork } from "../src/webview/presentation/defeat-artwork.ts"
 
 describe("defeat artwork", () => {
   test("Given normal and sad poses When rendering Then artwork alternates between them", () => {
