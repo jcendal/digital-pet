@@ -19,12 +19,8 @@ export const runEvolutionRevealSession = async (
   const to = dependencies.digimonCatalog.byId.get(evolution.toNodeId)
   if (from === undefined || to === undefined) return false
 
-  await runEvolutionAnimation(
-    dependencies.frameCatalog,
-    from.sprite,
-    to.sprite,
-    viewportWidth,
-    async (artwork) => dependencies.onArtwork(artwork),
+  await runEvolutionAnimation(dependencies.frameCatalog, from.sprite, to.sprite, viewportWidth, async (artwork) =>
+    dependencies.onArtwork(artwork),
   )
   return true
 }

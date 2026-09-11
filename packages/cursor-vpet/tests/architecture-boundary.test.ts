@@ -29,9 +29,7 @@ describe("cursor-vpet architecture boundary fixtures", () => {
     const path = join(directory, "forbidden.ts")
     try {
       await writeFile(path, 'import { openReadonlySqlJsDatabase } from "../../adapters/sqlite/sqljs-driver.ts"\n')
-      expect(await scanPresentationImports(directory)).toEqual([
-        `${path}: ../../adapters/sqlite/sqljs-driver.ts`,
-      ])
+      expect(await scanPresentationImports(directory)).toEqual([`${path}: ../../adapters/sqlite/sqljs-driver.ts`])
     } finally {
       await rm(directory, { recursive: true, force: true })
     }

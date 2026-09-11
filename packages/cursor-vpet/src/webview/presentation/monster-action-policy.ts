@@ -40,4 +40,3 @@ export const resolveSleepClip = (
   if (second !== undefined) return [second, second]
   return [fallback, fallback]
 }
-

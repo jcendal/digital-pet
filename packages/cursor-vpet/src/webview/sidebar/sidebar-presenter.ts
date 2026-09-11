@@ -17,7 +17,6 @@ export const buildSidebarPresentation = (snapshot: SidebarSnapshot | null): Side
   const inputs = getSidebarCardInputs(reader, DIGIMON_CATALOG)
   const model = buildSidebarCardModel(inputs, DEFAULT_VPET_SETTINGS)
   const payload = toSidebarWebviewPayload(model)
-  const partner =
-    model.kind === "partner" ? { sprite: model.sprite, isDigitama: model.stageNumber === 0 } : undefined
+  const partner = model.kind === "partner" ? { sprite: model.sprite, isDigitama: model.stageNumber === 0 } : undefined
   return { payload, partner }
 }

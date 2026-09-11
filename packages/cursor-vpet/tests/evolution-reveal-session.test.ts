@@ -8,17 +8,13 @@ import { runEvolutionRevealSession } from "../src/webview/presentation/evolution
 describe("evolution reveal session", () => {
   test("Given a valid evolution transition When running the session Then it renders evolution artwork", async () => {
     const frames: string[] = []
-    const revealed = await runEvolutionRevealSession(
-      { fromNodeId: "0-001", toNodeId: "1-001" },
-      80,
-      {
-        frameCatalog: MONSTER_FRAME_CATALOG,
-        digimonCatalog: DIGIMON_CATALOG,
-        onArtwork: async (artwork) => {
-          frames.push(artwork)
-        },
+    const revealed = await runEvolutionRevealSession({ fromNodeId: "0-001", toNodeId: "1-001" }, 80, {
+      frameCatalog: MONSTER_FRAME_CATALOG,
+      digimonCatalog: DIGIMON_CATALOG,
+      onArtwork: async (artwork) => {
+        frames.push(artwork)
       },
-    )
+    })
 
     expect(revealed).toBeTrue()
     expect(frames.length).toBeGreaterThan(0)
@@ -26,17 +22,13 @@ describe("evolution reveal session", () => {
 
   test("Given an unknown node When running the session Then it is a no-op", async () => {
     const frames: string[] = []
-    const revealed = await runEvolutionRevealSession(
-      { fromNodeId: "missing", toNodeId: "1-001" },
-      80,
-      {
-        frameCatalog: MONSTER_FRAME_CATALOG,
-        digimonCatalog: DIGIMON_CATALOG,
-        onArtwork: async (artwork) => {
-          frames.push(artwork)
-        },
+    const revealed = await runEvolutionRevealSession({ fromNodeId: "missing", toNodeId: "1-001" }, 80, {
+      frameCatalog: MONSTER_FRAME_CATALOG,
+      digimonCatalog: DIGIMON_CATALOG,
+      onArtwork: async (artwork) => {
+        frames.push(artwork)
       },
-    )
+    })
 
     expect(revealed).toBeFalse()
     expect(frames).toEqual([])

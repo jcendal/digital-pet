@@ -108,14 +108,7 @@ const animatePhase = async (
   const steps = Math.max(1, Math.ceil(durationMs / EVOLUTION_TICK_MS))
   for (let step = 0; step <= steps; step += 1) {
     const progress = step / steps
-    const artwork = renderEvolutionArtwork(
-      catalog,
-      fromSprite,
-      toSprite,
-      { phase, progress },
-      viewportWidth,
-      step,
-    )
+    const artwork = renderEvolutionArtwork(catalog, fromSprite, toSprite, { phase, progress }, viewportWidth, step)
     await onFrame(artwork)
     if (step < steps) await sleep(EVOLUTION_TICK_MS)
   }

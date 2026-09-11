@@ -18,11 +18,7 @@ export const FORBIDDEN_SHARED_IMPORTS = ["vscode", "/adapters/", "/webview/", "/
 
 export const FORBIDDEN_SQLITE_ADAPTER_IMPORTS = ["vscode"] as const
 
-export const FORBIDDEN_VSCODE_ADAPTER_IMPORTS = [
-  "/adapters/cursor/",
-  "/adapters/sqlite/",
-  "/bootstrap/",
-] as const
+export const FORBIDDEN_VSCODE_ADAPTER_IMPORTS = ["/adapters/cursor/", "/adapters/sqlite/", "/bootstrap/"] as const
 
 export const FORBIDDEN_CURSOR_ADAPTER_IMPORTS = ["vscode", "/webview/"] as const
 
@@ -44,10 +40,7 @@ export const findForbiddenImports = (
   const violations: string[] = []
   for (const match of importSpecifiers) {
     const specifier = match[1] ?? match[2]
-    if (
-      specifier !== undefined &&
-      forbiddenImports.some((forbidden) => matchesForbiddenImport(specifier, forbidden))
-    )
+    if (specifier !== undefined && forbiddenImports.some((forbidden) => matchesForbiddenImport(specifier, forbidden)))
       violations.push(`${sourcePath}: ${specifier}`)
   }
   return violations

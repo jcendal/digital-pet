@@ -5,10 +5,7 @@ import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 import { createAnimationSink, type AnimationSink } from "../../adapters/vscode/animation-sink.ts"
-import {
-  createVsCodeNotificationPort,
-  type NotificationPort,
-} from "../../adapters/vscode/notification-port.ts"
+import { createVsCodeNotificationPort, type NotificationPort } from "../../adapters/vscode/notification-port.ts"
 import { createIntervalScheduler, type IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
 import { createWebviewMessenger } from "../../adapters/vscode/webview-messenger.ts"
 import { createSidebarAnimationHost, type SidebarAnimationHost } from "./sidebar-animation-host.ts"

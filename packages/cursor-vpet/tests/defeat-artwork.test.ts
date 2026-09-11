@@ -13,12 +13,7 @@ describe("defeat artwork", () => {
   })
 
   test("Given defeat artwork When rendering Then the sprite is centered in the viewport", () => {
-    const artwork = renderDefeatArtwork(
-      MONSTER_FRAME_CATALOG,
-      "agumon",
-      { sad: false, sadAlt: false },
-      48,
-    )
+    const artwork = renderDefeatArtwork(MONSTER_FRAME_CATALOG, "agumon", { sad: false, sadAlt: false }, 48)
     const lines = artwork.split("\n").filter((line) => line.trim().length > 0)
 
     expect(lines.length).toBeGreaterThan(0)

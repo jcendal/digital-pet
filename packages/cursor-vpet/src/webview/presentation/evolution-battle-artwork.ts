@@ -114,13 +114,8 @@ const centerText = (width: number, text: string): string => {
 export const BATTLE_SCORE_HIT_PIP = "█"
 export const BATTLE_SCORE_MISS_PIP = "░"
 
-export const buildBattleScorePips = (
-  hits: number,
-  total: number = EVOLUTION_BATTLE_HITS_TO_WIN,
-): string =>
-  Array.from({ length: total }, (_, index) =>
-    index < hits ? BATTLE_SCORE_HIT_PIP : BATTLE_SCORE_MISS_PIP,
-  ).join("")
+export const buildBattleScorePips = (hits: number, total: number = EVOLUTION_BATTLE_HITS_TO_WIN): string =>
+  Array.from({ length: total }, (_, index) => (index < hits ? BATTLE_SCORE_HIT_PIP : BATTLE_SCORE_MISS_PIP)).join("")
 
 export const buildBattleScoreRow = (
   playerHits: number,
@@ -229,9 +224,7 @@ export const planEvolutionBattle = (
   return shots
 }
 
-export const defaultBattleScene = (
-  overrides: Partial<EvolutionBattleScene> = {},
-): EvolutionBattleScene => ({
+export const defaultBattleScene = (overrides: Partial<EvolutionBattleScene> = {}): EvolutionBattleScene => ({
   shooter: null,
   progress: 0,
   playerPose: "attack",
@@ -473,19 +466,9 @@ export const runEvolutionBattleAnimation = async (
       if (shot.shooter === "player") playerHits += 1
       else opponentHits += 1
     }
-    await animateImpact(
-      catalog,
-      playerSprite,
-      opponentSprite,
-      viewportWidth,
-      shot,
-      playerHits,
-      opponentHits,
-      onFrame,
-    )
+    await animateImpact(catalog, playerSprite, opponentSprite, viewportWidth, shot, playerHits, opponentHits, onFrame)
 
-    const battleOver =
-      playerHits >= EVOLUTION_BATTLE_HITS_TO_WIN || opponentHits >= EVOLUTION_BATTLE_HITS_TO_WIN
+    const battleOver = playerHits >= EVOLUTION_BATTLE_HITS_TO_WIN || opponentHits >= EVOLUTION_BATTLE_HITS_TO_WIN
     const isLastShot = index === shots.length - 1
     if (!battleOver && !isLastShot) {
       await animatePause(catalog, playerSprite, opponentSprite, viewportWidth, playerHits, opponentHits, onFrame)
@@ -493,15 +476,6 @@ export const runEvolutionBattleAnimation = async (
     if (battleOver) break
   }
 
-  await animateOutcome(
-    catalog,
-    playerSprite,
-    opponentSprite,
-    viewportWidth,
-    outcome,
-    playerHits,
-    opponentHits,
-    onFrame,
-  )
+  await animateOutcome(catalog, playerSprite, opponentSprite, viewportWidth, outcome, playerHits, opponentHits, onFrame)
   return outcome
 }

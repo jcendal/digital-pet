@@ -7,7 +7,11 @@ import {
   type CursorSqliteVpetRepository,
 } from "../adapters/sqlite/sqlite-vpet-write-store.ts"
 import { configureSqlJsWasmPath } from "../adapters/sqlite/sqljs-config.ts"
-import { getVpetExtensionSettings, toDatabaseOptions, type VpetExtensionSettings } from "../config/extension-settings.ts"
+import {
+  getVpetExtensionSettings,
+  toDatabaseOptions,
+  type VpetExtensionSettings,
+} from "../config/extension-settings.ts"
 import { VpetSidebarProvider } from "../webview/vpet-sidebar-provider.ts"
 
 export type VpetContainer = {

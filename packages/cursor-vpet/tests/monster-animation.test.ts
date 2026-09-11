@@ -78,7 +78,11 @@ describe("monster animation", () => {
 
   test("enters sleeping state after inactivity timeout", () => {
     let now = 0
-    const controller = new MonsterAnimationController(MONSTER_FRAME_CATALOG, () => 0.5, () => now)
+    const controller = new MonsterAnimationController(
+      MONSTER_FRAME_CATALOG,
+      () => 0.5,
+      () => now,
+    )
     controller.dispatch({ kind: "partner_changed", partner: { sprite: "agumon", isDigitama: false } })
     now = SLEEP_AFTER_MS
     const output = controller.dispatch({ kind: "tick" })
@@ -87,7 +91,11 @@ describe("monster animation", () => {
 
   test("wakes from sleeping on activity", () => {
     let now = 0
-    const controller = new MonsterAnimationController(MONSTER_FRAME_CATALOG, () => 0.5, () => now)
+    const controller = new MonsterAnimationController(
+      MONSTER_FRAME_CATALOG,
+      () => 0.5,
+      () => now,
+    )
     controller.dispatch({ kind: "partner_changed", partner: { sprite: "agumon", isDigitama: false } })
     now = SLEEP_AFTER_MS
     controller.dispatch({ kind: "tick" })

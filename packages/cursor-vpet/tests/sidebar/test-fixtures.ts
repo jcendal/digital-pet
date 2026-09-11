@@ -108,9 +108,7 @@ export const createSpyAnimationHost = (): SidebarAnimationHost & {
   }
 }
 
-export const createBattleRepository = (
-  outcome: "won" | "lost" = "won",
-): EvolutionBattleRepository => ({
+export const createBattleRepository = (outcome: "won" | "lost" = "won"): EvolutionBattleRepository => ({
   getActivePartner: () => ({
     partnerId: "partner-1",
     generation: 1,
@@ -123,9 +121,7 @@ export const createBattleRepository = (
     battleOpponentNodeId: "3-051",
   }),
   resolveEvolutionBattle: () =>
-    outcome === "won"
-      ? { kind: "won", evolution: { fromNodeId: "3-001", toNodeId: "4-017" } }
-      : { kind: "lost" },
+    outcome === "won" ? { kind: "won", evolution: { fromNodeId: "3-001", toNodeId: "4-017" } } : { kind: "lost" },
 })
 
 export const createManualScheduler = (): IntervalScheduler & {
