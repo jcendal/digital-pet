@@ -7,8 +7,8 @@ import { join } from "node:path"
 import { MonsterFrame, MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import entryPlugin, { createCommandConfig, plugin } from "../src/index.ts"
 import tuiPlugin from "../src/tui.tsx"
-import type { MonsterAnimationOutput } from "../src/tui/monster-animation.ts"
-import { mirrorMonsterFrame } from "../src/tui/monster-artwork-mirror.ts"
+import { mirrorMonsterFrame } from "@sbugallo/vpet-animation/idle/monster-artwork-mirror.ts"
+import type { MonsterAnimationOutput } from "@sbugallo/vpet-animation/idle/monster-animation.ts"
 import {
   createPackageFixture,
   fixtureEntryUrl,
@@ -290,7 +290,7 @@ const render = async (loadInputs, ticks, refreshAfterMount) => {
   const subscriptions = []
   const outputs = []
   const fakeArchiveReader = { async *readVpetArchiveEvents() { yield { type: "vpet_spawned", timestamp: Date.now() } } }; await createTui(loadInputs, settings, { scheduleVisualInterval: (callback) => { tick = callback; return () => undefined }, schedulePollTimeout: (callback) => { poll = callback; return () => undefined }, onAnimation: (output) => outputs.push(output), archiveReader: fakeArchiveReader })({ event: { on: (type) => { subscriptions.push(type); return () => undefined } }, renderer: { requestRender: () => renderer?.requestRender() }, lifecycle: { onDispose: (callback) => { dispose = callback; return () => undefined } }, slots: { register: (registered) => { slot = registered.slots.sidebar_content; return "opencode-vpet" } }, keymap: { registerLayer: (layer) => { registeredLayer = layer; return () => undefined } }, ui: { dialog: { replace: (el) => { dialogOpened = true; return undefined }, clear: () => undefined, setSize: () => undefined }, Dialog: (props) => props.children }, theme: { spacing: { 1: 1 }, colors: { fg: "white" } } })
-  try { const setup = await testRender(slot, { width: 81, height: 24 }); renderer = setup.renderer; await setup.flush(); setup.renderer.resize(80, 24); await setup.flush(); await Promise.resolve(); await Promise.resolve(); refreshAfterMount?.(); poll?.(); await Promise.resolve(); await Promise.resolve(); for (let index = 0; index < ticks; index += 1) tick(); await setup.renderOnce(); const frame = setup.captureCharFrame(); setup.renderer.destroy(); if (registeredLayer) { const dexCmd = registeredLayer.commands.find(c => c.name === "vpet.dex"); if (dexCmd) dexCmd.run(); } return { frame, subscriptions, outputs } } finally { dispose() }
+  try { const setup = await testRender(slot, { width: 81, height: 24 }); renderer = setup.renderer; await setup.flush(); setup.renderer.resize(80, 24); await setup.flush(); await Promise.resolve(); await Promise.resolve(); refreshAfterMount?.(); poll?.(); await new Promise((resolve) => setTimeout(resolve, 0)); await new Promise((resolve) => setTimeout(resolve, 50)); for (let index = 0; index < ticks; index += 1) tick(); await setup.renderOnce(); const frame = setup.captureCharFrame(); setup.renderer.destroy(); if (registeredLayer) { const dexCmd = registeredLayer.commands.find(c => c.name === "vpet.dex"); if (dexCmd) dexCmd.run(); } return { frame, subscriptions, outputs } } finally { dispose() }
 }
 if (entryPlugin.id !== "opencode-vpet" || typeof entryPlugin.server !== "function") throw new Error("Core export failed")
 if (serverPlugin.id !== "opencode-vpet" || typeof serverPlugin.server !== "function") throw new Error("Server export failed")

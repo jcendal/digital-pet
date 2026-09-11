@@ -10,7 +10,7 @@ import {
   FORBIDDEN_SERVER_HOOK_IMPORTS,
   FORBIDDEN_TUI_ANIMATION_IMPORTS,
   PROJECT_ROOT,
-  TUI_PRIVATE_ANIMATION_MODULES,
+  VPET_ANIMATION_IDLE_MODULES,
   findForbiddenImports,
   scanForbiddenImports,
   scanTuiPresentationImports,
@@ -44,8 +44,9 @@ describe("hexagonal dependency direction", () => {
     ).toEqual([]))
   test("Given the inner TUI source tree When scanned Then it has no persistence or SQLite dependencies", async () =>
     expect(await scanTuiPresentationImports(join(PROJECT_ROOT, "src", "tui"))).toEqual([]))
-  test("Given animation policy and mirror modules When scanned Then they remain TUI-private without domain, application, or SQLite dependencies", async () => {
-    const paths = TUI_PRIVATE_ANIMATION_MODULES.map((module) => join(PROJECT_ROOT, "src", "tui", module))
+  test("Given vpet-animation idle modules When scanned Then they remain presentation-only without application or SQLite dependencies", async () => {
+    const animationRoot = join(PROJECT_ROOT, "..", "vpet-animation", "src")
+    const paths = VPET_ANIMATION_IDLE_MODULES.map((module) => join(animationRoot, module))
     expect(await Promise.all(paths.map((path) => Bun.file(path).exists()))).toEqual([true, true, true, true])
     expect(
       await Promise.all(

@@ -1,15 +1,15 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-
-import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
-import type { IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
-import { renderPositionedArtwork } from "../presentation/animated-artwork.ts"
 import {
   MonsterAnimationController,
   type MonsterAnimationIdentity,
   type MonsterAnimationOutput,
-} from "../presentation/monster-animation.ts"
-import { DEFAULT_ARTWORK_WIDTH, MIN_ARTWORK_WIDTH } from "../../shared/constants/sidebar-ui.ts"
+} from "@sbugallo/vpet-animation/idle/monster-animation.ts"
+import { renderPositionedArtwork } from "@sbugallo/vpet-animation/render/positioned-artwork.ts"
+
+import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
+import type { IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
 import { SIDEBAR_VISUAL_INTERVAL_MS } from "../../shared/constants/presentation-timing.ts"
+import { DEFAULT_ARTWORK_WIDTH, MIN_ARTWORK_WIDTH } from "../../shared/constants/sidebar-ui.ts"
 
 export type SidebarAnimationHost = {
   setArtworkWidth(width: number): void

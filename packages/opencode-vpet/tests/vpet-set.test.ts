@@ -204,6 +204,8 @@ describe("vpet set command", () => {
         isTerminal: false,
         createdAt: "2026-08-22T00:00:00.000Z",
         retiredAt: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       }),
       applyUsageReceipt: () => ({ kind: "no_active_partner" as const }),
     }

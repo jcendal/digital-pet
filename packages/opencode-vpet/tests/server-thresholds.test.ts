@@ -254,14 +254,16 @@ describe("server threshold policy", () => {
         databasePath: join(appDataRoot, "opencode-vpet", "pet.db"),
       })
       try {
-        expect(repository.getActivePartner()).toEqual(
+        const partner = repository.getActivePartner()
+        expect(partner).not.toBeNull()
+        expect(partner).toEqual(
           expect.objectContaining({
-            gauge: 1,
-            currentNodeId: "0-001",
-            pendingEvolutionTargetId: expect.any(String),
-            battleOpponentNodeId: expect.any(String),
+            gauge: 0,
+            pendingEvolutionTargetId: null,
+            battleOpponentNodeId: null,
           }),
         )
+        expect(partner?.currentNodeId).toMatch(/^1-/)
       } finally {
         await repository.close()
       }
@@ -283,14 +285,16 @@ describe("server threshold policy", () => {
         databasePath: join(appDataRoot, "opencode-vpet", "pet.db"),
       })
       try {
-        expect(repository.getActivePartner()).toEqual(
+        const partner = repository.getActivePartner()
+        expect(partner).not.toBeNull()
+        expect(partner).toEqual(
           expect.objectContaining({
-            gauge: 1,
-            currentNodeId: "0-001",
-            pendingEvolutionTargetId: expect.any(String),
-            battleOpponentNodeId: expect.any(String),
+            gauge: 0,
+            pendingEvolutionTargetId: null,
+            battleOpponentNodeId: null,
           }),
         )
+        expect(partner?.currentNodeId).toMatch(/^1-/)
       } finally {
         await repository.close()
       }

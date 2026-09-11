@@ -5,31 +5,33 @@ import type { TuiPlugin, TuiDialogProps, TuiDialogStack, TuiTheme, TuiKeymap } f
 import type { JSX } from "@opentui/solid"
 import { createSignal } from "solid-js"
 
-import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
-import { createSqliteVpetArchiveReader } from "./adapters/sqlite/sqlite-vpet-archive-reader.ts"
-import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
 import type { SidebarCardInputs } from "@sbugallo/vpet-core/application/models/sidebar-card-inputs.ts"
 import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { VpetArchiveReader } from "@sbugallo/vpet-core/application/ports/vpet-archive.ts"
 import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/get-sidebar-card-inputs.ts"
 import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
-import { loadGlobalVpetSettings } from "./config/global-vpet-settings.ts"
 import type { ResolvedVpetSettings } from "@sbugallo/vpet-core/config/types.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { VpetSidebarCard } from "./tui/sidebar-card.tsx"
-import {
-  DEFAULT_BATTLE_ARTWORK_WIDTH,
-  runEvolutionBattleSession,
-} from "./tui/evolution-battle-session.ts"
-import { runEvolutionRevealSession } from "./tui/evolution-reveal-session.ts"
-import { MonsterAnimationController, type MonsterAnimationOutput } from "./tui/monster-animation.ts"
-import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
-import { registerVpetCommandLayer } from "./tui/vpet-command-layer.tsx"
+import {
+  MonsterAnimationController,
+  type MonsterAnimationOutput,
+} from "@sbugallo/vpet-animation/idle/monster-animation.ts"
+import { runEvolutionBattleSession } from "@sbugallo/vpet-animation/sessions/evolution-battle-session.ts"
+import { runEvolutionRevealSession } from "@sbugallo/vpet-animation/sessions/evolution-reveal-session.ts"
+
 import { formatVpetToast, type VpetToastEvent, type VpetToastNotifier } from "./adapters/opencode/vpet-toast.ts"
+import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
+import { createSqliteVpetArchiveReader } from "./adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
+import { loadGlobalVpetSettings } from "./config/global-vpet-settings.ts"
+import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
+import { VpetSidebarCard } from "./tui/sidebar-card.tsx"
+import { registerVpetCommandLayer } from "./tui/vpet-command-layer.tsx"
 
 const VISUAL_INTERVAL_MS = 500
+const DEFAULT_BATTLE_ARTWORK_WIDTH = 80
 
 const getStringOption = (options: PluginOptions | undefined, name: string): string | undefined => {
   const value = options?.[name]
@@ -341,7 +343,7 @@ export const tui: TuiPlugin = async (api, options) => {
     archiveReader,
     battleRepository,
     getSnapshot: () => reader.getSidebarSnapshot(),
-    ...( "client" in api && api.client !== undefined && "tui" in api.client
+    ...("client" in api && api.client !== undefined && "tui" in api.client
       ? {
           notify: async (payload): Promise<void> => {
             void api.client.tui.showToast({

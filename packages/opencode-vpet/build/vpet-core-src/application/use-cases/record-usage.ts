@@ -30,8 +30,7 @@ export const recordUsage = ({
     if (current === undefined)
       throw new Error(`Persisted partner node ${partner.currentNodeId} is missing from the catalog`)
 
-    const hadPendingBattle =
-      partner.pendingEvolutionTargetId != null && partner.battleOpponentNodeId != null
+    const hadPendingBattle = partner.pendingEvolutionTargetId != null && partner.battleOpponentNodeId != null
 
     const next = applyTokenProgress(
       {

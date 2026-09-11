@@ -181,6 +181,8 @@ describe.if(isBunSqliteAvailable)("sqlite vpet repository receipts", () => {
               currentNodeId: partner.currentNodeId,
               gauge: partner.gauge + receipt.tokenDelta,
               isTerminal: partner.isTerminal,
+              pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+              battleOpponentNodeId: partner.battleOpponentNodeId,
             })),
           ).toEqual({ kind: "applied" })
         const outcome = repository.applyUsageReceipt(receipt, (partner) => {
@@ -189,6 +191,8 @@ describe.if(isBunSqliteAvailable)("sqlite vpet repository receipts", () => {
             currentNodeId: partner.currentNodeId,
             gauge: partner.gauge + receipt.tokenDelta,
             isTerminal: partner.isTerminal,
+            pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+            battleOpponentNodeId: partner.battleOpponentNodeId,
           }
         })
         expect(outcome).toEqual({ kind: expectedOutcome })

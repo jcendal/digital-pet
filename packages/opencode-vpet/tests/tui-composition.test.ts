@@ -390,6 +390,7 @@ describe("TUI composition", () => {
     expect(loadCalls).toBe(2)
     resolveRefresh?.()
     await settle()
+    await settle()
     await setup.renderOnce()
 
     expect(loadCalls).toBe(3)

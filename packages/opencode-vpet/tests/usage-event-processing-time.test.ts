@@ -44,6 +44,8 @@ describe("usage event processing time", () => {
         isTerminal: false,
         createdAt: "2026-07-31T00:00:00.000Z",
         retiredAt: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       }),
       applyUsageReceipt(receipt: UsageReceiptMetadata): ApplyUsageReceiptOutcome {
         appliedModes.push({ receiptKey: receipt.receiptKey, mode: processingMode })

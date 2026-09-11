@@ -1,8 +1,13 @@
 import { rm } from "node:fs/promises"
 
-const stageSources = Bun.spawnSync(["bun", "scripts/stage-vpet-core-sources.ts"])
-if (stageSources.exitCode !== 0) {
-  throw new Error(new TextDecoder().decode(stageSources.stderr))
+const stageCoreSources = Bun.spawnSync(["bun", "scripts/stage-vpet-core-sources.ts"])
+if (stageCoreSources.exitCode !== 0) {
+  throw new Error(new TextDecoder().decode(stageCoreSources.stderr))
+}
+
+const stageAnimationSources = Bun.spawnSync(["bun", "scripts/stage-vpet-animation-sources.ts"])
+if (stageAnimationSources.exitCode !== 0) {
+  throw new Error(new TextDecoder().decode(stageAnimationSources.stderr))
 }
 await rm("dist", { recursive: true, force: true })
 

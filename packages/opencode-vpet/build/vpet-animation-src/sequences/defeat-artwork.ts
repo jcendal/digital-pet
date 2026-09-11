@@ -1,9 +1,8 @@
-import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
-import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
-import { DEFEAT_CYCLE_MS, DEFEAT_CYCLES, DEFEAT_PRE_ANIMATION_MS } from "../../shared/constants/presentation-timing.ts"
-import { sleep } from "../../shared/sleep.ts"
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
+import { DEFEAT_CYCLE_MS, DEFEAT_CYCLES, DEFEAT_PRE_ANIMATION_MS } from "../constants/presentation-timing.ts"
+import { sleep } from "../utils/sleep.ts"
 
 const NORMAL_FRAME: MonsterFrameName = "walk_1"
 const SAD_FRAMES: readonly MonsterFrameName[] = ["refuse", "injured_1"]

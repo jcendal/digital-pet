@@ -1,8 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { Event } from "@opencode-ai/sdk"
 
-import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
-import type { VpetToastPayload } from "../src/adapters/opencode/vpet-toast.ts"
 import type { DigimonCatalog, DigimonNode } from "@sbugallo/vpet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@sbugallo/vpet-core/domain/evolution.ts"
 import type { ApplyUsageReceiptOutcome, UsageReceiptMetadata } from "@sbugallo/vpet-core/application/models/usage.ts"
@@ -10,17 +8,14 @@ import type { PartnerLifecycle } from "@sbugallo/vpet-core/application/ports/par
 import type { UsageLedger } from "@sbugallo/vpet-core/application/ports/usage-ledger.ts"
 import type { VpetControl } from "@sbugallo/vpet-core/application/ports/vpet-control.ts"
 
+import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
+import type { Partner, PartnerProgression } from "@sbugallo/vpet-core/domain/partner.ts"
+import type { VpetToastPayload } from "../src/adapters/opencode/vpet-toast.ts"
+import { testPartner } from "./partner-fixtures.ts"
+
 const createRepository = (outcome: ApplyUsageReceiptOutcome, onReceipt?: () => void) =>
   ({
-    spawnPartner: () => ({
-      partnerId: "partner-1",
-      generation: 1,
-      currentNodeId: "0-001",
-      gauge: 0,
-      isTerminal: false,
-      createdAt: "2026-07-31T00:00:00.000Z",
-      retiredAt: null,
-    }),
+    spawnPartner: () => testPartner(),
     applyUsageReceipt: (_receipt: UsageReceiptMetadata) => {
       onReceipt?.()
       return outcome
@@ -57,48 +52,9 @@ const createToastRepository = () => {
   let frozen = false
   let cheatNodeId: string | undefined
   return {
-    spawnPartner: () => ({
-      partnerId: "partner-1",
-      generation: 1,
-      currentNodeId: "0-001",
-      gauge: 0,
-      isTerminal: false,
-      pendingEvolutionTargetId: null,
-      battleOpponentNodeId: null,
-      createdAt: "2026-07-31T00:00:00.000Z",
-      retiredAt: null,
-    }),
-    applyUsageReceipt: (
-      _receipt: UsageReceiptMetadata,
-      evolve: (partner: {
-        readonly partnerId: string
-        readonly generation: number
-        readonly currentNodeId: string
-        readonly gauge: number
-        readonly isTerminal: boolean
-        readonly pendingEvolutionTargetId: string | null
-        readonly battleOpponentNodeId: string | null
-        readonly createdAt: string
-        readonly retiredAt: string | null
-      }) => {
-        readonly currentNodeId: string
-        readonly gauge: number
-        readonly isTerminal: boolean
-        readonly pendingEvolutionTargetId: string | null
-        readonly battleOpponentNodeId: string | null
-      },
-    ) => {
-      evolve({
-        partnerId: "partner-1",
-        generation: 1,
-        currentNodeId: "0-001",
-        gauge: 0,
-        isTerminal: false,
-        pendingEvolutionTargetId: null,
-        battleOpponentNodeId: null,
-        createdAt: "2026-07-31T00:00:00.000Z",
-        retiredAt: null,
-      })
+    spawnPartner: () => testPartner(),
+    applyUsageReceipt: (_receipt: UsageReceiptMetadata, evolve: (partner: Partner) => PartnerProgression) => {
+      evolve(testPartner())
       return { kind: "applied" as const }
     },
     freeze: () => {

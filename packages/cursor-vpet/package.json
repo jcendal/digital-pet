@@ -110,6 +110,7 @@
     "vscode:prepublish": "bun run build"
   },
   "dependencies": {
+    "@sbugallo/vpet-animation": "workspace:*",
     "@sbugallo/vpet-core": "workspace:*",
     "sql.js": "^1.12.0"
   },

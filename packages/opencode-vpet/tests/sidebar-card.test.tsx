@@ -4,8 +4,9 @@ import { createMockMouse } from "@opentui/core/testing"
 import { testRender } from "@opentui/solid"
 
 import { MONSTER_FRAME_CATALOG, type MonsterFrame } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import { mirrorMonsterFrame } from "../src/tui/monster-artwork-mirror.ts"
-import type { MonsterAnimationOutput } from "../src/tui/monster-animation.ts"
+import { mirrorMonsterFrame } from "@sbugallo/vpet-animation/idle/monster-artwork-mirror.ts"
+import type { MonsterAnimationOutput } from "@sbugallo/vpet-animation/idle/monster-animation.ts"
+
 import { VpetSidebarCard } from "../src/tui/sidebar-card.tsx"
 
 const agumonFrame = (): MonsterFrame => {
@@ -31,6 +32,7 @@ const partnerModel = () => ({
   isTerminal: false,
   frozen: false,
   isSetOverride: false,
+  evolutionBattlePending: false,
 })
 
 const frameOutput = (offset: number, facing: "left" | "right" = "left"): MonsterAnimationOutput => ({
@@ -228,6 +230,7 @@ describe("VPet sidebar frame", () => {
             isTerminal: true,
             frozen: false,
             isSetOverride: false,
+            evolutionBattlePending: false,
           })}
           animation={animation(frameOutput(0))}
         />
@@ -258,6 +261,7 @@ describe("VPet sidebar frame", () => {
             isTerminal: true,
             frozen: false,
             isSetOverride: false,
+            evolutionBattlePending: false,
           })}
           animation={animation(frameOutput(0))}
         />
@@ -290,6 +294,7 @@ describe("VPet sidebar frame", () => {
             isTerminal: true,
             frozen: false,
             isSetOverride: false,
+            evolutionBattlePending: false,
           })}
           animation={animation(frameOutput(0))}
         />
@@ -325,6 +330,7 @@ describe("VPet sidebar frame", () => {
             isTerminal: false,
             frozen: true,
             isSetOverride: false,
+            evolutionBattlePending: false,
           })}
           animation={animation(frameOutput(0))}
         />
@@ -361,6 +367,7 @@ describe("VPet sidebar frame", () => {
             isTerminal: true,
             frozen: false,
             isSetOverride: false,
+            evolutionBattlePending: false,
           })}
           animation={animation(frameOutput(0))}
         />
@@ -511,6 +518,7 @@ describe("VPet sidebar frame", () => {
               isTerminal: false,
               frozen: false,
               isSetOverride: false,
+              evolutionBattlePending: false,
             })}
             animation={animation({
               kind: "unavailable",

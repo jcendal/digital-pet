@@ -51,10 +51,7 @@ export type SqliteVpetWriteStore = PartnerLifecycle &
     getPartnerByGeneration: (generation: number) => PersistedPartnerSummary | null
     listPartnerEvents: (partnerId: string) => readonly PersistedPartnerEvent[]
     listUsageReceipts: () => readonly UsageReceiptRecord[]
-    resolveEvolutionBattle: (
-      nextState: PartnerProgression,
-      createdAt: string,
-    ) => ResolveEvolutionBattleOutcome
+    resolveEvolutionBattle: (nextState: PartnerProgression, createdAt: string) => ResolveEvolutionBattleOutcome
   }
 
 export type { ApplyUsageReceiptOutcome, PartnerProgression, SpawnPartnerInput, UsageReceiptMetadata }

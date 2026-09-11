@@ -143,6 +143,8 @@ describe("usage event ingestion", () => {
         isTerminal: false,
         createdAt: "2026-07-31T00:00:00.000Z",
         retiredAt: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       }),
       applyUsageReceipt(receipt: UsageReceiptMetadata): ApplyUsageReceiptOutcome {
         appliedReceipts.push(receipt)
@@ -173,6 +175,8 @@ describe("usage event ingestion", () => {
         isTerminal: false,
         createdAt: "2026-07-31T00:00:00.000Z",
         retiredAt: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       }),
       applyUsageReceipt(receipt: UsageReceiptMetadata): ApplyUsageReceiptOutcome {
         appliedReceipts.push(receipt)

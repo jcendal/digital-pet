@@ -56,25 +56,39 @@ const createV2Database = (database: Database): void => {
   runMigrations(createExecutor(database))
   database.run("DROP TABLE vpet_control_receipts")
   database.run("DROP TABLE vpet_control_state")
-  database.run("DELETE FROM schema_migrations WHERE version = 3")
+  database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
+  database.run("ALTER TABLE partners DROP COLUMN battle_opponent_node_id")
+  database.run("DELETE FROM schema_migrations WHERE version IN (3, 4)")
 }
+
+const createV3Database = (database: Database): void => {
+  runMigrations(createExecutor(database))
+  database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
+  database.run("ALTER TABLE partners DROP COLUMN battle_opponent_node_id")
+  database.run("DELETE FROM schema_migrations WHERE version = 4")
+}
+
+const ALL_MIGRATIONS = [1, 2, 3, 4] as const
+
+const partnerLegacyColumns =
+  "partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at"
 
 describe("sqlite migrations", () => {
   test("Given an unmigrated database When migrations run Then inspection and all migration writes share one immediate transaction", () => {
     const executor = createMigrationExecutor()
 
-    expect(runMigrations(executor)).toEqual([1, 2, 3])
+    expect(runMigrations(executor)).toEqual(ALL_MIGRATIONS)
     expect(executor.transactionCount).toBe(1)
     expect(executor.statements.filter((statement) => statement.includes("INSERT INTO schema_migrations"))).toHaveLength(
-      3,
+      ALL_MIGRATIONS.length,
     )
   })
 
   test.if(isBunSqliteAvailable)(
-    "Given a fresh database When migration 3 runs Then it creates one default singleton control state and a constrained disabled-mode receipt ledger",
+    "Given a fresh database When migrations run Then it creates one default singleton control state and a constrained disabled-mode receipt ledger",
     async () => {
       await withDatabase((database) => {
-        expect(runMigrations(createExecutor(database))).toEqual([1, 2, 3])
+        expect(runMigrations(createExecutor(database))).toEqual(ALL_MIGRATIONS)
         expect(database.query("SELECT control_id, frozen, cheat_node_id FROM vpet_control_state").all()).toEqual([
           { control_id: 1, frozen: 0, cheat_node_id: null },
         ])
@@ -109,11 +123,16 @@ describe("sqlite migrations", () => {
         database.run(
           "INSERT INTO usage_receipts (receipt_key, partner_id, event_id, token_delta, cost, created_at) VALUES ('receipt-v2', 'partner-v2', 'event-v2', 7, 1.5, '2026-08-22T00:00:00.000Z')",
         )
-        const legacyTables = ["trainer_state", "partners", "partner_events", "usage_receipts"]
+        const legacyTables = ["trainer_state", "partner_events", "usage_receipts"]
         const legacyRows = legacyTables.map((table) => database.query(`SELECT * FROM ${table}`).all())
+        const legacyPartners = database.query(`SELECT ${partnerLegacyColumns} FROM partners`).all()
 
-        expect(runMigrations(createExecutor(database))).toEqual([1, 2, 3])
+        expect(runMigrations(createExecutor(database))).toEqual(ALL_MIGRATIONS)
         expect(legacyTables.map((table) => database.query(`SELECT * FROM ${table}`).all())).toEqual(legacyRows)
+        expect(database.query(`SELECT ${partnerLegacyColumns} FROM partners`).all()).toEqual(legacyPartners)
+        expect(
+          database.query("SELECT pending_evolution_target_id, battle_opponent_node_id FROM partners").all(),
+        ).toEqual([{ pending_evolution_target_id: null, battle_opponent_node_id: null }])
       })
     },
   )
@@ -157,9 +176,9 @@ describe("sqlite migrations", () => {
       const second = new Database(databasePath)
 
       try {
-        expect(runMigrations(createExecutor(first))).toEqual([1, 2, 3])
-        expect(runMigrations(createExecutor(first))).toEqual([1, 2, 3])
-        expect(runMigrations(createExecutor(second))).toEqual([1, 2, 3])
+        expect(runMigrations(createExecutor(first))).toEqual(ALL_MIGRATIONS)
+        expect(runMigrations(createExecutor(first))).toEqual(ALL_MIGRATIONS)
+        expect(runMigrations(createExecutor(second))).toEqual(ALL_MIGRATIONS)
         expect(first.query("SELECT control_id, frozen, cheat_node_id FROM vpet_control_state").all()).toEqual([
           { control_id: 1, frozen: 0, cheat_node_id: null },
         ])
@@ -168,6 +187,25 @@ describe("sqlite migrations", () => {
         second.close()
         await rm(root, { recursive: true, force: true })
       }
+    },
+  )
+
+  test.if(isBunSqliteAvailable)(
+    "Given a migrated version 3 database When migration 4 runs Then it adds nullable evolution battle columns to partners",
+    async () => {
+      await withDatabase((database) => {
+        createV3Database(database)
+        database.run(
+          "INSERT INTO partners (partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at) VALUES ('partner-v3', 1, '0-001', 7, 0, '2026-08-22T00:00:00.000Z', NULL)",
+        )
+        const legacyPartner = database.query(`SELECT ${partnerLegacyColumns} FROM partners`).all()
+
+        expect(runMigrations(createExecutor(database))).toEqual(ALL_MIGRATIONS)
+        expect(database.query(`SELECT ${partnerLegacyColumns} FROM partners`).all()).toEqual(legacyPartner)
+        expect(
+          database.query("SELECT pending_evolution_target_id, battle_opponent_node_id FROM partners").all(),
+        ).toEqual([{ pending_evolution_target_id: null, battle_opponent_node_id: null }])
+      })
     },
   )
 })

@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from "bun:test"
 
 import type { UsageEvolutionTransition } from "@sbugallo/vpet-core/application/models/usage.ts"
 
-mock.module("../../src/shared/sleep.ts", () => ({
+mock.module("../../../vpet-animation/src/utils/sleep.ts", () => ({
   sleep: async () => {},
 }))
 

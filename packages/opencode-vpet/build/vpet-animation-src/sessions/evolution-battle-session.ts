@@ -1,5 +1,5 @@
-import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { ResolveEvolutionBattleOutcome } from "@sbugallo/vpet-core/application/models/usage.ts"
+import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import {
   resolveEvolutionBattleForPartner,
   type EvolutionBattleRepository,
@@ -7,11 +7,9 @@ import {
 import type { DigimonCatalog } from "@sbugallo/vpet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
-import { runDefeatAnimation } from "./defeat-artwork.ts"
-import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "./evolution-battle-artwork.ts"
+import { runDefeatAnimation } from "../sequences/defeat-artwork.ts"
+import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "../sequences/evolution-battle-artwork.ts"
 import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
-
-export const DEFAULT_BATTLE_ARTWORK_WIDTH = 80
 
 export type EvolutionBattleSessionDependencies = {
   readonly frameCatalog: MonsterFrameCatalog

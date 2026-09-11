@@ -44,6 +44,10 @@ const copyPackage = async (root: string): Promise<string> => {
     recursive: true,
     filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
   })
+  await cp(join(PROJECT_ROOT, "../vpet-animation"), join(packagesDirectory, "vpet-animation"), {
+    recursive: true,
+    filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
+  })
   await symlink(join(PROJECT_ROOT, "node_modules"), join(packageDirectory, "node_modules"), "dir")
   return packageDirectory
 }

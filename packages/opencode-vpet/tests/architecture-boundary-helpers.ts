@@ -59,11 +59,11 @@ export const FORBIDDEN_TUI_ANIMATION_IMPORTS = [
 export const FORBIDDEN_ADAPTER_IMPORTS = ["/tui/", "../tui.tsx", "../index.ts", "/persistence/", "/runtime/"] as const
 export const FORBIDDEN_LEGACY_IMPORTS = ["/persistence/", "/runtime/", "/tui/sidebar-state.ts"] as const
 export const FORBIDDEN_SERVER_HOOK_IMPORTS = ["/adapters/sqlite/", "/application/ports/resource-lifecycle"] as const
-export const TUI_PRIVATE_ANIMATION_MODULES = [
-  "monster-action-policy.ts",
-  "monster-animation.ts",
-  "monster-artwork-mirror.ts",
-  "monster-walking-policy.ts",
+export const VPET_ANIMATION_IDLE_MODULES = [
+  "idle/monster-action-policy.ts",
+  "idle/monster-animation.ts",
+  "idle/monster-artwork-mirror.ts",
+  "idle/monster-walking-policy.ts",
 ] as const
 
 const CORE_PARTNER_FIELDS = [

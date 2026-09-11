@@ -1,5 +1,4 @@
-import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 import {
   BATTLE_GAP_COLUMNS,
@@ -7,8 +6,8 @@ import {
   BATTLE_SCORE_MISS_PIP,
   EVOLUTION_BATTLE_HITS_TO_WIN,
   EVOLUTION_BATTLE_MAX_SHOTS,
-} from "../../shared/constants/evolution-battle.ts"
-import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
+} from "../constants/evolution-battle.ts"
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
 import {
   EVOLUTION_BATTLE_IMPACT_MS,
   EVOLUTION_BATTLE_INTRO_MS,
@@ -16,9 +15,9 @@ import {
   EVOLUTION_BATTLE_PAUSE_MS,
   EVOLUTION_BATTLE_TICK_MS,
   EVOLUTION_BATTLE_TRAVEL_MS,
-} from "../../shared/constants/presentation-timing.ts"
-import { sleep } from "../../shared/sleep.ts"
-import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
+} from "../constants/presentation-timing.ts"
+import { mirrorMonsterFrame } from "../idle/monster-artwork-mirror.ts"
+import { sleep } from "../utils/sleep.ts"
 
 /** FIGlet-style BATTLE banner. */
 export const BATTLE_FIGLET_LINES = Object.freeze([

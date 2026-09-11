@@ -6,6 +6,7 @@ El root (`@sbugallo/opencode-vpet-workspace`) **no se publica en npm** — solo 
 packages/
 ├── vpet-core/          # @sbugallo/vpet-core (privado, compartido)
 │   └── src/adapters/sqlite/   # schema, migraciones, write-store (SqliteExecutor)
+├── vpet-animation/     # @sbugallo/vpet-animation (privado, ASCII idle + batalla/evolución)
 ├── opencode-vpet/      # @sbugallo/opencode-vpet (publicable en npm)
 │   └── src/adapters/sqlite/   # bun-sqlite-driver + factory
 └── cursor-vpet/        # extensión Cursor (.vsix)

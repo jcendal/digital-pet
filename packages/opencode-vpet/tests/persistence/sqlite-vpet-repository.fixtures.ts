@@ -43,6 +43,8 @@ export const applyReceipt = (repository: Repository, receiptKey: string, eventId
     currentNodeId: partner.currentNodeId,
     gauge: partner.gauge + tokenDelta,
     isTerminal: partner.isTerminal,
+    pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+    battleOpponentNodeId: partner.battleOpponentNodeId,
   }))
 
 export const setReceiptMode = (databasePath: string, mode: ReceiptMode): void => {

@@ -19,6 +19,8 @@ describe("vpet spawn command", () => {
           isTerminal: false,
           createdAt: "2026-07-31T00:00:00.000Z",
           retiredAt: null,
+          pendingEvolutionTargetId: null,
+          battleOpponentNodeId: null,
         }
       },
     }
@@ -45,6 +47,8 @@ describe("vpet spawn command", () => {
       isTerminal: false,
       createdAt: "2026-07-31T00:00:00.000Z",
       retiredAt: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
     }
     const calls: unknown[] = []
     const repository = {
@@ -88,6 +92,8 @@ describe("vpet spawn command", () => {
           isTerminal: false,
           createdAt: "2026-07-31T00:00:00.000Z",
           retiredAt: null,
+          pendingEvolutionTargetId: null,
+          battleOpponentNodeId: null,
         }
       },
       applyUsageReceipt: () => ({ kind: "no_active_partner" as const }),
@@ -158,6 +164,8 @@ describe("vpet spawn command", () => {
         isTerminal: false,
         createdAt: "2026-07-31T00:00:00.000Z",
         retiredAt: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       }),
       freeze: () => ({ kind: "frozen" as const }),
       unfreeze: () => ({ kind: "unfrozen" as const }),

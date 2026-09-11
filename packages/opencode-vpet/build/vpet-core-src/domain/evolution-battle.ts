@@ -1,10 +1,7 @@
 import type { DigimonNode } from "./digimon-node.ts"
 import type { EvolutionSelector } from "./evolution.ts"
 
-export const pickEvolutionTarget = (
-  current: DigimonNode,
-  selector: EvolutionSelector,
-): string => {
+export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSelector): string => {
   if (current.nextEvolutions.length === 0) {
     throw new Error("Evolution target selection failed: partner has no evolution options")
   }

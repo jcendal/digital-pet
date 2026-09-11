@@ -115,7 +115,13 @@ describe.if(isBunSqliteAvailable)("sqlite vpet archive history persistence", () 
       expect(
         repository.applyUsageReceipt(
           usageReceipt("receipt-same-snapshot", "event-c-same-snapshot", 100),
-          (partner) => ({ currentNodeId: "1-001", gauge: partner.gauge + 100, isTerminal: false }),
+          (partner) => ({
+            currentNodeId: "1-001",
+            gauge: partner.gauge + 100,
+            isTerminal: false,
+            pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+            battleOpponentNodeId: partner.battleOpponentNodeId,
+          }),
         ),
       ).toEqual({ kind: "applied" })
       expect(
@@ -123,6 +129,8 @@ describe.if(isBunSqliteAvailable)("sqlite vpet archive history persistence", () 
           currentNodeId: "2-001",
           gauge: partner.gauge + 100,
           isTerminal: false,
+          pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+          battleOpponentNodeId: partner.battleOpponentNodeId,
         })),
       ).toEqual({ kind: "applied" })
 

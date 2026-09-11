@@ -1,7 +1,6 @@
 import { MonsterFrame } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
-const FRAME_ROWS = 8
-const FRAME_COLUMNS = 16
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
 
 export type MalformedMonsterFrameReason =
   | { readonly kind: "row_count"; readonly actual: number }
@@ -11,7 +10,7 @@ export class MalformedMonsterFrameError extends Error {
   readonly name = "MalformedMonsterFrameError"
 
   constructor(readonly reason: MalformedMonsterFrameReason) {
-    super("Monster frame must contain eight rows of 16 Unicode code points")
+    super(`Monster frame must contain ${MONSTER_FRAME_ROWS} rows of ${MONSTER_FRAME_COLUMNS} Unicode code points`)
   }
 }
 
@@ -56,13 +55,13 @@ const mirrorGlyph = (glyph: string): string => {
 
 export const mirrorMonsterFrame = (frame: MonsterFrame): MirrorMonsterFrameResult => {
   const rows = frame.content.split("\n")
-  if (rows.length !== FRAME_ROWS) {
+  if (rows.length !== MONSTER_FRAME_ROWS) {
     return { kind: "invalid", error: new MalformedMonsterFrameError({ kind: "row_count", actual: rows.length }) }
   }
 
   for (const [row, content] of rows.entries()) {
     const cells = Array.from(content)
-    if (cells.length !== FRAME_COLUMNS) {
+    if (cells.length !== MONSTER_FRAME_COLUMNS) {
       return {
         kind: "invalid",
         error: new MalformedMonsterFrameError({ kind: "column_count", row, actual: cells.length }),

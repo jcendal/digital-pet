@@ -10,7 +10,8 @@ import type { JSX } from "@opentui/solid"
 import type { SidebarCardInputs } from "@sbugallo/vpet-core/application/models/sidebar-card-inputs.ts"
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import type { DigimonStage } from "@sbugallo/vpet-core/domain/stage.ts"
-import type { MonsterAnimationOutput } from "../src/tui/monster-animation.ts"
+import type { MonsterAnimationOutput } from "@sbugallo/vpet-animation/idle/monster-animation.ts"
+
 import { createTui, type TuiCompositionApi } from "../src/tui.tsx"
 
 type TuiCompositionKeymap = NonNullable<TuiCompositionApi["keymap"]>

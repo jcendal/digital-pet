@@ -3,6 +3,9 @@ import type {
   MonsterFrameCatalog,
   MonsterFrameName,
 } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
+import { MONSTER_SLEEP_AFTER_MS } from "../constants/presentation-timing.ts"
+import { assertNever } from "../utils/assert-never.ts"
 import {
   resolveCosmeticActions,
   resolveSleepClip,
@@ -94,11 +97,6 @@ type SleepingState = {
 
 type MonsterAnimationState = BlankState | UnavailableState | DigitamaState | WalkingState | ActionState | SleepingState
 const ORIGIN = { offset: 0, facing: "left" } as const
-const SLEEP_AFTER_MS = 300_000
-
-const assertNever = (value: never): never => {
-  throw new Error(`Unexpected monster animation variant: ${JSON.stringify(value)}`)
-}
 
 const sameIdentity = (left: MonsterAnimationIdentity, right: MonsterAnimationIdentity): boolean =>
   left.sprite === right.sprite && left.isDigitama === right.isDigitama
@@ -112,7 +110,11 @@ export class MonsterAnimationController {
   #latestViewportWidth: number | undefined
   #state: MonsterAnimationState = { kind: "blank" }
 
-  constructor(catalog: MonsterFrameCatalog, random: () => number = Math.random, nowMs: () => number = performance.now) {
+  constructor(
+    catalog: MonsterFrameCatalog,
+    random: () => number = Math.random,
+    nowMs: () => number = () => performance.now(),
+  ) {
     this.#catalog = catalog
     this.#random = random
     this.#nowMs = nowMs
@@ -267,7 +269,7 @@ export class MonsterAnimationController {
 
   #inactive(): boolean {
     const baseline = this.#lastActivityMs
-    return baseline !== undefined && this.#nowMs() - baseline >= SLEEP_AFTER_MS
+    return baseline !== undefined && this.#nowMs() - baseline >= MONSTER_SLEEP_AFTER_MS
   }
 
   #sleep(identity: MonsterAnimationIdentity, boundary: ActionBoundaryState): SleepingState {

@@ -1,15 +1,14 @@
-import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
-import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
-import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../../shared/constants/monster-artwork.ts"
+import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
 import {
   EVOLUTION_GLOW_MS,
   EVOLUTION_MORPH_MS,
   EVOLUTION_PRE_ANIMATION_MS,
   EVOLUTION_REVEAL_MS,
   EVOLUTION_TICK_MS,
-} from "../../shared/constants/presentation-timing.ts"
-import { sleep } from "../../shared/sleep.ts"
+} from "../constants/presentation-timing.ts"
+import { sleep } from "../utils/sleep.ts"
 
 const GLOW_GLYPHS = "▄▀█░"
 

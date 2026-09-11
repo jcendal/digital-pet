@@ -2,7 +2,7 @@ import type { UsageEvolutionTransition } from "@sbugallo/vpet-core/application/m
 import type { DigimonCatalog } from "@sbugallo/vpet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
-import { runEvolutionAnimation } from "./evolution-artwork.ts"
+import { runEvolutionAnimation } from "../sequences/evolution-artwork.ts"
 
 export type EvolutionRevealSessionDependencies = {
   readonly frameCatalog: MonsterFrameCatalog
@@ -19,12 +19,8 @@ export const runEvolutionRevealSession = async (
   const to = dependencies.digimonCatalog.byId.get(evolution.toNodeId)
   if (from === undefined || to === undefined) return false
 
-  await runEvolutionAnimation(
-    dependencies.frameCatalog,
-    from.sprite,
-    to.sprite,
-    viewportWidth,
-    async (artwork) => dependencies.onArtwork(artwork),
+  await runEvolutionAnimation(dependencies.frameCatalog, from.sprite, to.sprite, viewportWidth, async (artwork) =>
+    dependencies.onArtwork(artwork),
   )
   return true
 }

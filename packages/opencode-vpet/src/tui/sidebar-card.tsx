@@ -1,13 +1,15 @@
 /** @jsxImportSource @opentui/solid */
 import { createTextAttributes, type BoxRenderable, type TextRenderable } from "@opentui/core"
 import { createEffect, type Accessor } from "solid-js"
-import { openInBrowser } from "./open-in-browser.ts"
-import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
-import type { MonsterAnimationOutput, MonsterAnimationResult } from "./monster-animation.ts"
-import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 
-const ARTWORK_ROWS = 8
-const ARTWORK_COLUMNS = 16
+import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
+import { MONSTER_FRAME_ROWS } from "@sbugallo/vpet-animation/constants/monster-artwork.ts"
+import type { MonsterAnimationOutput, MonsterAnimationResult } from "@sbugallo/vpet-animation/idle/monster-animation.ts"
+import { renderPositionedArtworkRows } from "@sbugallo/vpet-animation/render/positioned-artwork.ts"
+
+import { openInBrowser } from "./open-in-browser.ts"
+
+const ARTWORK_ROWS = MONSTER_FRAME_ROWS
 const NEXT_CHECK_PREFIX = "Next check: "
 const URL_LABEL = "Encyclopedia entry"
 const LINK_ATTRIBUTES = createTextAttributes({ underline: true })
@@ -15,45 +17,10 @@ const LINK_COLOR = "#5f87ff"
 
 const formatCount = (value: number): string => value.toLocaleString("en-US")
 
-const positionedOutput = (animation: MonsterAnimationOutput | MonsterAnimationResult): MonsterAnimationOutput => {
-  if ("result" in animation) return animation
-  switch (animation.kind) {
-    case "blank":
-      return { kind: "blank", result: animation, offset: 0, facing: "left" }
-    case "frame":
-      return { kind: "walking", result: animation, offset: 0, facing: "left" }
-    case "unavailable":
-      return { kind: "unavailable", result: animation, offset: 0, facing: "left" }
-  }
-}
-
 const customArtworkRows = (artwork: string): readonly string[] => {
   const rows = artwork.split("\n")
   if (rows.length >= ARTWORK_ROWS) return rows.slice(0, ARTWORK_ROWS)
   return [...rows, ...Array.from({ length: ARTWORK_ROWS - rows.length }, () => "")]
-}
-
-const artworkRows = (animation: MonsterAnimationOutput | MonsterAnimationResult, width: number): readonly string[] => {
-  const output = positionedOutput(animation)
-  switch (output.result.kind) {
-    case "blank":
-      return Array.from({ length: ARTWORK_ROWS }, () => "")
-    case "frame": {
-      const mirrored = output.facing === "right" ? mirrorMonsterFrame(output.result.frame) : undefined
-      if (mirrored?.kind === "invalid") return Array.from({ length: ARTWORK_ROWS }, () => "")
-      const content = mirrored?.frame.content ?? output.result.frame.content
-      const free = Math.max(width - ARTWORK_COLUMNS, 0)
-      const left = Math.max(0, Math.min(free, Math.floor(free / 2) + output.offset))
-      return content.split("\n").map((row) => `${" ".repeat(left)}${row}`)
-    }
-    case "unavailable": {
-      const key = output.result.sprite === "" ? "(empty)" : output.result.sprite
-      const content = `Artwork unavailable: ${key}`
-      return Array.from({ length: ARTWORK_ROWS }, (_, index) =>
-        index === 3 ? `${" ".repeat(Math.max(Math.floor((width - content.length) / 2), 0))}${content}` : "",
-      )
-    }
-  }
 }
 
 const buildNextCheckLine = (model: SidebarCardModel, width: number): string => {
@@ -101,7 +68,9 @@ export const VpetSidebarCard = (props: {
     const width = Math.floor(artworkWidth?.width ?? 0)
     const battleArtwork = props.customArtwork?.()
     const rows =
-      battleArtwork === undefined ? artworkRows(props.animation(), width) : customArtworkRows(battleArtwork)
+      battleArtwork === undefined
+        ? renderPositionedArtworkRows(props.animation(), width)
+        : customArtworkRows(battleArtwork)
     for (const [index, content] of rows.entries()) {
       updateText(artwork[index], content)
     }

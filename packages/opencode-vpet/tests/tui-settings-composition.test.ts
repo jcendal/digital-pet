@@ -82,6 +82,7 @@ describe("TUI settings composition", () => {
       isTerminal: false,
       frozen: false,
       isSetOverride: false,
+      evolutionBattlePending: false,
       trainerTotalTokens: 100,
     }
     let slot: (() => unknown) | undefined
@@ -136,6 +137,7 @@ describe("TUI settings composition", () => {
       isTerminal: false,
       frozen: false,
       isSetOverride: false,
+      evolutionBattlePending: false,
       trainerTotalTokens: 777,
     }
     let slot: (() => JSX.Element) | undefined
@@ -229,6 +231,7 @@ describe("TUI settings composition", () => {
             isTerminal: false,
             frozen: false,
             isSetOverride: false,
+            evolutionBattlePending: false,
             trainerTotalTokens: 75_000_000,
           }),
           settings,
