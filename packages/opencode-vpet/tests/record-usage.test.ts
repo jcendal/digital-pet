@@ -73,7 +73,7 @@ const createLedger = (outcome: "applied" | "duplicate" | "no_active_partner", pa
 }
 
 describe("record usage application use case", () => {
-  test("Given completed usage and an active partner When recording it Then the ledger opens a pending evolution battle", () => {
+  test("Given completed usage and an active Digitama When recording it Then the ledger evolves immediately", () => {
     const ledger = createLedger("applied")
 
     const outcome = recordUsage({
@@ -91,19 +91,16 @@ describe("record usage application use case", () => {
     expect(outcome).toEqual({
       kind: "applied",
       receiptKey: "receipt-1",
-      evolutionBattlePending: {
-        opponentNodeId: currentNode.id,
-        targetNodeId: targetNode.id,
-      },
+      evolution: { fromNodeId: currentNode.id, toNodeId: targetNode.id },
     })
     expect(ledger.receipts).toEqual([usage("receipt-1")])
     expect(ledger.evolutions).toEqual([
       {
-        currentNodeId: currentNode.id,
-        gauge: STAGE_GAUGE_THRESHOLDS[0],
-        isTerminal: false,
-        pendingEvolutionTargetId: targetNode.id,
-        battleOpponentNodeId: currentNode.id,
+        currentNodeId: targetNode.id,
+        gauge: 0,
+        isTerminal: true,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       },
     ])
   })
@@ -305,7 +302,7 @@ describe("record usage application use case", () => {
     ).toThrow(writeFailure)
   })
 
-  test("Given a custom child threshold When recording usage Then the ledger opens a pending evolution battle", () => {
+  test("Given a custom Digitama threshold When recording usage Then the ledger evolves immediately", () => {
     const thresholds: StageThresholds = Object.freeze({
       ...STAGE_GAUGE_THRESHOLDS,
       0: 1,
@@ -327,18 +324,15 @@ describe("record usage application use case", () => {
     expect(outcome).toEqual({
       kind: "applied",
       receiptKey: "receipt-custom-threshold",
-      evolutionBattlePending: {
-        opponentNodeId: currentNode.id,
-        targetNodeId: targetNode.id,
-      },
+      evolution: { fromNodeId: currentNode.id, toNodeId: targetNode.id },
     })
     expect(ledger.evolutions).toEqual([
       {
-        currentNodeId: currentNode.id,
-        gauge: 1,
-        isTerminal: false,
-        pendingEvolutionTargetId: targetNode.id,
-        battleOpponentNodeId: currentNode.id,
+        currentNodeId: targetNode.id,
+        gauge: 0,
+        isTerminal: true,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       },
     ])
   })

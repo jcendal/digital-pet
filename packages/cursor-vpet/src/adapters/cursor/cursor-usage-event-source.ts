@@ -1,6 +1,7 @@
 import { watch } from "node:fs"
 import { open, stat, writeFile } from "node:fs/promises"
 
+import type { UsageProcessingResult } from "@sbugallo/vpet-core/application/models/usage.ts"
 import type { UsageLedger } from "@sbugallo/vpet-core/application/ports/usage-ledger.ts"
 import { recordUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
@@ -29,7 +30,7 @@ const toSettleOptions = (options: CursorUsageSettleOptions) => ({
 
 export const createCursorUsageEventSource = (
   ledger: UsageLedger,
-  onApplied?: () => void,
+  onApplied?: (result: UsageProcessingResult) => void,
   options: CursorUsageSettleOptions & { readonly eventsPath?: string } = { settleDelayMs: 4000 },
 ): CursorUsageEventSource => {
   const eventsPath = options.eventsPath ?? resolveHookEventsPath()
@@ -51,7 +52,7 @@ export const createCursorUsageEventSource = (
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
     console.log(`[cursor-vpet] ${source}`, result)
-    if (result.kind === "applied") onApplied?.()
+    if (result.kind === "applied") onApplied?.(result)
   }
 
   const handleBeforeSubmit = async (record: HookEventRecord): Promise<void> => {

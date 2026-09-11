@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 
+import type { UsageEvolutionTransition } from "@sbugallo/vpet-core/application/models/usage.ts"
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
@@ -9,6 +10,7 @@ import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 import { renderPositionedArtwork } from "./animated-artwork.ts"
 import { runEvolutionBattleSession } from "./evolution-battle-session.ts"
+import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./monster-animation.ts"
 import {
   buildSidebarWebviewHtml,
@@ -28,9 +30,10 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private cachedArtwork = ""
   private artworkWidth = DEFAULT_ARTWORK_WIDTH
   private visualInterval?: ReturnType<typeof setInterval>
-  private battleInProgress = false
+  private presentationInProgress = false
   private refreshInFlight = false
   private pendingRefresh = false
+  private pendingEvolutionReveal: UsageEvolutionTransition | undefined
   private readonly animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG, Math.random, () =>
     performance.now(),
   )
@@ -41,8 +44,12 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     private readonly battleRepository: EvolutionBattleRepository,
   ) {}
 
-  isBattleInProgress(): boolean {
-    return this.battleInProgress
+  isPresentationInProgress(): boolean {
+    return this.presentationInProgress
+  }
+
+  queueEvolutionReveal(evolution: UsageEvolutionTransition): void {
+    this.pendingEvolutionReveal = evolution
   }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
@@ -102,6 +109,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
       do {
         this.pendingRefresh = false
         await this.resolvePendingBattleIfNeeded()
+        await this.playPendingEvolutionReveal()
         if (this.view === undefined) return
         await this.publishSidebarModel()
       } while (this.pendingRefresh)
@@ -126,20 +134,20 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     this.cachedPayload = payload
     await this.view.webview.postMessage(payload)
 
-    if (this.battleInProgress) return
+    if (this.presentationInProgress) return
 
     this.syncAnimationPartner(model)
     await this.postAnimationFrame()
   }
 
   private async resolvePendingBattleIfNeeded(): Promise<void> {
-    if (this.battleInProgress) return
+    if (this.presentationInProgress) return
 
     const snapshot = this.snapshotReader.getSidebarSnapshot()
     if (snapshot === null) return
     if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return
 
-    this.battleInProgress = true
+    this.presentationInProgress = true
     this.stopVisualInterval()
     this.cachedArtwork = ""
 
@@ -151,6 +159,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
         onArtwork: async (artwork) => this.postArtwork(artwork),
         onResolved: async (result) => {
           if (result.kind === "won") {
+            this.pendingEvolutionReveal = undefined
             void vscode.window.showInformationMessage("Victory! Your partner evolved!")
           } else if (result.kind === "lost") {
             void vscode.window.showInformationMessage("Defeat! You lost all tokens for this stage.")
@@ -158,7 +167,31 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
         },
       })
     } finally {
-      this.battleInProgress = false
+      this.presentationInProgress = false
+      if (this.view?.visible) this.startVisualInterval()
+    }
+  }
+
+  private async playPendingEvolutionReveal(): Promise<void> {
+    const evolution = this.pendingEvolutionReveal
+    if (evolution === undefined || this.presentationInProgress) return
+
+    this.pendingEvolutionReveal = undefined
+    this.presentationInProgress = true
+    this.stopVisualInterval()
+    this.cachedArtwork = ""
+
+    try {
+      const revealed = await runEvolutionRevealSession(evolution, this.artworkWidth, {
+        frameCatalog: MONSTER_FRAME_CATALOG,
+        digimonCatalog: DIGIMON_CATALOG,
+        onArtwork: async (artwork) => this.postArtwork(artwork),
+      })
+      if (revealed) {
+        void vscode.window.showInformationMessage("Your partner evolved!")
+      }
+    } finally {
+      this.presentationInProgress = false
       if (this.view?.visible) this.startVisualInterval()
     }
   }
@@ -182,7 +215,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   private startVisualInterval(): void {
     if (this.visualInterval !== undefined) return
     this.visualInterval = setInterval(() => {
-      if (this.view === undefined || !this.view.visible || this.battleInProgress) return
+      if (this.view === undefined || !this.view.visible || this.presentationInProgress) return
       const nextAnimation = this.animation.dispatch({ kind: "tick" })
       void this.postAnimationFrame(nextAnimation)
     }, VISUAL_INTERVAL_MS)
@@ -195,7 +228,7 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private async postAnimationFrame(animation?: MonsterAnimationOutput): Promise<void> {
-    if (this.view === undefined || this.battleInProgress) return
+    if (this.view === undefined || this.presentationInProgress) return
     const output = animation ?? this.animation.output()
     const artwork = renderPositionedArtwork(output, this.artworkWidth)
     if (artwork === this.cachedArtwork) return

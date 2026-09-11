@@ -8,8 +8,8 @@ import type { DigimonCatalog } from "@sbugallo/vpet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 
 import { runDefeatAnimation } from "./defeat-artwork.ts"
-import { runEvolutionAnimation } from "./evolution-artwork.ts"
 import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "./evolution-battle-artwork.ts"
+import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
 
 export const DEFAULT_BATTLE_ARTWORK_WIDTH = 80
 
@@ -48,16 +48,15 @@ export const runEvolutionBattleSession = async (
   )
 
   if (outcome === "player") {
-    const target = dependencies.digimonCatalog.byId.get(snapshot.pendingEvolutionTargetId)
-    if (target !== undefined) {
-      await runEvolutionAnimation(
-        dependencies.frameCatalog,
-        player.sprite,
-        target.sprite,
-        viewportWidth,
-        postArtwork,
-      )
-    }
+    await runEvolutionRevealSession(
+      { fromNodeId: snapshot.currentNodeId, toNodeId: snapshot.pendingEvolutionTargetId },
+      viewportWidth,
+      {
+        frameCatalog: dependencies.frameCatalog,
+        digimonCatalog: dependencies.digimonCatalog,
+        onArtwork: postArtwork,
+      },
+    )
   } else {
     await runDefeatAnimation(dependencies.frameCatalog, player.sprite, viewportWidth, postArtwork)
   }

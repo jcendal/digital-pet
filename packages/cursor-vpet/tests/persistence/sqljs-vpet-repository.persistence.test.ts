@@ -101,14 +101,15 @@ describe("sql.js vpet repository persistence", () => {
   test("Given a resolved evolution battle When reading through the repository snapshot Then pending battle fields are cleared", async () => {
     if (tempRoot === undefined) throw new Error("Missing temp root.")
 
+    const battleThresholds = Object.freeze({ ...STAGE_GAUGE_THRESHOLDS, 0: 1, 1: 1 })
     const repository = await createSqliteVpetRepository({ appDataRoot: tempRoot.appDataRoot })
     try {
       spawnPartner(repository, "2026-09-09T12:00:00.000Z")
       recordUsage({
         usage: {
-          receiptKey: "receipt-threshold",
-          eventId: "event-threshold",
-          tokenDelta: STAGE_GAUGE_THRESHOLDS[0],
+          receiptKey: "receipt-hatch",
+          eventId: "event-hatch",
+          tokenDelta: 1,
           cost: null,
           createdAt: "2026-09-09T12:01:00.000Z",
         },
@@ -116,7 +117,21 @@ describe("sql.js vpet repository persistence", () => {
         digimonById: DIGIMON_CATALOG.byId,
         catalogNodes: DIGIMON_CATALOG.nodes,
         selector: () => 0,
-        thresholds: STAGE_GAUGE_THRESHOLDS,
+        thresholds: battleThresholds,
+      })
+      recordUsage({
+        usage: {
+          receiptKey: "receipt-threshold",
+          eventId: "event-threshold",
+          tokenDelta: 1,
+          cost: null,
+          createdAt: "2026-09-09T12:01:30.000Z",
+        },
+        ledger: repository,
+        digimonById: DIGIMON_CATALOG.byId,
+        catalogNodes: DIGIMON_CATALOG.nodes,
+        selector: () => 0,
+        thresholds: battleThresholds,
       })
 
       const pending = repository.getSidebarSnapshot()

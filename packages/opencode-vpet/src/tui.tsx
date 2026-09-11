@@ -22,6 +22,7 @@ import {
   DEFAULT_BATTLE_ARTWORK_WIDTH,
   runEvolutionBattleSession,
 } from "./tui/evolution-battle-session.ts"
+import { runEvolutionRevealSession } from "./tui/evolution-reveal-session.ts"
 import { MonsterAnimationController, type MonsterAnimationOutput } from "./tui/monster-animation.ts"
 import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
@@ -109,6 +110,7 @@ export const createTui =
     )
     let disposed = false
     let battleInProgress = false
+    let lastPresentedNodeId: string | undefined
     let artworkWidth = DEFAULT_BATTLE_ARTWORK_WIDTH
     const notifyEvent = async (event: VpetToastEvent): Promise<void> => {
       if (scheduling.notify === undefined) return
@@ -150,11 +152,44 @@ export const createTui =
         if (battled) {
           setCustomArtwork(undefined)
           const nextInputs = await Promise.resolve().then(() => loadInputs())
+          if (nextInputs.kind === "partner") lastPresentedNodeId = nextInputs.node.id
           setInputs(nextInputs)
           syncAnimation(nextInputs)
           api.renderer.requestRender()
         }
         return battled
+      } finally {
+        battleInProgress = false
+        setCustomArtwork(undefined)
+      }
+    }
+    const tryPlayEvolutionReveal = async (nextInputs: SidebarCardInputs): Promise<boolean> => {
+      if (disposed || battleInProgress) return false
+      if (nextInputs.kind !== "partner" || nextInputs.evolutionBattlePending) return false
+      if (lastPresentedNodeId === undefined) {
+        lastPresentedNodeId = nextInputs.node.id
+        return false
+      }
+      if (lastPresentedNodeId === nextInputs.node.id) return false
+
+      const evolution = { fromNodeId: lastPresentedNodeId, toNodeId: nextInputs.node.id }
+      battleInProgress = true
+      try {
+        const revealed = await runEvolutionRevealSession(evolution, artworkWidth, {
+          frameCatalog: MONSTER_FRAME_CATALOG,
+          digimonCatalog: DIGIMON_CATALOG,
+          onArtwork: async (artwork) => {
+            setCustomArtwork(artwork)
+            api.renderer.requestRender()
+          },
+        })
+        if (!revealed) return false
+        lastPresentedNodeId = nextInputs.node.id
+        setCustomArtwork(undefined)
+        setInputs(nextInputs)
+        syncAnimation(nextInputs)
+        api.renderer.requestRender()
+        return true
       } finally {
         battleInProgress = false
         setCustomArtwork(undefined)
@@ -187,7 +222,13 @@ export const createTui =
             poller.refresh()
             return
           }
+          if (await tryPlayEvolutionReveal(nextInputs)) {
+            if (disposed) return
+            poller.refresh()
+            return
+          }
           if (disposed || battleInProgress) return
+          if (nextInputs.kind === "partner") lastPresentedNodeId = nextInputs.node.id
           setInputs(nextInputs)
           syncAnimation(nextInputs)
           api.renderer.requestRender()

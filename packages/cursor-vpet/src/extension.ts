@@ -63,7 +63,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     void sidebarProvider?.refresh()
   }
 
-  const usageSource = createCursorUsageEventSource(repository, refreshSidebar, {
+  const usageSource = createCursorUsageEventSource(repository, (result) => {
+    if (result.kind === "applied" && result.evolution !== undefined) {
+      sidebarProvider?.queueEvolutionReveal(result.evolution)
+    }
+    refreshSidebar()
+  }, {
     settleDelayMs: readSettings().settleDelayMs,
   })
   context.subscriptions.push(usageSource)
@@ -72,8 +77,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     ...databaseOptions(),
     onChange: () => {
       repository.reloadFromDisk()
-      if (sidebarProvider?.isBattleInProgress() !== true) 
+      if (sidebarProvider?.isPresentationInProgress() !== true) {
         refreshSidebar()
+      }
     },
   })
   context.subscriptions.push({ dispose: () => databaseWatcher.dispose() })

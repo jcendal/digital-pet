@@ -171,8 +171,8 @@ describe("catalog and evolution", () => {
     expect(evolved.pendingEvolutionTargetId).toBeNull()
   })
 
-  test("Given a controlled immutable lookup When token progress reaches a threshold Then it opens a pending evolution battle", () => {
-    const pending = applyTokenProgress(
+  test("Given a Digitama threshold crossing When token progress applies Then it evolves immediately without a battle", () => {
+    const evolved = applyTokenProgress(
       { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
       1,
       () => 0,
@@ -181,15 +181,7 @@ describe("catalog and evolution", () => {
       STAGE_GAUGE_THRESHOLDS,
     )
 
-    expect(pending).toEqual({
-      current: controlledCurrent,
-      gauge: STAGE_GAUGE_THRESHOLDS[0],
-      isTerminal: false,
-      pendingEvolutionTargetId: "controlled-target",
-      battleOpponentNodeId: "controlled-opponent",
-    })
-
-    expect(resolveEvolutionBattle(pending, true, controlledLookup)).toEqual({
+    expect(evolved).toEqual({
       current: controlledTarget,
       gauge: 0,
       isTerminal: true,
@@ -211,22 +203,22 @@ describe("catalog and evolution", () => {
     ).toThrow("Evolution target controlled-target is missing from the catalog")
   })
 
-  test("Given a custom child threshold When token progress reaches it Then evolution crosses at the supplied policy boundary", () => {
+  test("Given a custom Digitama threshold When token progress reaches it Then evolution crosses at the supplied policy boundary", () => {
     const thresholds: StageThresholds = Object.freeze({
       ...STAGE_GAUGE_THRESHOLDS,
       0: 1,
     })
 
-    const pending = applyTokenProgress(
-      { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
-      1,
-      () => 0,
-      controlledLookup,
-      controlledCatalogNodes,
-      thresholds,
-    )
-
-    expect(resolveEvolutionBattle(pending, true, controlledLookup)).toEqual({
+    expect(
+      applyTokenProgress(
+        { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
+        1,
+        () => 0,
+        controlledLookup,
+        controlledCatalogNodes,
+        thresholds,
+      ),
+    ).toEqual({
       current: controlledTarget,
       gauge: 0,
       isTerminal: true,
@@ -353,18 +345,23 @@ describe("catalog and evolution", () => {
     ).toEqual({ current: controlledCurrent, gauge: 1, isTerminal: false, ...noBattle })
   })
 
-  test("Given a lost evolution battle When resolving Then gauge resets for the current stage", () => {
+  test("Given a lost evolution battle When resolving Then gauge resets for the current stage", async () => {
+    const catalog = await loadDigimonCatalog()
+    const andromon = catalog.byId.get("5-003")
+
+    if (andromon === undefined) throw new Error("Expected Andromon in catalog")
+
     const pending = applyTokenProgress(
-      { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
+      { current: andromon, gauge: 124_999_999, isTerminal: false, ...noBattle },
       1,
-      () => 0,
-      controlledLookup,
-      controlledCatalogNodes,
+      () => 0.5,
+      catalog.byId,
+      catalog.nodes,
       STAGE_GAUGE_THRESHOLDS,
     )
 
-    expect(resolveEvolutionBattle(pending, false, controlledLookup)).toEqual({
-      current: controlledCurrent,
+    expect(resolveEvolutionBattle(pending, false, catalog.byId)).toEqual({
+      current: andromon,
       gauge: 0,
       isTerminal: false,
       pendingEvolutionTargetId: null,

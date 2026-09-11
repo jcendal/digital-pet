@@ -68,6 +68,16 @@ export const applyTokenProgress = (
     throw new Error(`Evolution target ${pendingEvolutionTargetId} is missing from the catalog`)
   }
 
+  if (state.current.stage === 0) {
+    return {
+      current: target,
+      gauge: 0,
+      isTerminal: target.nextEvolutions.length === 0,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    }
+  }
+
   const battleOpponentNodeId = pickRandomSameStageOpponent(state.current, catalogNodes, selector)
   if (digimonById.get(battleOpponentNodeId) === undefined) {
     throw new Error(`Battle opponent ${battleOpponentNodeId} is missing from the catalog`)

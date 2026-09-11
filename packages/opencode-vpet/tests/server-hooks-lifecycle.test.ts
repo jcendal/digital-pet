@@ -253,21 +253,21 @@ describe("server hook lifecycle", () => {
 
     expect(delivered).toEqual([
       {
-        title: "Evolution battle",
-        message: "Battle against Digitama! Win to evolve.",
-        variant: "info",
+        title: "Digi-evolution",
+        message: "Digitama evolved into Koromon!",
+        variant: "success",
         duration: 5_000,
       },
       {
-        title: "Evolution battle",
-        message: "Battle against Digitama! Win to evolve.",
-        variant: "info",
+        title: "Digi-evolution",
+        message: "Digitama evolved into Koromon!",
+        variant: "success",
         duration: 5_000,
       },
       {
-        title: "Evolution battle",
-        message: "Battle against Digitama! Win to evolve.",
-        variant: "info",
+        title: "Digi-evolution",
+        message: "Digitama evolved into Koromon!",
+        variant: "success",
         duration: 5_000,
       },
     ])
