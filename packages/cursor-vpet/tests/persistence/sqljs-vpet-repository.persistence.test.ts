@@ -7,6 +7,7 @@ import { resolveEvolutionBattleForPartner } from "@sbugallo/vpet-core/applicatio
 import { spawnPartner } from "@sbugallo/vpet-core/application/use-cases/spawn-partner.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@sbugallo/vpet-core/domain/evolution.ts"
+
 import {
   createSqliteSidebarSnapshotReader,
   readSidebarSnapshot,

@@ -1,5 +1,5 @@
-import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
 import type { MonsterAnimationOutput, MonsterAnimationResult } from "./monster-animation.ts"
+import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
 
 const ARTWORK_ROWS = 8
 const ARTWORK_COLUMNS = 16

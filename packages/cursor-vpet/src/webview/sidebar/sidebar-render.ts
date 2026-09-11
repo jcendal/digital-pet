@@ -1,4 +1,5 @@
 import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
+
 import type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"
 
 export type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"

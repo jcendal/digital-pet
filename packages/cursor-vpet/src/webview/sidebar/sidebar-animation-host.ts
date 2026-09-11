@@ -1,4 +1,5 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
 import { renderPositionedArtwork } from "../presentation/animated-artwork.ts"

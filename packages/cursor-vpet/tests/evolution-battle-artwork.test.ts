@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import {
   buildBattleIntroTextLines,
   buildBattleScorePips,

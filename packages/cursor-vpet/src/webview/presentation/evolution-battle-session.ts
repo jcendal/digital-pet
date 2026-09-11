@@ -1,5 +1,5 @@
-import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { ResolveEvolutionBattleOutcome } from "@sbugallo/vpet-core/application/models/usage.ts"
+import type { SidebarSnapshot } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import {
   resolveEvolutionBattleForPartner,
   type EvolutionBattleRepository,

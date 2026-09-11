@@ -4,12 +4,13 @@ import { open, stat, writeFile } from "node:fs/promises"
 import type { UsageProcessingResult } from "@sbugallo/vpet-core/application/models/usage.ts"
 import type { UsageLedger } from "@sbugallo/vpet-core/application/ports/usage-ledger.ts"
 import { recordUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
+import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@sbugallo/vpet-core/domain/evolution.ts"
+
 import { captureWatermark, settleTurnDelta } from "./cursor-api-watermark.ts"
 import { hasStopTokens, toCompletedUsageFromStop } from "./cursor-stop-mapper.ts"
 import { resolveHookEventsPath } from "./paths.ts"
-import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import type { HookEventRecord, UsageWatermark } from "./types.ts"
 
 type TurnState = {

@@ -1,12 +1,12 @@
 import { join } from "node:path"
 import * as vscode from "vscode"
 
-import { configureSqlJsWasmPath } from "../adapters/sqlite/sqljs-config.ts"
 import { createDatabaseChangeWatcher } from "../adapters/sqlite/database-change-watcher.ts"
 import {
   createSqliteVpetRepository,
   type CursorSqliteVpetRepository,
 } from "../adapters/sqlite/sqlite-vpet-write-store.ts"
+import { configureSqlJsWasmPath } from "../adapters/sqlite/sqljs-config.ts"
 import { getVpetExtensionSettings, toDatabaseOptions, type VpetExtensionSettings } from "../config/extension-settings.ts"
 import { VpetSidebarProvider } from "../webview/vpet-sidebar-provider.ts"
 

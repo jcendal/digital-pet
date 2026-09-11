@@ -3,8 +3,9 @@ import * as vscode from "vscode"
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
 import { buildDexViewModel } from "@sbugallo/vpet-core/view-models/dex-view-model.ts"
-import type { CreateSqliteVpetArchiveReaderOptions } from "../../adapters/sqlite/sqlite-vpet-archive-reader.ts"
+
 import { readArchive } from "../../adapters/sqlite/sqlite-vpet-archive-reader.ts"
+import type { CreateSqliteVpetArchiveReaderOptions } from "../../adapters/sqlite/sqlite-vpet-archive-reader.ts"
 import { escapeHtml } from "../../shared/escape-html.ts"
 
 export const openDexPanel = async (

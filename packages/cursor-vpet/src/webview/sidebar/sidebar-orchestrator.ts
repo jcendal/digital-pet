@@ -1,8 +1,9 @@
 import type { UsageEvolutionTransition } from "@sbugallo/vpet-core/application/models/usage.ts"
-import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
-import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
+import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
+import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../adapters/vscode/notification-port.ts"
 import { createAsyncRefreshQueue } from "../../shared/async-refresh-queue.ts"

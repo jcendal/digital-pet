@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs"
 import type { Database } from "sql.js"
+
 import { getSqlRuntime } from "../sqlite/sqljs-config.ts"
 import { resolveStateVscdbPath } from "./paths.ts"
 

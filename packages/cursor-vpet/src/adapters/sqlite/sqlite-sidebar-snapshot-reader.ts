@@ -1,17 +1,18 @@
 import { existsSync, readFileSync } from "node:fs"
 import type { SqlJsStatic } from "sql.js"
 
-import type { SidebarSnapshot, SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
-import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
-import { isRecoverableSqliteReadError } from "./errors.ts"
-import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
-import { getSqlRuntime } from "./sqljs-config.ts"
 import {
   ACTIVE_PARTNER_SELECT,
   toPartner,
   type PersistedPartnerRow,
   type TrainerStateRow,
 } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-schema.ts"
+import type { SidebarSnapshot, SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
+import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
+
+import { isRecoverableSqliteReadError } from "./errors.ts"
+import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
+import { getSqlRuntime } from "./sqljs-config.ts"
 
 export type CreateSqliteSidebarSnapshotReaderOptions = SqliteDatabaseOptions
 

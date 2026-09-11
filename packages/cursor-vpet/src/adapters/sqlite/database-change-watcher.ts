@@ -1,5 +1,5 @@
-import { watch, type FSWatcher } from "node:fs"
 import { mkdirSync } from "node:fs"
+import { watch, type FSWatcher } from "node:fs"
 import { basename, dirname } from "node:path"
 
 import { resolveHostDatabasePath, type HostPathOptions } from "@sbugallo/vpet-core/adapters/sqlite/app-data-path.ts"

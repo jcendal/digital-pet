@@ -1,4 +1,5 @@
 import type { MonsterFrameCatalog, MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import { normalizedRandom } from "../../shared/random.ts"
 
 export type CosmeticActionClip = readonly [MonsterFrameName, MonsterFrameName]

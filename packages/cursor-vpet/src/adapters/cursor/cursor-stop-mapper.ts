@@ -1,4 +1,5 @@
 import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
+
 import type { CursorHookPayload } from "./types.ts"
 
 export const hasStopTokens = (payload: CursorHookPayload): boolean => {

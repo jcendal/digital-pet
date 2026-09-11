@@ -1,5 +1,6 @@
 import type { MonsterFrameCatalog } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import type { MonsterFrameName } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import { sleep } from "../../shared/sleep.ts"
 import { mirrorMonsterFrame } from "./monster-artwork-mirror.ts"
 

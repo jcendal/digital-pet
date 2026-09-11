@@ -1,7 +1,8 @@
 import type { CompletedUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
+
 import { sleep } from "../../shared/sleep.ts"
-import type { UsageApiEvent, UsageApiResponse, UsageWatermark } from "./types.ts"
 import { readCursorAccessToken } from "./cursor-auth.ts"
+import type { UsageApiEvent, UsageApiResponse, UsageWatermark } from "./types.ts"
 
 const USAGE_EVENTS_URL = "https://cursor.com/api/dashboard/get-filtered-usage-events"
 

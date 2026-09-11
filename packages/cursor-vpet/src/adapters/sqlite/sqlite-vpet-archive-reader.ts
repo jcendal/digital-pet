@@ -1,5 +1,11 @@
 import { existsSync } from "node:fs"
 
+import {
+  ARCHIVE_PARTNER_EVENTS_SELECT,
+  ARCHIVE_PARTNERS_SELECT,
+  type PersistedPartnerEventRow,
+  type PersistedPartnerRow,
+} from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-schema.ts"
 import type {
   VpetArchiveEvent,
   VpetArchivePartner,
@@ -7,15 +13,10 @@ import type {
 } from "@sbugallo/vpet-core/application/models/vpet-archive.ts"
 import type { VpetArchiveReader } from "@sbugallo/vpet-core/application/ports/vpet-archive.ts"
 import type { SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
+
 import { isRecoverableSqliteReadError } from "./errors.ts"
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { openReadonlySqlJsDatabase } from "./sqljs-driver.ts"
-import {
-  ARCHIVE_PARTNER_EVENTS_SELECT,
-  ARCHIVE_PARTNERS_SELECT,
-  type PersistedPartnerEventRow,
-  type PersistedPartnerRow,
-} from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-schema.ts"
 
 export type CreateSqliteVpetArchiveReaderOptions = SqliteDatabaseOptions
 

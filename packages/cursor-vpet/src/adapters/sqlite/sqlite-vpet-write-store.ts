@@ -1,6 +1,7 @@
-import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { SqliteVpetWriteStore } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-types.ts"
 import { createSqliteVpetWriteStore } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-write-store.ts"
+import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
+
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { readSidebarSnapshotFromExecutor } from "./sqlite-sidebar-snapshot-reader.ts"
 import { openWritableSqlJsDatabase } from "./sqljs-driver.ts"

@@ -1,10 +1,11 @@
 import { join } from "node:path"
 import * as vscode from "vscode"
 
-import { spawnPartner } from "@sbugallo/vpet-core/application/use-cases/spawn-partner.ts"
 import { freezeVpet } from "@sbugallo/vpet-core/application/use-cases/freeze-vpet.ts"
-import { unfreezeVpet } from "@sbugallo/vpet-core/application/use-cases/unfreeze-vpet.ts"
 import { setVpetCheatNode } from "@sbugallo/vpet-core/application/use-cases/set-vpet-cheat-node.ts"
+import { spawnPartner } from "@sbugallo/vpet-core/application/use-cases/spawn-partner.ts"
+import { unfreezeVpet } from "@sbugallo/vpet-core/application/use-cases/unfreeze-vpet.ts"
+
 import { installVpetHooks, uninstallVpetHooks } from "../adapters/cursor/install-hooks.ts"
 import { openDexPanel } from "../webview/panels/dex-panel.ts"
 import { openHistoryPanel } from "../webview/panels/history-panel.ts"

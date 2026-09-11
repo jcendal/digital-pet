@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
+
 import { resolveHooksJsonPath } from "./paths.ts"
 
 const VPET_MARKER = "hook-bridge.js"

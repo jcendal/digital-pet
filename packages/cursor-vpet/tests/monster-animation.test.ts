@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import { MonsterAnimationController } from "../src/webview/presentation/monster-animation.ts"
 
 const SLEEP_AFTER_MS = 300_000

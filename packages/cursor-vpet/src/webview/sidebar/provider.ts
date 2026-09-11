@@ -3,6 +3,7 @@ import * as vscode from "vscode"
 import type { SidebarSnapshotReader } from "@sbugallo/vpet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
+
 import { createAnimationSink, type AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import {
   createVsCodeNotificationPort,

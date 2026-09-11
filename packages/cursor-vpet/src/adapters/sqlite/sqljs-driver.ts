@@ -3,6 +3,7 @@ import { dirname } from "node:path"
 import type { Database, SqlJsStatic } from "sql.js"
 
 import type { QueryValue, SqliteExecutor } from "@sbugallo/vpet-core/ports/sqlite-executor.ts"
+
 import { getSqlRuntime } from "./sqljs-config.ts"
 
 export type SqlJsDatabase = {

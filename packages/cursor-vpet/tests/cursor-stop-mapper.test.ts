@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+
 import { hasStopTokens, toCompletedUsageFromStop } from "../src/adapters/cursor/cursor-stop-mapper.ts"
 
 describe("cursor-stop-mapper", () => {
