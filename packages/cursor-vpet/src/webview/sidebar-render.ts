@@ -1,4 +1,7 @@
 import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
+import type { AnimationFramePayload, SidebarWebviewPayload } from "./sidebar/webview-messages.ts"
+
+export type { AnimationFramePayload, SidebarWebviewPayload } from "./sidebar/webview-messages.ts"
 
 const NEXT_CHECK_PREFIX = "Next check: "
 const NEXT_CHECK_BAR_WIDTH = 20
@@ -28,25 +31,6 @@ export const buildNextCheckLine = (model: SidebarCardModel): string => {
 export const buildGaugeLine = (model: SidebarCardModel): string => {
   if (model.kind !== "partner") return ""
   return model.isTerminal ? "-/-" : `${formatCount(model.gauge)}/${formatCount(model.threshold)}`
-}
-
-export type SidebarWebviewPayload =
-  | { readonly type: "sidebar-model"; readonly kind: "no_partner"; readonly messageLine: string }
-  | {
-      readonly type: "sidebar-model"
-      readonly kind: "partner"
-      readonly name: string
-      readonly stage: string
-      readonly nextCheck: string
-      readonly gauge: string
-      readonly url: string
-      readonly urlLabel: string
-      readonly frozen: boolean
-    }
-
-export type AnimationFramePayload = {
-  readonly type: "animation-frame"
-  readonly artwork: string
 }
 
 export const toSidebarWebviewPayload = (model: SidebarCardModel): SidebarWebviewPayload => {
