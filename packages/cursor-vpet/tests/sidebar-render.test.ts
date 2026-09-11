@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test"
 import {
   buildGaugeLine,
   buildNextCheckLine,
+  buildSidebarWebviewHtml,
   pixelWidthToArtworkColumns,
   toSidebarWebviewPayload,
 } from "../src/webview/sidebar/sidebar-render.ts"
@@ -30,6 +31,12 @@ describe("sidebar render", () => {
     })
 
     expect(line).toBe("Next check: [██████████░░░░░░░░░░]")
+  })
+
+  test("embeds nonce in sidebar CSP and script tag", () => {
+    const html = buildSidebarWebviewHtml("test-nonce-123")
+    expect(html).toContain("script-src 'nonce-test-nonce-123'")
+    expect(html).toContain('nonce="test-nonce-123"')
   })
 
   test("maps partner model to sidebar payload without artwork", () => {
