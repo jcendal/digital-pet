@@ -15,6 +15,10 @@ import type { UsageProcessingResult } from "@sbugallo/vpet-core/application/mode
 import { reconcileUsage } from "@sbugallo/vpet-core/application/use-cases/reconcile-usage.ts"
 import { recordUsage } from "@sbugallo/vpet-core/application/use-cases/record-usage.ts"
 import {
+  resolveEvolutionBattleForPartner,
+  type EvolutionBattleRepository,
+} from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
+import {
   STAGE_GAUGE_THRESHOLDS,
   type EvolutionSelector,
   type StageThresholds,
@@ -45,6 +49,9 @@ const EMPTY_CATALOG: DigimonCatalog = Object.freeze({ nodes: Object.freeze([]), 
 const toToastEvent = (result: UsageProcessingResult): VpetToastEvent | undefined => {
   switch (result.kind) {
     case "applied":
+      if (result.evolutionBattlePending !== undefined) {
+        return { kind: "evolution_battle", opponentNodeId: result.evolutionBattlePending.opponentNodeId }
+      }
       return result.evolution === undefined ? undefined : { kind: "evolution", ...result.evolution }
     case "duplicate":
     case "no_active_partner":
@@ -74,12 +81,18 @@ const requiresCatalog = (event: VpetToastEvent): boolean => {
     case "spawn":
     case "set":
     case "evolution":
+    case "evolution_battle":
       return true
     case "freeze":
     case "unfreeze":
       return false
   }
 }
+
+const isEvolutionBattleRepository = (
+  repository: ServerHookDependencies["repository"],
+): repository is ServerHookDependencies["repository"] & EvolutionBattleRepository =>
+  "resolveEvolutionBattle" in repository && typeof repository.resolveEvolutionBattle === "function"
 
 export const createCommandConfig = () => ({
   "vpet-spawn": { template: "Spawn a new virtual pet." },
@@ -100,6 +113,32 @@ export const createServerHooks = ({
   notify = noOpNotifier,
 }: ServerHookDependencies): Hooks => {
   let closePromise: Promise<void> | undefined
+
+  const notifyUsageResult = async (result: UsageProcessingResult, catalog: DigimonCatalog): Promise<void> => {
+    if (result.kind !== "applied") return
+
+    if (result.evolutionBattlePending !== undefined) {
+      const battleToast = toToastEvent(result)
+      if (battleToast !== undefined) await notifyEvent(battleToast, catalog)
+
+      if (isEvolutionBattleRepository(repository)) {
+        const won = evolutionSelector() < 0.5
+        const resolved = resolveEvolutionBattleForPartner(
+          repository,
+          won,
+          catalog.byId,
+          new Date().toISOString(),
+        )
+        if (resolved.kind === "won") {
+          await notifyEvent({ kind: "evolution", ...resolved.evolution }, catalog)
+        }
+      }
+      return
+    }
+
+    const toastEvent = toToastEvent(result)
+    if (toastEvent !== undefined) await notifyEvent(toastEvent, catalog)
+  }
 
   const notifyEvent = async (event: VpetToastEvent, catalog?: DigimonCatalog): Promise<void> => {
     if (!notificationsEnabled) return
@@ -178,11 +217,11 @@ export const createServerHooks = ({
             usage,
             ledger: repository,
             digimonById: catalog.byId,
+            catalogNodes: catalog.nodes,
             selector: evolutionSelector,
             thresholds: evolutionThresholds,
           })
-          const toastEvent = toToastEvent(result)
-          if (toastEvent !== undefined) await notifyEvent(toastEvent, catalog)
+          await notifyUsageResult(result, catalog)
           return
         }
         case "session.idle": {
@@ -197,12 +236,12 @@ export const createServerHooks = ({
             usages,
             ledger: repository,
             digimonById: catalog.byId,
+            catalogNodes: catalog.nodes,
             selector: evolutionSelector,
             thresholds: evolutionThresholds,
           })
           for (const result of results) {
-            const toastEvent = toToastEvent(result)
-            if (toastEvent !== undefined) await notifyEvent(toastEvent, catalog)
+            await notifyUsageResult(result, catalog)
           }
           return
         }

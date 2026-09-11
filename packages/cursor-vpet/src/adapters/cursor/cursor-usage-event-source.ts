@@ -46,6 +46,7 @@ export const createCursorUsageEventSource = (
       ledger,
       usage,
       digimonById: DIGIMON_CATALOG.byId,
+      catalogNodes: DIGIMON_CATALOG.nodes,
       selector: Math.random,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })

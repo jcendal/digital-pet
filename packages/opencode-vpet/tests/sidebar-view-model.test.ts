@@ -21,6 +21,7 @@ describe("static sidebar model", () => {
     frozen: false,
     isSetOverride: false,
     trainerTotalTokens: 25_000,
+    evolutionBattlePending: false,
   } as const
 
   test("Given default Japanese settings When building the sidebar model Then it renders catalog Japanese names and familiar labels", () => {
@@ -29,6 +30,7 @@ describe("static sidebar model", () => {
     if (model.kind !== "partner") throw new Error("Expected partner sidebar model")
 
     expect(Object.keys(model).sort()).toEqual([
+      "evolutionBattlePending",
       "frozen",
       "gauge",
       "isSetOverride",

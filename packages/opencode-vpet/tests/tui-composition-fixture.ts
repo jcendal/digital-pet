@@ -55,6 +55,7 @@ export const partnerInputs = (sprite: string, options: PartnerInputOptions = {})
   frozen: false,
   isSetOverride: options.isSetOverride ?? false,
   trainerTotalTokens: 100,
+  evolutionBattlePending: false,
 })
 
 export const settle = async (): Promise<void> => {

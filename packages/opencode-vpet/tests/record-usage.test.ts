@@ -28,12 +28,16 @@ const targetNode: DigimonNode = {
   url: "https://example.test/target",
 }
 
+const catalogNodes = [currentNode, targetNode]
+
 const activePartner: Partner = {
   partnerId: "partner-1",
   generation: 1,
   currentNodeId: currentNode.id,
   gauge: 4_999_999,
   isTerminal: false,
+  pendingEvolutionTargetId: null,
+  battleOpponentNodeId: null,
   createdAt: "2026-07-31T00:00:00.000Z",
   retiredAt: null,
 }
@@ -69,7 +73,7 @@ const createLedger = (outcome: "applied" | "duplicate" | "no_active_partner", pa
 }
 
 describe("record usage application use case", () => {
-  test("Given completed usage and an active partner When recording it Then the ledger applies the transaction-scoped evolution", () => {
+  test("Given completed usage and an active partner When recording it Then the ledger opens a pending evolution battle", () => {
     const ledger = createLedger("applied")
 
     const outcome = recordUsage({
@@ -79,6 +83,7 @@ describe("record usage application use case", () => {
         [currentNode.id, currentNode],
         [targetNode.id, targetNode],
       ]),
+      catalogNodes,
       selector: () => 0,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
@@ -86,14 +91,19 @@ describe("record usage application use case", () => {
     expect(outcome).toEqual({
       kind: "applied",
       receiptKey: "receipt-1",
-      evolution: { fromNodeId: currentNode.id, toNodeId: targetNode.id },
+      evolutionBattlePending: {
+        opponentNodeId: currentNode.id,
+        targetNodeId: targetNode.id,
+      },
     })
     expect(ledger.receipts).toEqual([usage("receipt-1")])
     expect(ledger.evolutions).toEqual([
       {
-        currentNodeId: targetNode.id,
-        gauge: 0,
-        isTerminal: true,
+        currentNodeId: currentNode.id,
+        gauge: STAGE_GAUGE_THRESHOLDS[0],
+        isTerminal: false,
+        pendingEvolutionTargetId: targetNode.id,
+        battleOpponentNodeId: currentNode.id,
       },
     ])
   })
@@ -111,6 +121,7 @@ describe("record usage application use case", () => {
       selector: () => {
         throw new Error("selector must not run")
       },
+      catalogNodes,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
 
@@ -121,6 +132,8 @@ describe("record usage application use case", () => {
         currentNodeId: currentNode.id,
         gauge: 1,
         isTerminal: false,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       },
     ])
   })
@@ -135,6 +148,7 @@ describe("record usage application use case", () => {
       selector: () => {
         throw new Error("selector must not run")
       },
+      catalogNodes,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
 
@@ -152,6 +166,7 @@ describe("record usage application use case", () => {
       selector: () => {
         throw new Error("selector must not run")
       },
+      catalogNodes,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
 
@@ -178,6 +193,7 @@ describe("record usage application use case", () => {
         selector: () => {
           throw new Error("selector must not run")
         },
+        catalogNodes,
         thresholds: STAGE_GAUGE_THRESHOLDS,
       })
 
@@ -201,6 +217,7 @@ describe("record usage application use case", () => {
       selector: () => {
         throw new Error("selector must not run")
       },
+      catalogNodes,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
 
@@ -210,6 +227,8 @@ describe("record usage application use case", () => {
         currentNodeId: targetNode.id,
         gauge: 0,
         isTerminal: true,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       },
     ])
   })
@@ -233,6 +252,7 @@ describe("record usage application use case", () => {
       selector: () => {
         throw new Error("selector must not run")
       },
+      catalogNodes,
       thresholds: STAGE_GAUGE_THRESHOLDS,
     })
 
@@ -254,6 +274,7 @@ describe("record usage application use case", () => {
         ledger,
         digimonById: new Map(),
         selector: () => 0,
+        catalogNodes,
         thresholds: STAGE_GAUGE_THRESHOLDS,
       }),
     ).toThrow("Persisted partner node missing is missing from the catalog")
@@ -278,12 +299,13 @@ describe("record usage application use case", () => {
           [targetNode.id, targetNode],
         ]),
         selector: () => 0,
+        catalogNodes,
         thresholds: STAGE_GAUGE_THRESHOLDS,
       }),
     ).toThrow(writeFailure)
   })
 
-  test("Given a custom child threshold When recording usage Then the ledger evolves at the supplied threshold", () => {
+  test("Given a custom child threshold When recording usage Then the ledger opens a pending evolution battle", () => {
     const thresholds: StageThresholds = Object.freeze({
       ...STAGE_GAUGE_THRESHOLDS,
       0: 1,
@@ -297,6 +319,7 @@ describe("record usage application use case", () => {
         [currentNode.id, currentNode],
         [targetNode.id, targetNode],
       ]),
+      catalogNodes,
       selector: () => 0,
       thresholds,
     })
@@ -304,13 +327,18 @@ describe("record usage application use case", () => {
     expect(outcome).toEqual({
       kind: "applied",
       receiptKey: "receipt-custom-threshold",
-      evolution: { fromNodeId: currentNode.id, toNodeId: targetNode.id },
+      evolutionBattlePending: {
+        opponentNodeId: currentNode.id,
+        targetNodeId: targetNode.id,
+      },
     })
     expect(ledger.evolutions).toEqual([
       {
-        currentNodeId: targetNode.id,
-        gauge: 0,
-        isTerminal: true,
+        currentNodeId: currentNode.id,
+        gauge: 1,
+        isTerminal: false,
+        pendingEvolutionTargetId: targetNode.id,
+        battleOpponentNodeId: currentNode.id,
       },
     ])
   })

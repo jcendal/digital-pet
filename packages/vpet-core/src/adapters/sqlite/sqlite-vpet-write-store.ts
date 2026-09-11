@@ -1,5 +1,5 @@
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
-import type { UsageReceiptMetadata } from "../../application/models/usage.ts"
+import type { ResolveEvolutionBattleOutcome, UsageReceiptMetadata } from "../../application/models/usage.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import { runMigrations } from "./sqlite-migrations.ts"
@@ -123,7 +123,7 @@ export const createSqliteVpetWriteStore = (options: CreateSqliteVpetWriteStoreOp
         if (generationRow === null) throw new Error("Generation allocation failed")
         const partnerId = `partner-${generationRow.generation}`
         executor.run(
-          "INSERT INTO partners (partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at) VALUES (?, ?, ?, ?, ?, ?, NULL)",
+          "INSERT INTO partners (partner_id, generation, current_node_id, gauge, is_terminal, pending_evolution_target_id, battle_opponent_node_id, created_at, retired_at) VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, NULL)",
           [partnerId, generationRow.generation, input.currentNodeId, input.gauge, input.isTerminal, input.createdAt],
         )
         executor.run(
@@ -179,12 +179,17 @@ export const createSqliteVpetWriteStore = (options: CreateSqliteVpetWriteStoreOp
         if (activePartnerRow === null) return { kind: "no_active_partner" } as const
         const activePartner = toPartner(activePartnerRow)
         const nextState = evolve(activePartner)
-        executor.run("UPDATE partners SET current_node_id = ?, gauge = ?, is_terminal = ? WHERE partner_id = ?", [
-          nextState.currentNodeId,
-          nextState.gauge,
-          nextState.isTerminal,
-          activePartner.partnerId,
-        ])
+        executor.run(
+          "UPDATE partners SET current_node_id = ?, gauge = ?, is_terminal = ?, pending_evolution_target_id = ?, battle_opponent_node_id = ? WHERE partner_id = ?",
+          [
+            nextState.currentNodeId,
+            nextState.gauge,
+            nextState.isTerminal,
+            nextState.pendingEvolutionTargetId,
+            nextState.battleOpponentNodeId,
+            activePartner.partnerId,
+          ],
+        )
         executor.run(
           "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, ?, ?, ?)",
           [
@@ -217,6 +222,49 @@ export const createSqliteVpetWriteStore = (options: CreateSqliteVpetWriteStoreOp
     },
     listUsageReceipts() {
       return executor.all<UsageReceiptRow>(USAGE_RECEIPTS_SELECT).map(toUsageReceiptRecord)
+    },
+    resolveEvolutionBattle(nextState: PartnerProgression, createdAt: string): ResolveEvolutionBattleOutcome {
+      return executor.transaction(() => {
+        const activePartnerRow = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
+        if (activePartnerRow === null) return { kind: "no_pending_battle" } as const
+
+        const activePartner = toPartner(activePartnerRow)
+        if (activePartner.pendingEvolutionTargetId === null || activePartner.battleOpponentNodeId === null) {
+          return { kind: "no_pending_battle" } as const
+        }
+
+        const fromNodeId = activePartner.currentNodeId
+        executor.run(
+          "UPDATE partners SET current_node_id = ?, gauge = ?, is_terminal = ?, pending_evolution_target_id = ?, battle_opponent_node_id = ? WHERE partner_id = ?",
+          [
+            nextState.currentNodeId,
+            nextState.gauge,
+            nextState.isTerminal,
+            nextState.pendingEvolutionTargetId,
+            nextState.battleOpponentNodeId,
+            activePartner.partnerId,
+          ],
+        )
+        executor.run(
+          "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, NULL, NULL, ?)",
+          [
+            `event-battle-${createdAt}`,
+            activePartner.partnerId,
+            nextState.currentNodeId,
+            nextState.gauge,
+            nextState.isTerminal,
+            createdAt,
+          ],
+        )
+
+        if (nextState.currentNodeId !== fromNodeId) {
+          return {
+            kind: "won",
+            evolution: { fromNodeId, toNodeId: nextState.currentNodeId },
+          } as const
+        }
+        return { kind: "lost" } as const
+      })
     },
   } satisfies SqliteVpetWriteStore
 

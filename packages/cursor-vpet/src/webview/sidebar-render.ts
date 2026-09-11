@@ -18,6 +18,7 @@ const formatCount = (value: number): string => value.toLocaleString("en-US")
 export const buildNextCheckLine = (model: SidebarCardModel): string => {
   if (model.kind === "no_partner") return ""
   if (model.isTerminal && !model.isSetOverride) return `${NEXT_CHECK_PREFIX}None`
+  if (model.evolutionBattlePending) return `${NEXT_CHECK_PREFIX}Evolution battle!`
 
   const progress = model.isTerminal ? 1 : Math.min(Math.max(model.gauge / model.threshold, 0), 1)
   const filled = Math.floor(progress * NEXT_CHECK_BAR_WIDTH)

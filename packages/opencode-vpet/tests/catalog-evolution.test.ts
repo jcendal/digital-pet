@@ -5,11 +5,17 @@ import { DIGIMON_DATA } from "@sbugallo/vpet-core/data/digimon-data.ts"
 import type { DigimonNode as DomainDigimonNode } from "@sbugallo/vpet-core/domain/digimon-node.ts"
 import {
   applyTokenProgress,
+  resolveEvolutionBattle,
   STAGE_GAUGE_THRESHOLDS,
   type StageThresholds,
 } from "@sbugallo/vpet-core/domain/evolution.ts"
 import type { Partner, PartnerProgression } from "@sbugallo/vpet-core/domain/partner.ts"
 import { DIGIMON_STAGES, isDigimonStage } from "@sbugallo/vpet-core/domain/stage.ts"
+
+const noBattle = {
+  pendingEvolutionTargetId: null,
+  battleOpponentNodeId: null,
+} as const
 
 const controlledCurrent: DigimonNode = {
   id: "controlled-current",
@@ -31,6 +37,19 @@ const controlledTarget: DigimonNode = {
   url: "https://example.test/controlled-target",
 }
 
+const controlledOpponent: DigimonNode = {
+  id: "controlled-opponent",
+  nameEn: "Controlled Opponent",
+  nameJp: "Controlled Opponent",
+  nextEvolutions: [],
+  sprite: "controlled-opponent.png",
+  stage: 0,
+  url: "https://example.test/controlled-opponent",
+}
+
+const controlledCatalogNodes = [controlledCurrent, controlledTarget, controlledOpponent]
+const controlledLookup = new Map(controlledCatalogNodes.map((node) => [node.id, node]))
+
 describe("catalog and evolution", () => {
   test("Given domain contracts When catalog data is parsed Then normalized nodes use the domain stage and node shapes", () => {
     const node: DomainDigimonNode = controlledCurrent
@@ -40,6 +59,8 @@ describe("catalog and evolution", () => {
       currentNodeId: node.id,
       gauge: 0,
       isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
       createdAt: "2026-07-31T00:00:00.000Z",
       retiredAt: null,
     }
@@ -47,6 +68,8 @@ describe("catalog and evolution", () => {
       currentNodeId: node.id,
       gauge: 0,
       isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
     }
     const thresholds: StageThresholds = STAGE_GAUGE_THRESHOLDS
 
@@ -122,45 +145,67 @@ describe("catalog and evolution", () => {
     expect(() => parseDigimonCatalog([root])).toThrow(/next_evolutions/i)
   })
 
-  test("Given a threshold crossing on a same-stage edge When token progress applies Then it resets after exactly one selected evolution", async () => {
+  test("Given a threshold crossing on a same-stage edge When token progress applies Then it opens a pending evolution battle", async () => {
     const catalog = await loadDigimonCatalog()
     const andromon = catalog.byId.get("5-003")
 
     if (andromon === undefined) throw new Error("Expected Andromon in catalog")
 
-    const evolved = applyTokenProgress(
-      { current: andromon, gauge: 124_999_999, isTerminal: false },
+    const pending = applyTokenProgress(
+      { current: andromon, gauge: 124_999_999, isTerminal: false, ...noBattle },
       1,
       () => 0.5,
       catalog.byId,
+      catalog.nodes,
       STAGE_GAUGE_THRESHOLDS,
     )
 
+    expect(pending.current.id).toBe("5-003")
+    expect(pending.pendingEvolutionTargetId).toBe("5-033")
+    expect(pending.battleOpponentNodeId).not.toBe("5-003")
+    expect(pending.gauge).toBe(STAGE_GAUGE_THRESHOLDS[5])
+
+    const evolved = resolveEvolutionBattle(pending, true, catalog.byId)
     expect(evolved.current.id).toBe("5-033")
     expect(evolved.gauge).toBe(0)
+    expect(evolved.pendingEvolutionTargetId).toBeNull()
   })
 
-  test("Given a controlled immutable lookup When token progress reaches a threshold Then it selects the lookup target and marks terminal state", () => {
-    const lookup = new Map([[controlledTarget.id, controlledTarget]])
-
-    const evolved = applyTokenProgress(
-      { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
+  test("Given a controlled immutable lookup When token progress reaches a threshold Then it opens a pending evolution battle", () => {
+    const pending = applyTokenProgress(
+      { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
       1,
       () => 0,
-      lookup,
+      controlledLookup,
+      controlledCatalogNodes,
       STAGE_GAUGE_THRESHOLDS,
     )
 
-    expect(evolved).toEqual({ current: controlledTarget, gauge: 0, isTerminal: true })
+    expect(pending).toEqual({
+      current: controlledCurrent,
+      gauge: STAGE_GAUGE_THRESHOLDS[0],
+      isTerminal: false,
+      pendingEvolutionTargetId: "controlled-target",
+      battleOpponentNodeId: "controlled-opponent",
+    })
+
+    expect(resolveEvolutionBattle(pending, true, controlledLookup)).toEqual({
+      current: controlledTarget,
+      gauge: 0,
+      isTerminal: true,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    })
   })
 
   test("Given a controlled lookup missing the selected target When token progress reaches a threshold Then it retains the existing catalog error", () => {
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
+        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
         1,
         () => 0,
-        new Map(),
+        new Map([[controlledCurrent.id, controlledCurrent]]),
+        [controlledCurrent],
         STAGE_GAUGE_THRESHOLDS,
       ),
     ).toThrow("Evolution target controlled-target is missing from the catalog")
@@ -172,31 +217,39 @@ describe("catalog and evolution", () => {
       0: 1,
     })
 
-    const evolved = applyTokenProgress(
-      { current: controlledCurrent, gauge: 0, isTerminal: false },
+    const pending = applyTokenProgress(
+      { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
       1,
       () => 0,
-      new Map([[controlledTarget.id, controlledTarget]]),
+      controlledLookup,
+      controlledCatalogNodes,
       thresholds,
     )
 
-    expect(evolved).toEqual({ current: controlledTarget, gauge: 0, isTerminal: true })
+    expect(resolveEvolutionBattle(pending, true, controlledLookup)).toEqual({
+      current: controlledTarget,
+      gauge: 0,
+      isTerminal: true,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    })
   })
 
   test("Given an invalid selector When token progress reaches a threshold Then the existing selector error is retained", () => {
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false },
+        { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
         1,
         () => 1,
-        new Map([[controlledTarget.id, controlledTarget]]),
+        controlledLookup,
+        controlledCatalogNodes,
         STAGE_GAUGE_THRESHOLDS,
       ),
     ).toThrow("Evolution selector must return a finite number in [0, 1), received 1")
   })
 
   test("Given a terminal partner When token progress applies Then it preserves the existing terminal state", () => {
-    const state = { current: controlledTarget, gauge: 0, isTerminal: true } as const
+    const state = { current: controlledTarget, gauge: 0, isTerminal: true, ...noBattle } as const
 
     expect(
       applyTokenProgress(
@@ -205,7 +258,8 @@ describe("catalog and evolution", () => {
         () => {
           throw new Error("selector must not run")
         },
-        new Map(),
+        controlledLookup,
+        controlledCatalogNodes,
         STAGE_GAUGE_THRESHOLDS,
       ),
     ).toBe(state)
@@ -219,24 +273,26 @@ describe("catalog and evolution", () => {
 
     expect(
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 0, isTerminal: false },
+        { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
         1,
         () => {
           throw new Error("selector must not run")
         },
-        new Map(),
+        controlledLookup,
+        controlledCatalogNodes,
         thresholds,
       ),
-    ).toEqual({ current: controlledCurrent, gauge: 1, isTerminal: false })
+    ).toEqual({ current: controlledCurrent, gauge: 1, isTerminal: false, ...noBattle })
   })
 
   test("Given an incomplete untyped threshold policy When token progress applies Then it rejects the policy before evolution", () => {
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 0, isTerminal: false },
+        { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
         1,
         () => 0,
-        new Map([[controlledTarget.id, controlledTarget]]),
+        controlledLookup,
+        controlledCatalogNodes,
         {},
       ),
     ).toThrow("Evolution thresholds must be a complete frozen policy of positive finite numbers")
@@ -248,10 +304,11 @@ describe("catalog and evolution", () => {
 
     expect(() =>
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 0, isTerminal: false },
+        { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
         1,
         () => 0,
-        new Map([[controlledTarget.id, controlledTarget]]),
+        controlledLookup,
+        controlledCatalogNodes,
         thresholds,
       ),
     ).toThrow("Evolution thresholds must be a complete frozen policy of positive finite numbers")
@@ -267,10 +324,11 @@ describe("catalog and evolution", () => {
     for (const thresholds of policies) {
       expect(() =>
         applyTokenProgress(
-          { current: controlledCurrent, gauge: 0, isTerminal: false },
+          { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
           1,
           () => 0,
-          new Map([[controlledTarget.id, controlledTarget]]),
+          controlledLookup,
+          controlledCatalogNodes,
           thresholds,
         ),
       ).toThrow("Evolution thresholds must be a complete frozen policy of positive finite numbers")
@@ -283,15 +341,35 @@ describe("catalog and evolution", () => {
     expect(Reflect.set(thresholds, 0, 1)).toBeFalse()
     expect(
       applyTokenProgress(
-        { current: controlledCurrent, gauge: 0, isTerminal: false },
+        { current: controlledCurrent, gauge: 0, isTerminal: false, ...noBattle },
         1,
         () => {
           throw new Error("selector must not run")
         },
-        new Map(),
+        controlledLookup,
+        controlledCatalogNodes,
         thresholds,
       ),
-    ).toEqual({ current: controlledCurrent, gauge: 1, isTerminal: false })
+    ).toEqual({ current: controlledCurrent, gauge: 1, isTerminal: false, ...noBattle })
+  })
+
+  test("Given a lost evolution battle When resolving Then gauge resets for the current stage", () => {
+    const pending = applyTokenProgress(
+      { current: controlledCurrent, gauge: 4_999_999, isTerminal: false, ...noBattle },
+      1,
+      () => 0,
+      controlledLookup,
+      controlledCatalogNodes,
+      STAGE_GAUGE_THRESHOLDS,
+    )
+
+    expect(resolveEvolutionBattle(pending, false, controlledLookup)).toEqual({
+      current: controlledCurrent,
+      gauge: 0,
+      isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    })
   })
 })
 

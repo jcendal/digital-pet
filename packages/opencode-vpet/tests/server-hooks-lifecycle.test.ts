@@ -63,6 +63,8 @@ const createToastRepository = () => {
       currentNodeId: "0-001",
       gauge: 0,
       isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
       createdAt: "2026-07-31T00:00:00.000Z",
       retiredAt: null,
     }),
@@ -74,9 +76,17 @@ const createToastRepository = () => {
         readonly currentNodeId: string
         readonly gauge: number
         readonly isTerminal: boolean
+        readonly pendingEvolutionTargetId: string | null
+        readonly battleOpponentNodeId: string | null
         readonly createdAt: string
         readonly retiredAt: string | null
-      }) => { readonly currentNodeId: string; readonly gauge: number; readonly isTerminal: boolean },
+      }) => {
+        readonly currentNodeId: string
+        readonly gauge: number
+        readonly isTerminal: boolean
+        readonly pendingEvolutionTargetId: string | null
+        readonly battleOpponentNodeId: string | null
+      },
     ) => {
       evolve({
         partnerId: "partner-1",
@@ -84,6 +94,8 @@ const createToastRepository = () => {
         currentNodeId: "0-001",
         gauge: 0,
         isTerminal: false,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         createdAt: "2026-07-31T00:00:00.000Z",
         retiredAt: null,
       })
@@ -240,9 +252,24 @@ describe("server hook lifecycle", () => {
     await eventHandler({ event: { type: "session.idle", properties: { sessionID: "session-1" } } satisfies Event })
 
     expect(delivered).toEqual([
-      { title: "Digi-evolution", message: "Digitama evolved into Koromon!", variant: "success", duration: 5_000 },
-      { title: "Digi-evolution", message: "Digitama evolved into Koromon!", variant: "success", duration: 5_000 },
-      { title: "Digi-evolution", message: "Digitama evolved into Koromon!", variant: "success", duration: 5_000 },
+      {
+        title: "Evolution battle",
+        message: "Battle against Digitama! Win to evolve.",
+        variant: "info",
+        duration: 5_000,
+      },
+      {
+        title: "Evolution battle",
+        message: "Battle against Digitama! Win to evolve.",
+        variant: "info",
+        duration: 5_000,
+      },
+      {
+        title: "Evolution battle",
+        message: "Battle against Digitama! Win to evolve.",
+        variant: "info",
+        duration: 5_000,
+      },
     ])
   })
 

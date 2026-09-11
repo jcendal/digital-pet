@@ -14,6 +14,7 @@ export type VpetToastEvent =
   | Readonly<{ readonly kind: "unfreeze" }>
   | Readonly<{ readonly kind: "set"; readonly nodeId: string }>
   | Readonly<{ readonly kind: "evolution"; readonly fromNodeId: string; readonly toNodeId: string }>
+  | Readonly<{ readonly kind: "evolution_battle"; readonly opponentNodeId: string }>
 
 export type VpetToastNotifier = (payload: VpetToastPayload) => Promise<void>
 
@@ -80,6 +81,17 @@ export const formatVpetToast = (
             title: "Digi-evolution",
             message: `${fromName} evolved into ${toName}!`,
             variant: "success",
+            duration: 5_000,
+          }
+    }
+    case "evolution_battle": {
+      const opponentName = namedPayload(event.opponentNodeId, language, catalog)
+      return opponentName === undefined
+        ? undefined
+        : {
+            title: "Evolution battle",
+            message: `Battle against ${opponentName}! Win to evolve.`,
+            variant: "info",
             duration: 5_000,
           }
     }

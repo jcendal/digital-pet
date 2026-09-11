@@ -82,6 +82,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: false,
           isSetOverride: false,
           trainerTotalTokens: 100,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
         expect(closeSpy).toHaveBeenCalledTimes(1)
       } finally {
@@ -116,6 +122,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: true,
           isSetOverride: false,
           trainerTotalTokens: 0,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
       } finally {
         await repository.close()
@@ -149,6 +161,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: false,
           isSetOverride: true,
           trainerTotalTokens: 900,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
 
         const withoutPartner = new Database(databasePath)
@@ -162,6 +180,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: false,
           isSetOverride: true,
           trainerTotalTokens: 900,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
       } finally {
         await repository.close()
@@ -202,6 +226,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: false,
           isSetOverride: true,
           trainerTotalTokens: 900,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
 
         const afterDatabase = new Database(databasePath)
@@ -248,6 +278,12 @@ describe("SQLite sidebar snapshot reader", () => {
           frozen: false,
           isSetOverride: true,
           trainerTotalTokens: 0,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
         })
         const stored = new Database(databasePath)
         expect(stored.query("SELECT cheat_node_id FROM vpet_control_state WHERE control_id = 1").get()).toEqual({

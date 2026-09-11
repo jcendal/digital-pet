@@ -1,6 +1,10 @@
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
-import type { ApplyUsageReceiptOutcome, UsageReceiptMetadata } from "../../application/models/usage.ts"
+import type {
+  ApplyUsageReceiptOutcome,
+  ResolveEvolutionBattleOutcome,
+  UsageReceiptMetadata,
+} from "../../application/models/usage.ts"
 import type { PartnerLifecycle } from "../../application/ports/partner-lifecycle.ts"
 import type { UsageLedger } from "../../application/ports/usage-ledger.ts"
 import type { VpetControl } from "../../application/ports/vpet-control.ts"
@@ -47,6 +51,10 @@ export type SqliteVpetWriteStore = PartnerLifecycle &
     getPartnerByGeneration: (generation: number) => PersistedPartnerSummary | null
     listPartnerEvents: (partnerId: string) => readonly PersistedPartnerEvent[]
     listUsageReceipts: () => readonly UsageReceiptRecord[]
+    resolveEvolutionBattle: (
+      nextState: PartnerProgression,
+      createdAt: string,
+    ) => ResolveEvolutionBattleOutcome
   }
 
 export type { ApplyUsageReceiptOutcome, PartnerProgression, SpawnPartnerInput, UsageReceiptMetadata }

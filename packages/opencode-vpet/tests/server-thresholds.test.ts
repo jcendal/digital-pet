@@ -156,6 +156,8 @@ describe("server threshold policy", () => {
       currentNodeId: "3-001",
       gauge: 0,
       isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
       createdAt: "2026-08-21T00:00:00.000Z",
       retiredAt: null,
     }
@@ -184,8 +186,15 @@ describe("server threshold policy", () => {
     await dispatch(idleHooks, { type: "session.idle", properties: { sessionID: "session-1" } } satisfies Event)
 
     expect(directRepository.progressions).toEqual(idleRepository.progressions)
-    expect(directRepository.progressions).toEqual([expect.objectContaining({ gauge: 0, isTerminal: false })])
-    expect(directRepository.progressions[0]?.currentNodeId).not.toBe(partner.currentNodeId)
+    expect(directRepository.progressions).toEqual([
+      expect.objectContaining({
+        currentNodeId: partner.currentNodeId,
+        gauge: 1,
+        isTerminal: false,
+        pendingEvolutionTargetId: expect.any(String),
+        battleOpponentNodeId: expect.any(String),
+      }),
+    ])
   })
 
   test("Given default thresholds When direct usage arrives below the child threshold Then the existing timing is retained", async () => {
@@ -195,6 +204,8 @@ describe("server threshold policy", () => {
       currentNodeId: "3-001",
       gauge: 0,
       isTerminal: false,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
       createdAt: "2026-08-21T00:00:00.000Z",
       retiredAt: null,
     }
@@ -211,6 +222,8 @@ describe("server threshold policy", () => {
         currentNodeId: partner.currentNodeId,
         gauge: 1,
         isTerminal: false,
+        pendingEvolutionTargetId: null,
+        battleOpponentNodeId: null,
       },
     ])
   })
@@ -241,7 +254,12 @@ describe("server threshold policy", () => {
         databasePath: join(appDataRoot, "opencode-vpet", "pet.db"),
       })
       try {
-        expect(repository.getActivePartner()?.gauge).toBe(0)
+        expect(repository.getActivePartner()).toEqual(
+          expect.objectContaining({
+            gauge: 1,
+            pendingEvolutionTargetId: "1-001",
+          }),
+        )
       } finally {
         await repository.close()
       }
@@ -263,7 +281,12 @@ describe("server threshold policy", () => {
         databasePath: join(appDataRoot, "opencode-vpet", "pet.db"),
       })
       try {
-        expect(repository.getActivePartner()?.gauge).toBe(0)
+        expect(repository.getActivePartner()).toEqual(
+          expect.objectContaining({
+            gauge: 1,
+            pendingEvolutionTargetId: "1-001",
+          }),
+        )
       } finally {
         await repository.close()
       }

@@ -1,4 +1,5 @@
 import type { DigimonNode } from "./digimon-node.ts"
+import { pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
 import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
 
 export type StageThresholds = Readonly<Record<DigimonStage, number>>
@@ -18,6 +19,8 @@ export type PartnerEvolutionState = {
   readonly current: DigimonNode
   readonly gauge: number
   readonly isTerminal: boolean
+  readonly pendingEvolutionTargetId: string | null
+  readonly battleOpponentNodeId: string | null
 }
 
 export type EvolutionSelector = () => number
@@ -35,31 +38,79 @@ const isStageThresholds = (thresholds: unknown): thresholds is StageThresholds =
   })
 }
 
+const hasPendingBattle = (state: PartnerEvolutionState): boolean =>
+  state.pendingEvolutionTargetId != null && state.battleOpponentNodeId != null
+
 export const applyTokenProgress = (
   state: PartnerEvolutionState,
   tokenDelta: number,
   selector: EvolutionSelector,
   digimonById: ReadonlyMap<string, DigimonNode>,
+  catalogNodes: readonly DigimonNode[],
   thresholds: unknown,
 ): PartnerEvolutionState => {
   if (!isStageThresholds(thresholds)) {
     throw new Error("Evolution thresholds must be a complete frozen policy of positive finite numbers")
   }
   if (state.isTerminal) return state
+  if (hasPendingBattle(state)) return state
 
+  const threshold = thresholds[state.current.stage]
   const gauge = state.gauge + tokenDelta
-  if (gauge < thresholds[state.current.stage]) return { ...state, gauge }
-  if (state.current.nextEvolutions.length === 0) return { ...state, gauge: 0, isTerminal: true }
-
-  const selection = selector()
-  if (!Number.isFinite(selection) || selection < 0 || selection >= 1) {
-    throw new Error(`Evolution selector must return a finite number in [0, 1), received ${selection}`)
+  if (gauge < threshold) return { ...state, gauge }
+  if (state.current.nextEvolutions.length === 0) {
+    return { ...state, gauge: 0, isTerminal: true, pendingEvolutionTargetId: null, battleOpponentNodeId: null }
   }
 
-  const targetId = state.current.nextEvolutions[Math.floor(selection * state.current.nextEvolutions.length)]
-  if (targetId === undefined) throw new Error("Evolution target selection failed")
+  const pendingEvolutionTargetId = pickEvolutionTarget(state.current, selector)
+  const target = digimonById.get(pendingEvolutionTargetId)
+  if (target === undefined) {
+    throw new Error(`Evolution target ${pendingEvolutionTargetId} is missing from the catalog`)
+  }
+
+  const battleOpponentNodeId = pickRandomSameStageOpponent(state.current, catalogNodes, selector)
+  if (digimonById.get(battleOpponentNodeId) === undefined) {
+    throw new Error(`Battle opponent ${battleOpponentNodeId} is missing from the catalog`)
+  }
+
+  return {
+    current: state.current,
+    gauge: threshold,
+    isTerminal: false,
+    pendingEvolutionTargetId,
+    battleOpponentNodeId,
+  }
+}
+
+export const resolveEvolutionBattle = (
+  state: PartnerEvolutionState,
+  won: boolean,
+  digimonById: ReadonlyMap<string, DigimonNode>,
+): PartnerEvolutionState => {
+  if (!hasPendingBattle(state)) {
+    throw new Error("Cannot resolve evolution battle without a pending battle")
+  }
+
+  if (!won) {
+    return {
+      current: state.current,
+      gauge: 0,
+      isTerminal: state.isTerminal,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    }
+  }
+
+  const targetId = state.pendingEvolutionTargetId
+  if (targetId === null) throw new Error("Pending evolution target is missing")
   const current = digimonById.get(targetId)
   if (current === undefined) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
 
-  return { current, gauge: 0, isTerminal: current.nextEvolutions.length === 0 }
+  return {
+    current,
+    gauge: 0,
+    isTerminal: current.nextEvolutions.length === 0,
+    pendingEvolutionTargetId: null,
+    battleOpponentNodeId: null,
+  }
 }

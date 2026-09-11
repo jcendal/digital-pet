@@ -7,6 +7,8 @@ export type PersistedPartnerRow = {
   readonly current_node_id: string
   readonly gauge: number
   readonly is_terminal: number
+  readonly pending_evolution_target_id: string | null
+  readonly battle_opponent_node_id: string | null
   readonly created_at: string
   readonly retired_at: string | null
 }
@@ -40,15 +42,21 @@ export type MigrationRow = {
   readonly version: number
 }
 
-export const ACTIVE_PARTNER_SELECT = `
-  SELECT
+const PARTNER_COLUMNS = `
     partner_id,
     generation,
     current_node_id,
     gauge,
     is_terminal,
+    pending_evolution_target_id,
+    battle_opponent_node_id,
     created_at,
     retired_at
+`
+
+export const ACTIVE_PARTNER_SELECT = `
+  SELECT
+    ${PARTNER_COLUMNS}
   FROM partners
   WHERE retired_at IS NULL
   LIMIT 1
@@ -56,39 +64,21 @@ export const ACTIVE_PARTNER_SELECT = `
 
 export const PARTNERS_SELECT = `
   SELECT
-    partner_id,
-    generation,
-    current_node_id,
-    gauge,
-    is_terminal,
-    created_at,
-    retired_at
+    ${PARTNER_COLUMNS}
   FROM partners
   ORDER BY generation ASC, created_at ASC, partner_id ASC
 `
 
 export const ARCHIVE_PARTNERS_SELECT = `
   SELECT
-    partner_id,
-    generation,
-    current_node_id,
-    gauge,
-    is_terminal,
-    created_at,
-    retired_at
+    ${PARTNER_COLUMNS}
   FROM partners
   ORDER BY partner_id ASC
 `
 
 export const PARTNER_BY_GENERATION_SELECT = `
   SELECT
-    partner_id,
-    generation,
-    current_node_id,
-    gauge,
-    is_terminal,
-    created_at,
-    retired_at
+    ${PARTNER_COLUMNS}
   FROM partners
   WHERE generation = ?
   LIMIT 1
@@ -138,6 +128,8 @@ export const toPartner = (row: PersistedPartnerRow): Partner => {
     currentNodeId: row.current_node_id,
     gauge: row.gauge,
     isTerminal: row.is_terminal === 1,
+    pendingEvolutionTargetId: row.pending_evolution_target_id,
+    battleOpponentNodeId: row.battle_opponent_node_id,
     createdAt: row.created_at,
     retiredAt: row.retired_at,
   }

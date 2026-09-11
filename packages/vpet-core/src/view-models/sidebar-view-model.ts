@@ -17,6 +17,7 @@ export type SidebarCardModel =
       readonly isTerminal: boolean
       readonly frozen: boolean
       readonly isSetOverride: boolean
+      readonly evolutionBattlePending: boolean
     }
 
 export const buildSidebarCardModel = (
@@ -38,5 +39,6 @@ export const buildSidebarCardModel = (
     isTerminal: inputs.isTerminal,
     frozen: inputs.frozen,
     isSetOverride: inputs.isSetOverride,
+    evolutionBattlePending: inputs.evolutionBattlePending,
   }
 }

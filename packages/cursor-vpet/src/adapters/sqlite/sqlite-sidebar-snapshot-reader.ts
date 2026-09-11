@@ -37,6 +37,8 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
       frozen: false,
       isSetOverride: true,
       trainerTotalTokens: trainer?.total_tokens ?? 0,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
     }
   }
 
@@ -51,6 +53,8 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
     frozen: control?.frozen === 1,
     isSetOverride: false,
     trainerTotalTokens: trainer?.total_tokens ?? 0,
+    pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+    battleOpponentNodeId: partner.battleOpponentNodeId,
   }
 }
 

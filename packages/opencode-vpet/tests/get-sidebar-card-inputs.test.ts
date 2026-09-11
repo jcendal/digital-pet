@@ -32,6 +32,11 @@ const catalog: DigimonCatalog = {
   ]),
 }
 
+const snapshotFields = {
+  pendingEvolutionTargetId: null,
+  battleOpponentNodeId: null,
+} as const
+
 describe("get sidebar card inputs", () => {
   test("Given a reader without a snapshot When querying sidebar card inputs Then it returns no partner", () => {
     const reader: SidebarSnapshotReader = {
@@ -50,6 +55,7 @@ describe("get sidebar card inputs", () => {
         frozen: false,
         isSetOverride: false,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -61,6 +67,7 @@ describe("get sidebar card inputs", () => {
       frozen: false,
       isSetOverride: false,
       trainerTotalTokens: 40_000,
+      evolutionBattlePending: false,
     })
   })
 
@@ -73,6 +80,7 @@ describe("get sidebar card inputs", () => {
         frozen: false,
         isSetOverride: false,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -88,6 +96,7 @@ describe("get sidebar card inputs", () => {
         frozen: false,
         isSetOverride: true,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -103,6 +112,7 @@ describe("get sidebar card inputs", () => {
         frozen: false,
         isSetOverride: true,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -114,6 +124,7 @@ describe("get sidebar card inputs", () => {
       frozen: false,
       isSetOverride: true,
       trainerTotalTokens: 40_000,
+      evolutionBattlePending: false,
     })
   })
 
@@ -126,6 +137,7 @@ describe("get sidebar card inputs", () => {
         frozen: false,
         isSetOverride: false,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -137,6 +149,7 @@ describe("get sidebar card inputs", () => {
       frozen: false,
       isSetOverride: false,
       trainerTotalTokens: 40_000,
+      evolutionBattlePending: false,
     })
   })
 
@@ -149,6 +162,7 @@ describe("get sidebar card inputs", () => {
         frozen: true,
         isSetOverride: false,
         trainerTotalTokens: 40_000,
+        ...snapshotFields,
       }),
     }
 
@@ -160,6 +174,7 @@ describe("get sidebar card inputs", () => {
       frozen: true,
       isSetOverride: false,
       trainerTotalTokens: 40_000,
+      evolutionBattlePending: false,
     })
   })
 })

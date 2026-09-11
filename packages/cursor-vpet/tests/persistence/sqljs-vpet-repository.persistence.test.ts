@@ -53,6 +53,7 @@ describe("sql.js vpet repository persistence", () => {
         },
         ledger: repository,
         digimonById: DIGIMON_CATALOG.byId,
+        catalogNodes: DIGIMON_CATALOG.nodes,
         selector: () => 0,
         thresholds: STAGE_GAUGE_THRESHOLDS,
       })

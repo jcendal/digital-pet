@@ -50,6 +50,8 @@ export const createSqliteSidebarSnapshotReader = (
               frozen: false,
               isSetOverride: true,
               trainerTotalTokens: trainer?.total_tokens ?? 0,
+              pendingEvolutionTargetId: null,
+              battleOpponentNodeId: null,
             }
           }
 
@@ -64,6 +66,8 @@ export const createSqliteSidebarSnapshotReader = (
             frozen: control?.frozen === 1,
             isSetOverride: false,
             trainerTotalTokens: trainer?.total_tokens ?? 0,
+            pendingEvolutionTargetId: partner.pendingEvolutionTargetId,
+            battleOpponentNodeId: partner.battleOpponentNodeId,
           }
         } finally {
           database.close()
