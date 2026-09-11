@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import { DEFAULT_VPET_SETTINGS } from "@sbugallo/vpet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@sbugallo/vpet-core/data/catalog.ts"
-import { pickRandomSameStageOpponent } from "@sbugallo/vpet-core/domain/evolution-battle.ts"
+import { pickEvolutionTarget, pickRandomSameStageOpponent } from "@sbugallo/vpet-core/domain/evolution-battle.ts"
 import { DEBUG_FORCE_EVOLUTION_BATTLE } from "../config/debug.ts"
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import { getSidebarCardInputs } from "@sbugallo/vpet-core/application/use-cases/get-sidebar-card-inputs.ts"
@@ -14,6 +14,8 @@ import {
 } from "@sbugallo/vpet-core/application/use-cases/resolve-evolution-battle.ts"
 import { buildSidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
 import { renderPositionedArtwork } from "./animated-artwork.ts"
+import { runDefeatAnimation } from "./defeat-artwork.ts"
+import { runEvolutionAnimation } from "./evolution-artwork.ts"
 import {
   runEvolutionBattleAnimation,
   sleep,
@@ -121,8 +123,14 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     const opponent = DIGIMON_CATALOG.byId.get(opponentId)
     if (opponent === undefined) return
 
+    const evolutionTargetId =
+      player.nextEvolutions.length > 0 ? pickEvolutionTarget(player, Math.random) : null
+
     this.debugBattlePlayedThisVisit = true
-    await this.runBattleAnimation(player.sprite, opponent.sprite, {
+    await this.runBattleAnimation({
+      fromSprite: player.sprite,
+      opponentSprite: opponent.sprite,
+      evolutionTargetId,
       preview: true,
       opponentName: opponent.nameEn,
     })
@@ -166,15 +174,46 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
     const opponent = DIGIMON_CATALOG.byId.get(snapshot.battleOpponentNodeId)
     if (player === undefined || opponent === undefined) return false
 
-    await this.runBattleAnimation(player.sprite, opponent.sprite, { preview: false })
+    await this.runBattleAnimation({
+      fromSprite: player.sprite,
+      opponentSprite: opponent.sprite,
+      evolutionTargetId: snapshot.pendingEvolutionTargetId,
+      preview: false,
+    })
     return true
   }
 
-  private async runBattleAnimation(
-    playerSprite: string,
-    opponentSprite: string,
-    options: { readonly preview: boolean; readonly opponentName?: string },
-  ): Promise<void> {
+  private async postArtwork(artwork: string): Promise<void> {
+    this.cachedArtwork = artwork
+    await this.view?.webview.postMessage({ type: "animation-frame", artwork })
+  }
+
+  private async runDefeatReveal(sprite: string): Promise<void> {
+    await runDefeatAnimation(MONSTER_FRAME_CATALOG, sprite, this.artworkWidth, async (artwork) =>
+      this.postArtwork(artwork),
+    )
+  }
+
+  private async runEvolutionReveal(fromSprite: string, evolutionTargetId: string): Promise<void> {
+    const target = DIGIMON_CATALOG.byId.get(evolutionTargetId)
+    if (target === undefined) return
+
+    await runEvolutionAnimation(
+      MONSTER_FRAME_CATALOG,
+      fromSprite,
+      target.sprite,
+      this.artworkWidth,
+      async (artwork) => this.postArtwork(artwork),
+    )
+  }
+
+  private async runBattleAnimation(context: {
+    readonly fromSprite: string
+    readonly opponentSprite: string
+    readonly evolutionTargetId: string | null
+    readonly preview: boolean
+    readonly opponentName?: string
+  }): Promise<void> {
     if (this.battleInProgress) return
 
     this.battleInProgress = true
@@ -184,28 +223,32 @@ export class VpetSidebarProvider implements vscode.WebviewViewProvider {
       const outcome: EvolutionBattleOutcome = Math.random() < 0.5 ? "player" : "opponent"
       const battleOutcome = await runEvolutionBattleAnimation(
         MONSTER_FRAME_CATALOG,
-        playerSprite,
-        opponentSprite,
+        context.fromSprite,
+        context.opponentSprite,
         this.artworkWidth,
         outcome,
-        async (artwork) => {
-          this.cachedArtwork = artwork
-          await this.view?.webview.postMessage({ type: "animation-frame", artwork })
-        },
+        async (artwork) => this.postArtwork(artwork),
       )
 
-      if (options.preview) {
+      const playerWon = battleOutcome === "player"
+      if (playerWon && context.evolutionTargetId !== null) {
+        await this.runEvolutionReveal(context.fromSprite, context.evolutionTargetId)
+      } else if (!playerWon) {
+        await this.runDefeatReveal(context.fromSprite)
+      }
+
+      if (context.preview) {
         void vscode.window.showInformationMessage(
-          battleOutcome === "player"
-            ? `Debug victory vs ${options.opponentName ?? "opponent"} (no save).`
-            : `Debug defeat vs ${options.opponentName ?? "opponent"} (no save).`,
+          playerWon
+            ? `Debug victory vs ${context.opponentName ?? "opponent"} (no save).`
+            : `Debug defeat vs ${context.opponentName ?? "opponent"} (no save).`,
         )
         return
       }
 
       const result = resolveEvolutionBattleForPartner(
         this.battleRepository,
-        battleOutcome === "player",
+        playerWon,
         DIGIMON_CATALOG.byId,
         new Date().toISOString(),
       )

@@ -8,11 +8,24 @@ const BATTLE_GAP_COLUMNS = 12
 
 export const EVOLUTION_BATTLE_HITS_TO_WIN = 3
 export const EVOLUTION_BATTLE_MAX_SHOTS = 24
+export const EVOLUTION_BATTLE_INTRO_MS = 1600
 export const EVOLUTION_BATTLE_TRAVEL_MS = 900
 export const EVOLUTION_BATTLE_PAUSE_MS = 550
 export const EVOLUTION_BATTLE_IMPACT_MS = 650
 export const EVOLUTION_BATTLE_OUTCOME_MS = 1400
 export const EVOLUTION_BATTLE_TICK_MS = 70
+
+/** FIGlet-style BATTLE banner. */
+export const BATTLE_FIGLET_LINES = Object.freeze([
+  "██████╗  █████╗ ████████╗████████╗██╗     ███████╗",
+  "██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝",
+  "██████╔╝███████║   ██║      ██║   ██║     █████╗  ",
+  "██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  ",
+  "██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗",
+  "╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝",
+])
+
+export const buildBattleIntroTextLines = (): readonly string[] => BATTLE_FIGLET_LINES
 
 /** Block-style flame sprite matching Digimon ASCII art. */
 export const FIREBALL_LINES = Object.freeze([" ▄▀▄ ", "▄█▀▀█", " ▀▀▀ "])
@@ -230,6 +243,24 @@ export const defaultBattleScene = (
   ...overrides,
 })
 
+const buildBattleIntroLines = (tick: number): string[] => {
+  const textLines = buildBattleIntroTextLines()
+  const visible = tick % 2 === 0
+  return visible ? [...textLines] : textLines.map((line) => " ".repeat(line.length))
+}
+
+const padIntroRows = (rows: string[], viewportWidth: number): string[] => {
+  const width = rows[0]?.length ?? 0
+  const horizontalPadding = Math.max(0, Math.floor((viewportWidth - width) / 2))
+  const pad = " ".repeat(horizontalPadding)
+  return rows.map((row) => `${pad}${row}`)
+}
+
+export const renderBattleIntroArtwork = (viewportWidth: number, _progress: number, tick = 0): string => {
+  const lines = buildBattleIntroLines(tick)
+  return padIntroRows(lines, viewportWidth).join("\n")
+}
+
 export const renderEvolutionBattleArtwork = (
   catalog: MonsterFrameCatalog,
   playerSprite: string,
@@ -276,6 +307,18 @@ const postScene = async (
   onFrame: (artwork: string) => Promise<void>,
 ): Promise<void> => {
   await onFrame(renderEvolutionBattleArtwork(catalog, playerSprite, opponentSprite, scene, viewportWidth))
+}
+
+const animateBattleIntro = async (
+  viewportWidth: number,
+  onFrame: (artwork: string) => Promise<void>,
+): Promise<void> => {
+  const steps = Math.max(1, Math.ceil(EVOLUTION_BATTLE_INTRO_MS / EVOLUTION_BATTLE_TICK_MS))
+  for (let step = 0; step <= steps; step += 1) {
+    const progress = step / steps
+    await onFrame(renderBattleIntroArtwork(viewportWidth, progress, step))
+    if (step < steps) await sleep(EVOLUTION_BATTLE_TICK_MS)
+  }
 }
 
 const animateShot = async (
@@ -418,6 +461,8 @@ export const runEvolutionBattleAnimation = async (
   onFrame: (artwork: string) => Promise<void>,
   random: () => number = Math.random,
 ): Promise<EvolutionBattleOutcome> => {
+  await animateBattleIntro(viewportWidth, onFrame)
+
   const shots = planEvolutionBattle(outcome, random)
   let playerHits = 0
   let opponentHits = 0

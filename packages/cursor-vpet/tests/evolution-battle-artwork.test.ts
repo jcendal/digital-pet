@@ -2,12 +2,14 @@ import { describe, expect, test } from "bun:test"
 
 import { MONSTER_FRAME_CATALOG } from "@sbugallo/vpet-core/data/monster-frame-catalog.ts"
 import {
+  buildBattleIntroTextLines,
   buildBattleScorePips,
   buildBattleScoreRow,
   defaultBattleScene,
   EVOLUTION_BATTLE_HITS_TO_WIN,
   FIREBALL_LINES,
   planEvolutionBattle,
+  renderBattleIntroArtwork,
   renderEvolutionBattleArtwork,
 } from "../src/webview/evolution-battle-artwork.ts"
 
@@ -17,6 +19,18 @@ const countHits = (shots: readonly { readonly shooter: "player" | "opponent"; re
 })
 
 describe("evolution battle artwork", () => {
+  test("Given battle intro When ticking Then FIGlet BATTLE banner blinks", () => {
+    const textLines = buildBattleIntroTextLines()
+    const on = renderBattleIntroArtwork(80, 1, 0)
+    const off = renderBattleIntroArtwork(80, 1, 1)
+
+    expect(textLines).toHaveLength(6)
+    expect(textLines[0]).toContain("██████╗")
+    expect(on).toContain("███████╗")
+    expect(off).not.toContain("█")
+    expect(on).not.toEqual(off)
+  })
+
   test("Given a fireball shot When rendering Then the flame uses block-style sprite art", () => {
     const artwork = renderEvolutionBattleArtwork(
       MONSTER_FRAME_CATALOG,
