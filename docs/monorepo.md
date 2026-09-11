@@ -57,5 +57,5 @@ bun run package
 
 On release, if configured in GitHub Actions secrets:
 
-- `OVSX_PAT` — publishes to [Open VSX](https://open-vsx.org/extension/sbugallo/cursor-vpet) (ver [openvsx-setup.md](./openvsx-setup.md))
+- `OVSX_PAT` — publishes to [Open VSX](https://open-vsx.org/extension/sbugallo/cursor-vpet)
 - `VSCE_PAT` — publishes to VS Code Marketplace (optional)
