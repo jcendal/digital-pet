@@ -12,17 +12,26 @@ export type {
   SqliteVpetWriteStore,
 } from "@sbugallo/vpet-core/adapters/sqlite/sqlite-vpet-types.ts"
 
+export type CursorSqliteVpetRepository = SqliteVpetWriteStore & {
+  reloadFromDisk(): void
+}
+
 export const createSqliteVpetRepository = async (
   options: CreateSqliteVpetRepositoryOptions = {},
-): Promise<SqliteVpetWriteStore> => {
+): Promise<CursorSqliteVpetRepository> => {
   const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
   const database = await openWritableSqlJsDatabase(databasePath)
 
-  return createSqliteVpetWriteStore({
-    databasePath,
-    executor: database.executor,
-    close: () => {
-      database.close()
+  return {
+    ...createSqliteVpetWriteStore({
+      databasePath,
+      executor: database.executor,
+      close: () => {
+        database.close()
+      },
+    }),
+    reloadFromDisk: () => {
+      database.reloadFromDisk()
     },
-  })
+  }
 }

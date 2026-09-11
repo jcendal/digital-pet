@@ -64,6 +64,39 @@ describe("sql.js vpet repository persistence", () => {
     }
   })
 
+  test("Given a stale in-memory repository When another instance spawns Then usage applies to the new partner", async () => {
+    if (tempRoot === undefined) throw new Error("Missing temp root.")
+
+    const writer = await createSqliteVpetRepository({ appDataRoot: tempRoot.appDataRoot })
+    const staleReader = await createSqliteVpetRepository({ appDataRoot: tempRoot.appDataRoot })
+    const snapshotReader = await createSqliteSidebarSnapshotReader({ appDataRoot: tempRoot.appDataRoot })
+    try {
+      spawnPartner(writer, "2026-09-09T12:00:00.000Z")
+      spawnPartner(writer, "2026-09-09T12:01:00.000Z")
+
+      recordUsage({
+        usage: {
+          receiptKey: "receipt-cross-window",
+          eventId: "event-cross-window",
+          tokenDelta: 7,
+          cost: null,
+          createdAt: "2026-09-09T12:02:00.000Z",
+        },
+        ledger: staleReader,
+        digimonById: DIGIMON_CATALOG.byId,
+        catalogNodes: DIGIMON_CATALOG.nodes,
+        selector: () => 0,
+        thresholds: STAGE_GAUGE_THRESHOLDS,
+      })
+
+      expect(staleReader.getActivePartner()?.generation).toBe(2)
+      expect(snapshotReader.getSidebarSnapshot()?.gauge).toBe(7)
+    } finally {
+      writer.close()
+      staleReader.close()
+    }
+  })
+
   test("Given a spawned partner When reading the sidebar snapshot Then it returns the active partner", async () => {
     if (tempRoot === undefined) throw new Error("Missing temp root.")
 

@@ -10,6 +10,7 @@ import { createCursorUsageEventSource } from "./adapters/cursor/cursor-usage-eve
 import { installVpetHooks, uninstallVpetHooks } from "./adapters/cursor/install-hooks.ts"
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { configureSqlJsWasmPath } from "./adapters/sqlite/sqljs-config.ts"
+import { createDatabaseChangeWatcher } from "./adapters/sqlite/database-change-watcher.ts"
 import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteVpetRepository } from "./adapters/sqlite/sqlite-vpet-write-store.ts"
 import { getVpetExtensionSettings, toDatabaseOptions } from "./config/extension-settings.ts"
@@ -68,6 +69,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     settleDelayMs: readSettings().settleDelayMs,
   })
   context.subscriptions.push(usageSource)
+
+  const databaseWatcher = createDatabaseChangeWatcher({
+    ...databaseOptions(),
+    onChange: () => {
+      repository.reloadFromDisk()
+      refreshSidebar()
+    },
+  })
+  context.subscriptions.push({ dispose: () => databaseWatcher.dispose() })
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {
