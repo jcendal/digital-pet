@@ -5,7 +5,7 @@ import {
   buildNextCheckLine,
   pixelWidthToArtworkColumns,
   toSidebarWebviewPayload,
-} from "../src/webview/sidebar-render.ts"
+} from "../src/webview/sidebar/sidebar-render.ts"
 
 describe("sidebar render", () => {
   test("converts pixel width to monospace artwork columns", () => {

@@ -1,7 +1,7 @@
 import type { SidebarCardModel } from "@sbugallo/vpet-core/view-models/sidebar-view-model.ts"
-import type { AnimationFramePayload, SidebarWebviewPayload } from "./sidebar/webview-messages.ts"
+import type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"
 
-export type { AnimationFramePayload, SidebarWebviewPayload } from "./sidebar/webview-messages.ts"
+export type { AnimationFramePayload, SidebarWebviewPayload } from "./webview-messages.ts"
 
 const NEXT_CHECK_PREFIX = "Next check: "
 const NEXT_CHECK_BAR_WIDTH = 20
