@@ -58,9 +58,8 @@ export const ensureActivePartner = (repository: DevScenarioRepository): void => 
 export const setupBattlePending = (repository: DevScenarioRepository): void => {
   ensureActivePartner(repository)
   const initialSnapshot = repository.getSidebarSnapshot()
-  if (initialSnapshot === null) 
-    throw new Error("VPet dev: could not read the active partner snapshot.")
-  
+  if (initialSnapshot === null) throw new Error("VPet dev: could not read the active partner snapshot.")
+
   if (hasPendingBattle(initialSnapshot)) return
 
   assertPartnerCanBattle(initialSnapshot)
@@ -70,14 +69,13 @@ export const setupBattlePending = (repository: DevScenarioRepository): void => {
   if (current === undefined)
     throw new Error(`VPet dev: partner node ${initialSnapshot.currentNodeId} is missing from the catalog.`)
 
-  if (current.stage === 0) 
-    applyTokenUsage(repository, `dev-hatch-${receiptSuffix}`, 1)
+  if (current.stage === 0) applyTokenUsage(repository, `dev-hatch-${receiptSuffix}`, 1)
 
   const afterHatch = repository.getSidebarSnapshot()
-  if (afterHatch !== null && !hasPendingBattle(afterHatch)) 
+  if (afterHatch !== null && !hasPendingBattle(afterHatch))
     applyTokenUsage(repository, `dev-battle-${receiptSuffix}`, 1)
 
   const pending = repository.getSidebarSnapshot()
-  if (pending === null || !hasPendingBattle(pending)) 
+  if (pending === null || !hasPendingBattle(pending))
     throw new Error("VPet dev: could not open a pending evolution battle for the current partner.")
 }

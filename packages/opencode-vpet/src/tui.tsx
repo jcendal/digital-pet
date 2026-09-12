@@ -300,7 +300,7 @@ export const createTui =
 
     let disposeDevTools = (): void => undefined
     if (process.env["OPENCODE_VPET_DEV"] === "1" && api.keymap !== undefined) {
-      const devAttachPath = `./dev/${"attach-dev-tools.ts"}`
+      const devAttachPath = `./dev/${"attach-dev-tools.js"}`
       const { attachDevTools } = await import(devAttachPath)
       disposeDevTools = attachDevTools({
         api: { keymap: api.keymap },
