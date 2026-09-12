@@ -48,7 +48,7 @@ const advancePartnerToStage = (
     applyDevUsage(repository, `dev-progress-${step}`)
     const pending = repository.getActivePartner()
     if (pending?.pendingEvolutionTargetId !== null && pending?.battleOpponentNodeId !== null) {
-      resolveEvolutionBattleForPartner(repository, true, DIGIMON_CATALOG.byId, new Date().toISOString())
+      resolveEvolutionBattleForPartner(repository, true, DIGIMON_CATALOG.byId, `dev-battle-${step}-${Date.now()}`)
     }
   }
 }
