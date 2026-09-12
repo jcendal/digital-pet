@@ -3,6 +3,8 @@ import { tmpdir } from "node:os"
 import { basename, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
+import { stripWorkspaceDependencies } from "../scripts/strip-workspace-deps.ts"
+
 const PROJECT_ROOT = fileURLToPath(new URL("../", import.meta.url))
 const MONOREPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url))
 const REQUIRED_ARTIFACTS = ["index.js", "index.d.ts", "tui.js", "tui.d.ts", "cli.js"] as const
@@ -55,6 +57,7 @@ const copyPackage = async (root: string): Promise<string> => {
 const packPackage = async (
   packageDirectory: string,
 ): Promise<{ readonly archivePath: string; readonly archiveMembers: readonly string[] }> => {
+  await stripWorkspaceDependencies(packageDirectory)
   const archiveDirectory = join(packageDirectory, "archive")
   await mkdir(archiveDirectory)
   runCommand({ args: ["bun", "pm", "pack", "--destination", archiveDirectory], cwd: packageDirectory })
