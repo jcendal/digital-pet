@@ -22,12 +22,12 @@ export const stripWorkspaceDependencies = async (packageRoot: string): Promise<s
   const packageMetadata = JSON.parse(originalSource) as JsonObject
   if (!isJsonObject(packageMetadata)) throw new Error("package.json must contain an object.")
 
-  const dependencies = withoutWorkspaceDependencies(packageMetadata.dependencies)
+  const dependencies = withoutWorkspaceDependencies(packageMetadata["dependencies"])
   const publishMetadata = { ...packageMetadata } as Record<string, unknown>
   if (dependencies === undefined) {
-    delete publishMetadata.dependencies
+    delete publishMetadata["dependencies"]
   } else {
-    publishMetadata.dependencies = dependencies
+    publishMetadata["dependencies"] = dependencies
   }
 
   await writeFile(packageJsonPath, `${JSON.stringify(publishMetadata, null, 2)}\n`)
