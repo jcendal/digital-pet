@@ -7,6 +7,7 @@
     { "path": "./packages/opencode-vpet/tsconfig.test.json" },
     { "path": "./packages/cursor-vpet" },
     { "path": "./packages/cursor-vpet/tsconfig.scripts.json" },
+    { "path": "./packages/cursor-vpet/tsconfig.test.json" },
     { "path": "./tsconfig.release-metadata.json" }
   ]
 }

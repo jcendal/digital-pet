@@ -83,8 +83,20 @@
       {
         "command": "cursorVpet.uninstallHooks",
         "title": "Cursor VPet: Uninstall Hooks"
+      },
+      {
+        "command": "cursorVpet.dev.showMenu",
+        "title": "Cursor VPet: Dev Tools"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "cursorVpet.dev.showMenu",
+          "when": "cursorVpet.devToolsEnabled"
+        }
+      ]
+    },
     "configuration": {
       "title": "Cursor VPet",
       "properties": {
@@ -97,6 +109,12 @@
           "type": "number",
           "default": 4000,
           "description": "Initial delay before API watermark fallback (ms)"
+        },
+        "vpet.devTools": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "description": "Enable development tools for previewing feed, evolution reveal, and evolution battle animations."
         }
       }
     }

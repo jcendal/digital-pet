@@ -12,7 +12,7 @@ if (stageAnimationSources.exitCode !== 0) {
 await rm("dist", { recursive: true, force: true })
 
 const pluginResult = await Bun.build({
-  entrypoints: ["./src/index.ts", "./src/tui.tsx"],
+  entrypoints: ["./src/index.ts", "./src/tui.tsx", "./src/dev/attach-dev-tools.ts"],
   outdir: "./dist",
   target: "bun",
   format: "esm",

@@ -70,8 +70,7 @@ const createV3Database = (database: Database): void => {
 
 const ALL_MIGRATIONS = [1, 2, 3, 4] as const
 
-const partnerLegacyColumns =
-  "partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at"
+const partnerLegacyColumns = "partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at"
 
 describe("sqlite migrations", () => {
   test("Given an unmigrated database When migrations run Then inspection and all migration writes share one immediate transaction", () => {

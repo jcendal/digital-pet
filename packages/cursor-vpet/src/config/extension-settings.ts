@@ -23,3 +23,15 @@ export const toDatabaseOptions = (
   settings: VpetExtensionSettings,
 ): HostPathOptions & { readonly databasePath?: string } =>
   settings.databasePath === undefined ? {} : { databasePath: settings.databasePath }
+
+export const DEV_TOOLS_CONTEXT = "cursorVpet.devToolsEnabled"
+
+export const isDevToolsEnabled = (extensionMode: vscode.ExtensionMode): boolean => {
+  if (process.env.CURSOR_VPET_DEV === "1") return true
+  if (extensionMode === vscode.ExtensionMode.Development) return true
+  return vscode.workspace.getConfiguration("vpet").get<boolean>("devTools", false)
+}
+
+export const syncDevToolsContext = async (extensionMode: vscode.ExtensionMode): Promise<void> => {
+  await vscode.commands.executeCommand("setContext", DEV_TOOLS_CONTEXT, isDevToolsEnabled(extensionMode))
+}

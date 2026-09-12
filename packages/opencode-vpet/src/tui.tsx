@@ -298,6 +298,25 @@ export const createTui =
 
     poller.start()
 
+    let disposeDevTools = (): void => undefined
+    if (process.env["OPENCODE_VPET_DEV"] === "1" && api.keymap !== undefined) {
+      const devAttachPath = `./dev/${"attach-dev-tools.ts"}`
+      const { attachDevTools } = await import(devAttachPath)
+      disposeDevTools = attachDevTools({
+        api: { keymap: api.keymap },
+        isDisposed: () => disposed,
+        isBusy: () => battleInProgress,
+        feed,
+        activity,
+        tryResolveEvolutionBattle,
+        tryPlayEvolutionReveal,
+        setLastPresentedNodeId: (nodeId: string) => {
+          lastPresentedNodeId = nodeId
+        },
+        ...(scheduling.battleRepository === undefined ? {} : { battleRepository: scheduling.battleRepository }),
+      })
+    }
+
     const disposeLayer =
       api.keymap === undefined || api.ui === undefined || api.theme === undefined
         ? () => undefined
@@ -318,6 +337,7 @@ export const createTui =
     api.lifecycle.onDispose(() => {
       if (disposed) return
       disposed = true
+      disposeDevTools()
       disposeLayer()
       poller.dispose()
       stopVisualInterval()

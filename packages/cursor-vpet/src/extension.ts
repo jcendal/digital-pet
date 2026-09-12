@@ -3,6 +3,7 @@ import * as vscode from "vscode"
 
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { createUsagePipeline } from "./application/usage-pipeline.ts"
+import { isDevToolsEnabled, syncDevToolsContext } from "./config/extension-settings.ts"
 import { createVpetContainer } from "./bootstrap/container.ts"
 import { ensureHooksInstalled } from "./bootstrap/ensure-hooks.ts"
 import { registerCommands } from "./bootstrap/register-commands.ts"
@@ -39,6 +40,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   await ensureHooksInstalled(context)
   container.refreshSidebar()
+
+  await syncDevToolsContext(context.extensionMode)
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (!event.affectsConfiguration("vpet.devTools")) return
+      void syncDevToolsContext(context.extensionMode)
+    }),
+  )
+
+  if (isDevToolsEnabled(context.extensionMode)) {
+    const { registerDevCommands } = await import("./dev/register-commands.ts")
+    registerDevCommands(context, container)
+  }
 }
 
 export function deactivate(): void {}
