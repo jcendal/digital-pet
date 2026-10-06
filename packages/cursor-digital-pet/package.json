@@ -2,7 +2,7 @@
   "name": "cursor-digital-pet",
   "displayName": "Cursor Digital Pet",
   "description": "Digimon virtual pet for Cursor that evolves with Agent token usage.",
-  "version": "0.2.2-dev.0",
+  "version": "0.2.2",
   "publisher": "jcendal",
   "author": "Jorge Cendal",
   "contributors": [
