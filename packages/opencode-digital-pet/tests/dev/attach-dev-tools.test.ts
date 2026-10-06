@@ -92,7 +92,7 @@ describe("opencode-digital-pet dev attach-dev-tools dist", () => {
         throw new Error(new TextDecoder().decode(build.stderr))
       }
     }
-  })
+  }, 60_000)
 
   test("Given built dist When the dev attach module is imported Then attachDevTools is exported", async () => {
     const module = await import(new URL("../../dist/dev/attach-dev-tools.js", import.meta.url).href)
