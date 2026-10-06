@@ -142,7 +142,7 @@ jobs:
       - name: Run release checks
         if: steps.mode.outputs.retry != 'true'
         run: |
-          npm run check
+          npm run check --workspace cursor-digital-pet
           npm run test --workspace cursor-digital-pet
 
       - name: Set up Git
