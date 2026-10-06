@@ -49,4 +49,4 @@ jobs:
 
       - name: Package Cursor VSIX
         working-directory: packages/cursor-digital-pet
-        run: npx @vscode/vsce package --no-dependencies
+        run: npm run package

@@ -128,7 +128,7 @@
     "watch": "node esbuild.mjs --watch",
     "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "bun test",
-    "package": "npx @vscode/vsce package --no-dependencies",
+    "package": "npx @vscode/vsce package --no-dependencies --baseImagesUrl https://github.com/jcendal/digital-pet/raw/HEAD/packages/cursor-digital-pet",
     "publish:openvsx": "npx ovsx publish *.vsix",
     "vscode:prepublish": "npm run build"
   },

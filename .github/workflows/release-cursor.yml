@@ -146,7 +146,7 @@ jobs:
           set -euo pipefail
           vsix_path="$RUNNER_TEMP/cursor-digital-pet.vsix"
           cd packages/cursor-digital-pet
-          npx @vscode/vsce package --no-dependencies -o "$vsix_path"
+          npm run package -- -o "$vsix_path"
           printf 'vsix_path=%s\n' "$vsix_path" >> "$GITHUB_OUTPUT"
 
       - name: Set up Git
