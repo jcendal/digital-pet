@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-06
+
+### Changed
+
+- Feat/cursor pet display
+
+
 ## [0.4.0] - 2026-10-06
 
 ### Changed
