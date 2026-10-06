@@ -3,11 +3,11 @@ import * as vscode from "vscode"
 
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { createDatabaseChangeWatcher } from "../../adapters/sqlite/database-change-watcher.ts"
-import { readArchive } from "../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
-import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
-import { resolveDatabasePath } from "../../adapters/sqlite/options.ts"
-import { createAsyncRefreshQueue } from "../../shared/async-refresh-queue.ts"
+import { createDatabaseChangeWatcher } from "../../../adapters/sqlite/database-change-watcher.ts"
+import { readArchive } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import { resolveDatabasePath } from "../../../adapters/sqlite/options.ts"
+import { createAsyncRefreshQueue } from "../../../shared/async-refresh-queue.ts"
 import { buildDexPanelModel } from "./dex-model.ts"
 import { buildDexWebviewHtml } from "./dex-render.ts"
 
@@ -16,12 +16,14 @@ const panels = new Map<string, { readonly panel: vscode.WebviewPanel; readonly r
 export const openDexPanel = async (
   context: vscode.ExtensionContext,
   options: CreateSqliteDigitalPetArchiveReaderOptions = {},
+  selectedId?: string,
 ): Promise<void> => {
   const databasePath = resolveDatabasePath(options)
   const existing = panels.get(databasePath)
   if (existing !== undefined) {
     existing.panel.reveal(vscode.ViewColumn.One)
     await existing.refresh()
+    if (selectedId !== undefined) await existing.panel.webview.postMessage({ type: "dex-select", id: selectedId })
     return
   }
   const archive = await readArchive(options)
@@ -29,7 +31,9 @@ export const openDexPanel = async (
   const opened = panels.get(databasePath)
   if (opened !== undefined) {
     opened.panel.reveal(vscode.ViewColumn.One)
-    return opened.refresh()
+    await opened.refresh()
+    if (selectedId !== undefined) await opened.panel.webview.postMessage({ type: "dex-select", id: selectedId })
+    return
   }
   let model = buildDexPanelModel(archive, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
   const mediaRoot = vscode.Uri.joinPath(context.extensionUri, "media")
@@ -38,12 +42,17 @@ export const openDexPanel = async (
     localResourceRoots: [mediaRoot],
   })
   let disposed = false
+  let pendingSelection = selectedId
   const queue = createAsyncRefreshQueue()
   const refresh = (): Promise<void> =>
     queue.run(async () => {
       if (disposed) return
       model = buildDexPanelModel(await readArchive(options), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
       if (!disposed) await panel.webview.postMessage({ type: "dex-model", model })
+      if (!disposed && pendingSelection !== undefined) {
+        await panel.webview.postMessage({ type: "dex-select", id: pendingSelection })
+        pendingSelection = undefined
+      }
     })
   const requestRefresh = (): void => {
     void refresh().catch((error: unknown) => {
