@@ -33,7 +33,7 @@ on:
         type: string
 
 concurrency:
-  group: digital-pet-release-main
+  group: digital-pet-release-cursor
   cancel-in-progress: false
   queue: max
 
@@ -146,7 +146,7 @@ jobs:
           set -euo pipefail
           vsix_path="$RUNNER_TEMP/cursor-digital-pet.vsix"
           cd packages/cursor-digital-pet
-          npx @vscode/vsce package --no-dependencies -o "$vsix_path"
+          npm run package -- -o "$vsix_path"
           printf 'vsix_path=%s\n' "$vsix_path" >> "$GITHUB_OUTPUT"
 
       - name: Set up Git
@@ -179,7 +179,7 @@ jobs:
         if: steps.mode.outputs.retry != 'true'
         env:
           RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
-        run: git push --atomic origin HEAD:refs/heads/main "refs/tags/cursor-digital-pet-v$RELEASE_VERSION"
+        run: node --experimental-strip-types scripts/push-release.ts "cursor-digital-pet-v$RELEASE_VERSION"
 
       - name: Publish release (GitHub)
         if: steps.mode.outputs.retry != 'true' || inputs.retry_target == 'github'

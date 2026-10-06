@@ -10,22 +10,29 @@ const options: DispatchOptions = {
   cursor: { release: true, bump: "patch" },
 }
 
-const workflowName = (url: string): string => url.split("/").at(-2) ?? ""
+const workflowName = (url: string, method: string | undefined): string => {
+  if (method === "POST") return url.split("/").at(-2) ?? ""
+  return url.endsWith("/11") ? "release-opencode.yml" : "release-cursor.yml"
+}
 
 describe("dispatch merged releases", () => {
-  test("Given both products When OpenCode succeeds Then Cursor is dispatched with the run id request", async () => {
-    const posts: Array<{ workflow: string; body: { return_run_details?: boolean } }> = []
+  test("Given both products When dispatching Then both runs start before either is checked", async () => {
+    const calls: string[] = []
+    const gets = new Map<string, number>()
     const request = async (url: string, init?: RequestInit): Promise<Response> => {
+      const workflow = workflowName(url, init?.method)
       if (init?.method === "POST") {
         const body = JSON.parse(String(init.body)) as { return_run_details?: boolean }
-        const workflow = workflowName(url)
-        posts.push({ workflow, body })
+        calls.push(`POST ${workflow}`)
         expect(body.return_run_details).toBe(true)
         return Response.json({
           workflow_run_id: workflow.includes("opencode") ? 11 : 22,
           html_url: "https://github.com/run",
         })
       }
+      const seen = (gets.get(workflow) ?? 0) + 1
+      gets.set(workflow, seen)
+      if (workflow.includes("cursor") && seen === 1) return new Response("missing", { status: 404 })
       return Response.json({ status: "completed", conclusion: "success", html_url: "https://github.com/run" })
     }
 
@@ -36,17 +43,22 @@ describe("dispatch merged releases", () => {
       () => {},
     )
 
-    expect(posts.map((post) => post.workflow)).toEqual(["release-opencode.yml", "release-cursor.yml"])
+    expect(calls.slice(0, 2)).toEqual(["POST release-opencode.yml", "POST release-cursor.yml"])
   })
 
-  test("Given an OpenCode failure When dispatching Then Cursor is not started", async () => {
+  test("Given an OpenCode failure When both runs start Then Cursor still finishes and the failure is reported", async () => {
     const posts: string[] = []
     const request = async (url: string, init?: RequestInit): Promise<Response> => {
+      const workflow = workflowName(url, init?.method)
       if (init?.method === "POST") {
-        posts.push(workflowName(url))
-        return Response.json({ workflow_run_id: 11, html_url: "https://github.com/run" })
+        posts.push(workflow)
+        return Response.json({
+          workflow_run_id: workflow.includes("opencode") ? 11 : 22,
+          html_url: "https://github.com/run",
+        })
       }
-      return Response.json({ status: "completed", conclusion: "failure", html_url: "https://github.com/run" })
+      const conclusion = workflow.includes("opencode") ? "failure" : "success"
+      return Response.json({ status: "completed", conclusion, html_url: "https://github.com/run" })
     }
 
     await expect(
@@ -57,6 +69,6 @@ describe("dispatch merged releases", () => {
         () => {},
       ),
     ).rejects.toThrow("release-opencode.yml finished with failure")
-    expect(posts).toEqual(["release-opencode.yml"])
+    expect(posts).toEqual(["release-opencode.yml", "release-cursor.yml"])
   })
 })

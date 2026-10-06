@@ -41,7 +41,7 @@ Merging a pull request into `main` starts [the automatic release workflow](../.g
 
 By default, a `feat:` pull request makes a minor release and other changes make a patch release. Add exactly one `release:major`, `release:minor`, or `release:patch` label to choose a different bump. The first OpenCode release follows its existing `0.2.0-dev.0` candidate and becomes `0.2.0`.
 
-The release workflows update each product's package version and changelog, create its tag and GitHub Release, and publish OpenCode to npm or Cursor to Open VSX. After publishing `0.2.0`, `main` moves to `0.2.1-dev.0`; the stable `0.2.0` metadata remains on the release tag. The individual workflows also allow a manual run or a retry of a failed publication.
+The release workflows update each product's package version and changelog, create its tag and GitHub Release, and publish OpenCode to npm or Cursor to Open VSX. Both product workflows start together. When one push moves `main`, the other rebases its release commits and retries. After publishing `0.2.0`, `main` moves to `0.2.1-dev.0`; the stable `0.2.0` metadata remains on the release tag. The individual workflows also allow a manual run or a retry of a failed publication.
 
 ## Development tools
 
