@@ -4,6 +4,8 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-06
+
 ### Added
 
 - Cursor extension with an Explorer sidebar, partner controls, and Agent usage tracking.
