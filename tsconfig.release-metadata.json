@@ -9,5 +9,10 @@
     "rootDir": "scripts",
     "skipLibCheck": true
   },
-  "include": ["scripts/release-metadata.ts", "scripts/plan-merged-release.ts", "scripts/dispatch-merged-releases.ts"]
+  "include": [
+    "scripts/release-metadata.ts",
+    "scripts/plan-merged-release.ts",
+    "scripts/dispatch-merged-releases.ts",
+    "scripts/push-release.ts"
+  ]
 }

@@ -28,7 +28,7 @@ on:
         type: string
 
 concurrency:
-  group: digital-pet-release-main
+  group: digital-pet-release-opencode
   cancel-in-progress: false
   queue: max
 
@@ -165,7 +165,7 @@ jobs:
         if: steps.mode.outputs.retry != 'true'
         env:
           RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
-        run: git push --atomic origin HEAD:refs/heads/main "refs/tags/opencode-digital-pet-v$RELEASE_VERSION"
+        run: node --experimental-strip-types scripts/push-release.ts "opencode-digital-pet-v$RELEASE_VERSION"
 
       - name: Publish release (npm)
         if: steps.mode.outputs.retry != 'true' || inputs.retry_target == 'npm'

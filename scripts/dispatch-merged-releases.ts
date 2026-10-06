@@ -41,6 +41,17 @@ const readJson = async <T>(response: Response, operation: string): Promise<T> =>
   return (await response.json()) as T
 }
 
+const readRun = async (
+  request: typeof fetch,
+  runUrl: string,
+  headers: HeadersInit,
+  workflow: string,
+): Promise<RunResponse | undefined> => {
+  const response = await request(runUrl, { headers })
+  if (response.status === 404) return undefined
+  return readJson<RunResponse>(response, `Checking ${workflow}`)
+}
+
 export const dispatchSelectedReleases = async (
   options: DispatchOptions,
   request: typeof fetch = fetch,
@@ -58,11 +69,15 @@ export const dispatchSelectedReleases = async (
     "X-GitHub-Api-Version": API_VERSION,
   }
 
-  for (const [product, selected] of [
-    ["opencode", options.opencode],
-    ["cursor", options.cursor],
-  ] as const) {
-    if (!selected.release) continue
+  const selected = (
+    [
+      ["opencode", options.opencode],
+      ["cursor", options.cursor],
+    ] as const
+  ).filter(([, release]) => release.release)
+
+  const started = []
+  for (const [product, release] of selected) {
     const workflow = workflowFor(product)
     const dispatch = await readJson<DispatchResponse>(
       await request(`${baseUrl}/actions/workflows/${workflow}/dispatches`, {
@@ -70,7 +85,7 @@ export const dispatchSelectedReleases = async (
         headers,
         body: JSON.stringify({
           ref: "main",
-          inputs: { bump: selected.bump, release_note: options.releaseNote },
+          inputs: { bump: release.bump, release_note: options.releaseNote },
           return_run_details: true,
         }),
       }),
@@ -79,24 +94,28 @@ export const dispatchSelectedReleases = async (
     if (!Number.isSafeInteger(dispatch.workflow_run_id) || (dispatch.workflow_run_id ?? 0) <= 0) {
       throw new Error(`GitHub did not return a run ID for ${workflow}.`)
     }
-
     const runUrl = `${baseUrl}/actions/runs/${dispatch.workflow_run_id}`
     report(`Started ${workflow}: ${dispatch.html_url ?? runUrl}`)
-    for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
-      if (attempt > 0) await wait(POLL_INTERVAL_MS)
-      const run = await readJson<RunResponse>(await request(runUrl, { headers }), `Checking ${workflow}`)
-      if (run.status !== "completed") continue
-      if (run.conclusion !== "success") {
-        throw new Error(`${workflow} finished with ${run.conclusion ?? "no conclusion"}: ${run.html_url ?? runUrl}`)
-      }
-      report(`Published ${product}: ${run.html_url ?? runUrl}`)
-      break
-    }
-    const lastRun = await readJson<RunResponse>(await request(runUrl, { headers }), `Confirming ${workflow}`)
-    if (lastRun.status !== "completed" || lastRun.conclusion !== "success") {
-      throw new Error(`${workflow} did not finish successfully within 30 minutes: ${lastRun.html_url ?? runUrl}`)
-    }
+    started.push({ product, workflow, runUrl })
   }
+
+  const results = await Promise.all(
+    started.map(async ({ product, workflow, runUrl }) => {
+      for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
+        if (attempt > 0) await wait(POLL_INTERVAL_MS)
+        const run = await readRun(request, runUrl, headers, workflow)
+        if (run === undefined || run.status !== "completed" || run.conclusion == null) continue
+        if (run.conclusion !== "success") {
+          return `${workflow} finished with ${run.conclusion}: ${run.html_url ?? runUrl}`
+        }
+        report(`Published ${product}: ${run.html_url ?? runUrl}`)
+        return undefined
+      }
+      return `${workflow} did not finish successfully within 30 minutes: ${runUrl}`
+    }),
+  )
+  const failures = results.filter((failure) => failure !== undefined)
+  if (failures.length > 0) throw new Error(failures.join("\n"))
 }
 
 const parseBump = (value: string | undefined): ReleaseBump => {

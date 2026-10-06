@@ -12,6 +12,7 @@
     "dist",
     "tests/release-metadata.test.ts",
     "tests/release-plan.test.ts",
-    "tests/dispatch-merged-releases.test.ts"
+    "tests/dispatch-merged-releases.test.ts",
+    "tests/push-release.test.ts"
   ]
 }
