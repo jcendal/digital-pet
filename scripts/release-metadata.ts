@@ -12,6 +12,7 @@ type ReleaseMetadataCliOptions = {
   readonly date: string
   readonly legacyTagPrefix?: string
   readonly packageJsonPath: string
+  readonly releaseNote?: string
   readonly tagPrefix: string
 }
 
@@ -89,12 +90,13 @@ const parseCliOptions = (arguments_: readonly string[]): ReleaseMetadataCliOptio
   const date = values.get("--date")
   const tagPrefix = values.get("--tag-prefix") ?? "v"
   const legacyTagPrefix = values.get("--legacy-tag-prefix")
+  const releaseNote = values.get("--release-note")
   if (packageJsonPath === undefined || changelogPath === undefined || date === undefined) {
     throw new Error("Expected --package-json, --changelog, and --date.")
   }
   if (tagPrefix.length === 0 || legacyTagPrefix === "") throw new Error("Tag prefixes must not be empty.")
 
-  return { bump, changelogPath, date, legacyTagPrefix, packageJsonPath, tagPrefix }
+  return { bump, changelogPath, date, legacyTagPrefix, packageJsonPath, releaseNote, tagPrefix }
 }
 
 export const calculateReleaseVersion = (tags: readonly string[], bump: ReleaseBump, prefix = "v"): string => {
@@ -141,7 +143,12 @@ const resolveReleaseVersion = (
   return releaseVersion
 }
 
-export const insertReleaseIntoChangelog = (changelog: string, version: string, date: string): string => {
+export const insertReleaseIntoChangelog = (
+  changelog: string,
+  version: string,
+  date: string,
+  releaseNote?: string,
+): string => {
   const unreleasedHeading = "## [Unreleased]"
   const unreleasedHeadings = changelog.match(/^## \[Unreleased\]$/gm) ?? []
   if (unreleasedHeadings.length !== 1) throw new Error("CHANGELOG.md must contain exactly one ## [Unreleased] section.")
@@ -151,7 +158,12 @@ export const insertReleaseIntoChangelog = (changelog: string, version: string, d
   if (changelog.includes(releaseHeading)) throw new Error(`CHANGELOG.md already contains release ${version}.`)
   const offset = changelog.indexOf(unreleasedHeading)
   const insertionPoint = offset + unreleasedHeading.length
-  return `${changelog.slice(0, insertionPoint)}\n\n## [${version}] - ${date}${changelog.slice(insertionPoint)}`
+  const remaining = changelog.slice(insertionPoint)
+  const nextHeading = /^## /m.exec(remaining)
+  const unreleasedNotes = remaining.slice(0, nextHeading?.index)
+  const safeNote = releaseNote?.replace(/\s+/g, " ").trim()
+  const generatedNotes = unreleasedNotes.trim().length === 0 && safeNote ? `\n\n### Changed\n\n- ${safeNote}\n` : ""
+  return `${changelog.slice(0, insertionPoint)}\n\n## [${version}] - ${date}${generatedNotes}${remaining}`
 }
 
 export const extractReleaseNotes = (changelog: string, version: string): string => {
@@ -182,7 +194,7 @@ export const runReleaseMetadataCli = async (
   const releaseVersion = resolveReleaseVersion(packageMetadata.version, stableTags, options)
   const nextDevVersion = calculateNextDevelopmentVersion(releaseVersion)
   const releasePackageJson = `${JSON.stringify({ ...packageMetadata, version: releaseVersion }, null, 2)}\n`
-  const releaseChangelog = insertReleaseIntoChangelog(changelog, releaseVersion, options.date)
+  const releaseChangelog = insertReleaseIntoChangelog(changelog, releaseVersion, options.date, options.releaseNote)
   await Promise.all([
     writeFile(options.packageJsonPath, releasePackageJson),
     writeFile(options.changelogPath, releaseChangelog),

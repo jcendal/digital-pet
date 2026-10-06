@@ -71,6 +71,52 @@ describe("release metadata", () => {
     )
   })
 
+  test("Given no unreleased notes When a merged PR releases Then its title becomes the release note", () => {
+    const changelog = "# Changelog\n\n## [Unreleased]\n"
+    const released = insertReleaseIntoChangelog(changelog, "0.2.1", "2026-10-06", "fix: keep Cursor in sync")
+
+    expect(extractReleaseNotes(released, "0.2.1")).toBe("### Changed\n\n- fix: keep Cursor in sync\n")
+  })
+
+  test("Given an automatic patch release When the changelog is empty Then the CLI records the PR title", async () => {
+    const root = await createTempRoot()
+    const packageJsonPath = join(root, "package.json")
+    const changelogPath = join(root, "CHANGELOG.md")
+    await Promise.all([
+      writeFile(packageJsonPath, '{"name":"fixture","version":"0.2.1-dev.0"}\n'),
+      writeFile(changelogPath, "# Changelog\n\n## [Unreleased]\n\n## [0.2.0] - 2026-10-06\n\n- First release\n"),
+    ])
+
+    const result = Bun.spawnSync(
+      [
+        "bun",
+        resolve(import.meta.dir, "../../../scripts/release-metadata.ts"),
+        "--package-json",
+        packageJsonPath,
+        "--changelog",
+        changelogPath,
+        "--tag-prefix",
+        "opencode-digital-pet-v",
+        "--bump",
+        "patch",
+        "--date",
+        "2026-10-07",
+        "--release-note",
+        "fix: refresh the shared database",
+      ],
+      { stdin: new Blob(["opencode-digital-pet-v0.2.0\n"]) },
+    )
+
+    expect(result.exitCode).toBe(0)
+    expect(JSON.parse(new TextDecoder().decode(result.stdout))).toEqual({
+      nextDevVersion: "0.2.2-dev.0",
+      releaseVersion: "0.2.1",
+    })
+    expect(extractReleaseNotes(await readFile(changelogPath, "utf8"), "0.2.1")).toBe(
+      "### Changed\n\n- fix: refresh the shared database\n",
+    )
+  })
+
   test("Given multiple releases When extracting notes Then only the requested product version is returned", () => {
     const changelog =
       "# Changelog\n\n## [Unreleased]\n\n## [0.2.0] - 2026-10-06\n\n### Added\n\n- Cursor sidebar\n\n## [0.1.0] - 2026-08-30\n\n- Old notes\n"
