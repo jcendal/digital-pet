@@ -1,5 +1,5 @@
 import { mkdirSync } from "node:fs"
-import { watch, type FSWatcher } from "node:fs"
+import { watch } from "node:fs"
 import { basename, dirname } from "node:path"
 
 import {
@@ -17,12 +17,21 @@ export type DatabaseChangeWatcher = {
   dispose(): void
 }
 
+type DirectoryWatcher = { close(): void }
+export type WatchDirectory = (
+  directory: string,
+  listener: (eventType: string, filename: string | null) => void,
+) => DirectoryWatcher
+
 const isPetDatabaseFilename = (filename: string | null | undefined, databaseFileName: string): boolean => {
   if (filename === undefined || filename === null) return true
-  return filename === databaseFileName
+  return filename === databaseFileName || filename === `${databaseFileName}-wal`
 }
 
-export const createDatabaseChangeWatcher = (options: DatabaseChangeWatcherOptions): DatabaseChangeWatcher => {
+export const createDatabaseChangeWatcher = (
+  options: DatabaseChangeWatcherOptions,
+  watchDirectory: WatchDirectory = watch,
+): DatabaseChangeWatcher => {
   const databasePath = options.databasePath ?? resolveHostDatabasePath(options)
   const databaseDirectory = dirname(databasePath)
   const databaseFileName = basename(databasePath)
@@ -30,7 +39,7 @@ export const createDatabaseChangeWatcher = (options: DatabaseChangeWatcherOption
 
   let disposed = false
   let debounceTimer: ReturnType<typeof setTimeout> | undefined
-  let watcher: FSWatcher | undefined
+  let watcher: DirectoryWatcher | undefined
 
   const scheduleChange = (): void => {
     if (disposed) return
@@ -48,7 +57,7 @@ export const createDatabaseChangeWatcher = (options: DatabaseChangeWatcherOption
   }
 
   mkdirSync(databaseDirectory, { recursive: true })
-  watcher = watch(databaseDirectory, (eventType, filename) => {
+  watcher = watchDirectory(databaseDirectory, (eventType, filename) => {
     if (eventType !== "change" && eventType !== "rename") return
     handleWatchEvent(filename)
   })

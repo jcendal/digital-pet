@@ -1,11 +1,43 @@
 import { afterEach, describe, expect, test } from "bun:test"
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
+import { mkdtemp, rm } from "node:fs/promises"
+import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
 
-import { createDatabaseChangeWatcher } from "../src/adapters/sqlite/database-change-watcher.ts"
+import { createDatabaseChangeWatcher, type WatchDirectory } from "../src/adapters/sqlite/database-change-watcher.ts"
 
 const wait = async (milliseconds: number): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, milliseconds))
+}
+
+const waitForChangeCount = async (count: () => number, expected: number): Promise<void> => {
+  const deadline = Date.now() + 1_000
+  while (count() < expected && Date.now() < deadline) await wait(10)
+  expect(count()).toBe(expected)
+}
+
+const createFakeWatchDirectory = () => {
+  let listener: ((eventType: string, filename: string | null) => void) | undefined
+  let directory: string | undefined
+  let closed = false
+
+  const watchDirectory: WatchDirectory = (path, onEvent) => {
+    directory = path
+    listener = onEvent
+    return {
+      close: () => {
+        closed = true
+      },
+    }
+  }
+
+  return {
+    watchDirectory,
+    watchedDirectory: () => directory,
+    isClosed: () => closed,
+    emit: (eventType: string, filename: string | null) => {
+      if (!closed) listener?.(eventType, filename)
+    },
+  }
 }
 
 describe("database change watcher", () => {
@@ -21,99 +53,81 @@ describe("database change watcher", () => {
     }
   })
 
-  test("Given a pet.db write When watching the data directory Then onChange fires once after debounce", async () => {
-    tempRoot = await mkdtemp(join(process.cwd(), ".tmp-cursor-digital-pet-watch-"))
-    const appDataRoot = join(tempRoot, "app-data")
-    const databasePath = join(appDataRoot, "opencode-digital-pet", "pet.db")
-    await mkdir(dirname(databasePath), { recursive: true })
-
+  const startWatcher = async (debounceMs: number) => {
+    tempRoot = await mkdtemp(join(tmpdir(), "cursor-digital-pet-watch-"))
+    const databasePath = join(tempRoot, "opencode-digital-pet", "pet.db")
+    const fake = createFakeWatchDirectory()
     let changeCount = 0
-    watcher = createDatabaseChangeWatcher({
-      appDataRoot,
-      databasePath,
-      debounceMs: 80,
-      onChange: () => {
-        changeCount += 1
+
+    watcher = createDatabaseChangeWatcher(
+      {
+        databasePath,
+        debounceMs,
+        onChange: () => {
+          changeCount += 1
+        },
       },
-    })
+      fake.watchDirectory,
+    )
 
-    await writeFile(databasePath, "first")
-    await wait(200)
-    expect(changeCount).toBe(1)
+    return { fake, databasePath, count: () => changeCount }
+  }
 
-    await writeFile(databasePath, "second")
-    await wait(200)
-    expect(changeCount).toBe(2)
+  test("Given a pet.db event When watching the data directory Then each separate change fires once", async () => {
+    const { fake, databasePath, count } = await startWatcher(40)
+    expect(fake.watchedDirectory()).toBe(dirname(databasePath))
+
+    fake.emit("rename", "pet.db")
+    await waitForChangeCount(count, 1)
+
+    fake.emit("change", "pet.db")
+    await waitForChangeCount(count, 2)
   })
 
-  test("Given rapid pet.db writes When watching Then onChange coalesces into one debounced callback", async () => {
-    tempRoot = await mkdtemp(join(process.cwd(), ".tmp-cursor-digital-pet-watch-"))
-    const appDataRoot = join(tempRoot, "app-data")
-    const databasePath = join(appDataRoot, "opencode-digital-pet", "pet.db")
-    await mkdir(dirname(databasePath), { recursive: true })
+  test("Given rapid pet.db events When watching Then onChange coalesces into one debounced callback", async () => {
+    const { fake, count } = await startWatcher(60)
 
-    let changeCount = 0
-    watcher = createDatabaseChangeWatcher({
-      appDataRoot,
-      databasePath,
-      debounceMs: 120,
-      onChange: () => {
-        changeCount += 1
-      },
-    })
+    fake.emit("change", "pet.db")
+    fake.emit("change", "pet.db")
+    fake.emit("rename", "pet.db")
+    await waitForChangeCount(count, 1)
+    await wait(100)
 
-    await writeFile(databasePath, "a")
-    await wait(20)
-    await writeFile(databasePath, "b")
-    await wait(20)
-    await writeFile(databasePath, "c")
-    await wait(200)
-
-    expect(changeCount).toBe(1)
+    expect(count()).toBe(1)
   })
 
   test("Given another file in the data directory When it changes Then onChange is not called", async () => {
-    tempRoot = await mkdtemp(join(process.cwd(), ".tmp-cursor-digital-pet-watch-"))
-    const appDataRoot = join(tempRoot, "app-data")
-    const databasePath = join(appDataRoot, "opencode-digital-pet", "pet.db")
-    const otherPath = join(appDataRoot, "opencode-digital-pet", "notes.txt")
-    await mkdir(dirname(databasePath), { recursive: true })
+    const { fake, count } = await startWatcher(40)
 
-    let changeCount = 0
-    watcher = createDatabaseChangeWatcher({
-      appDataRoot,
-      databasePath,
-      debounceMs: 80,
-      onChange: () => {
-        changeCount += 1
-      },
-    })
+    fake.emit("change", "notes.txt")
+    await wait(100)
 
-    await writeFile(otherPath, "ignore me")
-    await wait(200)
-    expect(changeCount).toBe(0)
+    expect(count()).toBe(0)
+  })
+
+  test("Given no filename in a watch event When it changes Then the database is refreshed", async () => {
+    const { fake, count } = await startWatcher(40)
+
+    fake.emit("rename", null)
+    await waitForChangeCount(count, 1)
+  })
+
+  test("Given a SQLite WAL write When watching Then the shared database is refreshed", async () => {
+    const { fake, count } = await startWatcher(40)
+
+    fake.emit("change", "pet.db-wal")
+    await waitForChangeCount(count, 1)
   })
 
   test("Given a disposed watcher When pet.db changes Then onChange is not called", async () => {
-    tempRoot = await mkdtemp(join(process.cwd(), ".tmp-cursor-digital-pet-watch-"))
-    const appDataRoot = join(tempRoot, "app-data")
-    const databasePath = join(appDataRoot, "opencode-digital-pet", "pet.db")
-    await mkdir(dirname(databasePath), { recursive: true })
+    const { fake, count } = await startWatcher(40)
 
-    let changeCount = 0
-    watcher = createDatabaseChangeWatcher({
-      appDataRoot,
-      databasePath,
-      debounceMs: 80,
-      onChange: () => {
-        changeCount += 1
-      },
-    })
-    watcher.dispose()
+    watcher?.dispose()
     watcher = undefined
+    fake.emit("change", "pet.db")
+    await wait(100)
 
-    await writeFile(databasePath, "after-dispose")
-    await wait(200)
-    expect(changeCount).toBe(0)
+    expect(fake.isClosed()).toBe(true)
+    expect(count()).toBe(0)
   })
 })

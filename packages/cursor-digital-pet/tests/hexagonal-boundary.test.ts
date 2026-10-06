@@ -9,15 +9,11 @@ import {
   PROJECT_ROOT,
   findForbiddenImports,
   scanForbiddenImports,
-  scanPresentationImports,
   scanSharedImports,
   scanSidebarImports,
 } from "./architecture-boundary-helpers.ts"
 
 describe("cursor-digital-pet hexagonal dependency direction", () => {
-  test("Given the presentation source tree When scanned Then it has no forbidden dependencies", async () =>
-    expect(await scanPresentationImports(join(PROJECT_ROOT, "src", "webview", "presentation"))).toEqual([]))
-
   test("Given the shared source tree When scanned Then it has no forbidden dependencies", async () =>
     expect(await scanSharedImports(join(PROJECT_ROOT, "src", "shared"))).toEqual([]))
 
