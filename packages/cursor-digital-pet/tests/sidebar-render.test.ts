@@ -1,3 +1,5 @@
+import { Script } from "node:vm"
+import { SIDEBAR_SCRIPT } from "../src/webview/sidebar/sidebar-script.ts"
 import { describe, expect, test } from "bun:test"
 
 import {
@@ -24,6 +26,55 @@ const partnerCard = {
 }
 
 describe("sidebar render", () => {
+  test("walking frames keep the arena scale while their pixel position changes", () => {
+    const attributes: Record<string, string> = {}
+    const pixels: Record<string, string>[] = []
+    const element = {
+      clientWidth: 300,
+      classList: { toggle: () => {} },
+      setAttribute: (key: string, value: string) => {
+        attributes[key] = value
+      },
+      replaceChildren: () => {
+        pixels.length = 0
+      },
+      append: (node: Record<string, string>) => {
+        pixels.push(node)
+      },
+    }
+    let receive: (event: { data: unknown }) => void = () => {}
+    new Script(SIDEBAR_SCRIPT).runInNewContext({
+      acquireVsCodeApi: () => ({ postMessage: () => {} }),
+      document: {
+        getElementById: () => element,
+        querySelector: () => element,
+        querySelectorAll: () => [],
+        createElementNS: () => {
+          const node: Record<string, string> = {}
+          return Object.assign(node, {
+            setAttribute: (key: string, value: string) => {
+              node[key] = value
+            },
+          })
+        },
+      },
+      window: {
+        addEventListener: (_name: string, handler: typeof receive) => {
+          receive = handler
+        },
+      },
+      ResizeObserver: class {
+        observe() {}
+      },
+    })
+    receive({ data: { type: "animation-frame", artwork: " █" } })
+    expect(attributes["viewBox"]).toBe("0 0 50 16")
+    expect(pixels[0]?.["x"]).toBe("1")
+    receive({ data: { type: "animation-frame", artwork: "                              █" } })
+    expect(attributes["viewBox"]).toBe("0 0 50 16")
+    expect(pixels[0]?.["x"]).toBe("30")
+  })
+
   test("converts pixel width to monospace artwork columns", () => {
     expect(pixelWidthToArtworkColumns(250, 7.5)).toBe(33)
     expect(pixelWidthToArtworkColumns(120, 7.5)).toBe(16)
@@ -64,4 +115,8 @@ describe("sidebar render", () => {
       }),
     ).toBe("10/100")
   })
+})
+
+test("sidebar frontend script compiles after template interpolation", () => {
+  expect(() => new Script(SIDEBAR_SCRIPT)).not.toThrow()
 })

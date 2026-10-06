@@ -1,3 +1,4 @@
+import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { UsageEvolutionTransition } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
@@ -43,6 +44,22 @@ export const createSidebarOrchestrator = ({
   let cachedPayload: SidebarWebviewPayload | undefined
   let pendingEvolutionReveal: UsageEvolutionTransition | undefined
   let presentationInProgress = false
+  let currentState: PresentationState = { phase: "idle" }
+  const publishState = async (state: PresentationState): Promise<void> => {
+    currentState = state
+    if (state.phase !== "idle") {
+      const snapshot = snapshotReader.getSidebarSnapshot()
+      if (snapshot !== null && sink !== undefined) {
+        const currentNodeId = state.phase === "evolved" ? state.toNodeId : state.fromNodeId
+        cachedPayload = buildSidebarPresentation({ ...snapshot, currentNodeId }).payload
+        if (state.phase === "battle" && cachedPayload.kind === "partner") {
+          cachedPayload = { ...cachedPayload, opponentName: DIGIMON_CATALOG.byId.get(state.opponentNodeId)?.nameEn ?? "" }
+        }
+        await sink.postModel(cachedPayload)
+      }
+    }
+    await sink?.postState?.(state)
+  }
 
   const publishSidebarModel = async (): Promise<void> => {
     if (sink === undefined) return
@@ -71,8 +88,9 @@ export const createSidebarOrchestrator = ({
         digimonCatalog: DIGIMON_CATALOG,
         repository: battleRepository,
         random,
-        onArtwork: async (artwork) => {
-          if (sink !== undefined) await sink.postArtwork(artwork)
+        onState: publishState,
+        onArtwork: async (artwork, hud) => {
+          if (sink !== undefined) await sink.postArtwork(artwork, hud)
         },
         onResolved: async (result) => {
           if (result.kind === "won") {
@@ -85,6 +103,7 @@ export const createSidebarOrchestrator = ({
       })
     } finally {
       presentationInProgress = false
+      await publishState({ phase: "idle" })
       animationHost.setPresentationBlocked(false)
       onPresentationEnd?.()
     }
@@ -104,6 +123,7 @@ export const createSidebarOrchestrator = ({
       const revealed = await runEvolutionRevealSession(evolution, animationHost.getArtworkWidth(), {
         frameCatalog: MONSTER_FRAME_CATALOG,
         digimonCatalog: DIGIMON_CATALOG,
+        onState: publishState,
         onArtwork: async (artwork) => {
           if (sink !== undefined) await sink.postArtwork(artwork)
         },
@@ -113,6 +133,7 @@ export const createSidebarOrchestrator = ({
       }
     } finally {
       presentationInProgress = false
+      await publishState({ phase: "idle" })
       animationHost.setPresentationBlocked(false)
       onPresentationEnd?.()
     }
@@ -137,6 +158,7 @@ export const createSidebarOrchestrator = ({
     },
     setSink(nextSink: AnimationSink): void {
       sink = nextSink
+      void sink.postState?.(currentState)
     },
   }
 }

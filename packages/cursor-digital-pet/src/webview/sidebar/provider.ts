@@ -27,7 +27,8 @@ const createDeferredAnimationSink = (): { readonly sink: AnimationSink; setSink(
   }
   return {
     sink: {
-      postArtwork: async (artwork) => current.postArtwork(artwork),
+      postState: async (state) => current.postState?.(state),
+      postArtwork: async (artwork, hud) => current.postArtwork(artwork, hud),
       postModel: async (payload) => current.postModel(payload),
     },
     setSink(next: AnimationSink): void {
@@ -105,14 +106,33 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.extensionUri],
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
     }
 
-    webviewView.webview.html = buildSidebarWebviewHtml(String(Date.now()))
+    webviewView.webview.html = buildSidebarWebviewHtml(String(Date.now()), {
+      fontUri: webviewView.webview
+        .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "media", "fonts", "Silkscreen-Regular.ttf"))
+        .toString(),
+      cspSource: webviewView.webview.cspSource,
+    })
 
     webviewView.webview.onDidReceiveMessage((message: unknown) => {
       const inbound = parseWebviewInboundMessage(message)
       if (inbound === null) return
+      if (inbound.type === "sidebar-ready") {
+        this.orchestrator.setSink(sink)
+        const payload = this.orchestrator.getCachedPayload()
+        if (payload !== undefined) void sink.postModel(payload)
+        this.animationHost.clearArtwork()
+        void this.animationHost.postCurrentFrame()
+        return
+      }
+      if (inbound.type === "open-panel") {
+        void vscode.commands.executeCommand(
+          inbound.panel === "dex" ? "cursorDigitalPet.dex" : "cursorDigitalPet.history",
+        )
+        return
+      }
       if (inbound.type === "open-url") {
         void vscode.env.openExternal(vscode.Uri.parse(inbound.url))
         return

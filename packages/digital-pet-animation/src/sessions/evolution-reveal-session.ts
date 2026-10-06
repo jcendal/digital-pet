@@ -4,9 +4,12 @@ import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster
 
 import { runEvolutionAnimation } from "../sequences/evolution-artwork.ts"
 
+import type { PresentationStateListener } from "./presentation-state.ts"
+
 export type EvolutionRevealSessionDependencies = {
   readonly frameCatalog: MonsterFrameCatalog
   readonly digimonCatalog: DigimonCatalog
+  readonly onState?: PresentationStateListener
   readonly onArtwork: (artwork: string) => Promise<void>
 }
 
@@ -19,8 +22,16 @@ export const runEvolutionRevealSession = async (
   const to = dependencies.digimonCatalog.byId.get(evolution.toNodeId)
   if (from === undefined || to === undefined) return false
 
-  await runEvolutionAnimation(dependencies.frameCatalog, from.sprite, to.sprite, viewportWidth, async (artwork) =>
-    dependencies.onArtwork(artwork),
+  await dependencies.onState?.({ phase: "evolving", ...evolution })
+  await runEvolutionAnimation(
+    dependencies.frameCatalog,
+    from.sprite,
+    to.sprite,
+    viewportWidth,
+    dependencies.onArtwork,
+    async () => {
+      await dependencies.onState?.({ phase: "evolved", ...evolution })
+    },
   )
   return true
 }

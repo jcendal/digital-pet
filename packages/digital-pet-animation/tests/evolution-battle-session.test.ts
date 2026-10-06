@@ -10,6 +10,7 @@ mock.module("../src/utils/sleep.ts", () => ({
 }))
 
 import { runEvolutionBattleSession } from "../src/sessions/evolution-battle-session.ts"
+import type { BattleFrameHud } from "../src/sequences/evolution-battle-artwork.ts"
 import { battleSidebarSnapshot } from "./session-fixtures.ts"
 
 const pendingBattleSnapshot = battleSidebarSnapshot()
@@ -64,14 +65,20 @@ describe("evolution battle session", () => {
 
   test("Given a pending battle When the player wins Then it plays battle and reveal artwork and resolves won", async () => {
     const frames: string[] = []
+    const huds: BattleFrameHud[] = []
+    const phases: string[] = []
     let resolved: ResolveEvolutionBattleOutcome | undefined
     const battled = await runEvolutionBattleSession(pendingBattleSnapshot, 80, {
       frameCatalog: MONSTER_FRAME_CATALOG,
       digimonCatalog: DIGIMON_CATALOG,
+      onState: async (state) => {
+        phases.push(state.phase)
+      },
       repository: createRepository("won"),
       random: () => 0,
-      onArtwork: async (artwork) => {
+      onArtwork: async (artwork, hud) => {
         frames.push(artwork)
+        if (hud !== undefined) huds.push(hud)
       },
       onResolved: async (result) => {
         resolved = result
@@ -80,15 +87,24 @@ describe("evolution battle session", () => {
 
     expect(battled).toBeTrue()
     expect(frames.length).toBeGreaterThan(0)
+    expect(phases).toEqual(["battle", "evolving", "evolved"])
+    expect(huds[0]).toMatchObject({ playerHits: 0, opponentHits: 0, hitsToWin: 3, caption: null })
+    expect(huds.some((hud) => hud.playerHits === 1 && hud.caption === "HIT!")).toBe(true)
+    expect(huds.at(-1)).toMatchObject({ playerHits: 3, hitsToWin: 3, caption: "WIN!" })
+    expect(huds.every((hud) => hud.playerHits <= 3 && hud.opponentHits <= 3)).toBe(true)
     expect(resolved).toEqual({ kind: "won", evolution: { fromNodeId: "3-001", toNodeId: "4-017" } })
   })
 
   test("Given a pending battle When the player loses Then it plays battle and defeat artwork and resolves lost", async () => {
     const frames: string[] = []
+    const phases: string[] = []
     let resolved: ResolveEvolutionBattleOutcome | undefined
     const battled = await runEvolutionBattleSession(pendingBattleSnapshot, 80, {
       frameCatalog: MONSTER_FRAME_CATALOG,
       digimonCatalog: DIGIMON_CATALOG,
+      onState: async (state) => {
+        phases.push(state.phase)
+      },
       repository: createRepository("lost"),
       random: () => 0.99,
       onArtwork: async (artwork) => {
@@ -101,11 +117,13 @@ describe("evolution battle session", () => {
 
     expect(battled).toBeTrue()
     expect(frames.length).toBeGreaterThan(0)
+    expect(phases).toEqual(["battle", "defeated"])
     expect(resolved).toEqual({ kind: "lost" })
   })
 
   test("Given unknown catalog nodes When running the session Then it is a no-op", async () => {
     const frames: string[] = []
+    const phases: string[] = []
     const battled = await runEvolutionBattleSession(
       {
         ...pendingBattleSnapshot,
@@ -116,6 +134,9 @@ describe("evolution battle session", () => {
       {
         frameCatalog: MONSTER_FRAME_CATALOG,
         digimonCatalog: DIGIMON_CATALOG,
+        onState: async (state) => {
+          phases.push(state.phase)
+        },
         repository: createRepository("won"),
         onArtwork: async (artwork) => {
           frames.push(artwork)
@@ -125,5 +146,6 @@ describe("evolution battle session", () => {
 
     expect(battled).toBeFalse()
     expect(frames).toEqual([])
+    expect(phases).toEqual([])
   })
 })
