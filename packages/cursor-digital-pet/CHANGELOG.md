@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-06
+
+### Changed
+
+- Feat/cursor digidex
+
+
 ## [0.2.4] - 2026-10-06
 
 ### Changed
