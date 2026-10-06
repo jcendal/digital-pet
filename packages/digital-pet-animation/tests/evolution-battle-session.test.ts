@@ -32,6 +32,44 @@ const createRepository = (outcome: "won" | "lost"): EvolutionBattleRepository =>
 })
 
 describe("evolution battle session", () => {
+  test("legacy artwork-only consumers receive identical frames and outcomes to consumers of phase and HUD metadata", async () => {
+    for (const outcome of ["won", "lost"] as const) {
+      const legacyFrames: string[] = []
+      const metadataFrames: string[] = []
+      const results: ResolveEvolutionBattleOutcome[] = []
+      let phase = "idle"
+      const random = () => (outcome === "won" ? 0 : 0.99)
+      const dependencies = {
+        frameCatalog: MONSTER_FRAME_CATALOG,
+        digimonCatalog: DIGIMON_CATALOG,
+        repository: createRepository(outcome),
+        random,
+        onResolved: async (result: ResolveEvolutionBattleOutcome) => {
+          results.push(result)
+        },
+      }
+      await runEvolutionBattleSession(pendingBattleSnapshot, 80, {
+        ...dependencies,
+        onArtwork: async (artwork) => {
+          legacyFrames.push(artwork)
+        },
+      })
+      await runEvolutionBattleSession(pendingBattleSnapshot, 80, {
+        ...dependencies,
+        onState: async (state) => {
+          phase = state.phase
+        },
+        onArtwork: async (artwork, hud) => {
+          metadataFrames.push(artwork)
+          if (hud !== undefined) expect(phase).toBe("battle")
+          if (phase !== "battle") expect(hud).toBeUndefined()
+        },
+      })
+      expect(metadataFrames).toEqual(legacyFrames)
+      expect(results[1]).toEqual(results[0])
+    }
+  })
+
   test("Given a snapshot without a pending battle When running the session Then it is a no-op", async () => {
     const frames: string[] = []
     const battled = await runEvolutionBattleSession(

@@ -1,6 +1,7 @@
 import { describe, expect, mock, test } from "bun:test"
 
 import type { UsageEvolutionTransition } from "@jcendal/digital-pet-core/application/models/usage.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 
 mock.module("../../../digital-pet-animation/src/utils/sleep.ts", () => ({
   sleep: async () => {},
@@ -64,7 +65,7 @@ describe("sidebar orchestrator", () => {
   })
 
   test("pending battle resolves with victory notification", async () => {
-    const { sink } = createCaptureSink()
+    const { sink, models } = createCaptureSink()
     const notification = createCaptureNotification()
     const orchestrator = createSidebarOrchestrator({
       snapshotReader: { getSidebarSnapshot: battleSidebarSnapshot },
@@ -75,6 +76,11 @@ describe("sidebar orchestrator", () => {
     })
     orchestrator.setSink(sink)
     await orchestrator.refresh()
+    const battleModel = models.find((model) => model.kind === "partner" && model.opponentName !== undefined)
+    expect(battleModel).toMatchObject({
+      name: DIGIMON_CATALOG.byId.get("3-001")?.nameEn,
+      opponentName: DIGIMON_CATALOG.byId.get("3-051")?.nameEn,
+    })
     expect(notification.messages.some((message) => message.includes("Victory"))).toBe(true)
   })
 

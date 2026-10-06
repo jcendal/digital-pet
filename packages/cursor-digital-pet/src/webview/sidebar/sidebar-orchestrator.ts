@@ -53,7 +53,10 @@ export const createSidebarOrchestrator = ({
         const currentNodeId = state.phase === "evolved" ? state.toNodeId : state.fromNodeId
         cachedPayload = buildSidebarPresentation({ ...snapshot, currentNodeId }).payload
         if (state.phase === "battle" && cachedPayload.kind === "partner") {
-          cachedPayload = { ...cachedPayload, opponentName: DIGIMON_CATALOG.byId.get(state.opponentNodeId)?.nameEn ?? "" }
+          cachedPayload = {
+            ...cachedPayload,
+            opponentName: DIGIMON_CATALOG.byId.get(state.opponentNodeId)?.nameEn ?? "",
+          }
         }
         await sink.postModel(cachedPayload)
       }
