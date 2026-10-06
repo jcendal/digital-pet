@@ -37,7 +37,11 @@ The two products have independent versions and changelogs:
 | OpenCode | [`packages/opencode-digital-pet/CHANGELOG.md`](../packages/opencode-digital-pet/CHANGELOG.md) |
 | Cursor | [`packages/cursor-digital-pet/CHANGELOG.md`](../packages/cursor-digital-pet/CHANGELOG.md) |
 
-The release workflows are in [`.github/workflows`](../.github/workflows). The Cursor workflow publishes to Open VSX and attaches the VSIX to a GitHub Release.
+Merging a pull request into `main` starts [the automatic release workflow](../.github/workflows/release-after-merge.yml). It publishes only products changed by the pull request; changes to either shared package publish both. The merge that adds this workflow does not run it. The next merge does, and that first automatic release publishes both products. Closing a pull request without merging it does not publish anything.
+
+By default, a `feat:` pull request makes a minor release and other changes make a patch release. Add exactly one `release:major`, `release:minor`, or `release:patch` label to choose a different bump. The first OpenCode release follows its existing `0.2.0-dev.0` candidate and becomes `0.2.0`.
+
+The release workflows update each product's package version and changelog, create its tag and GitHub Release, and publish OpenCode to npm or Cursor to Open VSX. After publishing `0.2.0`, `main` moves to `0.2.1-dev.0`; the stable `0.2.0` metadata remains on the release tag. The individual workflows also allow a manual run or a retry of a failed publication.
 
 ## Development tools
 

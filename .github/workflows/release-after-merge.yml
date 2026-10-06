@@ -1,0 +1,85 @@
+name: Release after PR merge
+run-name: Release merged PR #${{ github.event.pull_request.number }}
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: write
+
+concurrency:
+  group: digital-pet-auto-release
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  plan:
+    name: Select packages and versions
+    if: github.repository == 'jcendal/digital-pet' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      release_opencode: ${{ steps.plan.outputs.release_opencode }}
+      opencode_bump: ${{ steps.plan.outputs.opencode_bump }}
+      release_cursor: ${{ steps.plan.outputs.release_cursor }}
+      cursor_bump: ${{ steps.plan.outputs.cursor_bump }}
+    steps:
+      - name: Check out merged main
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.11.0
+          cache: npm
+
+      - name: Install release planner dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Plan releases from the merged PR
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" \
+            --jq '.[].filename' > "$RUNNER_TEMP/merged-pr-files.txt"
+          git tag --list | node --experimental-strip-types scripts/plan-merged-release.ts \
+            "$RUNNER_TEMP/merged-pr-files.txt"
+
+  publish:
+    name: Publish selected packages in order
+    needs: plan
+    if: needs.plan.outputs.release_opencode == 'true' || needs.plan.outputs.release_cursor == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release orchestrator
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.11.0
+          package-manager-cache: false
+
+      - name: Start and monitor product releases
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_OPENCODE: ${{ needs.plan.outputs.release_opencode }}
+          OPENCODE_BUMP: ${{ needs.plan.outputs.opencode_bump }}
+          RELEASE_CURSOR: ${{ needs.plan.outputs.release_cursor }}
+          CURSOR_BUMP: ${{ needs.plan.outputs.cursor_bump }}
+          RELEASE_NOTE: ${{ github.event.pull_request.title }}
+        run: node --experimental-strip-types scripts/dispatch-merged-releases.ts

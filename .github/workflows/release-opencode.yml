@@ -22,10 +22,15 @@ on:
         options:
           - npm
           - github
+      release_note:
+        description: Merged pull request title to use when Unreleased has no notes
+        required: false
+        type: string
 
 concurrency:
   group: digital-pet-release-main
   cancel-in-progress: false
+  queue: max
 
 jobs:
   release:
@@ -39,7 +44,7 @@ jobs:
       - name: Check out release source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.sha }}
+          ref: main
           fetch-depth: 0
           fetch-tags: true
 
@@ -88,6 +93,7 @@ jobs:
         id: metadata
         env:
           BUMP: ${{ inputs.bump }}
+          RELEASE_NOTE: ${{ inputs.release_note }}
         run: |
           set -euo pipefail
           release_date="$(date -u +%F)"
@@ -97,7 +103,8 @@ jobs:
             --tag-prefix opencode-digital-pet-v \
             --legacy-tag-prefix v \
             --bump "$BUMP" \
-            --date "$release_date"
+            --date "$release_date" \
+            --release-note "$RELEASE_NOTE"
 
       - name: Update lockfile
         if: steps.mode.outputs.retry != 'true'
