@@ -52,6 +52,10 @@ describe("push release when main moved", () => {
     git(seed, ["push", "origin", "main"])
     git(root, ["clone", origin, first])
     git(root, ["clone", origin, second])
+    for (const cwd of [first, second]) {
+      git(cwd, ["config", "user.name", "Test"])
+      git(cwd, ["config", "user.email", "test@example.com"])
+    }
     commitRelease(first, "opencode.txt", "opencode-v1.0.0")
     commitRelease(second, "cursor.txt", "cursor-v1.0.0")
 
