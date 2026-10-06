@@ -7,8 +7,8 @@ import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/sp
 import { unfreezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/unfreeze-digital-pet.ts"
 
 import { installDigitalPetHooks, uninstallDigitalPetHooks } from "../adapters/cursor/install-hooks.ts"
-import { openDexPanel } from "../webview/panels/dex-panel.ts"
-import { openHistoryPanel } from "../webview/panels/history-panel.ts"
+import { openDexPanel } from "../webview/panels/dex/dex-panel.ts"
+import { openHistoryPanel } from "../webview/panels/history/history-panel.ts"
 import type { DigitalPetContainer } from "./container.ts"
 
 export const registerCommands = (context: vscode.ExtensionContext, container: DigitalPetContainer): void => {

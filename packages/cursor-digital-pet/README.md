@@ -62,7 +62,7 @@ carries over between Cursor and OpenCode.
 | --- | --- |
 | **Sidebar webview** | Animated ASCII partner artwork with stage gauge and evolution progress |
 | **Digidex panel** | Pixel LCD collection browser with grid/list layouts, search, stage filters, and evolution records |
-| **History panel** | Review current and retired partner generations |
+| **History panel** | Browse current and retired generations, their recorded evolution journeys, and creation/retirement dates in a pixel LCD layout |
 | **Token tracking** | Cursor hooks (`beforeSubmitPrompt` + `stop`) with API watermark fallback |
 | **Shared database** | Compatible `pet.db` with the OpenCode Digital Pet plugin |
 | **Partner commands** | Spawn, freeze, unfreeze, and set Digimon by catalog ID |
@@ -142,7 +142,7 @@ The panel refreshes when your shared database changes and remembers your filters
 | **Cursor Digital Pet: Unfreeze** | Resumes partner progression |
 | **Cursor Digital Pet: Set Digimon** | Overrides the partner with a catalog ID (e.g. `3-001`) |
 | **Cursor Digital Pet: Open Dex** | Opens the partner Dex panel |
-| **Cursor Digital Pet: Open History** | Opens the generation history panel |
+| **Cursor Digital Pet: Open History** | Opens the independent generation browser with search, status filters, and recorded evolution timelines |
 | **Cursor Digital Pet: Install Hooks** | Registers hooks in `~/.cursor/hooks.json` |
 | **Cursor Digital Pet: Uninstall Hooks** | Removes Digital Pet hooks from `~/.cursor/hooks.json` |
 

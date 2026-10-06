@@ -1,3 +1,5 @@
+import { PANEL_SCRIPT_HELPERS } from "../../shared/panel-script.ts"
+
 // Runs inside the isolated VS Code webview. All catalog strings enter the DOM through textContent.
 export const DEX_SCRIPT = /* javascript */ `
   const vscode = acquireVsCodeApi();
@@ -17,24 +19,7 @@ export const DEX_SCRIPT = /* javascript */ `
   if (!stage.value) stage.value = 'all';
   discovery.value = ['all', 'registered', 'unknown'].includes(saved.discovery) ? saved.discovery : 'all';
   const remember = () => vscode.setState({ selectedId, mode, expanded, search: search.value, stage: stage.value, discovery: discovery.value, scroll: entries.scrollTop });
-  const element = (tag, className, text) => {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  };
-  const UNKNOWN = 'M5 3h6v1H5zM4 4h2v2H4zM10 4h2v3h-2zM8 7h3v1H8zM7 8h2v3H7zM7 13h2v2H7z';
-  const sprite = (entry, className) => {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 16 16');
-    svg.setAttribute('aria-hidden', 'true');
-    if (className) svg.setAttribute('class', className);
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', entry.artwork || UNKNOWN);
-    path.setAttribute('fill', 'currentColor');
-    svg.append(path);
-    return svg;
-  };
+  ${PANEL_SCRIPT_HELPERS}
   const date = value => {
     if (!value || !Number.isFinite(Date.parse(value))) return '--';
     return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
@@ -193,6 +178,11 @@ export const DEX_SCRIPT = /* javascript */ `
   for (const value of ['grid', 'list']) document.getElementById(value + '-mode').addEventListener('click', () => { mode = value; render(); });
   document.getElementById('refresh').addEventListener('click', () => vscode.postMessage({ type: 'dex-refresh' }));
   window.addEventListener('message', event => {
+    if (event.data?.type === 'dex-select') {
+      const target = model.entries.find(entry => entry.id === event.data.id && entry.discovered);
+      if (target) { search.value = ''; stage.value = 'all'; discovery.value = 'all'; selectedId = target.id; render(); selectEntry(target.id, true); }
+      return;
+    }
     if (event.data?.type !== 'dex-model') return;
     model = event.data.model;
     const scroll = entries.scrollTop;

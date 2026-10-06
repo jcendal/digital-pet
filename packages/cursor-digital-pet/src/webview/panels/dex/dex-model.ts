@@ -6,6 +6,8 @@ import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { getStageLabel } from "@jcendal/digital-pet-core/data/stages.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 
+import { artworkToPixelPath } from "../../shared/pixel-artwork.ts"
+
 export type DexEntry = {
   readonly id: string
   readonly name: string
@@ -27,18 +29,6 @@ export type DexPanelModel = {
   readonly discovered: number
   readonly status: "available" | "empty" | "unavailable"
   readonly message: string
-}
-
-/** Expand terminal half-block artwork back into the original square LCD pixels. */
-export const artworkToPixelPath = (artwork: string): string => {
-  const pixels: string[] = []
-  for (const [row, line] of artwork.split("\n").entries()) {
-    for (const [column, cell] of Array.from(line).entries()) {
-      if (cell === "█" || cell === "▀") pixels.push(`M${column} ${row * 2}h1v1h-1z`)
-      if (cell === "█" || cell === "▄") pixels.push(`M${column} ${row * 2 + 1}h1v1h-1z`)
-    }
-  }
-  return pixels.join("")
 }
 
 export const buildDexPanelModel = (
