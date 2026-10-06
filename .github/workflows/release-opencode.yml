@@ -33,13 +33,16 @@ concurrency:
   queue: max
 
 jobs:
-  release:
-    name: Publish OpenCode Digital Pet
+  version:
+    name: Version OpenCode Digital Pet
     if: github.repository == 'jcendal/digital-pet'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write
+    outputs:
+      release_version: ${{ steps.result.outputs.release_version }}
+      release_tag: ${{ steps.result.outputs.release_tag }}
+      retry: ${{ steps.mode.outputs.retry }}
     steps:
       - name: Check out release source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -75,17 +78,20 @@ jobs:
           fi
 
       - name: Set up Node.js
+        if: steps.mode.outputs.retry != 'true'
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24.11.0
           package-manager-cache: false
 
       - name: Set up Bun
+        if: steps.mode.outputs.retry != 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
 
       - name: Install dependencies
+        if: steps.mode.outputs.retry != 'true'
         run: npm ci
 
       - name: Prepare release metadata
@@ -108,28 +114,14 @@ jobs:
 
       - name: Update lockfile
         if: steps.mode.outputs.retry != 'true'
-        run: |
-          npm install --package-lock-only --ignore-scripts
+        run: npm install --package-lock-only --ignore-scripts
 
       - name: Run release checks
+        if: steps.mode.outputs.retry != 'true'
         run: npm run release:check
 
-      - name: Pack release
-        id: pack
-        run: |
-          set -euo pipefail
-          package_directory="$RUNNER_TEMP/opencode-digital-pet-package"
-          mkdir -p "$package_directory"
-
-          tarball_name="$(npm pack --loglevel silent \
-            --pack-destination "$package_directory" \
-            --workspace @jcendal/opencode-digital-pet)"
-
-          test -f "$package_directory/$tarball_name"
-
-          printf 'tarball_name=%s\n' "$tarball_name" >> "$GITHUB_OUTPUT"
-
       - name: Set up Git
+        if: steps.mode.outputs.retry != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -140,11 +132,8 @@ jobs:
           RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
         run: |
           set -euo pipefail
-
           git add packages/opencode-digital-pet/package.json packages/opencode-digital-pet/CHANGELOG.md package-lock.json
-
           git commit -m "chore(opencode release): v$RELEASE_VERSION"
-
           git tag -a "opencode-digital-pet-v$RELEASE_VERSION" -m "OpenCode Digital Pet v$RELEASE_VERSION"
 
       - name: Commit next version
@@ -153,29 +142,74 @@ jobs:
           NEXT_DEV_VERSION: ${{ steps.metadata.outputs.next_dev_version }}
         run: |
           set -euo pipefail
-
           node --experimental-strip-types scripts/release-metadata.ts set-package-version packages/opencode-digital-pet/package.json "$NEXT_DEV_VERSION"
           npm install --package-lock-only --ignore-scripts
-
           git add packages/opencode-digital-pet/package.json package-lock.json
-
           git commit -m "chore(opencode): bump v$NEXT_DEV_VERSION"
 
       - name: Push release
         if: steps.mode.outputs.retry != 'true'
+        run: node --experimental-strip-types scripts/push-release.ts "opencode-digital-pet-v${{ steps.metadata.outputs.release_version }}"
+
+      - name: Export release coordinates
+        id: result
         env:
-          RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
-        run: node --experimental-strip-types scripts/push-release.ts "opencode-digital-pet-v$RELEASE_VERSION"
+          RETRY: ${{ steps.mode.outputs.retry }}
+          RETRY_VERSION: ${{ steps.mode.outputs.release_version }}
+          NEW_VERSION: ${{ steps.metadata.outputs.release_version }}
+        run: |
+          set -euo pipefail
+          if [ "$RETRY" = true ]; then
+            version="$RETRY_VERSION"
+          else
+            version="$NEW_VERSION"
+          fi
+          test -n "$version"
+          printf 'release_version=%s\nrelease_tag=opencode-digital-pet-v%s\n' "$version" "$version" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish OpenCode Digital Pet
+    needs: version
+    if: github.repository == 'jcendal/digital-pet' && needs.version.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.version.outputs.release_tag }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.11.0
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pack release
+        id: pack
+        run: |
+          set -euo pipefail
+          package_directory="$RUNNER_TEMP/opencode-digital-pet-package"
+          mkdir -p "$package_directory"
+          tarball_name="$(npm pack --loglevel silent \
+            --pack-destination "$package_directory" \
+            --workspace @jcendal/opencode-digital-pet)"
+          test -f "$package_directory/$tarball_name"
+          printf 'tarball_name=%s\n' "$tarball_name" >> "$GITHUB_OUTPUT"
 
       - name: Publish release (npm)
-        if: steps.mode.outputs.retry != 'true' || inputs.retry_target == 'npm'
+        if: needs.version.outputs.retry != 'true' || inputs.retry_target == 'npm'
         env:
           TARBALL: ${{ runner.temp }}/opencode-digital-pet-package/${{ steps.pack.outputs.tarball_name }}
         run: |
           set -euo pipefail
-
           npm_version="$(npm --version)"
-
           NPM_VERSION="$npm_version" node --input-type=module <<'NODE'
           const [major, minor, patch] = process.env.NPM_VERSION.split(".").map(Number);
           if (
@@ -185,15 +219,13 @@ jobs:
             throw new Error(`npm ${process.env.NPM_VERSION} is below required version 11.5.1`);
           }
           NODE
-
-          npm publish "$TARBALL" \
-            --access public --provenance --ignore-scripts
+          npm publish "$TARBALL" --access public --provenance --ignore-scripts
 
       - name: Publish release (GitHub)
-        if: steps.mode.outputs.retry != 'true' || inputs.retry_target == 'github'
+        if: needs.version.outputs.retry != 'true' || inputs.retry_target == 'github'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_VERSION: ${{ steps.metadata.outputs.release_version || steps.mode.outputs.release_version }}
+          RELEASE_VERSION: ${{ needs.version.outputs.release_version }}
           TARBALL: ${{ runner.temp }}/opencode-digital-pet-package/${{ steps.pack.outputs.tarball_name }}
         run: |
           node --experimental-strip-types scripts/release-metadata.ts release-notes packages/opencode-digital-pet/CHANGELOG.md "$RELEASE_VERSION" > "$RUNNER_TEMP/opencode-release-notes.md"
