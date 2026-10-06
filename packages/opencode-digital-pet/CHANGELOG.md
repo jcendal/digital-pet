@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-06
+
+### Changed
+
+- fix(cursor-digital-pet): point README images at the package directory
+
+
 ## [0.2.0] - 2026-10-06
 
 ### Changed
