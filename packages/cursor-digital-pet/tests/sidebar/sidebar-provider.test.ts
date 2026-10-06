@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, mock, test } from "bun:test"
 
 const openedUrls: string[] = []
+const executedCommands: string[] = []
 
 beforeAll(() => {
   mock.module("vscode", () => ({
@@ -9,7 +10,13 @@ beforeAll(() => {
         openedUrls.push(uri.toString())
       },
     },
+    commands: {
+      executeCommand: async (command: string) => {
+        executedCommands.push(command)
+      },
+    },
     Uri: {
+      joinPath: (_base: unknown, ...parts: string[]) => ({ toString: () => `/extension/${parts.join("/")}` }),
       parse: (value: string) => ({ toString: () => value }),
     },
   }))
@@ -27,6 +34,8 @@ const createStubWebviewView = (visible = true) => {
   const posted: unknown[] = []
   const webview = {
     options: {},
+    cspSource: "https://webview.test",
+    asWebviewUri: (uri: { toString: () => string }) => uri,
     html: "",
     postMessage: async (message: unknown) => {
       posted.push(message)
@@ -49,6 +58,24 @@ const createStubWebviewView = (visible = true) => {
 }
 
 describe("sidebar provider", () => {
+  test("sidebar actions open only the Dex and History commands", async () => {
+    const DigitalPetSidebarProvider = await loadProvider()
+    executedCommands.length = 0
+    const stub = createStubWebviewView()
+    const provider = new DigitalPetSidebarProvider(
+      extensionUri as import("vscode").Uri,
+      { getSidebarSnapshot: () => null },
+      { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
+      { scheduler: { start: () => () => undefined } },
+    )
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
+    stub.sendMessage({ type: "open-panel", panel: "dex" })
+    stub.sendMessage({ type: "open-panel", panel: "history" })
+    stub.sendMessage({ type: "open-panel", panel: "arbitrary-command" })
+    expect(executedCommands).toEqual(["cursorDigitalPet.dex", "cursorDigitalPet.history"])
+    provider.dispose()
+  })
+
   test("resolveWebviewView sets CSP html with a nonce", async () => {
     const DigitalPetSidebarProvider = await loadProvider()
     const stub = createStubWebviewView()
@@ -90,7 +117,7 @@ describe("sidebar provider", () => {
     )
     provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     stub.sendMessage({ type: "unknown" })
-    expect(stub.posted).toHaveLength(0)
+    expect(stub.posted).toEqual([{ type: "presentation-state", state: { phase: "idle" } }])
   })
 
   test("cached payload is posted when webview resolves", async () => {
@@ -117,6 +144,11 @@ describe("sidebar provider", () => {
     provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
     await Promise.resolve()
     expect(stub.posted.some((message) => (message as { kind?: string }).kind === "partner")).toBe(true)
+    stub.posted.length = 0
+    stub.sendMessage({ type: "sidebar-ready" })
+    await Promise.resolve()
+    expect(stub.posted.some((message) => (message as { kind?: string }).kind === "partner")).toBe(true)
+    expect(stub.posted.some((message) => (message as { type?: string }).type === "animation-frame")).toBe(true)
   })
 
   test("dispose stops the animation host scheduler", async () => {

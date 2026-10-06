@@ -47,6 +47,20 @@ export type EvolutionBattleOutcome = EvolutionBattleShooter
 export type BattleSpritePose = "attack" | "injured" | "happy" | "idle"
 export type EvolutionBattleResultLabel = "hit" | "miss" | null
 
+/** Scores and caption accompanying the shared frame; frontends choose their HUD style. */
+export type BattleFrameHud = {
+  readonly playerHits: number
+  readonly opponentHits: number
+  readonly hitsToWin: number
+  readonly caption: string | null
+  readonly gapStartColumn: number
+  readonly gapColumns: number
+  readonly scoreRow: number
+  readonly captionRow: number
+}
+
+export type BattleFrameListener = (artwork: string, hud?: BattleFrameHud) => Promise<void>
+
 export type EvolutionBattleShot = {
   readonly shooter: EvolutionBattleShooter
   readonly hit: boolean
@@ -293,15 +307,22 @@ const postScene = async (
   opponentSprite: string,
   viewportWidth: number,
   scene: EvolutionBattleScene,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
-  await onFrame(renderEvolutionBattleArtwork(catalog, playerSprite, opponentSprite, scene, viewportWidth))
+  const battleWidth = MONSTER_FRAME_COLUMNS * 2 + BATTLE_GAP_COLUMNS
+  await onFrame(renderEvolutionBattleArtwork(catalog, playerSprite, opponentSprite, scene, viewportWidth), {
+    playerHits: scene.playerHits,
+    opponentHits: scene.opponentHits,
+    hitsToWin: EVOLUTION_BATTLE_HITS_TO_WIN,
+    caption: scene.outcomeLabel ?? (scene.lastResult === null ? null : scene.lastResult === "hit" ? "HIT!" : "MISS"),
+    gapStartColumn: Math.max(Math.floor((viewportWidth - battleWidth) / 2), 0) + MONSTER_FRAME_COLUMNS,
+    gapColumns: BATTLE_GAP_COLUMNS,
+    scoreRow: 0,
+    captionRow: MONSTER_FRAME_ROWS - 1,
+  })
 }
 
-const animateBattleIntro = async (
-  viewportWidth: number,
-  onFrame: (artwork: string) => Promise<void>,
-): Promise<void> => {
+const animateBattleIntro = async (viewportWidth: number, onFrame: BattleFrameListener): Promise<void> => {
   const steps = Math.max(1, Math.ceil(EVOLUTION_BATTLE_INTRO_MS / EVOLUTION_BATTLE_TICK_MS))
   for (let step = 0; step <= steps; step += 1) {
     const progress = step / steps
@@ -318,7 +339,7 @@ const animateShot = async (
   shot: EvolutionBattleShot,
   playerHits: number,
   opponentHits: number,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
   const steps = Math.max(1, Math.ceil(EVOLUTION_BATTLE_TRAVEL_MS / EVOLUTION_BATTLE_TICK_MS))
   for (let step = 0; step <= steps; step += 1) {
@@ -350,7 +371,7 @@ const animateImpact = async (
   shot: EvolutionBattleShot,
   playerHits: number,
   opponentHits: number,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
   const playerPose = shot.hit && shot.shooter === "opponent" ? "injured" : "attack"
   const opponentPose = shot.hit && shot.shooter === "player" ? "injured" : "attack"
@@ -386,7 +407,7 @@ const animatePause = async (
   viewportWidth: number,
   playerHits: number,
   opponentHits: number,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
   await postScene(
     catalog,
@@ -412,7 +433,7 @@ const animateOutcome = async (
   outcome: EvolutionBattleOutcome,
   playerHits: number,
   opponentHits: number,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
   const ticks = Math.max(1, Math.ceil(EVOLUTION_BATTLE_OUTCOME_MS / EVOLUTION_BATTLE_TICK_MS))
   const playerWon = outcome === "player"
@@ -447,7 +468,7 @@ export const runEvolutionBattleAnimation = async (
   opponentSprite: string,
   viewportWidth: number,
   outcome: EvolutionBattleOutcome,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
   random: () => number = Math.random,
 ): Promise<EvolutionBattleOutcome> => {
   await animateBattleIntro(viewportWidth, onFrame)

@@ -1,3 +1,4 @@
+import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 /** @jsxImportSource @opentui/solid */
 import type { PluginOptions } from "@opencode-ai/plugin"
 import type { EventMessagePartUpdated, EventMessageUpdated, EventSessionStatus } from "@opencode-ai/sdk/v2"
@@ -108,6 +109,7 @@ export const createTui =
       offset: 0,
       facing: "left",
     })
+    const [presentationState, setPresentationState] = createSignal<PresentationState>({ phase: "idle" })
     const [customArtwork, setCustomArtwork] = createSignal<string | undefined>()
     const controller = new MonsterAnimationController(
       MONSTER_FRAME_CATALOG,
@@ -143,6 +145,15 @@ export const createTui =
           digimonCatalog: DIGIMON_CATALOG,
           repository: scheduling.battleRepository,
           ...(scheduling.random === undefined ? {} : { random: scheduling.random }),
+          onState: async (state) => {
+            setPresentationState(state)
+            if (state.phase === "evolved") {
+              const current = inputs()
+              const node = DIGIMON_CATALOG.byId.get(state.toNodeId)
+              if (current.kind === "partner" && node !== undefined) setInputs({ ...current, node })
+            }
+            api.renderer.requestRender()
+          },
           onArtwork: async (artwork) => {
             setCustomArtwork(artwork)
             api.renderer.requestRender()
@@ -166,6 +177,7 @@ export const createTui =
         return battled
       } finally {
         battleInProgress = false
+        setPresentationState({ phase: "idle" })
         setCustomArtwork(undefined)
       }
     }
@@ -184,6 +196,15 @@ export const createTui =
         const revealed = await runEvolutionRevealSession(evolution, artworkWidth, {
           frameCatalog: MONSTER_FRAME_CATALOG,
           digimonCatalog: DIGIMON_CATALOG,
+          onState: async (state) => {
+            setPresentationState(state)
+            if (state.phase === "evolved") {
+              const current = inputs()
+              const node = DIGIMON_CATALOG.byId.get(state.toNodeId)
+              if (current.kind === "partner" && node !== undefined) setInputs({ ...current, node })
+            }
+            api.renderer.requestRender()
+          },
           onArtwork: async (artwork) => {
             setCustomArtwork(artwork)
             api.renderer.requestRender()
@@ -198,6 +219,7 @@ export const createTui =
         return true
       } finally {
         battleInProgress = false
+        setPresentationState({ phase: "idle" })
         setCustomArtwork(undefined)
       }
     }
@@ -357,6 +379,7 @@ export const createTui =
               model={() => buildSidebarCardModel(inputs(), settings)}
               animation={animation}
               customArtwork={customArtwork}
+              presentationState={presentationState}
               onArtworkWidthChange={(width) => {
                 if (disposed) return
                 artworkWidth = width

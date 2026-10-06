@@ -118,9 +118,11 @@ export const runEvolutionAnimation = async (
   toSprite: string,
   viewportWidth: number,
   onFrame: (artwork: string) => Promise<void>,
+  onReveal?: () => Promise<void>,
 ): Promise<void> => {
   await sleep(EVOLUTION_PRE_ANIMATION_MS)
   await animatePhase(catalog, fromSprite, toSprite, viewportWidth, "glow", EVOLUTION_GLOW_MS, onFrame)
   await animatePhase(catalog, fromSprite, toSprite, viewportWidth, "morph", EVOLUTION_MORPH_MS, onFrame)
+  await onReveal?.()
   await animatePhase(catalog, fromSprite, toSprite, viewportWidth, "reveal", EVOLUTION_REVEAL_MS, onFrame)
 }

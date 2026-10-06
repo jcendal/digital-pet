@@ -26,9 +26,9 @@
 
 <div align="center" style="text-align: center; white-space: nowrap;">
 <center>
-<img src="images/sidebar-partner.png" alt="Cursor Digital Pet sidebar showing a partner and its evolution progress" width="31%" />
-<img src="images/sidebar-animation.png" alt="Cursor Digital Pet partner animation in the sidebar" width="31%" />
-<img src="images/sidebar-battle.png" alt="Cursor Digital Pet battle scene in the sidebar" width="31%" />
+<img src="images/sidebar-partner-lcd.jpg" alt="Cursor Digital Pet sidebar showing a partner and its evolution progress" width="31%" />
+<img src="images/sidebar-evolution-lcd.jpg" alt="Cursor Digital Pet partner animation in the sidebar" width="31%" />
+<img src="images/sidebar-battle-lcd.jpg" alt="Cursor Digital Pet battle scene in the sidebar" width="31%" />
 </center>
 </div>
 
@@ -60,7 +60,7 @@ carries over between Cursor and OpenCode.
 
 | Feature | Description |
 | --- | --- |
-| **Sidebar webview** | Animated ASCII partner artwork with stage gauge and evolution progress |
+| **Sidebar webview** | Compact pixel LCD partner view with evolution progress, shared combat/evolution animations, and Dex/History shortcuts |
 | **Digidex panel** | Pixel LCD collection browser with grid/list layouts, search, stage filters, and evolution records |
 | **History panel** | Browse current and retired generations, their recorded evolution journeys, and creation/retirement dates in a pixel LCD layout |
 | **Token tracking** | Cursor hooks (`beforeSubmitPrompt` + `stop`) with API watermark fallback |

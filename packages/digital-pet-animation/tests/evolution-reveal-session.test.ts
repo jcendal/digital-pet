@@ -8,28 +8,38 @@ import { runEvolutionRevealSession } from "../src/sessions/evolution-reveal-sess
 describe("evolution reveal session", () => {
   test("Given a valid evolution transition When running the session Then it renders evolution artwork", async () => {
     const frames: string[] = []
+    const phases: string[] = []
     const revealed = await runEvolutionRevealSession({ fromNodeId: "0-001", toNodeId: "1-001" }, 80, {
       frameCatalog: MONSTER_FRAME_CATALOG,
       digimonCatalog: DIGIMON_CATALOG,
+      onState: async (state) => {
+        phases.push(state.phase)
+      },
       onArtwork: async (artwork) => {
         frames.push(artwork)
       },
     })
 
+    expect(phases).toEqual(["evolving", "evolved"])
     expect(revealed).toBeTrue()
     expect(frames.length).toBeGreaterThan(0)
   })
 
   test("Given an unknown node When running the session Then it is a no-op", async () => {
     const frames: string[] = []
+    const phases: string[] = []
     const revealed = await runEvolutionRevealSession({ fromNodeId: "missing", toNodeId: "1-001" }, 80, {
       frameCatalog: MONSTER_FRAME_CATALOG,
       digimonCatalog: DIGIMON_CATALOG,
+      onState: async (state) => {
+        phases.push(state.phase)
+      },
       onArtwork: async (artwork) => {
         frames.push(artwork)
       },
     })
 
+    expect(phases).toEqual([])
     expect(revealed).toBeFalse()
     expect(frames).toEqual([])
   })

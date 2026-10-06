@@ -8,15 +8,22 @@ import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 
 import { runDefeatAnimation } from "../sequences/defeat-artwork.ts"
-import { runEvolutionBattleAnimation, type EvolutionBattleOutcome } from "../sequences/evolution-battle-artwork.ts"
+import {
+  runEvolutionBattleAnimation,
+  type EvolutionBattleOutcome,
+  type BattleFrameListener,
+} from "../sequences/evolution-battle-artwork.ts"
 import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
+
+import type { PresentationStateListener } from "./presentation-state.ts"
 
 export type EvolutionBattleSessionDependencies = {
   readonly frameCatalog: MonsterFrameCatalog
   readonly digimonCatalog: DigimonCatalog
   readonly repository: EvolutionBattleRepository
   readonly random?: () => number
-  readonly onArtwork: (artwork: string) => Promise<void>
+  readonly onState?: PresentationStateListener
+  readonly onArtwork: BattleFrameListener
   readonly onResolved?: (result: ResolveEvolutionBattleOutcome) => Promise<void>
 }
 
@@ -33,8 +40,9 @@ export const runEvolutionBattleSession = async (
 
   const random = dependencies.random ?? Math.random
   const outcome: EvolutionBattleOutcome = random() < 0.5 ? "player" : "opponent"
-  const postArtwork = async (artwork: string): Promise<void> => dependencies.onArtwork(artwork)
+  const postArtwork: BattleFrameListener = async (artwork, hud) => dependencies.onArtwork(artwork, hud)
 
+  await dependencies.onState?.({ phase: "battle", fromNodeId: player.id, opponentNodeId: opponent.id })
   await runEvolutionBattleAnimation(
     dependencies.frameCatalog,
     player.sprite,
@@ -53,9 +61,11 @@ export const runEvolutionBattleSession = async (
         frameCatalog: dependencies.frameCatalog,
         digimonCatalog: dependencies.digimonCatalog,
         onArtwork: postArtwork,
+        ...(dependencies.onState === undefined ? {} : { onState: dependencies.onState }),
       },
     )
   } else {
+    await dependencies.onState?.({ phase: "defeated", fromNodeId: player.id })
     await runDefeatAnimation(dependencies.frameCatalog, player.sprite, viewportWidth, postArtwork)
   }
 

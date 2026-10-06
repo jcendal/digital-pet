@@ -1,3 +1,4 @@
+import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 /** @jsxImportSource @opentui/solid */
 import { createTextAttributes, type BoxRenderable, type TextRenderable } from "@opentui/core"
 import { createEffect, type Accessor } from "solid-js"
@@ -40,6 +41,7 @@ const buildNextCheckLine = (model: SidebarCardModel, width: number): string => {
 export const DigitalPetSidebarCard = (props: {
   readonly model: Accessor<SidebarCardModel>
   readonly animation: Accessor<MonsterAnimationOutput | MonsterAnimationResult>
+  readonly presentationState?: Accessor<PresentationState>
   readonly customArtwork?: Accessor<string | undefined>
   readonly onArtworkWidthChange?: (width: number) => void
   readonly onUrlClick?: (url: string) => void
@@ -86,13 +88,18 @@ export const DigitalPetSidebarCard = (props: {
         updateText(gauge, "")
         updateText(url, "")
         return
-      case "partner":
+      case "partner": {
         updateText(name, model.isSetOverride ? `${model.name} (set)` : model.name)
         updateText(stage, model.frozen ? `${model.stage} (frozen)` : model.stage)
-        updateText(nextCheck, buildNextCheckLine(model, nextCheckWidth?.width ?? 0))
+        const phase = props.presentationState?.().phase ?? "idle"
+        updateText(
+          nextCheck,
+          phase === "idle" ? buildNextCheckLine(model, nextCheckWidth?.width ?? 0) : phase.toUpperCase(),
+        )
         updateText(gauge, model.isTerminal ? "-/-" : `${formatCount(model.gauge)}/${formatCount(model.threshold)}`)
         updateText(url, URL_LABEL)
         return
+      }
     }
   }
 
