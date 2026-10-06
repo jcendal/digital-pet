@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-06
+
+### Changed
+
+- feat(cursor): add generation history panel and shared LCD webview UI
+
+
 ## [0.3.0] - 2026-10-06
 
 ### Changed
