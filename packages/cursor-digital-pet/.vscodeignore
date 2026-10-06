@@ -6,6 +6,11 @@
 !icon.png
 !images/
 !images/*.png
+!images/*.jpg
 !hook-bridge.js
 !dist/extension.js
 !dist/sql-wasm.wasm
+!media/
+!media/fonts/
+!media/fonts/Silkscreen-Regular.ttf
+!media/fonts/OFL.txt

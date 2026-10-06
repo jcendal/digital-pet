@@ -61,7 +61,7 @@ carries over between Cursor and OpenCode.
 | Feature | Description |
 | --- | --- |
 | **Sidebar webview** | Animated ASCII partner artwork with stage gauge and evolution progress |
-| **Dex panel** | Browse discovered Digimon from your collection |
+| **Digidex panel** | Pixel LCD collection browser with grid/list layouts, search, stage filters, and evolution records |
 | **History panel** | Review current and retired partner generations |
 | **Token tracking** | Cursor hooks (`beforeSubmitPrompt` + `stop`) with API watermark fallback |
 | **Shared database** | Compatible `pet.db` with the OpenCode Digital Pet plugin |
@@ -115,6 +115,16 @@ Your partner starts as an egg and evolves as you complete Agent turns.
 ### Evolution battles
 
 Evolution sequences can show your partner in a battle scene inside the sidebar.
+
+### Digidex
+
+Run **Cursor Digital Pet: Open Dex** to browse the full catalog alongside a selected record.
+Switch between grid and list layouts, search by name or catalog ID, and filter by stage or discovery.
+Registered Digimon show their pixel sprite, first registration, generation count and evolution routes.
+Undiscovered entries stay hidden until you raise them. Arrow keys, Home and End navigate the catalog.
+The panel refreshes when your shared database changes and remembers your filters and selection.
+
+![Digidex with brown V-Pet casing, green LCD, collection list and Komondomon record (sample archive)](images/digidex-browser.jpg)
 
 ### Other access methods
 
