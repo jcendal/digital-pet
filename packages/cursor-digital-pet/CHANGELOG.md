@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-06
+
+### Changed
+
+- fix(cursor-digital-pet): point README images at the package directory
+
+
 ## [0.2.0] - 2026-10-06
 
 ### Added
