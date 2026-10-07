@@ -9,11 +9,13 @@
   "scripts": {
     "build": "node esbuild.mjs",
     "start": "node dist/server.js",
-    "check": "tsc --noEmit -p tsconfig.json"
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test tests"
   },
   "dependencies": {
-    "@jcendal/digital-pet-core": "0.2.0-dev.0",
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
-    "@jcendal/digital-pet-webviews": "0.1.0-dev.0"
+    "@jcendal/digital-pet-core": "0.2.0-dev.0",
+    "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
+    "peerjs": "^1.5.5"
   }
 }

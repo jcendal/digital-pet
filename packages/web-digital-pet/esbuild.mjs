@@ -17,3 +17,27 @@ await build({
   sourcemap: false,
   logLevel: "info",
 })
+await build({
+  entryPoints: [resolve(root, "src/browser-local.ts")],
+  outfile: resolve(root, "dist/browser-local.js"),
+  bundle: true,
+  platform: "browser",
+  target: "es2022",
+  format: "esm",
+  charset: "utf8",
+  minify: true,
+  sourcemap: false,
+  logLevel: "info",
+})
+await build({
+  entryPoints: [resolve(root, "src/browser-pairing.ts")],
+  outfile: resolve(root, "dist/browser-pairing.js"),
+  bundle: true,
+  platform: "browser",
+  target: "es2022",
+  format: "esm",
+  charset: "utf8",
+  minify: true,
+  sourcemap: false,
+  logLevel: "info",
+})

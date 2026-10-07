@@ -15,6 +15,7 @@ import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/applicat
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 
 export const databasePath = process.env.DIGITAL_PET_DATABASE_PATH || resolveHostDatabasePath()
+export const hasHostDatabase = (): boolean => existsSync(databasePath)
 
 const readDatabase = <T>(read: (database: DatabaseSync) => T, fallback: T): T => {
   if (!existsSync(databasePath)) return fallback

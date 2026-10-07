@@ -1,4 +1,4 @@
-const CACHE_NAME = "web-digital-pet-v4"
+const CACHE_NAME = "web-digital-pet-v6"
 const APP_FILES = [
   "/",
   "/dex",
@@ -6,6 +6,8 @@ const APP_FILES = [
   "/view/sidebar",
   "/view/dex",
   "/view/history",
+  "/browser-local.js",
+  "/browser-pairing.js",
   "/manifest.webmanifest",
   "/favicon.ico",
   "/fonts/Silkscreen-Regular.ttf",
