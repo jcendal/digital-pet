@@ -12,7 +12,7 @@ export type DispatchOptions = {
   readonly releaseNote: string
   readonly opencode: SelectedRelease
   readonly cursor: SelectedRelease
-  readonly web: boolean
+  readonly web: SelectedRelease
 }
 
 type DispatchResponse = {
@@ -77,7 +77,7 @@ export const dispatchSelectedReleases = async (
     [
       ["opencode", options.opencode],
       ["cursor", options.cursor],
-      ["web", { release: options.web }],
+      ["web", options.web],
     ] as const
   ).filter(([, release]) => release.release)
 
@@ -90,7 +90,7 @@ export const dispatchSelectedReleases = async (
         headers,
         body: JSON.stringify({
           ref: "main",
-          ...(product === "web" ? {} : { inputs: { bump: release.bump, release_note: options.releaseNote } }),
+          inputs: { bump: release.bump, release_note: options.releaseNote },
           return_run_details: true,
         }),
       }),
@@ -138,6 +138,7 @@ if (import.meta.main) {
     RELEASE_CURSOR,
     CURSOR_BUMP,
     RELEASE_WEB,
+    WEB_BUMP,
   } = process.env
   await dispatchSelectedReleases({
     repository: GITHUB_REPOSITORY ?? "",
@@ -145,6 +146,6 @@ if (import.meta.main) {
     releaseNote: RELEASE_NOTE ?? "",
     opencode: { release: RELEASE_OPENCODE === "true", bump: parseBump(OPENCODE_BUMP) },
     cursor: { release: RELEASE_CURSOR === "true", bump: parseBump(CURSOR_BUMP) },
-    web: RELEASE_WEB === "true",
+    web: { release: RELEASE_WEB === "true", bump: parseBump(WEB_BUMP) },
   })
 }

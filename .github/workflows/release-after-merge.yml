@@ -29,6 +29,7 @@ jobs:
       release_cursor: ${{ steps.plan.outputs.release_cursor }}
       cursor_bump: ${{ steps.plan.outputs.cursor_bump }}
       release_web: ${{ steps.plan.outputs.release_web }}
+      web_bump: ${{ steps.plan.outputs.web_bump }}
     steps:
       - name: Check out merged main
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -83,5 +84,6 @@ jobs:
           RELEASE_CURSOR: ${{ needs.plan.outputs.release_cursor }}
           CURSOR_BUMP: ${{ needs.plan.outputs.cursor_bump }}
           RELEASE_WEB: ${{ needs.plan.outputs.release_web }}
+          WEB_BUMP: ${{ needs.plan.outputs.web_bump }}
           RELEASE_NOTE: ${{ github.event.pull_request.title }}
         run: node --experimental-strip-types scripts/dispatch-merged-releases.ts

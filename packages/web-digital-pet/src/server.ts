@@ -142,6 +142,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
     let width = 40;
     let busy = false;
     let refreshRequested = false;
+    let hostBrowser = false;
     let scenery;
     if (page === 'sidebar') window.addEventListener('DOMContentLoaded', async () => {
       scenery = (await import('/browser-scenery.js')).initPartnerScenery();
@@ -151,7 +152,13 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
       if (window.parent === window) { location.href = path; return; }
       window.parent.postMessage({ type: 'digital-pet:navigate', path }, location.origin);
     };
+    const pageVisible = () => document.visibilityState !== 'hidden' && (!window.frameElement || window.frameElement.classList.contains('active'));
+    const browserSave = () => {
+      const preferred = localStorage.getItem('digital-pet:preferred-source');
+      return preferred === 'browser' || (preferred !== 'sqlite' && localStorage.getItem('digital-pet:source') === 'browser');
+    };
     const refresh = async () => {
+      if (!pageVisible()) return;
       if (busy) { refreshRequested = true; return; }
       busy = true;
       const preferred = localStorage.getItem('digital-pet:preferred-source');
@@ -164,7 +171,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         const path = page === 'sidebar' ? '/api/sidebar?width=' + width : '/api/' + page;
         let data;
         try {
-          if (preferred === 'browser') data = { mode: 'browser' };
+          if (hostBrowser || browserSave()) data = { mode: 'browser' };
           else {
             const response = await fetch(path, { cache: 'no-store' });
             if (!response.ok) throw new Error('Could not read Digital Pet data');
@@ -176,6 +183,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         }
         if (preferred !== localStorage.getItem('digital-pet:preferred-source')) { refreshRequested = true; return; }
         if (data.mode === 'browser') {
+          hostBrowser = true;
           localStorage.setItem('digital-pet:source', 'browser');
           const local = await import('/browser-local.js');
           if (page === 'sidebar') {
@@ -215,7 +223,10 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         }
         if (message.type.endsWith('-ready')) {
           refresh();
-          setInterval(refresh, page === 'sidebar' ? 800 : 5000);
+          setInterval(() => { if (pageVisible()) refresh(); }, page === 'sidebar' ? 800 : 5000);
+          const frame = window.frameElement;
+          if (frame) new MutationObserver(() => { if (pageVisible()) refresh(); }).observe(frame, { attributes: true, attributeFilter: ['class'] });
+          document.addEventListener('visibilitychange', () => { if (pageVisible()) refresh(); });
           if (page === 'dex') {
             const selected = new URLSearchParams(location.search).get('selected');
             if (selected) setTimeout(() => deliver({ type: 'dex-select', id: selected }), 0);
@@ -341,7 +352,7 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
       }
     })();
   `
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}${worldStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}${worldMarkup(availablePhotos)}<script nonce="${nonce}">${script}</script></body></html>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}${worldStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}${worldMarkup(availablePhotos)}<script nonce="${nonce}">${script}</script></body></html>`
 }
 
 const send = (response: ServerResponse, status: number, contentType: string, body: string | Buffer): void => {
