@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-07
+
+### Changed
+
+- feat(ci): dispatch web deploy from merged release plan
+
+
 ## [0.3.0] - 2026-10-06
 
 ### Changed
