@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test"
 
-import { parsePetTransfer } from "../src/transfer-protocol.ts"
+import { MAX_BACKUP_BYTES, parsePetTransfer } from "../src/transfer-protocol.ts"
 
 const state = {
   partnerId: "sample-partner",
@@ -16,6 +16,12 @@ describe("browser save transfer", () => {
   it("accepts a versioned save and discards unknown fields", () => {
     const transfer = parsePetTransfer({ version: 1, state: { ...state, unwanted: "data" } })
     expect(transfer.state).toEqual(state)
+  })
+
+  it("keeps device transfers small while allowing larger validated backup files", () => {
+    const backup = { version: 1, state, ignored: "x".repeat(65_536) }
+    expect(() => parsePetTransfer(backup)).toThrow("too large")
+    expect(parsePetTransfer(backup, MAX_BACKUP_BYTES).state).toEqual(state)
   })
 
   it("rejects malformed and inconsistent histories before import", () => {

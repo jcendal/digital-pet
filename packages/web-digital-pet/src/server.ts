@@ -1,7 +1,7 @@
 import { createServer, type ServerResponse } from "node:http"
 import { existsSync } from "node:fs"
-import { readFile } from "node:fs/promises"
-import { randomBytes } from "node:crypto"
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
+import { createHash, randomBytes } from "node:crypto"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { gzipSync } from "node:zlib"
@@ -204,7 +204,15 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         if (message.type === 'artwork-width') { width = message.width; return; }
         if (message.type === 'open-panel') { navigate('/' + message.panel); return; }
         if (message.type === 'history-dex') { navigate('/dex?selected=' + encodeURIComponent(message.id)); return; }
-        if (message.type === 'dex-reference') { window.open('/api/reference?id=' + encodeURIComponent(message.id) + '&source=' + localStorage.getItem('digital-pet:source'), '_blank', 'noopener'); return; }
+        if (message.type === 'dex-reference') {
+          if (localStorage.getItem('digital-pet:source') === 'browser') {
+            if (typeof message.url === 'string' && message.url.startsWith('https://digimon.net/'))
+              window.open(message.url, '_blank', 'noopener');
+          } else {
+            window.open('/api/reference?id=' + encodeURIComponent(message.id) + '&source=sqlite', '_blank', 'noopener');
+          }
+          return;
+        }
         if (message.type.endsWith('-ready')) {
           refresh();
           setInterval(refresh, page === 'sidebar' ? 800 : 5000);
@@ -514,6 +522,112 @@ const server = createServer(async (request, response) => {
   }
 })
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`Digital Pet Web: http://localhost:${port} (database: ${databasePath})`)
-})
+const exportStaticSite = async (): Promise<void> => {
+  if (hasHostDatabase()) throw new Error("Static export requires browser mode without a host database")
+  const outputRoot = resolve(packageRoot, "dist-static")
+  await rm(outputRoot, { recursive: true, force: true })
+  const write = async (path: string, content: string | Buffer): Promise<void> => {
+    const destination = resolve(outputRoot, path)
+    await mkdir(dirname(destination), { recursive: true })
+    await writeFile(destination, content)
+  }
+  const stableStaticNonce = (html: string): string => {
+    const nonce = /nonce-([a-f0-9]{32})/u.exec(html)?.[1]
+    if (!nonce) throw new Error("Missing static page nonce")
+    const stable = createHash("sha256").update(html.replaceAll(nonce, "STATIC-NONCE")).digest("hex").slice(0, 32)
+    return html.replaceAll(nonce, stable)
+  }
+  const shell = stableStaticNonce(renderShell("sidebar"))
+  const views = (["sidebar", "dex", "history"] as const).map(
+    (page) => [page, stableStaticNonce(renderPage(page))] as const,
+  )
+  const scripts = [
+    ["browser-local.js", browserLocalPath],
+    ["browser-pairing.js", browserPairingPath],
+    ["browser-options.js", browserOptionsPath],
+    ["browser-world.js", resolve(packageRoot, "dist", "browser-world.js")],
+    ["browser-scenery.js", resolve(packageRoot, "dist", "browser-scenery.js")],
+  ] as const
+  const scriptContents = await Promise.all(
+    scripts.map(async ([name, path]) => [name, await readFile(path, "utf8")] as const),
+  )
+  const files = [
+    ["manifest.webmanifest", manifestPath],
+    ["favicon.ico", faviconPath],
+    ["fonts/Silkscreen-Regular.ttf", fontPath],
+    ["images/digital-world-lake-background.png", backgroundPath],
+    ["icons/digital-pet-16.png", icon16Path],
+    ["icons/digital-pet-32.png", icon32Path],
+    ["icons/digital-pet-180.png", icon180Path],
+    ["icons/digital-pet-192.png", icon192Path],
+    ["icons/digital-pet-512.png", icon512Path],
+    ["icons/digital-pet-maskable-192.png", maskable192Path],
+    ["icons/digital-pet-maskable-512.png", maskable512Path],
+  ] as const
+  const serviceWorker = await readFile(serviceWorkerPath, "utf8")
+  const revision = createHash("sha256")
+  revision.update(shell)
+  for (const [, html] of views) revision.update(html)
+  for (const [, script] of scriptContents) revision.update(script)
+  revision.update(serviceWorker)
+  for (const [, path] of files) revision.update(await readFile(path))
+  for (const place of LOCATIONS) {
+    revision.update(await readFile(resolve(fieldsAssets, "scenes", `${place.scene}.svg`)))
+    if (availablePhotos.includes(place.id))
+      revision.update(await readFile(resolve(fieldsAssets, "backgrounds", place.backgroundFile)))
+  }
+  const releaseId = revision.digest("hex").slice(0, 12)
+  const releaseRoot = `revisions/${releaseId}`
+  const rewriteScripts = (content: string): string =>
+    scriptContents.reduce((text, [name]) => text.replaceAll(`/${name}`, `/${releaseRoot}/${name}`), content)
+
+  let staticShell = rewriteScripts(shell)
+  for (const [page, html] of views) {
+    const revisedPath = `/${releaseRoot}/view/${page}.html`
+    staticShell = staticShell.replace(`src="/view/${page}"`, `src="${revisedPath}"`)
+    const revisedHtml = rewriteScripts(html)
+    await write(`${releaseRoot}/view/${page}.html`, revisedHtml)
+    await write(`view/${page}.html`, revisedHtml)
+  }
+  await write("index.html", staticShell)
+  await write("api/browser.json", '{"mode":"browser"}\n')
+  for (const [name, content] of scriptContents) await write(`${releaseRoot}/${name}`, rewriteScripts(content))
+  for (const [destination, source] of files) await write(destination, await readFile(source))
+  for (const place of LOCATIONS) {
+    await write(`regions/${place.id}/scene.svg`, await readFile(resolve(fieldsAssets, "scenes", `${place.scene}.svg`)))
+    if (availablePhotos.includes(place.id))
+      await write(
+        `regions/${place.id}/background.png`,
+        await readFile(resolve(fieldsAssets, "backgrounds", place.backgroundFile)),
+      )
+  }
+  let versionedServiceWorker = rewriteScripts(serviceWorker).replace(
+    /^const CACHE_NAME = "[^"]+"$/mu,
+    `const CACHE_NAME = "web-digital-pet-${releaseId}"`,
+  )
+  for (const [page] of views)
+    versionedServiceWorker = versionedServiceWorker.replace(`"/view/${page}"`, `"/${releaseRoot}/view/${page}.html"`)
+  if (!versionedServiceWorker.includes(`const CACHE_NAME = "web-digital-pet-${releaseId}"`))
+    throw new Error("Could not version the service worker cache")
+  await write("service-worker.js", versionedServiceWorker)
+  const precachedPaths = /const APP_FILES = (\[[\s\S]*?\])/u.exec(versionedServiceWorker)?.[1]
+  if (!precachedPaths) throw new Error("Could not find the service worker asset list")
+  for (const match of precachedPaths.matchAll(/"([^"]+)"/gu)) {
+    const path = match[1]
+    if (path === undefined) throw new Error("Invalid precached asset path")
+    const name =
+      path === "/" || path === "/dex" || path === "/history"
+        ? "index.html"
+        : path.startsWith("/view/")
+          ? `${path.slice(1)}.html`
+          : path.slice(1)
+    if (!existsSync(resolve(outputRoot, name))) throw new Error(`Missing precached asset: ${path}`)
+  }
+  console.log(`Static Digital Pet exported to ${outputRoot}`)
+}
+
+if (process.env.DIGITAL_PET_STATIC_EXPORT === "1") await exportStaticSite()
+else
+  server.listen(port, "127.0.0.1", () => {
+    console.log(`Digital Pet Web: http://localhost:${port} (database: ${databasePath})`)
+  })

@@ -1,4 +1,5 @@
 const CACHE_NAME = "web-digital-pet-v13"
+const CACHE_PREFIX = "web-digital-pet-"
 const APP_FILES = [
   "/",
   "/dex",
@@ -37,12 +38,7 @@ const APP_FILES = [
 ]
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_FILES))
-      .then(() => self.skipWaiting()),
-  )
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES)))
 })
 
 self.addEventListener("activate", (event) => {
@@ -50,7 +46,11 @@ self.addEventListener("activate", (event) => {
     Promise.all([
       caches
         .keys()
-        .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))),
+        .then((keys) =>
+          Promise.all(
+            keys.filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME).map((key) => caches.delete(key)),
+          ),
+        ),
       self.clients.claim(),
     ]),
   )
@@ -64,15 +64,16 @@ self.addEventListener("fetch", (event) => {
     return
   event.respondWith(
     (async () => {
+      const cache = await caches.open(CACHE_NAME)
+      if (url.pathname.startsWith("/revisions/")) {
+        const cached = await cache.match(request)
+        if (cached) return cached
+      }
       try {
         const response = await fetch(request)
-        if (response.ok) {
-          const cache = await caches.open(CACHE_NAME)
-          await cache.put(request, response.clone())
-        }
+        if (response.ok) await cache.put(request, response.clone())
         return response
       } catch {
-        const cache = await caches.open(CACHE_NAME)
         return (await cache.match(request, { ignoreSearch: request.mode === "navigate" })) || Response.error()
       }
     })(),

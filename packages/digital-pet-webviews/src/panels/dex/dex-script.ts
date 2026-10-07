@@ -97,7 +97,7 @@ export const DEX_SCRIPT = /* javascript */ `
       if (entry.url) {
         const reference = element('button', 'utility reference', 'OPEN DIGIMON REFERENCE >');
         reference.type = 'button';
-        reference.addEventListener('click', () => vscode.postMessage({ type: 'dex-reference', id: entry.id }));
+        reference.addEventListener('click', () => vscode.postMessage({ type: 'dex-reference', id: entry.id, url: entry.url }));
         extra.append(reference);
       }
       body.append(extra);

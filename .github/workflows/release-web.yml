@@ -1,0 +1,100 @@
+name: Release Digital Pet web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release-web.yml"
+      - "infra/web-digital-pet.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "packages/digital-pet-animation/**"
+      - "packages/digital-pet-core/**"
+      - "packages/digital-pet-fields/**"
+      - "packages/digital-pet-webviews/**"
+      - "packages/web-digital-pet/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: digital-pet-web-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
+      WEB_DISTRIBUTION_ID: ${{ vars.WEB_DISTRIBUTION_ID }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.11.0
+          cache: npm
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify local Digital Pet packages
+        run: node scripts/check-workspace-dependencies.mjs
+
+      - name: Check and test the web package
+        run: |
+          npm run check --workspace @jcendal/web-digital-pet
+          npm run test --workspace @jcendal/web-digital-pet
+
+      - name: Build static website
+        run: npm run build:static --workspace @jcendal/web-digital-pet
+
+      - name: Validate deployment settings
+        env:
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+        run: |
+          test -n "$AWS_ROLE_ARN" || { echo "Missing AWS_ROLE_ARN repository variable" >&2; exit 1; }
+          test -n "$WEB_BUCKET_NAME" || { echo "Missing WEB_BUCKET_NAME repository variable" >&2; exit 1; }
+          test -n "$WEB_DISTRIBUTION_ID" || { echo "Missing WEB_DISTRIBUTION_ID repository variable" >&2; exit 1; }
+
+      - name: Authenticate to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+
+      - name: Publish website
+        run: |
+          site=packages/web-digital-pet/dist-static
+          aws s3 sync "$site/revisions" "s3://$WEB_BUCKET_NAME/revisions" \
+            --cache-control "public,max-age=31536000,immutable"
+          aws s3 sync "$site" "s3://$WEB_BUCKET_NAME/" \
+            --exclude "revisions/*" --exclude "index.html" \
+            --exclude "service-worker.js" --exclude "manifest.webmanifest" \
+            --exclude "api/browser.json" \
+            --cache-control "no-cache"
+          aws s3 cp "$site/api/browser.json" "s3://$WEB_BUCKET_NAME/api/browser.json" \
+            --content-type "application/json" --cache-control "no-cache"
+          aws s3 cp "$site/manifest.webmanifest" \
+            "s3://$WEB_BUCKET_NAME/manifest.webmanifest" \
+            --content-type "application/manifest+json" \
+            --cache-control "no-cache"
+          aws s3 cp "$site/index.html" "s3://$WEB_BUCKET_NAME/index.html" \
+            --content-type "text/html; charset=utf-8" \
+            --cache-control "no-cache,no-store,must-revalidate"
+          aws s3 cp "$site/service-worker.js" \
+            "s3://$WEB_BUCKET_NAME/service-worker.js" \
+            --content-type "text/javascript" \
+            --cache-control "no-cache,no-store,must-revalidate"
+          aws cloudfront create-invalidation \
+            --distribution-id "$WEB_DISTRIBUTION_ID" --paths "/*"
