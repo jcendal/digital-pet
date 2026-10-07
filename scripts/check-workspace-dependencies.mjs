@@ -5,7 +5,14 @@ import { fileURLToPath } from "node:url"
 import semver from "semver"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
-const workspaces = ["digital-pet-core", "digital-pet-animation", "opencode-digital-pet", "cursor-digital-pet"]
+const workspaces = [
+  "digital-pet-core",
+  "digital-pet-animation",
+  "digital-pet-webviews",
+  "web-digital-pet",
+  "opencode-digital-pet",
+  "cursor-digital-pet",
+]
 const manifests = new Map()
 
 for (const workspace of workspaces) {

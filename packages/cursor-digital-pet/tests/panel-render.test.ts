@@ -15,7 +15,7 @@ test("shared panel rendering escapes labels and serializes archive data without 
       script: "",
       layout: {
         summaryHtml: "",
-        toolbarHtml: "",
+        toolbarHtml: '<input id="search" type="search">',
         listLabel: unsafe,
         listHeading: unsafe,
         itemsLabel: unsafe,
@@ -28,6 +28,8 @@ test("shared panel rendering escapes labels and serializes archive data without 
   expect(html).not.toContain("<img")
   expect(html).toContain("&lt;img")
   expect(html).toContain("script-src 'nonce-testnonce'")
+  expect(html).toContain('<details id="filters" class="panel-filters"><summary>FILTERS</summary>')
+  expect(html).toContain('<div class="toolbar"><input id="search" type="search"></div></details>')
   const data = html.match(/<script id="test-data"[^>]*>(.*?)<\/script>/s)?.[1]
   expect(JSON.parse(data ?? "{}").message).toBe(unsafe)
 })

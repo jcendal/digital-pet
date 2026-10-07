@@ -1,15 +1,1 @@
-export const PANEL_THEME = /* css */ `
-  * { box-sizing: border-box; }
-  :root { color-scheme: light; --case: #594130; --case-edge: #9a7750; --case-ink: #d6c5a3;
-    --lcd: #bac79c; --lcd-edge: #89966f; --ink: #26351e; --muted: #435334; --line: #8fa276;
-    --type-small: 14px; --type-label: 16px; --type-body: 18px; --type-name: 20px; --type-title: 28px; }
-  html { height: 100%; overflow: hidden; }
-  body { height: 100%; height: 100dvh; overflow: hidden; margin: 0; background: #10120e; color: var(--ink); font-family: 'Digital Pet Pixel', monospace;
-    font-size: var(--type-body); line-height: 1.4; padding: 12px; }
-  .micro { font-size: var(--type-label); color: var(--muted); }
-  h2, h3, p { margin: 0; }
-  h2 { font-size: var(--type-title); font-weight: 400; overflow-wrap: anywhere; text-transform: uppercase; }
-  h3 { font-size: var(--type-body); font-weight: 400; }
-  svg { shape-rendering: crispEdges; }
-  [hidden] { display: none !important; }
-`
+export * from "@jcendal/digital-pet-webviews/shared/theme.ts"

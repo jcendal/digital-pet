@@ -152,6 +152,16 @@ describe("sidebar render", () => {
     expect(html).toContain('nonce="test-nonce-123"')
   })
 
+  test("keeps the Cursor partner sidebar without the web device frame", () => {
+    const cursorHtml = buildSidebarWebviewHtml("cursor")
+    const webHtml = buildSidebarWebviewHtml("web", { fontUri: "font.ttf", cspSource: "'self'", webShell: true })
+
+    expect(cursorHtml).toContain('<main class="pet-module" aria-label="Digital Pet">')
+    expect(cursorHtml).not.toContain('class="device partner-device"')
+    expect(cursorHtml).not.toContain('class="masthead"')
+    expect(webHtml).toContain('class="device partner-device"')
+  })
+
   test("maps partner model to sidebar payload without artwork", () => {
     const payload = toSidebarWebviewPayload({
       ...partnerCard,

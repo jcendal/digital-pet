@@ -1,5 +1,1 @@
-export type PanelWebviewResources = {
-  readonly nonce: string
-  readonly fontUri: string
-  readonly cspSource: string
-}
+export * from "@jcendal/digital-pet-webviews/shared/webview-resources.ts"
