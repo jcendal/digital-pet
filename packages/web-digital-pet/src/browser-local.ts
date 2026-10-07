@@ -10,7 +10,7 @@ import { buildHistoryPanelModel } from "@jcendal/digital-pet-webviews/panels/his
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 
 import { readLocalState } from "./browser-store.ts"
-import type { LocalPetState } from "./local-progress.ts"
+import { experienceMultiplier, type LocalPetState } from "./local-progress.ts"
 
 const animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG)
 let currentPartner = ""
@@ -20,14 +20,29 @@ export const isKnownNode = (id: string): boolean => DIGIMON_CATALOG.byId.has(id)
 const archiveFor = (state: LocalPetState): DigitalPetArchiveResult => ({
   kind: "available",
   partners: [
+    ...(state.retiredPartners ?? []).map((partner, index) => ({
+      ...partner,
+      generation: index + 1,
+      events: partner.events.map((event, eventIndex) => ({ eventId: `${index}:${eventIndex}`, ...event })),
+    })),
     {
       partnerId: state.partnerId,
-      generation: 1,
+      generation: (state.retiredPartners?.length ?? 0) + 1,
       createdAt: state.createdAt,
       retiredAt: null,
       events: state.events.map((event, index) => ({ eventId: String(index), ...event })),
     },
   ],
+})
+
+const settingsFor = (state: LocalPetState) => ({
+  ...DEFAULT_DIGITAL_PET_SETTINGS,
+  stageThresholds: Object.fromEntries(
+    Object.entries(DEFAULT_DIGITAL_PET_SETTINGS.stageThresholds).map(([stage, threshold]) => [
+      stage,
+      threshold * experienceMultiplier(state.experienceLevel),
+    ]),
+  ) as typeof DEFAULT_DIGITAL_PET_SETTINGS.stageThresholds,
 })
 
 export const sidebar = async (requestedWidth: number) => {
@@ -42,7 +57,7 @@ export const sidebar = async (requestedWidth: number) => {
     pendingEvolutionTargetId: null,
     battleOpponentNodeId: null,
   }
-  const presentation = buildSidebarPresentation(snapshot)
+  const presentation = buildSidebarPresentation(snapshot, settingsFor(state))
   const identity = presentation.partner
   const partnerKey = identity ? `${identity.sprite}:${identity.isDigitama}` : ""
   if (partnerKey !== currentPartner) {
@@ -59,9 +74,12 @@ export const sidebar = async (requestedWidth: number) => {
 }
 
 export const dex = async () => {
-  const model = buildDexPanelModel(archiveFor(await readLocalState()), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
+  const state = await readLocalState()
+  const model = buildDexPanelModel(archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
   return { ...model, message: "Discoveries are saved in this browser." }
 }
 
-export const history = async () =>
-  buildHistoryPanelModel(archiveFor(await readLocalState()), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
+export const history = async () => {
+  const state = await readLocalState()
+  return buildHistoryPanelModel(archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
+}

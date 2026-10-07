@@ -41,3 +41,15 @@ await build({
   sourcemap: false,
   logLevel: "info",
 })
+await build({
+  entryPoints: [resolve(root, "src/browser-options.ts")],
+  outfile: resolve(root, "dist/browser-options.js"),
+  bundle: true,
+  platform: "browser",
+  target: "es2022",
+  format: "esm",
+  charset: "utf8",
+  minify: true,
+  sourcemap: false,
+  logLevel: "info",
+})

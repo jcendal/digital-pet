@@ -65,6 +65,7 @@ const sidebarPreview = () => {
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
     acquireVsCodeApi: () => ({ postMessage: () => {} }),
+    getComputedStyle: () => ({ getPropertyValue: () => "6" }),
     document: {
       getElementById: element,
       querySelector: element,

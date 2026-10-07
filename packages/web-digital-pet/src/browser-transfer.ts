@@ -36,6 +36,10 @@ export class BrowserTransfer {
     return this.peer.connect(`${PEER_PREFIX}${code}`, { serialization: "json", reliable: true })
   }
 
+  get connected(): boolean {
+    return this.peer.open
+  }
+
   stop(): void {
     this.stopped = true
     this.peer.destroy()

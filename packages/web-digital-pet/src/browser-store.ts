@@ -1,10 +1,11 @@
-import { advanceLocalPet, type LocalPetState } from "./local-progress.ts"
+import { advanceLocalPet, beginNewPartner, type ExperienceLevel, type LocalPetState } from "./local-progress.ts"
 
 const DB_NAME = "web-digital-pet"
 const STORE_NAME = "pet"
 const STATE_KEY = "current"
 const DEVICE_KEY = "device-code"
 const BACKUP_KEY = "previous-save"
+const PAIRED_KEY = "paired-device"
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 const openDatabase = (): Promise<IDBDatabase> =>
@@ -122,6 +123,53 @@ export const restorePreviousSave = async (): Promise<boolean> => {
     if (current) store.put(current, BACKUP_KEY)
     await done
     return true
+  } finally {
+    database.close()
+  }
+}
+
+const changeLocalState = async (change: (state: LocalPetState) => LocalPetState, backup = false): Promise<void> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const stored = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
+    const state = advanceLocalPet(stored ?? initialState(Date.now()), Date.now())
+    if (backup) store.put(state, BACKUP_KEY)
+    store.put(change(state), STATE_KEY)
+    await done
+  } finally {
+    database.close()
+  }
+}
+
+export const setExperienceLevel = (level: ExperienceLevel): Promise<void> =>
+  changeLocalState((state) => ({ ...state, experienceLevel: level }))
+
+export const startNewPartner = (): Promise<void> =>
+  changeLocalState((state) => beginNewPartner(state, crypto.randomUUID(), Date.now()), true)
+
+export const getPairedDevice = async (): Promise<string | null> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readonly")
+    const value = await resultOf(transaction.objectStore(STORE_NAME).get(PAIRED_KEY))
+    return typeof value === "string" ? value : null
+  } finally {
+    database.close()
+  }
+}
+
+export const setPairedDevice = async (code: string | null): Promise<void> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    if (code === null) store.delete(PAIRED_KEY)
+    else store.put(code, PAIRED_KEY)
+    await done
   } finally {
     database.close()
   }

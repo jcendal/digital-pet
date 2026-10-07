@@ -26,4 +26,22 @@ describe("browser save transfer", () => {
       parsePetTransfer({ version: 1, state: { ...state, events: [{ ...state.events[0], createdAt: "bad" }] } }),
     ).toThrow()
   })
+
+  it("transfers experience preferences and archived companions, and rejects invalid settings", () => {
+    const extended = {
+      ...state,
+      experienceLevel: "low",
+      retiredPartners: [
+        { partnerId: "previous", createdAt: state.createdAt, retiredAt: state.createdAt, events: state.events },
+      ],
+    }
+    expect(parsePetTransfer({ version: 1, state: extended }).state).toEqual(extended)
+    expect(() => parsePetTransfer({ version: 1, state: { ...state, experienceLevel: ["low"] } })).toThrow()
+    expect(() =>
+      parsePetTransfer({
+        version: 1,
+        state: { ...extended, retiredPartners: [{ ...extended.retiredPartners[0], events: [] }] },
+      }),
+    ).toThrow()
+  })
 })

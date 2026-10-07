@@ -45,12 +45,11 @@
 <p style="white-space: nowrap;">
 <img src="images/digidex.jpg" alt="Digidex with Algomon selected, pixel artwork, and registered catalog entries" width="31%" />
 <img src="images/history.jpg" alt="Generation history with the current Greymon partner and previous generations" width="31%" />
-<img src="images/device-transfer.jpg" alt="Device transfer dialog with this device's code and a field to request another device's save" width="31%" />
 </p>
 </center>
 </div>
 
-<p align="center"><em>Screenshots above use an example SQLite archive. A new browser save starts with a Digitama.</em></p>
+<p align="center"><em>Partner, Digidex, and History above use an example computer save. A new browser save starts with a Digitama.</em></p>
 
 ---
 
@@ -60,7 +59,7 @@
 
 When a shared `pet.db` is present on the host machine, the web app **reads** the same archive as
 [@jcendal/cursor-digital-pet](https://open-vsx.org/extension/jcendal/cursor-digital-pet) and
-[@jcendal/opencode-digital-pet](https://www.npmjs.com/package/@jcendal/opencode-digital-pet). When that file is absent, the app runs in **browser mode**: progress lives in IndexedDB, experience ticks on a five-minute schedule, and you can install the app as a PWA or move saves between devices with **PAIR**.
+[@jcendal/opencode-digital-pet](https://www.npmjs.com/package/@jcendal/opencode-digital-pet). When that file is absent, the app runs in **browser mode**: progress lives in IndexedDB, experience ticks on a five-minute schedule, and you can install the app as a PWA or move saves between devices from **OPTIONS → PAIR DEVICES**. You can also choose a browser companion even when a computer save is available.
 
 ### 🎯 Key Highlights
 
@@ -68,7 +67,8 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 - 📱 **PWA-ready** — Manifest, icons, maskable assets, and a service worker for offline UI
 - 🎮 **650 Digimon** — Same catalog, evolution art, and panels as the desktop integrations
 - 📊 **Partner · Dex · History** — Shared webview UI from `digital-pet-webviews`
-- 🔄 **Device transfer** — Request, preview, and import a browser save over WebRTC (browser mode)
+- ⚙️ **Options panel** — Choose your save, set evolution experience, and start a new egg
+- 🔄 **Manual device sync** — Pair once, then bring the other browser's save with **SYNC**
 - 🔒 **Privacy-first** — No accounts, no cloud backup; saves stay on your device or local disk
 - 📖 **Read-only SQLite** — Cursor and OpenCode advance the shared archive; the web app does not write `pet.db`
 
@@ -84,7 +84,10 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **SQLite mode** | Live view of the shared `pet.db` while Cursor or OpenCode records usage |
 | **Browser mode** | Digitama hatch, timed experience, automatic evolution, IndexedDB persistence |
 | **PWA install** | Add to home screen or desktop with standalone window and cached shell |
-| **PAIR transfer** | Approve incoming requests, preview remote saves, import with rollback backup |
+| **Options** | Fourth navigation button opens the save selector, growth settings, new egg, and device pairing |
+| **Evolution experience** | Low = 10% of the original requirement, Normal = 50%, High = 100% |
+| **New egg** | Start a fresh browser companion while keeping the previous generation in History |
+| **Device pairing and Sync** | Approve the first exchange, remember the device, then request later transfers with one button and a rollback backup |
 
 ---
 
@@ -111,7 +114,7 @@ Open [http://localhost:4173](http://localhost:4173). The command builds this pac
 
 ### Try browser mode locally
 
-Point the server at a database path that does not exist:
+Open **OPTIONS** and select **THIS BROWSER**. This keeps the computer save and browser save separate. To test a host without any computer save, point the server at a database path that does not exist:
 
 ```sh
 DIGITAL_PET_DATABASE_PATH=/path/to/nonexistent/pet.db npm run web
@@ -121,16 +124,17 @@ DIGITAL_PET_DATABASE_PATH=/path/to/nonexistent/pet.db npm run web
 
 ## 💾 Storage
 
-The app picks its mode from whether the configured `pet.db` file exists on the host.
+Open **OPTIONS → YOUR SAVE** to choose **COMPUTER SAVE** (the companion raised with Cursor or OpenCode) or **THIS BROWSER** (an independent companion saved in this browser). The default is the computer save when available, otherwise the browser save. Switching remembers your choice and preserves both saves; it does not copy or merge them.
 
 | | Local SQLite archive | Browser save |
 | --- | --- | --- |
-| **When** | Configured `pet.db` exists | Configured `pet.db` does not exist |
+| **When** | Choose COMPUTER SAVE while the configured `pet.db` exists | Choose THIS BROWSER, or no computer save is available |
 | **Partner** | Shared with Cursor and OpenCode on that computer | Separate partner, starting with a Digitama |
-| **Experience** | Token usage from the integrations | One twenty-fourth of the stage threshold per completed five-minute interval |
+| **Experience** | Token usage from the integrations | One twenty-fourth of the original stage threshold per completed five-minute interval; evolution requirements are adjustable |
 | **Persistence** | Existing database (read-only from the web app) | IndexedDB for this browser origin |
 | **Offline** | Live progress needs the local server | UI and save after the service worker cache |
-| **PAIR** | Unavailable | On request between open browser sessions |
+| **Growth / new egg** | Managed in Cursor or OpenCode | Configurable in OPTIONS; retired companions stay in History |
+| **Pair / Sync** | Unavailable | On request between paired, open browser sessions |
 
 Default `pet.db` location (same as the other apps):
 
@@ -142,7 +146,7 @@ Default `pet.db` location (same as the other apps):
 
 Override with `DIGITAL_PET_DATABASE_PATH`. In SQLite mode, partner progression and history are updated only by Cursor or OpenCode.
 
-In browser mode, elapsed five-minute intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and a stable device code. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
+In browser mode, elapsed five-minute intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and the selected evolution experience. The stable device code and paired device are stored separately, so importing a save keeps this device's identity. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
 
 ---
 
@@ -152,31 +156,52 @@ In browser mode, elapsed five-minute intervals are applied when you reopen the a
 2. Use the browser **Install app** or **Add to Home Screen** action when offered.
 3. Launch Digital Pet from the installed icon.
 
-The package ships a web app manifest, favicons, standard and maskable icons, and a service worker that caches the shell for offline use. A browser save can keep progressing offline; **PAIR** needs a network connection, and SQLite mode needs the local server. Installation away from `localhost` requires HTTPS.
+The package ships a web app manifest, favicons, standard and maskable icons, and a service worker that caches the shell for offline use. A browser save can keep progressing offline; **Pair / Sync** needs a network connection, and SQLite mode needs the local server. Installation away from `localhost` requires HTTPS.
 
 ---
 
 ## 🔗 Transfer a browser save
 
-Keep the app **open and online** on both devices. **PAIR** appears only in browser mode.
+Keep the app **open and online** on both devices, with **OPTIONS → THIS BROWSER** selected. Computer saves are not transferred.
 
 <div align="center">
-  <img src="images/device-transfer.jpg" alt="Device transfer dialog with this device's code and a field to request another device's save" width="360" />
+  <img src="images/device-transfer.jpg" alt="Device transfer dialog with this device's code and a field to request another device's save" width="70%" />
 </div>
 
-1. On device **B**, open **PAIR** and copy its device code.
-2. On device **A**, open **PAIR**, enter B's code, and select **REQUEST**.
-3. On **B**, choose **SEND SAVE** to approve or **DECLINE** to cancel.
-4. On **A**, review the preview. Choose **REPLACE SAVE** to import or **KEEP MINE** to keep the current save.
+1. On device **B**, open **OPTIONS → PAIR DEVICES** and copy its device code.
+2. On device **A**, open **OPTIONS → PAIR DEVICES**, enter B's code, and select **REQUEST**.
+3. On **B**, choose **SEND SAVE & PAIR** to approve or **DECLINE** to cancel.
+4. On **A**, review the preview. Choose **REPLACE SAVE & PAIR** to import or **KEEP MINE** to keep the current save.
 5. After importing, **A** can use **RESTORE PREVIOUS SAVE** to recover the backed-up copy.
 
-This is a one-time transfer: **B** keeps its save, **A** keeps its device code, and progress diverges afterward. Switching Partner, Dex, or History does not cancel an active request.
+After the first accepted transfer, both devices remember each other. In **OPTIONS → CONNECT DEVICES**, press **SYNC** on A to request B's current save again, without entering its code or repeating approval. B must remain open with **THIS BROWSER** selected. **FORGET DEVICE** removes the remembered pairing on that device.
+
+Each transfer replaces the receiving device's browser save and keeps a backup. **B** keeps its save, **A** keeps its device code, and progress can diverge afterward. **SYNC always brings the other device's save here**; it does not merge progress, pick the newest save, or run continuously. Switching Partner, Dex, or History does not cancel an active request.
 
 [PeerJS Cloud](https://peerjs.com/server/cloud) provides free signaling; WebRTC carries the save peer-to-peer. The public service has no TURN relay, so some networks may block the connection. Incoming requests appear only while the app is open — there are no background push notifications.
 
 ---
 
 ## ⚙️ Configuration
+
+### In-app options
+
+<div align="center">
+  <img src="images/options.jpg" alt="Options panel with computer or browser save choice and evolution experience slider" width="70%" />
+  <img src="images/manual-sync.jpg" alt="Paired browser companion options with new egg and manual Sync" width="70%" />
+</div>
+
+**OPTIONS** opens a scrollable overlay from any section. Browser companion options are enabled when **THIS BROWSER** is selected:
+
+| Evolution experience | Requirement | Effect |
+| --- | --- | --- |
+| **LOW** | 10% of HIGH | Faster evolution |
+| **NORMAL** | 50% of HIGH | Half the original requirement |
+| **HIGH** | 100% | Original progression (default) |
+
+The amount earned every five minutes stays the same. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting and paired device.
+
+### Server settings
 
 | Setting | Default | Description |
 | --- | --- | --- |
@@ -208,7 +233,7 @@ This package adds the local server, SQLite read adapter, IndexedDB save, timed b
 - ✅ No analytics or telemetry in the web package
 - ✅ SQLite mode keeps partner data in your local `pet.db` only
 - ✅ Browser saves stay in IndexedDB on your device; no account or cloud sync
-- ⚠️ **PAIR** uses PeerJS Cloud for signaling and exchanges save data directly between browsers you approve
+- ⚠️ **Pair / Sync** uses PeerJS Cloud for signaling and exchanges save data directly between browsers you approve
 - ⚠️ Clearing site data or uninstalling the PWA removes browser saves unless you transferred them elsewhere
 
 ---

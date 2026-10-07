@@ -4,10 +4,35 @@ import {
   resolveEvolutionBattle,
   STAGE_GAUGE_THRESHOLDS,
   type EvolutionSelector,
+  type StageThresholds,
 } from "@jcendal/digital-pet-core/domain/evolution.ts"
 
 export const EXPERIENCE_INTERVAL_MS = 5 * 60 * 1000
 const TICKS_PER_STAGE = 24
+
+export type ExperienceLevel = "low" | "normal" | "high"
+export const isExperienceLevel = (value: unknown): value is ExperienceLevel =>
+  value === "low" || value === "normal" || value === "high"
+
+export const experienceMultiplier = (level: ExperienceLevel = "high"): number =>
+  level === "low" ? 0.1 : level === "normal" ? 0.5 : 1
+
+export const experienceThresholds = (level: ExperienceLevel = "high"): StageThresholds =>
+  Object.freeze(
+    Object.fromEntries(
+      Object.entries(STAGE_GAUGE_THRESHOLDS).map(([stage, threshold]) => [
+        stage,
+        threshold * experienceMultiplier(level),
+      ]),
+    ),
+  ) as StageThresholds
+
+export type LocalArchivedPartner = {
+  readonly partnerId: string
+  readonly createdAt: string
+  readonly retiredAt: string
+  readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
+}
 
 export type LocalPetState = {
   readonly partnerId: string
@@ -17,6 +42,8 @@ export type LocalPetState = {
   readonly isTerminal: boolean
   readonly lastTickAt: number
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
+  readonly experienceLevel?: ExperienceLevel
+  readonly retiredPartners?: readonly LocalArchivedPartner[]
 }
 
 export const advanceLocalPet = (
@@ -31,6 +58,7 @@ export const advanceLocalPet = (
   let gauge = initial.gauge
   let isTerminal = initial.isTerminal
   const events = [...initial.events]
+  const thresholds = experienceThresholds(initial.experienceLevel)
 
   for (let index = 0; index < ticks && !isTerminal; index++) {
     const current = DIGIMON_CATALOG.byId.get(currentNodeId)
@@ -42,7 +70,7 @@ export const advanceLocalPet = (
       selector,
       DIGIMON_CATALOG.byId,
       DIGIMON_CATALOG.nodes,
-      STAGE_GAUGE_THRESHOLDS,
+      thresholds,
     )
     if (next.pendingEvolutionTargetId !== null) next = resolveEvolutionBattle(next, true, DIGIMON_CATALOG.byId)
     if (next.current.id !== currentNodeId) {
@@ -63,5 +91,24 @@ export const advanceLocalPet = (
     isTerminal,
     lastTickAt: initial.lastTickAt + ticks * EXPERIENCE_INTERVAL_MS,
     events,
+  }
+}
+
+export const beginNewPartner = (previous: LocalPetState, partnerId: string, now: number): LocalPetState => {
+  const settled = advanceLocalPet(previous, now)
+  const createdAt = new Date(now).toISOString()
+  return {
+    partnerId,
+    createdAt,
+    currentNodeId: "0-001",
+    gauge: 0,
+    isTerminal: false,
+    lastTickAt: now,
+    experienceLevel: settled.experienceLevel ?? "high",
+    events: [{ currentNodeId: "0-001", createdAt }],
+    retiredPartners: [
+      ...(settled.retiredPartners ?? []),
+      { partnerId: settled.partnerId, createdAt: settled.createdAt, retiredAt: createdAt, events: settled.events },
+    ],
   }
 }

@@ -1,4 +1,4 @@
-import type { LocalPetState } from "./local-progress.ts"
+import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./local-progress.ts"
 
 export const TRANSFER_VERSION = 1
 export const MAX_TRANSFER_BYTES = 64 * 1024
@@ -12,6 +12,20 @@ const validDate = (value: unknown): value is string =>
   typeof value === "string" && value.length <= 32 && Number.isFinite(Date.parse(value))
 
 const validNodeId = (value: unknown): value is string => typeof value === "string" && /^[0-7]-\d{3}$/.test(value)
+
+const parseEvents = (value: unknown): LocalPetState["events"] => {
+  if (!Array.isArray(value) || value.length < 1 || value.length > 256)
+    throw new Error("The received save contains an invalid history")
+  let previousTime = 0
+  return value.map((event) => {
+    if (!isRecord(event) || !validNodeId(event.currentNodeId) || !validDate(event.createdAt))
+      throw new Error("The received save contains an invalid history")
+    const timestamp = Date.parse(event.createdAt)
+    if (timestamp < previousTime) throw new Error("The received save has an unordered history")
+    previousTime = timestamp
+    return { currentNodeId: event.currentNodeId, createdAt: event.createdAt }
+  })
+}
 
 export const parsePetTransfer = (input: unknown): PetTransfer => {
   if (!isRecord(input) || input.version !== TRANSFER_VERSION || !isRecord(input.state))
@@ -41,16 +55,40 @@ export const parsePetTransfer = (input: unknown): PetTransfer => {
   )
     throw new Error("The received save contains invalid partner data")
 
-  let previousTime = 0
-  for (const event of state.events) {
-    if (!isRecord(event) || !validNodeId(event.currentNodeId) || !validDate(event.createdAt))
-      throw new Error("The received save contains an invalid history")
-    const timestamp = Date.parse(event.createdAt)
-    if (timestamp < previousTime) throw new Error("The received save has an unordered history")
-    previousTime = timestamp
-  }
-  if (state.events.at(-1)?.currentNodeId !== state.currentNodeId)
+  const events = parseEvents(state.events)
+  if (events.at(-1)?.currentNodeId !== state.currentNodeId)
     throw new Error("The received save does not match its history")
+
+  if (
+    state.experienceLevel !== undefined &&
+    state.experienceLevel !== "low" &&
+    state.experienceLevel !== "normal" &&
+    state.experienceLevel !== "high"
+  )
+    throw new Error("The received save has an invalid experience setting")
+  let retiredPartners: LocalArchivedPartner[] | undefined
+  if (state.retiredPartners !== undefined) {
+    if (!Array.isArray(state.retiredPartners) || state.retiredPartners.length > 128)
+      throw new Error("The received save has an invalid archive")
+    retiredPartners = state.retiredPartners.map((partner) => {
+      if (
+        !isRecord(partner) ||
+        typeof partner.partnerId !== "string" ||
+        partner.partnerId.length < 1 ||
+        partner.partnerId.length > 100 ||
+        !validDate(partner.createdAt) ||
+        !validDate(partner.retiredAt) ||
+        Date.parse(partner.retiredAt) < Date.parse(partner.createdAt)
+      )
+        throw new Error("The received save has an invalid archived partner")
+      return {
+        partnerId: partner.partnerId,
+        createdAt: partner.createdAt,
+        retiredAt: partner.retiredAt,
+        events: parseEvents(partner.events),
+      }
+    })
+  }
 
   return {
     version: TRANSFER_VERSION,
@@ -61,10 +99,9 @@ export const parsePetTransfer = (input: unknown): PetTransfer => {
       gauge: state.gauge as number,
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
-      events: state.events.map((event) => {
-        const record = event as Record<string, unknown>
-        return { currentNodeId: record.currentNodeId as string, createdAt: record.createdAt as string }
-      }),
+      events,
+      ...(state.experienceLevel !== undefined ? { experienceLevel: state.experienceLevel as ExperienceLevel } : {}),
+      ...(retiredPartners !== undefined ? { retiredPartners } : {}),
     },
   }
 }
