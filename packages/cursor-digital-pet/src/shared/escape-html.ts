@@ -1,2 +1,1 @@
-export const escapeHtml = (value: string): string =>
-  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+export * from "@jcendal/digital-pet-webviews/shared/escape-html.ts"

@@ -1,10 +1,10 @@
 <div align="center">
   <img src="_images/logo.png" alt="Digital Pet logo" width="160" style="image-rendering: pixelated">
   <h1>Digital Pet</h1>
-  <p>A Digimon virtual pet that evolves with AI token usage in Cursor and OpenCode.</p>
+  <p>A Digimon virtual pet that evolves with AI token usage in Cursor and OpenCode, with a local web companion.</p>
 </div>
 
-Digital Pet has two apps in one monorepo: a Cursor extension and an OpenCode plugin. Both use the same local SQLite database, so your partner, Dex discoveries, and generation history carry across the two tools. You can use either app on its own.
+Digital Pet has a Cursor extension, an OpenCode plugin, and a local web companion. They read the same SQLite database, so your partner, Dex discoveries, and generation history carry across the three views. Cursor and OpenCode record token usage; the web companion displays the shared progress.
 
 ## Choose your app
 
@@ -12,12 +12,13 @@ Digital Pet has two apps in one monorepo: a Cursor extension and an OpenCode plu
 | --- | --- | --- |
 | [Cursor Digital Pet](packages/cursor-digital-pet/README.md) | Shows your partner in the Explorer sidebar and tracks Cursor Agent usage through hooks, with an API fallback. | [Install from Open VSX](https://open-vsx.org/extension/jcendal/cursor-digital-pet) or use a VSIX from [GitHub Releases](https://github.com/jcendal/digital-pet/releases). Follow the [Cursor setup guide](packages/cursor-digital-pet/README.md#-usage) to install hooks and hatch a partner. |
 | [OpenCode Digital Pet](packages/opencode-digital-pet/README.md) | Adds a TUI sidebar and `/digital-pet-*` commands; completed assistant messages provide experience. | Run `npx @jcendal/opencode-digital-pet init`, restart OpenCode, then run `/digital-pet-spawn`. See the [OpenCode guide](packages/opencode-digital-pet/README.md#quick-start). |
+| [Web Digital Pet](packages/web-digital-pet/README.md) | Shows the animated partner, Digidex, and generation history in a phone-width browser layout. | Run `npm run web`, then open `http://localhost:4173`. |
 
 The [illustrative OpenCode preview](_images/digital-pet-overview.png) shows the partner, Dex, and history views. Each app's README describes its own commands, requirements, settings, and storage behavior.
 
 ## Shared progress and migration
 
-Both apps resolve the same `pet.db` location by default:
+All three apps resolve the same `pet.db` location by default:
 
 | Platform | Database |
 | --- | --- |
@@ -35,10 +36,13 @@ If you previously installed `@sbugallo/opencode-vpet` or unscoped `opencode-vpet
 | --- | --- |
 | [`packages/cursor-digital-pet`](packages/cursor-digital-pet) | Cursor extension, packaged as a VSIX |
 | [`packages/opencode-digital-pet`](packages/opencode-digital-pet) | `@jcendal/opencode-digital-pet`, npm plugin and CLI |
+| [`packages/digital-pet-fields`](packages/digital-pet-fields) | Fields, regions, habitat rosters, and scenery assets; private workspace |
 | [`packages/digital-pet-core`](packages/digital-pet-core) | Shared catalog, evolution rules, use cases, and SQLite schema; private workspace |
 | [`packages/digital-pet-animation`](packages/digital-pet-animation) | Shared animation logic; private workspace |
+| [`packages/digital-pet-webviews`](packages/digital-pet-webviews) | Shared browser interface for Cursor and the web companion; private workspace |
+| [`packages/web-digital-pet`](packages/web-digital-pet) | Local browser server and read-only SQLite adapter |
 
-The root workspace is private. The two shared packages are bundled into the products and are not published separately. Cursor and OpenCode have [separate changelogs](CHANGELOG.md) and release versions. See [monorepo documentation](docs/monorepo.md) for development tools and release details.
+The root workspace is private. The shared packages are bundled into the products and are not published separately. Cursor and OpenCode have [separate changelogs](CHANGELOG.md) and release versions. See [monorepo documentation](docs/monorepo.md) for development tools and release details.
 
 ## Development
 

@@ -1,0 +1,17 @@
+{
+  "name": "@jcendal/digital-pet-webviews",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@jcendal/digital-pet-core": "0.2.0-dev.0",
+    "@jcendal/digital-pet-animation": "0.2.0-dev.0",
+    "@jcendal/digital-pet-fields": "0.1.0-dev.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

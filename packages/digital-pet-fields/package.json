@@ -1,0 +1,19 @@
+{
+  "name": "@jcendal/digital-pet-fields",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./domain/*": "./src/domain/*",
+    "./data/*": "./src/data/*",
+    "./application/*": "./src/application/*",
+    "./assets/*": "./assets/*"
+  },
+  "dependencies": {
+    "@jcendal/digital-pet-core": "0.2.0-dev.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test tests"
+  }
+}

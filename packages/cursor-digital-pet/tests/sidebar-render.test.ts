@@ -65,6 +65,7 @@ const sidebarPreview = () => {
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
     acquireVsCodeApi: () => ({ postMessage: () => {} }),
+    getComputedStyle: () => ({ getPropertyValue: () => "6" }),
     document: {
       getElementById: element,
       querySelector: element,
@@ -150,6 +151,16 @@ describe("sidebar render", () => {
     const html = buildSidebarWebviewHtml("test-nonce-123")
     expect(html).toContain("script-src 'nonce-test-nonce-123'")
     expect(html).toContain('nonce="test-nonce-123"')
+  })
+
+  test("keeps the Cursor partner sidebar without the web device frame", () => {
+    const cursorHtml = buildSidebarWebviewHtml("cursor")
+    const webHtml = buildSidebarWebviewHtml("web", { fontUri: "font.ttf", cspSource: "'self'", webShell: true })
+
+    expect(cursorHtml).toContain('<main class="pet-module" aria-label="Digital Pet">')
+    expect(cursorHtml).not.toContain('class="device partner-device"')
+    expect(cursorHtml).not.toContain('class="masthead"')
+    expect(webHtml).toContain('class="device partner-device"')
   })
 
   test("maps partner model to sidebar payload without artwork", () => {
