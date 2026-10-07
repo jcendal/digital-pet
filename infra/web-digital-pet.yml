@@ -1,0 +1,208 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Digital Pet browser site at digital-pet.rebase.es
+
+Parameters:
+  RebaseHostedZoneId:
+    Type: String
+    Description: Public Route 53 hosted zone ID for rebase.es
+  ExistingGitHubOidcProviderArn:
+    Type: String
+    Default: ""
+    Description: Leave empty to create GitHub's OIDC provider, or provide its existing ARN
+  GitHubOidcSubject:
+    Type: String
+    Default: "repo:jcendal/digital-pet:ref:refs/heads/main"
+    Description: Exact GitHub OIDC subject for main (adjust if immutable subjects are enabled)
+
+Conditions:
+  CreateOidcProvider: !Equals [!Ref ExistingGitHubOidcProviderArn, ""]
+
+Resources:
+  WebBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  WebCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: digital-pet.rebase.es
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: digital-pet.rebase.es
+          HostedZoneId: !Ref RebaseHostedZoneId
+
+  WebOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: digital-pet-web-s3
+        Description: Private S3 origin for Digital Pet
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  WebRoutes:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: digital-pet-web-routes
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Map Digital Pet browser routes to static S3 objects
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          if (uri === '/dex' || uri === '/history') {
+            request.uri = '/index.html';
+          } else if (uri === '/view/sidebar' || uri === '/view/dex' || uri === '/view/history') {
+            request.uri = uri + '.html';
+          } else if (uri === '/api/mode' || uri === '/api/sidebar' || uri === '/api/dex' ||
+                     uri === '/api/history' || uri === '/api/world') {
+            request.uri = '/api/browser.json';
+          }
+          return request;
+        }
+
+  WebDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: Digital Pet browser site
+        IPV6Enabled: true
+        Aliases:
+          - digital-pet.rebase.es
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        Origins:
+          - Id: web-bucket
+            DomainName: !GetAtt WebBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt WebOriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: web-bucket
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          MinTTL: 0
+          DefaultTTL: 0
+          MaxTTL: 31536000
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt WebRoutes.FunctionMetadata.FunctionARN
+        ViewerCertificate:
+          AcmCertificateArn: !Ref WebCertificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${WebBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${WebDistribution}"
+
+  WebDnsA:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref RebaseHostedZoneId
+      Name: digital-pet.rebase.es.
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt WebDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+  WebDnsAAAA:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref RebaseHostedZoneId
+      Name: digital-pet.rebase.es.
+      Type: AAAA
+      AliasTarget:
+        DNSName: !GetAtt WebDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOidcProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+
+  WebDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateOidcProvider
+                - !Ref GitHubOidcProvider
+                - !Ref ExistingGitHubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Ref GitHubOidcSubject
+      Policies:
+        - PolicyName: publish-web-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource: !GetAtt WebBucket.Arn
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub "${WebBucket.Arn}/*"
+              - Effect: Allow
+                Action: cloudfront:CreateInvalidation
+                Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${WebDistribution}"
+
+Outputs:
+  SiteUrl:
+    Value: https://digital-pet.rebase.es
+  BucketName:
+    Value: !Ref WebBucket
+  DistributionId:
+    Value: !Ref WebDistribution
+  DeployRoleArn:
+    Value: !GetAtt WebDeployRole.Arn

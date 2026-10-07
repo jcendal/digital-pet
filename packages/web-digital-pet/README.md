@@ -173,6 +173,8 @@ In browser mode, elapsed five-minute intervals are applied when you reopen the a
 
 ## 📱 Install as a PWA
 
+The public browser-only version can be built with `npm run build:static --workspace @jcendal/web-digital-pet` from the repository root. It writes `dist-static` without starting the local server or including `pet.db`. See the [AWS deployment guide](../../docs/web-deployment.md) for the one-time subdomain setup and automatic GitHub deployment.
+
 1. Open the app and wait for the first load to finish.
 2. Use the browser **Install app** or **Add to Home Screen** action when offered.
 3. Launch Digital Pet from the installed icon.

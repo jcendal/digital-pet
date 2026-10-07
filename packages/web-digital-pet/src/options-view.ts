@@ -30,6 +30,14 @@ export const optionsMarkup = /* html */ `
         <button id="pair-forget" class="text-action" type="button" hidden>FORGET PAIRED DEVICE</button>
         <p id="pair-summary" class="connection-status" role="status" aria-live="polite"></p>
       </section>
+      <section class="backup-section"><h3>BACK UP YOUR SAVE</h3><p class="section-description">Keep a copy of your companion outside this browser.</p>
+        <button id="backup-download" class="wide-action" type="button">DOWNLOAD BACKUP</button>
+        <button id="backup-import" class="wide-action" type="button">IMPORT BACKUP</button>
+        <input id="backup-file" class="sr-only" type="file" accept=".json,application/json" aria-label="Choose a Digital Pet backup">
+        <div id="backup-confirm" class="confirm-box" hidden><strong>REPLACE THIS BROWSER SAVE?</strong><p id="backup-preview"></p><p>Your current save can be restored from Options after import.</p><div class="dialog-actions"><button id="backup-accept" class="primary-action" type="button">REPLACE SAVE</button><button id="backup-cancel" type="button">CANCEL</button></div></div>
+        <button id="backup-restore" class="text-action" type="button" hidden>RESTORE PREVIOUS SAVE</button>
+        <p class="setting-caption">Updates keep your browser save. A downloaded backup also protects it if browser data is cleared.</p>
+      </section>
       <section class="new-partner-section"><div class="action-heading">${eggIcon}<div><h3>A NEW JOURNEY</h3><p class="section-description">Start fresh. Keep your past companions.</p></div></div>
         <button id="new-partner" class="wide-action" type="button"><span>START A NEW EGG</span><span aria-hidden="true">+</span></button>
         <p class="setting-caption">Your current companion moves to History.</p>
@@ -151,6 +159,7 @@ export const optionsStyles = /* css */ `
   .pair-code-row output { flex: 1; overflow-wrap: anywhere; font-size: 12px; }
   #pair-dialog label { display: block; margin: 18px 0 8px; font-size: 11px; }
   #pair-restore { margin-top: 20px; font-size: 11px; }
+  #backup-import { margin-top: 8px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   @media (max-width: 360px) { .dialog-head { padding: 10px 12px; } .dialog-body { padding: 14px 12px 18px; }
     .save-card { padding-right: 8px; } .section-heading { gap: 6px; } .web-dialog h3 { font-size: 12px; } }

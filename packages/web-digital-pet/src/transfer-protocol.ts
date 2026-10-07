@@ -3,6 +3,7 @@ import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./loc
 
 export const TRANSFER_VERSION = 1
 export const MAX_TRANSFER_BYTES = 64 * 1024
+export const MAX_BACKUP_BYTES = 4 * 1024 * 1024
 
 export type PetTransfer = { readonly version: 1; readonly state: LocalPetState }
 
@@ -28,10 +29,10 @@ const parseEvents = (value: unknown): LocalPetState["events"] => {
   })
 }
 
-export const parsePetTransfer = (input: unknown): PetTransfer => {
+export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES): PetTransfer => {
   if (!isRecord(input) || input.version !== TRANSFER_VERSION || !isRecord(input.state))
     throw new Error("Unsupported save format")
-  if (new TextEncoder().encode(JSON.stringify(input)).byteLength > MAX_TRANSFER_BYTES)
+  if (new TextEncoder().encode(JSON.stringify(input)).byteLength > maxBytes)
     throw new Error("The received save is too large")
 
   const state = input.state

@@ -1,8 +1,16 @@
-import { readLocalState, setExperienceLevel, startNewPartner } from "./browser-store.ts"
+import {
+  hasPreviousSave,
+  readLocalState,
+  replaceLocalState,
+  restorePreviousSave,
+  setExperienceLevel,
+  startNewPartner,
+} from "./browser-store.ts"
 import { ACTIVE_SOURCE_KEY, SOURCE_PREFERENCE_KEY, refreshBrowserViews, resolveSaveSource } from "./browser-source.ts"
 import type { ExperienceLevel } from "./local-progress.ts"
 import type { BrowserPairingControls } from "./browser-pairing.ts"
 import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "./scene-motion.ts"
+import { MAX_BACKUP_BYTES, parsePetTransfer, TRANSFER_VERSION, type PetTransfer } from "./transfer-protocol.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
@@ -38,6 +46,10 @@ export const initBrowserOptions = async (): Promise<void> => {
   const description = byId<HTMLElement>("experience-description")
   const status = byId<HTMLElement>("options-status")
   const confirmation = byId<HTMLElement>("new-partner-confirm")
+  const backupFile = byId<HTMLInputElement>("backup-file")
+  const backupConfirm = byId<HTMLElement>("backup-confirm")
+  const backupRestore = byId<HTMLButtonElement>("backup-restore")
+  let pendingBackup: PetTransfer | null = null
   let pairing: BrowserPairingControls | undefined
   let available: boolean | null = null
   let source = resolveSaveSource(
@@ -85,6 +97,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     const level = (await readLocalState()).experienceLevel ?? "high"
     slider.value = String(levels.indexOf(level))
     describe(level)
+    backupRestore.hidden = !(await hasPreviousSave())
   }
   const updateSource = async (): Promise<void> => {
     localStorage.setItem(ACTIVE_SOURCE_KEY, source)
@@ -93,6 +106,8 @@ export const initBrowserOptions = async (): Promise<void> => {
     fieldset.disabled = source !== "browser"
     byId("browser-options-hint").hidden = source === "browser"
     confirmation.hidden = true
+    backupConfirm.hidden = true
+    pendingBackup = null
     pairing?.setBrowserEnabled(source === "browser")
     await refreshSettings()
     refreshBrowserViews()
@@ -117,6 +132,84 @@ export const initBrowserOptions = async (): Promise<void> => {
         })
     })
   slider.addEventListener("input", () => describe(levels[Number(slider.value)] ?? "high"))
+  byId("backup-download").addEventListener("click", async () => {
+    if (source !== "browser") return
+    try {
+      const state = await readLocalState()
+      const blob = new Blob([JSON.stringify({ version: TRANSFER_VERSION, state }, null, 2)], {
+        type: "application/json",
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `digital-pet-backup-${new Date().toISOString().slice(0, 10)}.json`
+      link.click()
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+      status.textContent = "Backup downloaded. Keep the file somewhere safe."
+    } catch (error) {
+      status.textContent = String(error)
+    }
+  })
+  byId("backup-import").addEventListener("click", () => backupFile.click())
+  backupFile.addEventListener("change", async () => {
+    const file = backupFile.files?.[0]
+    backupFile.value = ""
+    backupConfirm.hidden = true
+    pendingBackup = null
+    if (!file || source !== "browser") return
+    if (file.size > MAX_BACKUP_BYTES) {
+      status.textContent = "This backup file is too large."
+      return
+    }
+    try {
+      pendingBackup = parsePetTransfer(JSON.parse(await file.text()) as unknown, MAX_BACKUP_BYTES)
+      byId("backup-preview").textContent =
+        `Backup from ${new Date(pendingBackup.state.createdAt).toLocaleDateString()}.`
+      backupConfirm.hidden = false
+      byId("backup-cancel").focus()
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : "This backup could not be read."
+    }
+  })
+  byId("backup-cancel").addEventListener("click", () => {
+    backupConfirm.hidden = true
+    pendingBackup = null
+    byId("backup-import").focus()
+  })
+  byId("backup-accept").addEventListener("click", async () => {
+    if (source !== "browser" || !pendingBackup) return
+    if (pairing?.busy) {
+      status.textContent = "Finish the current device transfer first."
+      return
+    }
+    try {
+      await replaceLocalState(pendingBackup.state)
+      backupConfirm.hidden = true
+      pendingBackup = null
+      refreshBrowserViews()
+      status.textContent = "Backup imported. Your previous save can be restored here."
+    } catch (error) {
+      status.textContent = String(error)
+    }
+  })
+  backupRestore.addEventListener("click", async () => {
+    if (source !== "browser") return
+    if (pairing?.busy) {
+      status.textContent = "Finish the current device transfer first."
+      return
+    }
+    try {
+      if (await restorePreviousSave()) {
+        refreshBrowserViews()
+        status.textContent = "Previous save restored."
+      } else {
+        backupRestore.hidden = true
+        status.textContent = "There is no previous save to restore."
+      }
+    } catch (error) {
+      status.textContent = String(error)
+    }
+  })
   for (const button of Array.from(dialog.querySelectorAll<HTMLButtonElement>("[data-experience-index]")))
     button.addEventListener("click", () => {
       slider.value = button.dataset.experienceIndex ?? "2"
