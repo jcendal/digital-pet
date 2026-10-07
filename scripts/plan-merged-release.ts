@@ -18,6 +18,7 @@ type ReleasePlanInput = {
 export type ReleasePlan = {
   readonly opencode: { readonly release: boolean; readonly bump: ReleaseBump }
   readonly cursor: { readonly release: boolean; readonly bump: ReleaseBump }
+  readonly web: { readonly release: boolean }
 }
 
 const PRODUCT_TAG_PREFIX: Readonly<Record<Product, string>> = {
@@ -63,6 +64,18 @@ export const planMergedRelease = (input: ReleasePlanInput): ReleasePlan => {
     sharedChanged || input.changedFiles.some((path) => path.startsWith("packages/opencode-digital-pet/"))
   const cursorChanged =
     sharedChanged || input.changedFiles.some((path) => path.startsWith("packages/cursor-digital-pet/"))
+  const webChanged =
+    sharedChanged ||
+    input.changedFiles.some(
+      (path) =>
+        path.startsWith("packages/digital-pet-fields/") ||
+        path.startsWith("packages/digital-pet-webviews/") ||
+        path.startsWith("packages/web-digital-pet/") ||
+        path === "package.json" ||
+        path === "package-lock.json" ||
+        path === ".github/workflows/release-web.yml" ||
+        path === "infra/web-digital-pet.yml",
+    )
   const requestedBump = bumpFromPullRequest(input.title, input.labels)
 
   return {
@@ -74,6 +87,7 @@ export const planMergedRelease = (input: ReleasePlanInput): ReleasePlan => {
       release: !input.alreadyReleased.cursor && (firstCursorRelease || cursorChanged),
       bump: requestedBump,
     },
+    web: { release: webChanged },
   }
 }
 
@@ -126,7 +140,7 @@ const run = async (): Promise<void> => {
   })
   await writeFile(
     outputPath,
-    `release_opencode=${plan.opencode.release}\nopencode_bump=${plan.opencode.bump}\nrelease_cursor=${plan.cursor.release}\ncursor_bump=${plan.cursor.bump}\n`,
+    `release_opencode=${plan.opencode.release}\nopencode_bump=${plan.opencode.bump}\nrelease_cursor=${plan.cursor.release}\ncursor_bump=${plan.cursor.bump}\nrelease_web=${plan.web.release}\n`,
     { flag: "a" },
   )
   process.stdout.write(`${JSON.stringify(plan)}\n`)

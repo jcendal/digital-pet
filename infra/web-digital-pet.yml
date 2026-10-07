@@ -11,8 +11,10 @@ Parameters:
     Description: Leave empty to create GitHub's OIDC provider, or provide its existing ARN
   GitHubOidcSubject:
     Type: String
-    Default: "repo:jcendal/digital-pet:ref:refs/heads/main"
-    Description: Exact GitHub OIDC subject for main (adjust if immutable subjects are enabled)
+    Default: "repo:jcendal@29627990/digital-pet@1363502452:ref:refs/heads/main"
+    AllowedValues:
+      - "repo:jcendal@29627990/digital-pet@1363502452:ref:refs/heads/main"
+    Description: Exact immutable GitHub OIDC subject for this repository on main
 
 Conditions:
   CreateOidcProvider: !Equals [!Ref ExistingGitHubOidcProviderArn, ""]
@@ -191,7 +193,6 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:PutObject
-                  - s3:DeleteObject
                 Resource: !Sub "${WebBucket.Arn}/*"
               - Effect: Allow
                 Action: cloudfront:CreateInvalidation

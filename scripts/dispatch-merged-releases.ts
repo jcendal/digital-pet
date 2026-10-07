@@ -1,5 +1,5 @@
 type ReleaseBump = "patch" | "minor" | "major"
-type Product = "opencode" | "cursor"
+type Product = "opencode" | "cursor" | "web"
 
 type SelectedRelease = {
   readonly release: boolean
@@ -12,6 +12,7 @@ export type DispatchOptions = {
   readonly releaseNote: string
   readonly opencode: SelectedRelease
   readonly cursor: SelectedRelease
+  readonly web: boolean
 }
 
 type DispatchResponse = {
@@ -29,8 +30,11 @@ const API_VERSION = "2026-03-10"
 const MAX_POLLS = 120
 const POLL_INTERVAL_MS = 15_000
 
-const workflowFor = (product: Product): string =>
-  product === "opencode" ? "release-opencode.yml" : "release-cursor.yml"
+const workflowFor = (product: Product): string => {
+  if (product === "opencode") return "release-opencode.yml"
+  if (product === "cursor") return "release-cursor.yml"
+  return "release-web.yml"
+}
 
 const pause = async (milliseconds: number): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, milliseconds))
@@ -73,6 +77,7 @@ export const dispatchSelectedReleases = async (
     [
       ["opencode", options.opencode],
       ["cursor", options.cursor],
+      ["web", { release: options.web }],
     ] as const
   ).filter(([, release]) => release.release)
 
@@ -85,7 +90,7 @@ export const dispatchSelectedReleases = async (
         headers,
         body: JSON.stringify({
           ref: "main",
-          inputs: { bump: release.bump, release_note: options.releaseNote },
+          ...(product === "web" ? {} : { inputs: { bump: release.bump, release_note: options.releaseNote } }),
           return_run_details: true,
         }),
       }),
@@ -132,6 +137,7 @@ if (import.meta.main) {
     OPENCODE_BUMP,
     RELEASE_CURSOR,
     CURSOR_BUMP,
+    RELEASE_WEB,
   } = process.env
   await dispatchSelectedReleases({
     repository: GITHUB_REPOSITORY ?? "",
@@ -139,5 +145,6 @@ if (import.meta.main) {
     releaseNote: RELEASE_NOTE ?? "",
     opencode: { release: RELEASE_OPENCODE === "true", bump: parseBump(OPENCODE_BUMP) },
     cursor: { release: RELEASE_CURSOR === "true", bump: parseBump(CURSOR_BUMP) },
+    web: RELEASE_WEB === "true",
   })
 }
