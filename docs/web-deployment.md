@@ -141,18 +141,18 @@ Referencia: [crear variables de repositorio en GitHub](https://docs.github.com/e
 ### Paso 6. Publica el código y ejecuta el primer despliegue
 
 1. Asegúrate de que los cambios de este despliegue, incluido
-   [`.github/workflows/deploy-web.yml`](../.github/workflows/deploy-web.yml),
+   [`.github/workflows/release-web.yml`](../.github/workflows/release-web.yml),
    están **confirmados y presentes en la rama `main` de GitHub**. Los cambios
    que solo estén en tu ordenador no son visibles para GitHub Actions.
 2. Al llegar el cambio a `main`, el evento `push` ejecuta automáticamente
-   **Deploy Digital Pet web**. Abre en GitHub **Actions → Deploy Digital Pet
+   **Release Digital Pet web**. Abre en GitHub **Actions → Release Digital Pet
    web** y selecciona la ejecución más reciente.
 3. Entra en el trabajo **deploy**. Espera a que pasen, en este orden:
    instalación, comprobación y pruebas, compilación estática, autenticación
    OIDC, publicación en S3 e invalidación de CloudFront. El trabajo completo
    debe terminar en verde.
 4. Si los cambios llegaron a `main` antes de crear el stack o las variables,
-   o si necesitas repetir el despliegue, abre **Actions → Deploy Digital Pet
+   o si necesitas repetir el despliegue, abre **Actions → Release Digital Pet
    web → Run workflow**, selecciona **main** y pulsa **Run workflow**.
 5. La ejecución manual requiere que el archivo del workflow ya esté en la
    rama predeterminada. Si no aparece **Run workflow**, confirma primero que
@@ -245,7 +245,7 @@ antes de cambiar de navegador o dispositivo.
 - CloudFront traduce las rutas `/dex`, `/history`, `/view/*` y las
   respuestas fijas de `/api/*` a objetos estáticos. El navegador mantiene
   los datos de juego localmente.
-- [`.github/workflows/deploy-web.yml`](../.github/workflows/deploy-web.yml)
+- [`.github/workflows/release-web.yml`](../.github/workflows/release-web.yml)
   se ejecuta para cambios web en `main` y también manualmente. El rol IAM
   solo puede escribir en este bucket e invalidar esta distribución.
 - El stack debe instalarse en `us-east-1` porque CloudFront exige allí los
