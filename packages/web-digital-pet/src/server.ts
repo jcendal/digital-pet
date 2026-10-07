@@ -24,6 +24,7 @@ import { PANEL_THEME } from "@jcendal/digital-pet-webviews/shared/theme.ts"
 
 import { databasePath, hasHostDatabase, readArchive, readSidebarSnapshot } from "./database.ts"
 import { optionsMarkup, optionsStyles } from "./options-view.ts"
+import { sceneMotionFor } from "./scene-motion.ts"
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const fontPath = resolve(packageRoot, "..", "digital-pet-webviews", "media", "fonts", "Silkscreen-Regular.ttf")
@@ -33,6 +34,7 @@ const availablePhotos = LOCATIONS.filter((place) =>
   existsSync(resolve(fieldsAssets, "backgrounds", place.backgroundFile)),
 ).map((place) => place.id)
 const browserWorldScript = readFile(resolve(packageRoot, "dist", "browser-world.js"))
+const browserSceneryScript = readFile(resolve(packageRoot, "dist", "browser-scenery.js"))
 const manifestPath = resolve(packageRoot, "assets", "manifest.webmanifest")
 const serviceWorkerPath = resolve(packageRoot, "assets", "service-worker.js")
 const browserLocalPath = resolve(packageRoot, "dist", "browser-local.js")
@@ -71,7 +73,11 @@ const sidebarData = (requestedWidth: number) => {
   const frame = animation.dispatch({ kind: "tick" })
   return {
     model: presentation.payload,
-    frame: { type: "animation-frame", artwork: renderPositionedArtwork(frame, width) },
+    frame: {
+      type: "animation-frame",
+      artwork: renderPositionedArtwork(frame, width),
+      motion: sceneMotionFor(frame, partnerKey, width),
+    },
   }
 }
 
@@ -103,6 +109,11 @@ const webStyles = /* css */ `
   .partner-device .screen { display: flex; flex-direction: column; overflow: hidden; }
   .partner-device .arena { --artwork-pixel-size: 7.5; background: url("/regions/dragon-eye-lake/scene.svg") center / 100% 100% no-repeat; }
   .partner-device .arena:not(.with-battle-hud) #artwork { height: 85%; align-self: start; }
+  .world-scenery { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .world-scenery-track { position: absolute; inset: 0 auto 0 -100%; width: 400%; display: flex; }
+  .world-scenery-track img { width: 25%; height: 100%; flex: none; display: block; image-rendering: pixelated; }
+  .world-scenery-track img:nth-child(odd) { transform: scaleX(-1); }
+  .partner-device .arena #artwork { position: relative; }
   #world-location { flex: none; padding: 8px 6px; margin: 0 0 8px; text-align: left; font: inherit; font-size: 10px; color: var(--muted); border: 0; border-bottom: 2px dotted var(--line); background: transparent; cursor: pointer; }
   #world-location:hover { color: var(--ink); }
   #world-location:focus-visible { outline: 2px dotted var(--ink); }
@@ -131,6 +142,10 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
     let width = 40;
     let busy = false;
     let refreshRequested = false;
+    let scenery;
+    if (page === 'sidebar') window.addEventListener('DOMContentLoaded', async () => {
+      scenery = (await import('/browser-scenery.js')).initPartnerScenery();
+    }, { once: true });
     const deliver = data => window.dispatchEvent(new MessageEvent('message', { data }));
     const navigate = path => {
       if (window.parent === window) { location.href = path; return; }
@@ -143,6 +158,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
       const deliverCurrent = data => {
         if (preferred !== localStorage.getItem('digital-pet:preferred-source')) { refreshRequested = true; return; }
         deliver(data);
+        if (page === 'sidebar' && data.type === 'animation-frame') scenery?.update(data.motion);
       };
       try {
         const path = page === 'sidebar' ? '/api/sidebar?width=' + width : '/api/' + page;
@@ -212,6 +228,8 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         if (event.source !== window.parent || event.origin !== location.origin || event.data?.type !== 'digital-pet:world-changed') return;
         if (!${JSON.stringify(LOCATIONS.map((place) => place.id))}.includes(event.data.locationId)) return;
         document.querySelector('.arena').style.backgroundImage = "url('/regions/" + event.data.locationId + "/scene.svg')";
+        document.querySelector('.arena').dataset.locationId = event.data.locationId;
+        scenery?.setLocation(event.data.locationId);
         document.getElementById('world-location').textContent = event.data.name + ' →';
       });
     }
@@ -345,6 +363,8 @@ const server = createServer(async (request, response) => {
     }
     if (url.pathname === "/browser-world.js")
       return send(response, 200, "text/javascript; charset=utf-8", await browserWorldScript)
+    if (url.pathname === "/browser-scenery.js")
+      return send(response, 200, "text/javascript; charset=utf-8", await browserSceneryScript)
     const worldAsset = /^\/regions\/([a-z-]+)\/(scene\.svg|background\.png)$/.exec(url.pathname)
     if (worldAsset) {
       const place = LOCATIONS.find((candidate) => candidate.id === worldAsset[1])

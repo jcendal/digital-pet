@@ -66,3 +66,14 @@ await build({
   minify: true,
   logLevel: "info",
 })
+
+await build({
+  entryPoints: [resolve(root, "src/browser-scenery.ts")],
+  outfile: resolve(root, "dist/browser-scenery.js"),
+  bundle: true,
+  platform: "browser",
+  target: "es2022",
+  format: "esm",
+  minify: true,
+  logLevel: "info",
+})

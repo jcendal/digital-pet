@@ -6,6 +6,7 @@ import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/applicat
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import { MonsterAnimationController } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { sceneMotionFor } from "./scene-motion.ts"
 import { buildDexPanelModel } from "@jcendal/digital-pet-webviews/panels/dex/dex-model.ts"
 import { buildHistoryPanelModel } from "@jcendal/digital-pet-webviews/panels/history/history-model.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
@@ -70,7 +71,11 @@ export const sidebar = async (requestedWidth: number) => {
   const frame = animation.dispatch({ kind: "tick" })
   return {
     model: presentation.payload,
-    frame: { type: "animation-frame", artwork: renderPositionedArtwork(frame, width) },
+    frame: {
+      type: "animation-frame",
+      artwork: renderPositionedArtwork(frame, width),
+      motion: sceneMotionFor(frame, partnerKey, width),
+    },
   }
 }
 

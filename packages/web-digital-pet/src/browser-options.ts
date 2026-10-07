@@ -2,6 +2,7 @@ import { readLocalState, setExperienceLevel, startNewPartner } from "./browser-s
 import { ACTIVE_SOURCE_KEY, SOURCE_PREFERENCE_KEY, refreshBrowserViews, resolveSaveSource } from "./browser-source.ts"
 import type { ExperienceLevel } from "./local-progress.ts"
 import type { BrowserPairingControls } from "./browser-pairing.ts"
+import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "./scene-motion.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
@@ -13,6 +14,23 @@ const descriptions: Record<ExperienceLevel, string> = {
 
 export const initBrowserOptions = async (): Promise<void> => {
   const dialog = byId<HTMLDialogElement>("options-dialog")
+  const landscape = byId<HTMLButtonElement>("landscape-motion")
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
+  const describeLandscape = () => {
+    const on = landscapeMotionEnabled(localStorage.getItem(LANDSCAPE_MOTION_KEY), reducedMotion.matches)
+    landscape.setAttribute("aria-pressed", String(on))
+    byId("landscape-motion-state").textContent = on ? "ON" : "OFF"
+  }
+  landscape.addEventListener("click", () => {
+    const on = landscape.getAttribute("aria-pressed") !== "true"
+    localStorage.setItem(LANDSCAPE_MOTION_KEY, on ? "on" : "off")
+    describeLandscape()
+  })
+  window.addEventListener("storage", (event) => {
+    if (event.key === LANDSCAPE_MOTION_KEY || event.key === null) describeLandscape()
+  })
+  reducedMotion.addEventListener("change", describeLandscape)
+  describeLandscape()
   const computer = byId<HTMLInputElement>("source-computer")
   const browser = byId<HTMLInputElement>("source-browser")
   const fieldset = byId<HTMLFieldSetElement>("browser-options")

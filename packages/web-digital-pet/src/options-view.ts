@@ -13,7 +13,7 @@ export const optionsMarkup = /* html */ `
       <p class="save-note"><span class="note-mark" aria-hidden="true"></span>Switching keeps both saves. Choice saved on this device.</p>
       <aside id="browser-options-hint" class="source-notice" hidden><strong>COMPUTER COMPANION</strong><p>Manage growth and new eggs in Cursor or OpenCode. Choose THIS BROWSER to use the options below.</p></aside>
     </section>
-    <section class="world-section"><h3>YOUR WORLD</h3><p class="section-description">Explore a new home with your companion.</p><button id="world-button" class="wide-action" type="button" aria-haspopup="dialog"><span>EXPLORE REGIONS<span id="world-current">Dragon Eye Lake</span></span><span aria-hidden="true">→</span></button></section>
+    <section class="world-section"><h3>YOUR WORLD</h3><p class="section-description">Explore a new home with your companion.</p><button id="world-button" class="wide-action" type="button" aria-haspopup="dialog"><span>EXPLORE REGIONS<span id="world-current">Dragon Eye Lake</span></span><span aria-hidden="true">→</span></button><button id="landscape-motion" class="wide-action" type="button" aria-pressed="false"><span>MOVING LANDSCAPE</span><span id="landscape-motion-state" class="value-badge">OFF</span></button><p class="setting-caption">Scrolls gently in the direction your companion walks.</p></section>
     <fieldset id="browser-options"><legend class="sr-only">Browser companion options</legend>
       <section class="growth-section"><div class="section-heading"><h3>EXPERIENCE TO EVOLVE</h3><span id="experience-amount" class="value-badge">100%</span></div>
         <p class="section-description">Set the pace of your companion's journey.</p>
@@ -84,6 +84,8 @@ export const optionsStyles = /* css */ `
   .web-dialog fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
   .web-dialog fieldset:disabled .experience-control, .web-dialog fieldset:disabled .option-icon { opacity: .55; }
   .web-dialog fieldset:disabled .connection-status { display: none; }
+  #landscape-motion { margin-top: 12px; }
+  #landscape-motion[aria-pressed=true] { border-color: var(--ink); }
   .save-choices { display: grid; gap: 10px; margin-top: 12px; }
   .save-choice { display: block; position: relative; cursor: pointer; }
   .save-choice input { appearance: none; -webkit-appearance: none; position: absolute; z-index: 1;

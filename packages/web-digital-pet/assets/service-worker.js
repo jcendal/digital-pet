@@ -1,4 +1,4 @@
-const CACHE_NAME = "web-digital-pet-v12"
+const CACHE_NAME = "web-digital-pet-v13"
 const APP_FILES = [
   "/",
   "/dex",
@@ -10,6 +10,7 @@ const APP_FILES = [
   "/browser-pairing.js",
   "/browser-options.js",
   "/browser-world.js",
+  "/browser-scenery.js",
   "/regions/dragon-eye-lake/background.png",
   "/regions/gear-savannah/scene.svg",
   "/regions/digital-ocean/scene.svg",
