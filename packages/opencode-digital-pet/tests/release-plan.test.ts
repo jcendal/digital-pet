@@ -18,6 +18,7 @@ describe("merged pull request release planning", () => {
     ).toEqual({
       opencode: { release: true, bump: "minor" },
       cursor: { release: true, bump: "patch" },
+      web: { release: false },
     })
   })
 
@@ -34,6 +35,7 @@ describe("merged pull request release planning", () => {
     ).toEqual({
       opencode: { release: false, bump: "minor" },
       cursor: { release: true, bump: "minor" },
+      web: { release: false },
     })
   })
 
@@ -50,6 +52,7 @@ describe("merged pull request release planning", () => {
     ).toEqual({
       opencode: { release: true, bump: "major" },
       cursor: { release: true, bump: "major" },
+      web: { release: true },
     })
   })
 
@@ -65,6 +68,7 @@ describe("merged pull request release planning", () => {
 
     expect(plan.opencode.release).toBe(false)
     expect(plan.cursor.release).toBe(false)
+    expect(plan.web.release).toBe(false)
   })
 
   test("Given a documentation-only PR after the first releases When it merges Then it publishes nothing", () => {
@@ -79,6 +83,41 @@ describe("merged pull request release planning", () => {
 
     expect(plan.opencode.release).toBe(false)
     expect(plan.cursor.release).toBe(false)
+    expect(plan.web.release).toBe(false)
+  })
+
+  test("Given a web-only change When the PR merges Then only the web is deployed", () => {
+    const plan = planMergedRelease({
+      changedFiles: ["packages/web-digital-pet/src/browser-world.ts"],
+      tags: productTags,
+      title: "fix(web): update world view",
+      labels: [],
+      opencodeVersion: "0.2.1-dev.0",
+      alreadyReleased: { opencode: false, cursor: false },
+    })
+
+    expect(plan.opencode.release).toBe(false)
+    expect(plan.cursor.release).toBe(false)
+    expect(plan.web.release).toBe(true)
+  })
+
+  test("Given web infrastructure or shared view changes When the PR merges Then the web is deployed", () => {
+    for (const changedFile of [
+      "infra/web-digital-pet.yml",
+      ".github/workflows/release-web.yml",
+      "packages/digital-pet-fields/src/application/world.ts",
+      "packages/digital-pet-webviews/src/panels/world/world-model.ts",
+    ]) {
+      const plan = planMergedRelease({
+        changedFiles: [changedFile],
+        tags: productTags,
+        title: "fix(web): update deployment",
+        labels: [],
+        opencodeVersion: "0.2.1-dev.0",
+        alreadyReleased: { opencode: false, cursor: false },
+      })
+      expect(plan.web.release).toBe(true)
+    }
   })
 
   test("Given conflicting release labels When planning Then it rejects the ambiguous version bump", () => {

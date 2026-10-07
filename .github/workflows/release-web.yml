@@ -1,18 +1,6 @@
 name: Release Digital Pet web
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/release-web.yml"
-      - "infra/web-digital-pet.yml"
-      - "package.json"
-      - "package-lock.json"
-      - "packages/digital-pet-animation/**"
-      - "packages/digital-pet-core/**"
-      - "packages/digital-pet-fields/**"
-      - "packages/digital-pet-webviews/**"
-      - "packages/web-digital-pet/**"
   workflow_dispatch:
 
 permissions:
@@ -25,12 +13,16 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.repository == 'jcendal/digital-pet'
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
       WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
       WEB_DISTRIBUTION_ID: ${{ vars.WEB_DISTRIBUTION_ID }}
     steps:
+      - name: Require main branch
+        run: test "$GITHUB_REF" = "refs/heads/main"
+
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
