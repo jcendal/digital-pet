@@ -3,7 +3,7 @@ import { readFile, writeFile } from "node:fs/promises"
 
 import semver from "semver"
 
-type Product = "opencode" | "cursor"
+type Product = "opencode" | "cursor" | "web"
 type ReleaseBump = "patch" | "minor" | "major"
 
 type ReleasePlanInput = {
@@ -18,12 +18,13 @@ type ReleasePlanInput = {
 export type ReleasePlan = {
   readonly opencode: { readonly release: boolean; readonly bump: ReleaseBump }
   readonly cursor: { readonly release: boolean; readonly bump: ReleaseBump }
-  readonly web: { readonly release: boolean }
+  readonly web: { readonly release: boolean; readonly bump: ReleaseBump }
 }
 
 const PRODUCT_TAG_PREFIX: Readonly<Record<Product, string>> = {
   opencode: "opencode-digital-pet-v",
   cursor: "cursor-digital-pet-v",
+  web: "web-digital-pet-v",
 }
 
 const latestStableTag = (tags: readonly string[], prefix: string): string | undefined => {
@@ -87,7 +88,10 @@ export const planMergedRelease = (input: ReleasePlanInput): ReleasePlan => {
       release: !input.alreadyReleased.cursor && (firstCursorRelease || cursorChanged),
       bump: requestedBump,
     },
-    web: { release: webChanged },
+    web: {
+      release: !input.alreadyReleased.web && webChanged,
+      bump: requestedBump,
+    },
   }
 }
 
@@ -136,11 +140,12 @@ const run = async (): Promise<void> => {
     alreadyReleased: {
       opencode: isAlreadyReleased(pullRequest.merge_commit_sha, latestStableTag(tags, PRODUCT_TAG_PREFIX.opencode)),
       cursor: isAlreadyReleased(pullRequest.merge_commit_sha, latestStableTag(tags, PRODUCT_TAG_PREFIX.cursor)),
+      web: isAlreadyReleased(pullRequest.merge_commit_sha, latestStableTag(tags, PRODUCT_TAG_PREFIX.web)),
     },
   })
   await writeFile(
     outputPath,
-    `release_opencode=${plan.opencode.release}\nopencode_bump=${plan.opencode.bump}\nrelease_cursor=${plan.cursor.release}\ncursor_bump=${plan.cursor.bump}\nrelease_web=${plan.web.release}\n`,
+    `release_opencode=${plan.opencode.release}\nopencode_bump=${plan.opencode.bump}\nrelease_cursor=${plan.cursor.release}\ncursor_bump=${plan.cursor.bump}\nrelease_web=${plan.web.release}\nweb_bump=${plan.web.bump}\n`,
     { flag: "a" },
   )
   process.stdout.write(`${JSON.stringify(plan)}\n`)

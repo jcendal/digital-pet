@@ -13,12 +13,12 @@ describe("merged pull request release planning", () => {
         title: "fix: automate releases",
         labels: [],
         opencodeVersion: "0.2.0-dev.0",
-        alreadyReleased: { opencode: false, cursor: false },
+        alreadyReleased: { opencode: false, cursor: false, web: false },
       }),
     ).toEqual({
       opencode: { release: true, bump: "minor" },
       cursor: { release: true, bump: "patch" },
-      web: { release: false },
+      web: { release: false, bump: "patch" },
     })
   })
 
@@ -30,12 +30,12 @@ describe("merged pull request release planning", () => {
         title: "feat: improve the sidebar",
         labels: [],
         opencodeVersion: "0.2.1-dev.0",
-        alreadyReleased: { opencode: false, cursor: false },
+        alreadyReleased: { opencode: false, cursor: false, web: false },
       }),
     ).toEqual({
       opencode: { release: false, bump: "minor" },
       cursor: { release: true, bump: "minor" },
-      web: { release: false },
+      web: { release: false, bump: "minor" },
     })
   })
 
@@ -47,23 +47,27 @@ describe("merged pull request release planning", () => {
         title: "refactor: change the database schema",
         labels: ["release:major"],
         opencodeVersion: "0.2.1-dev.0",
-        alreadyReleased: { opencode: false, cursor: false },
+        alreadyReleased: { opencode: false, cursor: false, web: false },
       }),
     ).toEqual({
       opencode: { release: true, bump: "major" },
       cursor: { release: true, bump: "major" },
-      web: { release: true },
+      web: { release: true, bump: "major" },
     })
   })
 
   test("Given a merge already contained in each product tag When a queued run starts Then it publishes nothing", () => {
     const plan = planMergedRelease({
-      changedFiles: ["packages/opencode-digital-pet/src/index.ts", "packages/cursor-digital-pet/src/extension.ts"],
+      changedFiles: [
+        "packages/opencode-digital-pet/src/index.ts",
+        "packages/cursor-digital-pet/src/extension.ts",
+        "packages/web-digital-pet/src/browser-world.ts",
+      ],
       tags: productTags,
       title: "fix: update both hosts",
       labels: [],
       opencodeVersion: "0.2.1-dev.0",
-      alreadyReleased: { opencode: true, cursor: true },
+      alreadyReleased: { opencode: true, cursor: true, web: true },
     })
 
     expect(plan.opencode.release).toBe(false)
@@ -78,7 +82,7 @@ describe("merged pull request release planning", () => {
       title: "docs: clarify releases",
       labels: [],
       opencodeVersion: "0.2.1-dev.0",
-      alreadyReleased: { opencode: false, cursor: false },
+      alreadyReleased: { opencode: false, cursor: false, web: false },
     })
 
     expect(plan.opencode.release).toBe(false)
@@ -93,12 +97,12 @@ describe("merged pull request release planning", () => {
       title: "fix(web): update world view",
       labels: [],
       opencodeVersion: "0.2.1-dev.0",
-      alreadyReleased: { opencode: false, cursor: false },
+      alreadyReleased: { opencode: false, cursor: false, web: false },
     })
 
     expect(plan.opencode.release).toBe(false)
     expect(plan.cursor.release).toBe(false)
-    expect(plan.web.release).toBe(true)
+    expect(plan.web).toEqual({ release: true, bump: "patch" })
   })
 
   test("Given web infrastructure or shared view changes When the PR merges Then the web is deployed", () => {
@@ -114,9 +118,9 @@ describe("merged pull request release planning", () => {
         title: "fix(web): update deployment",
         labels: [],
         opencodeVersion: "0.2.1-dev.0",
-        alreadyReleased: { opencode: false, cursor: false },
+        alreadyReleased: { opencode: false, cursor: false, web: false },
       })
-      expect(plan.web.release).toBe(true)
+      expect(plan.web).toEqual({ release: true, bump: "patch" })
     }
   })
 
@@ -128,7 +132,7 @@ describe("merged pull request release planning", () => {
         title: "fix: update the plugin",
         labels: ["release:minor", "release:major"],
         opencodeVersion: "0.2.1-dev.0",
-        alreadyReleased: { opencode: false, cursor: false },
+        alreadyReleased: { opencode: false, cursor: false, web: false },
       }),
     ).toThrow("only one")
   })

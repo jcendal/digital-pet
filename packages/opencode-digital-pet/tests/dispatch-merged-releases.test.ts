@@ -8,7 +8,7 @@ const options: DispatchOptions = {
   releaseNote: "feat: sidebar",
   opencode: { release: true, bump: "minor" },
   cursor: { release: true, bump: "patch" },
-  web: true,
+  web: { release: true, bump: "patch" },
 }
 
 const workflowName = (url: string, method: string | undefined): string => {
@@ -28,7 +28,8 @@ describe("dispatch merged releases", () => {
         const body = JSON.parse(String(init.body)) as { return_run_details?: boolean; inputs?: unknown }
         calls.push(`POST ${workflow}`)
         expect(body.return_run_details).toBe(true)
-        if (workflow === "release-web.yml") expect(body.inputs).toBeUndefined()
+        const bump = workflow.includes("opencode") ? "minor" : "patch"
+        expect(body.inputs).toEqual({ bump, release_note: "feat: sidebar" })
         return Response.json({
           workflow_run_id: workflow.includes("opencode") ? 11 : workflow.includes("cursor") ? 22 : 33,
           html_url: "https://github.com/run",
@@ -76,7 +77,7 @@ describe("dispatch merged releases", () => {
     expect(posts).toEqual(["release-opencode.yml", "release-cursor.yml", "release-web.yml"])
   })
 
-  test("Given only web changes When dispatching Then no package release starts", async () => {
+  test("Given only web changes When dispatching Then only the web release starts", async () => {
     const posts: string[] = []
     const request = async (url: string, init?: RequestInit): Promise<Response> => {
       if (init?.method === "POST") {
