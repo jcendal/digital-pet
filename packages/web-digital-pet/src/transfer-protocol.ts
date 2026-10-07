@@ -1,3 +1,4 @@
+import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./local-progress.ts"
 
 export const TRANSFER_VERSION = 1
@@ -66,6 +67,8 @@ export const parsePetTransfer = (input: unknown): PetTransfer => {
     state.experienceLevel !== "high"
   )
     throw new Error("The received save has an invalid experience setting")
+  if (state.worldVisit !== undefined && !isWorldVisit(state.worldVisit))
+    throw new Error("The received save has an invalid destination")
   let retiredPartners: LocalArchivedPartner[] | undefined
   if (state.retiredPartners !== undefined) {
     if (!Array.isArray(state.retiredPartners) || state.retiredPartners.length > 128)
@@ -100,6 +103,9 @@ export const parsePetTransfer = (input: unknown): PetTransfer => {
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
       events,
+      ...(isWorldVisit(state.worldVisit)
+        ? { worldVisit: { regionId: state.worldVisit.regionId, locationId: state.worldVisit.locationId } }
+        : {}),
       ...(state.experienceLevel !== undefined ? { experienceLevel: state.experienceLevel as ExperienceLevel } : {}),
       ...(retiredPartners !== undefined ? { retiredPartners } : {}),
     },

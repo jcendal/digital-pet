@@ -16,6 +16,7 @@
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
     "@jcendal/digital-pet-core": "0.2.0-dev.0",
     "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
-    "peerjs": "^1.5.5"
+    "peerjs": "^1.5.5",
+    "@jcendal/digital-pet-fields": "0.1.0-dev.0"
   }
 }

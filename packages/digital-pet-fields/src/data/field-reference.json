@@ -1,0 +1,2118 @@
+{
+  "1-001": {
+    "apiId": 1303,
+    "fields": ["nightmare-soldiers"]
+  },
+  "1-002": {
+    "apiId": 6,
+    "fields": ["virus-busters", "nature-spirits"]
+  },
+  "1-003": {
+    "apiId": 290,
+    "fields": ["dragons-roar"]
+  },
+  "1-004": {
+    "apiId": 147,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "1-010": {
+    "apiId": 487,
+    "fields": ["metal-empire"]
+  },
+  "1-012": {
+    "apiId": 173,
+    "fields": ["nightmare-soldiers"]
+  },
+  "1-013": {
+    "apiId": 182,
+    "fields": ["wind-guardians"]
+  },
+  "1-014": {
+    "apiId": 42,
+    "fields": ["nature-spirits"]
+  },
+  "1-016": {
+    "apiId": 100,
+    "fields": ["deep-savers"]
+  },
+  "1-017": {
+    "apiId": 102,
+    "fields": ["virus-busters"]
+  },
+  "1-019": {
+    "apiId": 373,
+    "fields": ["wind-guardians"]
+  },
+  "1-022": {
+    "apiId": 345,
+    "fields": ["deep-savers"]
+  },
+  "1-023": {
+    "apiId": 210,
+    "fields": ["virus-busters"]
+  },
+  "1-029": {
+    "apiId": 486,
+    "fields": ["dragons-roar"]
+  },
+  "2-001": {
+    "apiId": 1304,
+    "fields": ["nightmare-soldiers"]
+  },
+  "2-004": {
+    "apiId": 103,
+    "fields": ["deep-savers"]
+  },
+  "2-005": {
+    "apiId": 215,
+    "fields": ["nightmare-soldiers"]
+  },
+  "2-009": {
+    "apiId": 479,
+    "fields": ["metal-empire"]
+  },
+  "2-011": {
+    "apiId": 144,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "2-013": {
+    "apiId": 36,
+    "fields": ["virus-busters"]
+  },
+  "2-015": {
+    "apiId": 71,
+    "fields": ["nature-spirits"]
+  },
+  "2-016": {
+    "apiId": 181,
+    "fields": ["virus-busters"]
+  },
+  "2-018": {
+    "apiId": 367,
+    "fields": ["wind-guardians"]
+  },
+  "2-021": {
+    "apiId": 86,
+    "fields": ["virus-busters"]
+  },
+  "2-025": {
+    "apiId": 348,
+    "fields": ["deep-savers"]
+  },
+  "2-026": {
+    "apiId": 837,
+    "fields": ["nature-spirits"]
+  },
+  "2-028": {
+    "apiId": 225,
+    "fields": ["wind-guardians"]
+  },
+  "2-030": {
+    "apiId": 472,
+    "fields": ["dragons-roar"]
+  },
+  "3-001": {
+    "apiId": 1,
+    "fields": ["deep-savers", "dragons-roar", "metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "3-004": {
+    "apiId": 634,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "3-005": {
+    "apiId": 1305,
+    "fields": ["nightmare-soldiers"]
+  },
+  "3-006": {
+    "apiId": 271,
+    "fields": ["nature-spirits", "deep-savers"]
+  },
+  "3-007": {
+    "apiId": 4,
+    "fields": ["nature-spirits"]
+  },
+  "3-008": {
+    "apiId": 101,
+    "fields": ["nature-spirits", "virus-busters", "wind-guardians", "jungle-troopers"]
+  },
+  "3-010": {
+    "apiId": 815,
+    "fields": ["virus-busters"]
+  },
+  "3-011": {
+    "apiId": 143,
+    "fields": ["nightmare-soldiers"]
+  },
+  "3-012": {
+    "apiId": 882,
+    "fields": ["dragons-roar"]
+  },
+  "3-013": {
+    "apiId": 59,
+    "fields": ["deep-savers"]
+  },
+  "3-014": {
+    "apiId": 216,
+    "fields": ["dark-area", "nightmare-soldiers", "wind-guardians"]
+  },
+  "3-015": {
+    "apiId": 657,
+    "fields": ["dragons-roar", "nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "3-016": {
+    "apiId": 891,
+    "fields": ["dragons-roar"]
+  },
+  "3-018": {
+    "apiId": 544,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "3-019": {
+    "apiId": 15,
+    "fields": ["deep-savers", "nature-spirits", "metal-empire"]
+  },
+  "3-020": {
+    "apiId": 764,
+    "fields": ["wind-guardians"]
+  },
+  "3-021": {
+    "apiId": 162,
+    "fields": ["jungle-troopers", "wind-guardians"]
+  },
+  "3-022": {
+    "apiId": 16,
+    "fields": ["metal-empire", "nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "3-023": {
+    "apiId": 663,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "3-024": {
+    "apiId": 826,
+    "fields": ["nature-spirits", "dragons-roar", "jungle-troopers"]
+  },
+  "3-025": {
+    "apiId": 83,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "3-026": {
+    "apiId": 111,
+    "fields": ["nature-spirits", "nightmare-soldiers", "unknown", "wind-guardians"]
+  },
+  "3-027": {
+    "apiId": 1351,
+    "fields": ["nightmare-soldiers"]
+  },
+  "3-028": {
+    "apiId": 115,
+    "fields": ["deep-savers", "unknown"]
+  },
+  "3-029": {
+    "apiId": 117,
+    "fields": ["deep-savers"]
+  },
+  "3-030": {
+    "apiId": 726,
+    "fields": ["deep-savers"]
+  },
+  "3-031": {
+    "apiId": 119,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "unknown"]
+  },
+  "3-032": {
+    "apiId": 477,
+    "fields": ["deep-savers", "dragons-roar", "metal-empire", "nature-spirits", "virus-busters"]
+  },
+  "3-033": {
+    "apiId": 244,
+    "fields": ["metal-empire"]
+  },
+  "3-034": {
+    "apiId": 399,
+    "fields": ["wind-guardians"]
+  },
+  "3-036": {
+    "apiId": 1156,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "3-037": {
+    "apiId": 482,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "3-039": {
+    "apiId": 1292,
+    "fields": ["metal-empire"]
+  },
+  "3-040": {
+    "apiId": 1355,
+    "fields": ["metal-empire"]
+  },
+  "3-042": {
+    "apiId": 262,
+    "fields": ["metal-empire"]
+  },
+  "3-043": {
+    "apiId": 735,
+    "fields": ["jungle-troopers", "metal-empire"]
+  },
+  "3-044": {
+    "apiId": 126,
+    "fields": ["nature-spirits", "jungle-troopers"]
+  },
+  "3-045": {
+    "apiId": 492,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "3-046": {
+    "apiId": 867,
+    "fields": ["jungle-troopers", "wind-guardians", "nature-spirits"]
+  },
+  "3-047": {
+    "apiId": 313,
+    "fields": ["nature-spirits"]
+  },
+  "3-050": {
+    "apiId": 901,
+    "fields": ["deep-savers"]
+  },
+  "3-051": {
+    "apiId": 444,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits"]
+  },
+  "3-052": {
+    "apiId": 1331,
+    "fields": ["nature-spirits"]
+  },
+  "3-053": {
+    "apiId": 178,
+    "fields": ["jungle-troopers", "wind-guardians", "nature-spirits"]
+  },
+  "3-054": {
+    "apiId": 79,
+    "fields": ["deep-savers", "nature-spirits"]
+  },
+  "3-055": {
+    "apiId": 688,
+    "fields": ["deep-savers"]
+  },
+  "3-056": {
+    "apiId": 81,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "3-057": {
+    "apiId": 690,
+    "fields": ["nature-spirits"]
+  },
+  "3-058": {
+    "apiId": 98,
+    "fields": ["nature-spirits", "virus-busters", "wind-guardians", "jungle-troopers"]
+  },
+  "3-059": {
+    "apiId": 747,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "3-060": {
+    "apiId": 1343,
+    "fields": ["wind-guardians"]
+  },
+  "3-062": {
+    "apiId": 715,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "3-063": {
+    "apiId": 222,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "3-064": {
+    "apiId": 708,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "3-065": {
+    "apiId": 1350,
+    "fields": ["deep-savers"]
+  },
+  "3-066": {
+    "apiId": 983,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "3-067": {
+    "apiId": 1154,
+    "fields": ["nature-spirits"]
+  },
+  "3-068": {
+    "apiId": 1337,
+    "fields": ["nature-spirits"]
+  },
+  "3-069": {
+    "apiId": 778,
+    "fields": ["deep-savers"]
+  },
+  "3-070": {
+    "apiId": 109,
+    "fields": ["deep-savers"]
+  },
+  "3-071": {
+    "apiId": 717,
+    "fields": ["deep-savers"]
+  },
+  "3-072": {
+    "apiId": 136,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "3-073": {
+    "apiId": 85,
+    "fields": ["jungle-troopers", "metal-empire", "nature-spirits"]
+  },
+  "3-074": {
+    "apiId": 341,
+    "fields": ["metal-empire", "nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "3-076": {
+    "apiId": 1071,
+    "fields": ["wind-guardians"]
+  },
+  "3-077": {
+    "apiId": 196,
+    "fields": ["metal-empire"]
+  },
+  "3-078": {
+    "apiId": 349,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "unknown", "virus-busters", "wind-guardians"]
+  },
+  "3-080": {
+    "apiId": 356,
+    "fields": ["jungle-troopers", "nature-spirits", "unknown", "nightmare-soldiers"]
+  },
+  "3-081": {
+    "apiId": 1214,
+    "fields": ["metal-empire"]
+  },
+  "3-082": {
+    "apiId": 263,
+    "fields": ["nature-spirits"]
+  },
+  "3-083": {
+    "apiId": 763,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "3-085": {
+    "apiId": 465,
+    "fields": ["nightmare-soldiers", "nature-spirits", "unknown"]
+  },
+  "4-001": {
+    "apiId": 493,
+    "fields": ["dragons-roar", "nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "4-002": {
+    "apiId": 2,
+    "fields": ["dragons-roar", "nature-spirits", "wind-guardians"]
+  },
+  "4-003": {
+    "apiId": 635,
+    "fields": ["nature-spirits"]
+  },
+  "4-004": {
+    "apiId": 3,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "4-005": {
+    "apiId": 266,
+    "fields": ["metal-empire", "nature-spirits", "deep-savers"]
+  },
+  "4-006": {
+    "apiId": 246,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "4-007": {
+    "apiId": 267,
+    "fields": ["wind-guardians"]
+  },
+  "4-008": {
+    "apiId": 1306,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-009": {
+    "apiId": 1020,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-010": {
+    "apiId": 1307,
+    "fields": ["nature-spirits"]
+  },
+  "4-011": {
+    "apiId": 41,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-012": {
+    "apiId": 1308,
+    "fields": ["virus-busters"]
+  },
+  "4-013": {
+    "apiId": 1183,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "4-014": {
+    "apiId": 5,
+    "fields": ["nature-spirits", "wind-guardians"]
+  },
+  "4-015": {
+    "apiId": 43,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-016": {
+    "apiId": 149,
+    "fields": ["metal-empire"]
+  },
+  "4-017": {
+    "apiId": 45,
+    "fields": ["deep-savers"]
+  },
+  "4-018": {
+    "apiId": 880,
+    "fields": ["dragons-roar"]
+  },
+  "4-019": {
+    "apiId": 881,
+    "fields": ["dragons-roar"]
+  },
+  "4-020": {
+    "apiId": 46,
+    "fields": ["nature-spirits", "unknown"]
+  },
+  "4-022": {
+    "apiId": 539,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "4-023": {
+    "apiId": 48,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "4-025": {
+    "apiId": 49,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "4-026": {
+    "apiId": 227,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "4-027": {
+    "apiId": 50,
+    "fields": ["dragons-roar", "nightmare-soldiers", "unknown", "wind-guardians"]
+  },
+  "4-028": {
+    "apiId": 14,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "4-029": {
+    "apiId": 762,
+    "fields": ["wind-guardians"]
+  },
+  "4-030": {
+    "apiId": 432,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "4-031": {
+    "apiId": 157,
+    "fields": ["jungle-troopers", "nature-spirits", "unknown", "nightmare-soldiers"]
+  },
+  "4-032": {
+    "apiId": 106,
+    "fields": ["deep-savers"]
+  },
+  "4-033": {
+    "apiId": 654,
+    "fields": ["dragons-roar", "nature-spirits", "nightmare-soldiers"]
+  },
+  "4-034": {
+    "apiId": 52,
+    "fields": ["nature-spirits"]
+  },
+  "4-035": {
+    "apiId": 544,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "4-036": {
+    "apiId": 53,
+    "fields": ["deep-savers"]
+  },
+  "4-037": {
+    "apiId": 1316,
+    "fields": ["unknown", "metal-empire"]
+  },
+  "4-038": {
+    "apiId": 358,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "wind-guardians"]
+  },
+  "4-040": {
+    "apiId": 897,
+    "fields": ["dragons-roar"]
+  },
+  "4-041": {
+    "apiId": 161,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "4-042": {
+    "apiId": 57,
+    "fields": ["unknown", "wind-guardians"]
+  },
+  "4-043": {
+    "apiId": 29,
+    "fields": ["nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "4-044": {
+    "apiId": 825,
+    "fields": ["nature-spirits"]
+  },
+  "4-045": {
+    "apiId": 309,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-046": {
+    "apiId": 33,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters", "wind-guardians"]
+  },
+  "4-047": {
+    "apiId": 83,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "4-048": {
+    "apiId": 693,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-049": {
+    "apiId": 112,
+    "fields": ["nature-spirits"]
+  },
+  "4-050": {
+    "apiId": 857,
+    "fields": ["dragons-roar", "nature-spirits", "virus-busters"]
+  },
+  "4-051": {
+    "apiId": 113,
+    "fields": ["deep-savers"]
+  },
+  "4-052": {
+    "apiId": 724,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "4-053": {
+    "apiId": 238,
+    "fields": ["metal-empire", "unknown", "nature-spirits"]
+  },
+  "4-054": {
+    "apiId": 34,
+    "fields": ["deep-savers", "dragons-roar", "metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "4-055": {
+    "apiId": 475,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "virus-busters"]
+  },
+  "4-056": {
+    "apiId": 731,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "4-057": {
+    "apiId": 242,
+    "fields": ["metal-empire"]
+  },
+  "4-058": {
+    "apiId": 619,
+    "fields": ["deep-savers"]
+  },
+  "4-059": {
+    "apiId": 1222,
+    "fields": ["nature-spirits"]
+  },
+  "4-060": {
+    "apiId": 124,
+    "fields": ["deep-savers"]
+  },
+  "4-062": {
+    "apiId": 35,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "4-063": {
+    "apiId": 259,
+    "fields": ["jungle-troopers", "wind-guardians"]
+  },
+  "4-064": {
+    "apiId": 44,
+    "fields": ["wind-guardians"]
+  },
+  "4-065": {
+    "apiId": 1400,
+    "fields": ["metal-empire"]
+  },
+  "4-066": {
+    "apiId": 127,
+    "fields": ["nature-spirits", "wind-guardians"]
+  },
+  "4-067": {
+    "apiId": 736,
+    "fields": ["jungle-troopers", "metal-empire", "nature-spirits"]
+  },
+  "4-069": {
+    "apiId": 899,
+    "fields": ["deep-savers"]
+  },
+  "4-070": {
+    "apiId": 60,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-071": {
+    "apiId": 666,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-072": {
+    "apiId": 593,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters", "wind-guardians", "metal-empire"]
+  },
+  "4-073": {
+    "apiId": 1324,
+    "fields": ["metal-empire"]
+  },
+  "4-074": {
+    "apiId": 947,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-075": {
+    "apiId": 317,
+    "fields": ["deep-savers", "metal-empire", "virus-busters"]
+  },
+  "4-076": {
+    "apiId": 673,
+    "fields": ["deep-savers"]
+  },
+  "4-077": {
+    "apiId": 1192,
+    "fields": ["nature-spirits"]
+  },
+  "4-078": {
+    "apiId": 64,
+    "fields": ["metal-empire"]
+  },
+  "4-079": {
+    "apiId": 18,
+    "fields": ["nature-spirits", "nightmare-soldiers", "dragons-roar"]
+  },
+  "4-081": {
+    "apiId": 1329,
+    "fields": ["virus-busters"]
+  },
+  "4-082": {
+    "apiId": 70,
+    "fields": ["unknown"]
+  },
+  "4-083": {
+    "apiId": 72,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "4-084": {
+    "apiId": 73,
+    "fields": ["nature-spirits"]
+  },
+  "4-085": {
+    "apiId": 74,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "4-086": {
+    "apiId": 684,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "4-087": {
+    "apiId": 252,
+    "fields": ["jungle-troopers", "nature-spirits", "unknown", "virus-busters"]
+  },
+  "4-088": {
+    "apiId": 22,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "unknown"]
+  },
+  "4-090": {
+    "apiId": 76,
+    "fields": ["deep-savers"]
+  },
+  "4-091": {
+    "apiId": 78,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "4-093": {
+    "apiId": 687,
+    "fields": ["metal-empire", "unknown"]
+  },
+  "4-095": {
+    "apiId": 1341,
+    "fields": ["wind-guardians"]
+  },
+  "4-096": {
+    "apiId": 843,
+    "fields": ["wind-guardians"]
+  },
+  "4-098": {
+    "apiId": 1090,
+    "fields": ["wind-guardians"]
+  },
+  "4-099": {
+    "apiId": 748,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "4-100": {
+    "apiId": 709,
+    "fields": ["wind-guardians"]
+  },
+  "4-101": {
+    "apiId": 105,
+    "fields": ["nightmare-soldiers", "metal-empire"]
+  },
+  "4-102": {
+    "apiId": 226,
+    "fields": ["wind-guardians"]
+  },
+  "4-103": {
+    "apiId": 790,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "4-104": {
+    "apiId": 713,
+    "fields": ["metal-empire"]
+  },
+  "4-105": {
+    "apiId": 116,
+    "fields": ["nightmare-soldiers", "unknown", "nature-spirits"]
+  },
+  "4-106": {
+    "apiId": 791,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "4-107": {
+    "apiId": 31,
+    "fields": ["deep-savers"]
+  },
+  "4-108": {
+    "apiId": 716,
+    "fields": ["deep-savers"]
+  },
+  "4-110": {
+    "apiId": 386,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "4-111": {
+    "apiId": 110,
+    "fields": ["deep-savers"]
+  },
+  "4-112": {
+    "apiId": 257,
+    "fields": ["deep-savers", "nature-spirits", "unknown"]
+  },
+  "4-113": {
+    "apiId": 990,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "4-115": {
+    "apiId": 82,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "4-116": {
+    "apiId": 336,
+    "fields": ["jungle-troopers", "nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "4-117": {
+    "apiId": 447,
+    "fields": ["nature-spirits", "metal-empire"]
+  },
+  "4-118": {
+    "apiId": 337,
+    "fields": ["deep-savers"]
+  },
+  "4-119": {
+    "apiId": 108,
+    "fields": ["metal-empire", "unknown"]
+  },
+  "4-120": {
+    "apiId": 833,
+    "fields": ["jungle-troopers"]
+  },
+  "4-121": {
+    "apiId": 192,
+    "fields": ["metal-empire"]
+  },
+  "4-123": {
+    "apiId": 194,
+    "fields": ["metal-empire"]
+  },
+  "4-125": {
+    "apiId": 1338,
+    "fields": ["deep-savers"]
+  },
+  "4-126": {
+    "apiId": 695,
+    "fields": ["nature-spirits"]
+  },
+  "4-127": {
+    "apiId": 195,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "4-128": {
+    "apiId": 696,
+    "fields": ["nature-spirits"]
+  },
+  "4-129": {
+    "apiId": 88,
+    "fields": ["nature-spirits"]
+  },
+  "4-130": {
+    "apiId": 972,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-131": {
+    "apiId": 450,
+    "fields": ["nature-spirits", "unknown"]
+  },
+  "4-132": {
+    "apiId": 90,
+    "fields": ["nature-spirits", "unknown"]
+  },
+  "4-133": {
+    "apiId": 347,
+    "fields": ["deep-savers"]
+  },
+  "4-134": {
+    "apiId": 698,
+    "fields": ["deep-savers"]
+  },
+  "4-135": {
+    "apiId": 25,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "unknown", "dragons-roar"]
+  },
+  "4-137": {
+    "apiId": 92,
+    "fields": ["nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "4-138": {
+    "apiId": 93,
+    "fields": ["dragons-roar", "nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "4-139": {
+    "apiId": 27,
+    "fields": ["nature-spirits", "unknown", "wind-guardians"]
+  },
+  "4-140": {
+    "apiId": 590,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-141": {
+    "apiId": 28,
+    "fields": ["deep-savers"]
+  },
+  "4-142": {
+    "apiId": 355,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-143": {
+    "apiId": 206,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "4-145": {
+    "apiId": 207,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "4-146": {
+    "apiId": 1213,
+    "fields": ["metal-empire"]
+  },
+  "4-148": {
+    "apiId": 164,
+    "fields": ["nightmare-soldiers"]
+  },
+  "4-149": {
+    "apiId": 249,
+    "fields": ["deep-savers", "nightmare-soldiers"]
+  },
+  "4-150": {
+    "apiId": 217,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "4-151": {
+    "apiId": 377,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "4-152": {
+    "apiId": 229,
+    "fields": ["nightmare-soldiers", "wind-guardians"]
+  },
+  "5-001": {
+    "apiId": 129,
+    "fields": ["dragons-roar", "nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "5-002": {
+    "apiId": 494,
+    "fields": ["dragons-roar", "nightmare-soldiers", "virus-busters", "nature-spirits", "deep-savers"]
+  },
+  "5-003": {
+    "apiId": 37,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-004": {
+    "apiId": 38,
+    "fields": ["nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "5-006": {
+    "apiId": 265,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-007": {
+    "apiId": 802,
+    "fields": ["jungle-troopers", "nightmare-soldiers"]
+  },
+  "5-008": {
+    "apiId": 269,
+    "fields": ["jungle-troopers", "nightmare-soldiers", "unknown", "nature-spirits"]
+  },
+  "5-009": {
+    "apiId": 738,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "5-010": {
+    "apiId": 133,
+    "fields": ["nightmare-soldiers", "unknown", "virus-busters"]
+  },
+  "5-011": {
+    "apiId": 918,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-012": {
+    "apiId": 510,
+    "fields": ["virus-busters", "wind-guardians", "metal-empire"]
+  },
+  "5-013": {
+    "apiId": 137,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-014": {
+    "apiId": 139,
+    "fields": ["wind-guardians"]
+  },
+  "5-015": {
+    "apiId": 589,
+    "fields": ["metal-empire"]
+  },
+  "5-016": {
+    "apiId": 591,
+    "fields": ["dragons-roar", "nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "5-017": {
+    "apiId": 642,
+    "fields": ["metal-empire", "wind-guardians"]
+  },
+  "5-018": {
+    "apiId": 429,
+    "fields": ["dark-area", "nature-spirits", "nightmare-soldiers", "unknown"]
+  },
+  "5-019": {
+    "apiId": 643,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "5-020": {
+    "apiId": 256,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "5-021": {
+    "apiId": 1029,
+    "fields": ["nature-spirits"]
+  },
+  "5-022": {
+    "apiId": 883,
+    "fields": ["deep-savers"]
+  },
+  "5-023": {
+    "apiId": 786,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-025": {
+    "apiId": 150,
+    "fields": ["metal-empire", "nature-spirits", "virus-busters", "wind-guardians", "dragons-roar"]
+  },
+  "5-027": {
+    "apiId": 937,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-028": {
+    "apiId": 75,
+    "fields": ["metal-empire", "unknown"]
+  },
+  "5-029": {
+    "apiId": 153,
+    "fields": ["wind-guardians", "nature-spirits"]
+  },
+  "5-030": {
+    "apiId": 51,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "5-031": {
+    "apiId": 300,
+    "fields": ["jungle-troopers", "metal-empire", "nature-spirits", "wind-guardians", "nightmare-soldiers"]
+  },
+  "5-032": {
+    "apiId": 245,
+    "fields": ["deep-savers"]
+  },
+  "5-033": {
+    "apiId": 1314,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-034": {
+    "apiId": 656,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "5-035": {
+    "apiId": 47,
+    "fields": ["deep-savers"]
+  },
+  "5-036": {
+    "apiId": 1203,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-037": {
+    "apiId": 1315,
+    "fields": ["wind-guardians"]
+  },
+  "5-038": {
+    "apiId": 1317,
+    "fields": ["metal-empire"]
+  },
+  "5-039": {
+    "apiId": 54,
+    "fields": ["deep-savers", "metal-empire", "unknown"]
+  },
+  "5-040": {
+    "apiId": 56,
+    "fields": ["nature-spirits", "unknown", "nightmare-soldiers"]
+  },
+  "5-041": {
+    "apiId": 898,
+    "fields": ["dragons-roar"]
+  },
+  "5-042": {
+    "apiId": 233,
+    "fields": ["unknown", "wind-guardians"]
+  },
+  "5-043": {
+    "apiId": 165,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "5-044": {
+    "apiId": 719,
+    "fields": ["wind-guardians"]
+  },
+  "5-045": {
+    "apiId": 114,
+    "fields": ["metal-empire"]
+  },
+  "5-046": {
+    "apiId": 1352,
+    "fields": ["nature-spirits"]
+  },
+  "5-047": {
+    "apiId": 728,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "5-048": {
+    "apiId": 915,
+    "fields": ["dragons-roar"]
+  },
+  "5-049": {
+    "apiId": 1353,
+    "fields": ["deep-savers"]
+  },
+  "5-050": {
+    "apiId": 618,
+    "fields": ["nature-spirits", "wind-guardians"]
+  },
+  "5-051": {
+    "apiId": 733,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "5-052": {
+    "apiId": 125,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "5-053": {
+    "apiId": 626,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "5-055": {
+    "apiId": 622,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "5-056": {
+    "apiId": 611,
+    "fields": ["nature-spirits", "wind-guardians", "metal-empire", "virus-busters"]
+  },
+  "5-057": {
+    "apiId": 146,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "5-058": {
+    "apiId": 260,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-059": {
+    "apiId": 128,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "5-062": {
+    "apiId": 827,
+    "fields": ["jungle-troopers", "wind-guardians", "nature-spirits"]
+  },
+  "5-063": {
+    "apiId": 166,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "5-064": {
+    "apiId": 668,
+    "fields": ["wind-guardians"]
+  },
+  "5-065": {
+    "apiId": 768,
+    "fields": ["metal-empire"]
+  },
+  "5-066": {
+    "apiId": 553,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "5-067": {
+    "apiId": 556,
+    "fields": ["dark-area", "nightmare-soldiers", "unknown"]
+  },
+  "5-068": {
+    "apiId": 828,
+    "fields": ["nature-spirits"]
+  },
+  "5-069": {
+    "apiId": 121,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "5-070": {
+    "apiId": 17,
+    "fields": ["metal-empire", "unknown", "virus-busters"]
+  },
+  "5-071": {
+    "apiId": 744,
+    "fields": ["unknown"]
+  },
+  "5-072": {
+    "apiId": 671,
+    "fields": ["unknown"]
+  },
+  "5-073": {
+    "apiId": 61,
+    "fields": ["nature-spirits", "nightmare-soldiers", "virus-busters"]
+  },
+  "5-074": {
+    "apiId": 672,
+    "fields": ["nature-spirits"]
+  },
+  "5-075": {
+    "apiId": 1326,
+    "fields": ["virus-busters"]
+  },
+  "5-076": {
+    "apiId": 1327,
+    "fields": ["deep-savers"]
+  },
+  "5-077": {
+    "apiId": 63,
+    "fields": ["dark-area", "deep-savers"]
+  },
+  "5-078": {
+    "apiId": 1208,
+    "fields": ["nature-spirits"]
+  },
+  "5-079": {
+    "apiId": 1195,
+    "fields": ["unknown"]
+  },
+  "5-080": {
+    "apiId": 66,
+    "fields": ["metal-empire", "wind-guardians", "dragons-roar"]
+  },
+  "5-081": {
+    "apiId": 134,
+    "fields": ["jungle-troopers", "nature-spirits"]
+  },
+  "5-082": {
+    "apiId": 65,
+    "fields": ["deep-savers"]
+  },
+  "5-083": {
+    "apiId": 675,
+    "fields": ["deep-savers"]
+  },
+  "5-085": {
+    "apiId": 320,
+    "fields": ["deep-savers"]
+  },
+  "5-086": {
+    "apiId": 169,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "virus-busters", "nightmare-soldiers", "deep-savers"]
+  },
+  "5-087": {
+    "apiId": 169,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "virus-busters", "nightmare-soldiers", "deep-savers"]
+  },
+  "5-088": {
+    "apiId": 19,
+    "fields": ["metal-empire"]
+  },
+  "5-090": {
+    "apiId": 680,
+    "fields": ["metal-empire"]
+  },
+  "5-091": {
+    "apiId": 20,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-092": {
+    "apiId": 678,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "5-093": {
+    "apiId": 69,
+    "fields": ["metal-empire", "unknown", "dragons-roar"]
+  },
+  "5-094": {
+    "apiId": 682,
+    "fields": ["metal-empire"]
+  },
+  "5-095": {
+    "apiId": 21,
+    "fields": ["metal-empire"]
+  },
+  "5-097": {
+    "apiId": 177,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "5-098": {
+    "apiId": 199,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "5-100": {
+    "apiId": 568,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-101": {
+    "apiId": 77,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "5-102": {
+    "apiId": 685,
+    "fields": ["jungle-troopers", "metal-empire", "nature-spirits"]
+  },
+  "5-104": {
+    "apiId": 185,
+    "fields": ["nature-spirits", "nightmare-soldiers", "unknown"]
+  },
+  "5-105": {
+    "apiId": 331,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "wind-guardians"]
+  },
+  "5-106": {
+    "apiId": 213,
+    "fields": ["wind-guardians"]
+  },
+  "5-107": {
+    "apiId": 160,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-108": {
+    "apiId": 1342,
+    "fields": ["deep-savers"]
+  },
+  "5-109": {
+    "apiId": 99,
+    "fields": ["jungle-troopers", "nature-spirits", "wind-guardians"]
+  },
+  "5-110": {
+    "apiId": 224,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "5-111": {
+    "apiId": 1246,
+    "fields": ["virus-busters"]
+  },
+  "5-112": {
+    "apiId": 463,
+    "fields": ["metal-empire", "wind-guardians"]
+  },
+  "5-113": {
+    "apiId": 1346,
+    "fields": ["metal-empire"]
+  },
+  "5-115": {
+    "apiId": 849,
+    "fields": ["dragons-roar", "metal-empire", "virus-busters"]
+  },
+  "5-117": {
+    "apiId": 1185,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "5-118": {
+    "apiId": 380,
+    "fields": ["nature-spirits"]
+  },
+  "5-119": {
+    "apiId": 638,
+    "fields": ["deep-savers"]
+  },
+  "5-120": {
+    "apiId": 387,
+    "fields": ["deep-savers", "metal-empire", "unknown", "virus-busters"]
+  },
+  "5-121": {
+    "apiId": 87,
+    "fields": ["nature-spirits"]
+  },
+  "5-122": {
+    "apiId": 995,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "5-123": {
+    "apiId": 390,
+    "fields": ["virus-busters", "wind-guardians", "nature-spirits"]
+  },
+  "5-124": {
+    "apiId": 1172,
+    "fields": ["deep-savers"]
+  },
+  "5-125": {
+    "apiId": 718,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "5-126": {
+    "apiId": 32,
+    "fields": ["dragons-roar", "nightmare-soldiers"]
+  },
+  "5-127": {
+    "apiId": 152,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-129": {
+    "apiId": 193,
+    "fields": ["metal-empire"]
+  },
+  "5-130": {
+    "apiId": 1339,
+    "fields": ["wind-guardians"]
+  },
+  "5-131": {
+    "apiId": 89,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "5-132": {
+    "apiId": 697,
+    "fields": ["nature-spirits"]
+  },
+  "5-133": {
+    "apiId": 26,
+    "fields": ["dark-area", "unknown"]
+  },
+  "5-134": {
+    "apiId": 590,
+    "fields": ["nightmare-soldiers"]
+  },
+  "5-135": {
+    "apiId": 439,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "virus-busters"]
+  },
+  "5-136": {
+    "apiId": 676,
+    "fields": ["dragons-roar", "metal-empire"]
+  },
+  "5-137": {
+    "apiId": 203,
+    "fields": ["dark-area", "metal-empire"]
+  },
+  "5-138": {
+    "apiId": 204,
+    "fields": ["deep-savers"]
+  },
+  "5-139": {
+    "apiId": 205,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters", "wind-guardians"]
+  },
+  "5-140": {
+    "apiId": 705,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers"]
+  },
+  "5-141": {
+    "apiId": 28,
+    "fields": ["deep-savers"]
+  },
+  "5-142": {
+    "apiId": 909,
+    "fields": ["dragons-roar", "wind-guardians"]
+  },
+  "5-143": {
+    "apiId": 96,
+    "fields": ["deep-savers"]
+  },
+  "5-145": {
+    "apiId": 884,
+    "fields": ["metal-empire"]
+  },
+  "5-146": {
+    "apiId": 656,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "5-147": {
+    "apiId": 332,
+    "fields": ["metal-empire", "unknown"]
+  },
+  "5-148": {
+    "apiId": 380,
+    "fields": ["nature-spirits"]
+  },
+  "5-149": {
+    "apiId": 338,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "6-001": {
+    "apiId": 917,
+    "fields": ["deep-savers"]
+  },
+  "6-002": {
+    "apiId": 636,
+    "fields": ["virus-busters"]
+  },
+  "6-003": {
+    "apiId": 495,
+    "fields": ["nature-spirits", "unknown"]
+  },
+  "6-004": {
+    "apiId": 496,
+    "fields": ["nightmare-soldiers", "unknown", "virus-busters"]
+  },
+  "6-005": {
+    "apiId": 497,
+    "fields": ["nature-spirits", "unknown", "virus-busters"]
+  },
+  "6-006": {
+    "apiId": 498,
+    "fields": ["unknown", "wind-guardians"]
+  },
+  "6-007": {
+    "apiId": 499,
+    "fields": ["deep-savers", "unknown"]
+  },
+  "6-008": {
+    "apiId": 500,
+    "fields": ["deep-savers", "unknown"]
+  },
+  "6-009": {
+    "apiId": 501,
+    "fields": ["nightmare-soldiers", "unknown"]
+  },
+  "6-010": {
+    "apiId": 502,
+    "fields": ["nature-spirits", "unknown", "wind-guardians"]
+  },
+  "6-011": {
+    "apiId": 503,
+    "fields": ["metal-empire", "unknown", "nature-spirits"]
+  },
+  "6-012": {
+    "apiId": 504,
+    "fields": ["nightmare-soldiers", "unknown", "metal-empire"]
+  },
+  "6-013": {
+    "apiId": 415,
+    "fields": ["unknown", "nightmare-soldiers"]
+  },
+  "6-014": {
+    "apiId": 132,
+    "fields": ["dark-area", "deep-savers", "nightmare-soldiers", "nature-spirits"]
+  },
+  "6-015": {
+    "apiId": 869,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "6-016": {
+    "apiId": 803,
+    "fields": ["jungle-troopers", "nightmare-soldiers"]
+  },
+  "6-017": {
+    "apiId": 420,
+    "fields": ["dark-area", "deep-savers", "nightmare-soldiers", "metal-empire"]
+  },
+  "6-018": {
+    "apiId": 374,
+    "fields": ["dragons-roar", "unknown", "virus-busters", "wind-guardians"]
+  },
+  "6-020": {
+    "apiId": 272,
+    "fields": ["metal-empire", "nature-spirits", "unknown"]
+  },
+  "6-021": {
+    "apiId": 752,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "6-022": {
+    "apiId": 1181,
+    "fields": ["unknown"]
+  },
+  "6-023": {
+    "apiId": 640,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "6-025": {
+    "apiId": 421,
+    "fields": ["dark-area", "metal-empire", "nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "6-026": {
+    "apiId": 739,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "6-027": {
+    "apiId": 754,
+    "fields": ["dragons-roar"]
+  },
+  "6-028": {
+    "apiId": 1201,
+    "fields": ["metal-empire"]
+  },
+  "6-029": {
+    "apiId": 141,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "6-030": {
+    "apiId": 872,
+    "fields": ["dragons-roar", "metal-empire"]
+  },
+  "6-032": {
+    "apiId": 742,
+    "fields": ["metal-empire"]
+  },
+  "6-033": {
+    "apiId": 288,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "6-036": {
+    "apiId": 760,
+    "fields": ["virus-busters"]
+  },
+  "6-037": {
+    "apiId": 154,
+    "fields": ["dark-area", "nightmare-soldiers", "unknown"]
+  },
+  "6-038": {
+    "apiId": 1202,
+    "fields": ["metal-empire"]
+  },
+  "6-039": {
+    "apiId": 761,
+    "fields": ["dark-area", "metal-empire"]
+  },
+  "6-041": {
+    "apiId": 885,
+    "fields": ["deep-savers", "nature-spirits"]
+  },
+  "6-042": {
+    "apiId": 649,
+    "fields": ["nature-spirits"]
+  },
+  "6-043": {
+    "apiId": 650,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "6-044": {
+    "apiId": 1204,
+    "fields": ["metal-empire"]
+  },
+  "6-045": {
+    "apiId": 545,
+    "fields": ["virus-busters"]
+  },
+  "6-046": {
+    "apiId": 660,
+    "fields": ["unknown"]
+  },
+  "6-047": {
+    "apiId": 357,
+    "fields": ["deep-savers", "jungle-troopers", "nature-spirits", "unknown", "wind-guardians"]
+  },
+  "6-048": {
+    "apiId": 625,
+    "fields": ["deep-savers", "nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "6-049": {
+    "apiId": 1318,
+    "fields": ["metal-empire"]
+  },
+  "6-050": {
+    "apiId": 620,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters", "wind-guardians"]
+  },
+  "6-051": {
+    "apiId": 664,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "6-052": {
+    "apiId": 434,
+    "fields": ["dragons-roar", "metal-empire", "virus-busters", "wind-guardians"]
+  },
+  "6-053": {
+    "apiId": 658,
+    "fields": ["nightmare-soldiers", "virus-busters", "metal-empire"]
+  },
+  "6-054": {
+    "apiId": 1135,
+    "fields": ["virus-busters"]
+  },
+  "6-055": {
+    "apiId": 296,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "6-056": {
+    "apiId": 723,
+    "fields": ["deep-savers"]
+  },
+  "6-057": {
+    "apiId": 237,
+    "fields": ["dragons-roar", "unknown", "virus-busters", "wind-guardians"]
+  },
+  "6-058": {
+    "apiId": 725,
+    "fields": ["virus-busters"]
+  },
+  "6-059": {
+    "apiId": 729,
+    "fields": ["jungle-troopers", "metal-empire", "nature-spirits"]
+  },
+  "6-060": {
+    "apiId": 793,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-061": {
+    "apiId": 395,
+    "fields": ["jungle-troopers", "nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "6-062": {
+    "apiId": 614,
+    "fields": ["metal-empire", "nature-spirits", "nightmare-soldiers"]
+  },
+  "6-063": {
+    "apiId": 241,
+    "fields": ["nightmare-soldiers", "wind-guardians"]
+  },
+  "6-064": {
+    "apiId": 1186,
+    "fields": ["metal-empire"]
+  },
+  "6-065": {
+    "apiId": 1354,
+    "fields": ["metal-empire"]
+  },
+  "6-066": {
+    "apiId": 120,
+    "fields": ["jungle-troopers", "nature-spirits"]
+  },
+  "6-068": {
+    "apiId": 400,
+    "fields": ["metal-empire"]
+  },
+  "6-069": {
+    "apiId": 1187,
+    "fields": ["virus-busters"]
+  },
+  "6-071": {
+    "apiId": 485,
+    "fields": ["metal-empire", "virus-busters", "wind-guardians"]
+  },
+  "6-072": {
+    "apiId": 776,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "6-073": {
+    "apiId": 258,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "6-074": {
+    "apiId": 892,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "6-075": {
+    "apiId": 667,
+    "fields": ["dark-area", "deep-savers", "nightmare-soldiers"]
+  },
+  "6-076": {
+    "apiId": 552,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "6-077": {
+    "apiId": 554,
+    "fields": ["virus-busters"]
+  },
+  "6-078": {
+    "apiId": 900,
+    "fields": ["unknown"]
+  },
+  "6-079": {
+    "apiId": 557,
+    "fields": ["dark-area", "nightmare-soldiers", "virus-busters", "wind-guardians", "metal-empire"]
+  },
+  "6-080": {
+    "apiId": 176,
+    "fields": ["metal-empire"]
+  },
+  "6-081": {
+    "apiId": 123,
+    "fields": ["nature-spirits", "unknown", "wind-guardians", "dragons-roar", "virus-busters"]
+  },
+  "6-082": {
+    "apiId": 734,
+    "fields": ["nature-spirits"]
+  },
+  "6-083": {
+    "apiId": 559,
+    "fields": ["metal-empire", "virus-busters", "wind-guardians"]
+  },
+  "6-084": {
+    "apiId": 315,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "6-085": {
+    "apiId": 274,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-086": {
+    "apiId": 62,
+    "fields": ["deep-savers", "virus-busters"]
+  },
+  "6-087": {
+    "apiId": 466,
+    "fields": ["metal-empire"]
+  },
+  "6-088": {
+    "apiId": 441,
+    "fields": ["dark-area", "dragons-roar", "metal-empire", "nightmare-soldiers"]
+  },
+  "6-089": {
+    "apiId": 677,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-090": {
+    "apiId": 67,
+    "fields": ["metal-empire", "nature-spirits"]
+  },
+  "6-091": {
+    "apiId": 168,
+    "fields": ["metal-empire", "virus-busters", "wind-guardians", "nature-spirits"]
+  },
+  "6-092": {
+    "apiId": 679,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "6-094": {
+    "apiId": 681,
+    "fields": ["deep-savers"]
+  },
+  "6-095": {
+    "apiId": 68,
+    "fields": ["deep-savers", "metal-empire"]
+  },
+  "6-096": {
+    "apiId": 830,
+    "fields": ["nature-spirits"]
+  },
+  "6-097": {
+    "apiId": 565,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-098": {
+    "apiId": 1335,
+    "fields": ["nature-spirits"]
+  },
+  "6-099": {
+    "apiId": 1273,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-100": {
+    "apiId": 445,
+    "fields": ["virus-busters", "nature-spirits"]
+  },
+  "6-103": {
+    "apiId": 569,
+    "fields": ["nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "6-104": {
+    "apiId": 689,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "6-105": {
+    "apiId": 248,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "6-107": {
+    "apiId": 218,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-108": {
+    "apiId": 844,
+    "fields": ["metal-empire", "nightmare-soldiers"]
+  },
+  "6-109": {
+    "apiId": 221,
+    "fields": ["deep-savers"]
+  },
+  "6-110": {
+    "apiId": 707,
+    "fields": ["deep-savers"]
+  },
+  "6-111": {
+    "apiId": 749,
+    "fields": ["unknown"]
+  },
+  "6-112": {
+    "apiId": 104,
+    "fields": ["deep-savers"]
+  },
+  "6-113": {
+    "apiId": 219,
+    "fields": ["jungle-troopers", "wind-guardians"]
+  },
+  "6-114": {
+    "apiId": 1244,
+    "fields": ["wind-guardians"]
+  },
+  "6-119": {
+    "apiId": 1216,
+    "fields": ["virus-busters"]
+  },
+  "6-120": {
+    "apiId": 847,
+    "fields": ["wind-guardians"]
+  },
+  "6-121": {
+    "apiId": 1347,
+    "fields": ["deep-savers"]
+  },
+  "6-123": {
+    "apiId": 228,
+    "fields": ["jungle-troopers", "nature-spirits", "nightmare-soldiers", "wind-guardians"]
+  },
+  "6-124": {
+    "apiId": 714,
+    "fields": ["jungle-troopers", "wind-guardians", "nature-spirits"]
+  },
+  "6-125": {
+    "apiId": 1171,
+    "fields": ["metal-empire"]
+  },
+  "6-126": {
+    "apiId": 107,
+    "fields": ["nature-spirits", "virus-busters"]
+  },
+  "6-128": {
+    "apiId": 384,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "6-129": {
+    "apiId": 853,
+    "fields": ["dragons-roar", "nature-spirits", "virus-busters"]
+  },
+  "6-130": {
+    "apiId": 187,
+    "fields": ["nature-spirits", "nightmare-soldiers"]
+  },
+  "6-131": {
+    "apiId": 691,
+    "fields": ["nightmare-soldiers"]
+  },
+  "6-132": {
+    "apiId": 571,
+    "fields": ["virus-busters", "deep-savers"]
+  },
+  "6-133": {
+    "apiId": 905,
+    "fields": ["dragons-roar"]
+  },
+  "6-134": {
+    "apiId": 576,
+    "fields": ["deep-savers", "metal-empire", "nature-spirits", "nightmare-soldiers", "virus-busters", "wind-guardians"]
+  },
+  "6-135": {
+    "apiId": 694,
+    "fields": ["jungle-troopers", "metal-empire", "wind-guardians"]
+  },
+  "6-136": {
+    "apiId": 1169,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "6-137": {
+    "apiId": 588,
+    "fields": ["dragons-roar", "nature-spirits", "virus-busters", "wind-guardians"]
+  },
+  "6-138": {
+    "apiId": 701,
+    "fields": ["metal-empire"]
+  },
+  "6-139": {
+    "apiId": 350,
+    "fields": ["virus-busters", "wind-guardians", "nature-spirits"]
+  },
+  "6-140": {
+    "apiId": 784,
+    "fields": ["wind-guardians"]
+  },
+  "6-141": {
+    "apiId": 200,
+    "fields": ["nightmare-soldiers", "metal-empire"]
+  },
+  "6-143": {
+    "apiId": 202,
+    "fields": ["dragons-roar", "metal-empire", "virus-busters", "nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "6-144": {
+    "apiId": 703,
+    "fields": ["dragons-roar", "metal-empire"]
+  },
+  "6-145": {
+    "apiId": 361,
+    "fields": ["nightmare-soldiers", "unknown", "wind-guardians"]
+  },
+  "6-146": {
+    "apiId": 351,
+    "fields": ["deep-savers", "nature-spirits"]
+  },
+  "6-149": {
+    "apiId": 1180,
+    "fields": ["wind-guardians"]
+  },
+  "6-150": {
+    "apiId": 655,
+    "fields": ["dragons-roar", "nature-spirits"]
+  },
+  "7-001": {
+    "apiId": 637,
+    "fields": ["virus-busters"]
+  },
+  "7-002": {
+    "apiId": 420,
+    "fields": ["dark-area", "deep-savers", "nightmare-soldiers", "metal-empire"]
+  },
+  "7-003": {
+    "apiId": 1254,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "7-004": {
+    "apiId": 753,
+    "fields": ["nightmare-soldiers"]
+  },
+  "7-005": {
+    "apiId": 422,
+    "fields": ["dark-area", "nightmare-soldiers", "wind-guardians"]
+  },
+  "7-007": {
+    "apiId": 1212,
+    "fields": ["nightmare-soldiers"]
+  },
+  "7-008": {
+    "apiId": 757,
+    "fields": ["unknown", "virus-busters"]
+  },
+  "7-009": {
+    "apiId": 1228,
+    "fields": ["virus-busters"]
+  },
+  "7-010": {
+    "apiId": 1261,
+    "fields": ["dark-area", "nightmare-soldiers", "unknown"]
+  },
+  "7-011": {
+    "apiId": 1036,
+    "fields": ["nightmare-soldiers"]
+  },
+  "7-013": {
+    "apiId": 659,
+    "fields": ["virus-busters"]
+  },
+  "7-014": {
+    "apiId": 895,
+    "fields": ["dragons-roar", "virus-busters"]
+  },
+  "7-016": {
+    "apiId": 658,
+    "fields": ["nightmare-soldiers", "virus-busters", "metal-empire"]
+  },
+  "7-017": {
+    "apiId": 1263,
+    "fields": ["virus-busters"]
+  },
+  "7-019": {
+    "apiId": 405,
+    "fields": ["dragons-roar", "metal-empire", "nature-spirits", "wind-guardians", "dark-area"]
+  },
+  "7-020": {
+    "apiId": 481,
+    "fields": ["metal-empire", "virus-busters", "nature-spirits", "nightmare-soldiers", "deep-savers", "wind-guardians"]
+  },
+  "7-022": {
+    "apiId": 1237,
+    "fields": ["virus-busters"]
+  },
+  "7-023": {
+    "apiId": 893,
+    "fields": ["nature-spirits"]
+  },
+  "7-025": {
+    "apiId": 1265,
+    "fields": ["dark-area", "nightmare-soldiers"]
+  },
+  "7-028": {
+    "apiId": 670,
+    "fields": ["metal-empire", "virus-busters"]
+  },
+  "7-029": {
+    "apiId": 1191,
+    "fields": ["nature-spirits", "nightmare-soldiers", "unknown"]
+  },
+  "7-031": {
+    "apiId": 904,
+    "fields": ["nightmare-soldiers"]
+  },
+  "7-032": {
+    "apiId": 183,
+    "fields": ["metal-empire", "nightmare-soldiers", "virus-busters", "nature-spirits", "deep-savers", "wind-guardians"]
+  },
+  "7-033": {
+    "apiId": 1209,
+    "fields": ["virus-busters"]
+  },
+  "7-034": {
+    "apiId": 686,
+    "fields": ["metal-empire", "virus-busters", "wind-guardians"]
+  },
+  "7-036": {
+    "apiId": 1244,
+    "fields": ["wind-guardians"]
+  },
+  "7-039": {
+    "apiId": 1171,
+    "fields": ["metal-empire"]
+  },
+  "7-040": {
+    "apiId": 700,
+    "fields": ["virus-busters", "wind-guardians"]
+  },
+  "7-041": {
+    "apiId": 1302,
+    "fields": ["virus-busters", "nature-spirits", "nightmare-soldiers", "deep-savers"]
+  },
+  "7-042": {
+    "apiId": 1322,
+    "fields": ["metal-empire", "virus-busters", "wind-guardians"]
+  },
+  "7-045": {
+    "apiId": 536,
+    "fields": ["dragons-roar", "metal-empire"]
+  }
+}

@@ -1,3 +1,4 @@
+import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import {
   applyTokenProgress,
@@ -42,6 +43,7 @@ export type LocalPetState = {
   readonly isTerminal: boolean
   readonly lastTickAt: number
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
+  readonly worldVisit?: WorldVisit
   readonly experienceLevel?: ExperienceLevel
   readonly retiredPartners?: readonly LocalArchivedPartner[]
 }
@@ -105,6 +107,7 @@ export const beginNewPartner = (previous: LocalPetState, partnerId: string, now:
     isTerminal: false,
     lastTickAt: now,
     experienceLevel: settled.experienceLevel ?? "high",
+    ...(settled.worldVisit ? { worldVisit: settled.worldVisit } : {}),
     events: [{ currentNodeId: "0-001", createdAt }],
     retiredPartners: [
       ...(settled.retiredPartners ?? []),

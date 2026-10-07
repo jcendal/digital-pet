@@ -68,6 +68,7 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 - 🎮 **650 Digimon** — Same catalog, evolution art, and panels as the desktop integrations
 - 📊 **Partner · Dex · History** — Shared webview UI from `digital-pet-webviews`
 - ⚙️ **Options panel** — Choose your save, set evolution experience, and start a new egg
+- 🌍 **Explore regions** — Ten destinations, a habitat guide, and eleven LCD landscapes
 - 🔄 **Manual device sync** — Pair once, then bring the other browser's save with **SYNC**
 - 🔒 **Privacy-first** — No accounts, no cloud backup; saves stay on your device or local disk
 - 📖 **Read-only SQLite** — Cursor and OpenCode advance the shared archive; the web app does not write `pet.db`
@@ -80,6 +81,7 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | --- | --- |
 | **Partner view** | Animated Digimon with evolution progress toward the next stage |
 | **Digidex** | Catalog browser with discoveries, filters (collapsed by default), and per-entry detail |
+| **Regions** | Explore ten classic Field destinations, visit Dragon Eye Lake, and change your companion’s LCD landscape |
 | **History** | Current and retired generations with recorded evolution journeys |
 | **SQLite mode** | Live view of the shared `pet.db` while Cursor or OpenCode records usage |
 | **Browser mode** | Digitama hatch, timed experience, automatic evolution, IndexedDB persistence |
@@ -122,6 +124,25 @@ DIGITAL_PET_DATABASE_PATH=/path/to/nonexistent/pet.db npm run web
 
 ---
 
+## 🌍 Explore the Digital World
+
+Open **OPTIONS → YOUR WORLD → EXPLORE REGIONS**, or select the place name above your partner's viewer. Browse ten destinations, inspect their inhabitants, and choose **TRAVEL HERE**. Digital Ocean also includes **Dragon Eye Lake**, the starting location with the existing background illustration.
+
+Each place has its own LCD pixel landscape. The guide shows public species names and artwork, with a registration marker and Dex shortcut for species already in your save. Counts reflect your history; visiting does not register species or change evolution rules. All 650 catalog records have at least one habitat, combining reference Fields with explicit thematic choices where references are missing. Habitats can overlap between regions. The guide shows **five cards initially**; use the arrow below them to reveal the remaining inhabitants. The arrow disappears when expanded. See the [habitat catalog notes](../digital-pet-fields/README.md) for sources and classification details.
+
+<div align="center">
+  <img src="images/regions.jpg" alt="LCD region selector with pixel landscape cards and registration counts" width="70%" />
+  <img src="images/regions-mobile.jpg" alt="Region selector fitted to a 375 px phone screen" width="31%" />
+  <img src="images/habitat-guide-mobile.jpg" alt="Habitat Guide showing five Digimon and an arrow to reveal 93 more inhabitants" width="31%" />
+  <img src="images/partner-region.jpg" alt="Animated partner with its current location and pixel landscape" width="70%" />
+</div>
+
+Travel is available for both saves. The browser destination travels with its save during Pair / Sync and remains when starting a new egg. The computer destination is a separate web preference, without changing SQLite. The four future Fields are documented but inactive.
+
+Only Dragon Eye Lake currently has a large page illustration. Other places use atmosphere colors until their images are supplied. Add the named PNG files in [`digital-pet-fields/assets/backgrounds`](../digital-pet-fields/assets/backgrounds) and restart the server; see the [Fields package guide](../digital-pet-fields/README.md#add-background-images). All eleven LCD scenes are cached for offline use; supplied photos are cached after they are viewed.
+
+---
+
 ## 💾 Storage
 
 Open **OPTIONS → YOUR SAVE** to choose **COMPUTER SAVE** (the companion raised with Cursor or OpenCode) or **THIS BROWSER** (an independent companion saved in this browser). The default is the computer save when available, otherwise the browser save. Switching remembers your choice and preserves both saves; it does not copy or merge them.
@@ -146,7 +167,7 @@ Default `pet.db` location (same as the other apps):
 
 Override with `DIGITAL_PET_DATABASE_PATH`. In SQLite mode, partner progression and history are updated only by Cursor or OpenCode.
 
-In browser mode, elapsed five-minute intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and the selected evolution experience. The stable device code and paired device are stored separately, so importing a save keeps this device's identity. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
+In browser mode, elapsed five-minute intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and the selected evolution experience and location. The stable device code and paired device are stored separately, so importing a save keeps this device's identity. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
 
 ---
 
@@ -199,7 +220,7 @@ Each transfer replaces the receiving device's browser save and keeps a backup. *
 | **NORMAL** | 50% of HIGH | Half the original requirement |
 | **HIGH** | 100% | Original progression (default) |
 
-The amount earned every five minutes stays the same. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting and paired device.
+The amount earned every five minutes stays the same. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting, location, and paired device.
 
 ### Server settings
 
@@ -224,7 +245,7 @@ npm run check --workspace @jcendal/web-digital-pet
 npm run test --workspace @jcendal/web-digital-pet
 ```
 
-This package adds the local server, SQLite read adapter, IndexedDB save, timed browser progression, and device transfer. Rendering and panels come from `digital-pet-core`, `digital-pet-webviews`, and `digital-pet-animation`. See the [Cursor extension](../cursor-digital-pet/README.md) and [OpenCode plugin](../opencode-digital-pet/README.md) guides for desktop setup.
+This package adds the local server, SQLite read adapter, IndexedDB save, timed browser progression, and device transfer. Rendering and panels come from `digital-pet-core`, `digital-pet-webviews`, and `digital-pet-animation`. World definitions and assets come from `digital-pet-fields`. See the [Cursor extension](../cursor-digital-pet/README.md) and [OpenCode plugin](../opencode-digital-pet/README.md) guides for desktop setup.
 
 ---
 

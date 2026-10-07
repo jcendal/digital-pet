@@ -1,3 +1,5 @@
+import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { advanceLocalPet, beginNewPartner, type ExperienceLevel, type LocalPetState } from "./local-progress.ts"
 
 const DB_NAME = "web-digital-pet"
@@ -173,4 +175,9 @@ export const setPairedDevice = async (code: string | null): Promise<void> => {
   } finally {
     database.close()
   }
+}
+
+export const setWorldVisit = (worldVisit: WorldVisit): Promise<void> => {
+  if (!isWorldVisit(worldVisit)) throw new Error("Unknown destination")
+  return changeLocalState((state) => ({ ...state, worldVisit }))
 }

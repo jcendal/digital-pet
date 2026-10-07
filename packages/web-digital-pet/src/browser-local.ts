@@ -1,3 +1,4 @@
+import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
@@ -82,4 +83,9 @@ export const dex = async () => {
 export const history = async () => {
   const state = await readLocalState()
   return buildHistoryPanelModel(archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
+}
+
+export const world = async (regionId: string) => {
+  const state = await readLocalState()
+  return buildWorldPanelModel(regionId, archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
 }

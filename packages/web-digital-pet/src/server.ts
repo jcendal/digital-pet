@@ -1,4 +1,5 @@
 import { createServer, type ServerResponse } from "node:http"
+import { existsSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import { randomBytes } from "node:crypto"
 import { dirname, resolve } from "node:path"
@@ -16,6 +17,9 @@ import { buildHistoryPanelModel } from "@jcendal/digital-pet-webviews/panels/his
 import { buildHistoryWebviewHtml } from "@jcendal/digital-pet-webviews/panels/history/history-render.ts"
 import { buildSidebarWebviewHtml } from "@jcendal/digital-pet-webviews/sidebar/sidebar-document.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
+import { LOCATIONS, REGIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
+import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
+import { worldMarkup, worldStyles } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 import { PANEL_THEME } from "@jcendal/digital-pet-webviews/shared/theme.ts"
 
 import { databasePath, hasHostDatabase, readArchive, readSidebarSnapshot } from "./database.ts"
@@ -23,7 +27,12 @@ import { optionsMarkup, optionsStyles } from "./options-view.ts"
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const fontPath = resolve(packageRoot, "..", "digital-pet-webviews", "media", "fonts", "Silkscreen-Regular.ttf")
-const backgroundPath = resolve(packageRoot, "assets", "digital-world-lake-background.png")
+const fieldsAssets = resolve(packageRoot, "..", "digital-pet-fields", "assets")
+const backgroundPath = resolve(fieldsAssets, "backgrounds", "dragon-eye-lake.png")
+const availablePhotos = LOCATIONS.filter((place) =>
+  existsSync(resolve(fieldsAssets, "backgrounds", place.backgroundFile)),
+).map((place) => place.id)
+const browserWorldScript = readFile(resolve(packageRoot, "dist", "browser-world.js"))
 const manifestPath = resolve(packageRoot, "assets", "manifest.webmanifest")
 const serviceWorkerPath = resolve(packageRoot, "assets", "service-worker.js")
 const browserLocalPath = resolve(packageRoot, "dist", "browser-local.js")
@@ -92,7 +101,11 @@ const webStyles = /* css */ `
   .toolbar .field, .toolbar select { min-width: 0; max-width: 100%; }
   .panel-filters { flex: none; margin-bottom: 12px; }
   .partner-device .screen { display: flex; flex-direction: column; overflow: hidden; }
-  .partner-device .arena { --artwork-pixel-size: 7.5; }
+  .partner-device .arena { --artwork-pixel-size: 7.5; background: url("/regions/dragon-eye-lake/scene.svg") center / 100% 100% no-repeat; }
+  .partner-device .arena:not(.with-battle-hud) #artwork { height: 85%; align-self: start; }
+  #world-location { flex: none; padding: 8px 6px; margin: 0 0 8px; text-align: left; font: inherit; font-size: 10px; color: var(--muted); border: 0; border-bottom: 2px dotted var(--line); background: transparent; cursor: pointer; }
+  #world-location:hover { color: var(--ink); }
+  #world-location:focus-visible { outline: 2px dotted var(--ink); }
   @media (max-width: 390px) { .partner-device .arena { --artwork-pixel-size: 6; } }
   .pet-module { flex: 1; display: flex; flex-direction: column; width: 100%; min-height: 0; padding: 0; border: 0;
     background: transparent; box-shadow: none; }
@@ -191,6 +204,17 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
     window.addEventListener('storage', event => {
       if (event.key === 'digital-pet:preferred-source') refresh();
     });
+    if (page === 'sidebar') {
+      document.addEventListener('click', event => {
+        if (event.target.closest('#world-location')) window.parent.postMessage({ type: 'digital-pet:world-open' }, location.origin);
+      });
+      window.addEventListener('message', event => {
+        if (event.source !== window.parent || event.origin !== location.origin || event.data?.type !== 'digital-pet:world-changed') return;
+        if (!${JSON.stringify(LOCATIONS.map((place) => place.id))}.includes(event.data.locationId)) return;
+        document.querySelector('.arena').style.backgroundImage = "url('/regions/" + event.data.locationId + "/scene.svg')";
+        document.getElementById('world-location').textContent = event.data.name + ' →';
+      });
+    }
     window.addEventListener('message', event => {
       if (event.source === window.parent && event.origin === location.origin && event.data?.type === 'browser-save-updated') refresh();
     });
@@ -206,7 +230,15 @@ const renderPage = (page: "sidebar" | "dex" | "history"): string => {
       : page === "dex"
         ? buildDexWebviewHtml(dexModel(), resources)
         : buildHistoryWebviewHtml(historyModel(), resources)
-  return html
+  const withWorld =
+    page === "sidebar"
+      ? html.replace(
+          '<div id="content">',
+          '<button id="world-location" type="button" aria-haspopup="dialog">Dragon Eye Lake →</button><div id="content">',
+        )
+      : html
+  return withWorld
+    .replace('<svg id="artwork"', '<svg id="artwork" preserveAspectRatio="xMidYMax"')
     .replace("script-src 'nonce-", "script-src 'self' 'nonce-")
     .replace(
       "</style>",
@@ -266,7 +298,12 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
         if (!frames.some(frame => frame.contentWindow === event.source)) return;
         navigate(event.data.path);
       });
-      window.addEventListener('popstate', () => show(location.pathname + location.search));
+      window.addEventListener('digital-pet:navigate', event => {
+        const path = event.detail;
+        if (typeof path === 'string' && /^\\/(?:dex(?:\\?selected=[0-7]-[0-9]{3})?|history)?$/.test(path)) navigate(path);
+      });
+      import('/browser-world.js').then(module => module.initBrowserWorld()).catch(() => {});
+      window.addEventListener('popstate' , () => show(location.pathname + location.search));
       show(location.pathname + location.search);
       import('/browser-options.js').then(module => module.initBrowserOptions()).catch(error => {
         const dialog = document.getElementById('options-dialog');
@@ -278,7 +315,7 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
       }
     })();
   `
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}<script nonce="${nonce}">${script}</script></body></html>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}${worldStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}${worldMarkup(availablePhotos)}<script nonce="${nonce}">${script}</script></body></html>`
 }
 
 const send = (response: ServerResponse, status: number, contentType: string, body: string | Buffer): void => {
@@ -305,6 +342,28 @@ const server = createServer(async (request, response) => {
     }
     if (url.pathname === "/images/digital-world-lake-background.png") {
       return send(response, 200, "image/png", await readFile(backgroundPath))
+    }
+    if (url.pathname === "/browser-world.js")
+      return send(response, 200, "text/javascript; charset=utf-8", await browserWorldScript)
+    const worldAsset = /^\/regions\/([a-z-]+)\/(scene\.svg|background\.png)$/.exec(url.pathname)
+    if (worldAsset) {
+      const place = LOCATIONS.find((candidate) => candidate.id === worldAsset[1])
+      if (!place) return send(response, 404, "text/plain; charset=utf-8", "Unknown location")
+      if (worldAsset[2] === "scene.svg")
+        return send(
+          response,
+          200,
+          "image/svg+xml",
+          await readFile(resolve(fieldsAssets, "scenes", `${place.scene}.svg`)),
+        )
+      if (!availablePhotos.includes(place.id))
+        return send(response, 404, "text/plain; charset=utf-8", "Background coming soon")
+      return send(
+        response,
+        200,
+        "image/png",
+        await readFile(resolve(fieldsAssets, "backgrounds", place.backgroundFile)),
+      )
     }
     if (url.pathname === "/manifest.webmanifest") {
       return send(response, 200, "application/manifest+json; charset=utf-8", await readFile(manifestPath))
@@ -381,6 +440,18 @@ const server = createServer(async (request, response) => {
         200,
         "application/json; charset=utf-8",
         JSON.stringify({ mode: hasHostDatabase() ? "sqlite" : "browser" }),
+      )
+    }
+    if (url.pathname === "/api/world") {
+      const regionId = url.searchParams.get("region") ?? "digital-ocean"
+      if (!REGIONS.some((region) => region.id === regionId))
+        return send(response, 400, "text/plain; charset=utf-8", "Unknown region")
+      if (!hasHostDatabase()) return send(response, 200, "application/json; charset=utf-8", '{"mode":"browser"}')
+      return send(
+        response,
+        200,
+        "application/json; charset=utf-8",
+        JSON.stringify(buildWorldPanelModel(regionId, readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)),
       )
     }
     if (url.pathname === "/api/sidebar") {

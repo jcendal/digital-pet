@@ -1,4 +1,4 @@
-const CACHE_NAME = "web-digital-pet-v8"
+const CACHE_NAME = "web-digital-pet-v12"
 const APP_FILES = [
   "/",
   "/dex",
@@ -9,6 +9,19 @@ const APP_FILES = [
   "/browser-local.js",
   "/browser-pairing.js",
   "/browser-options.js",
+  "/browser-world.js",
+  "/regions/dragon-eye-lake/background.png",
+  "/regions/gear-savannah/scene.svg",
+  "/regions/digital-ocean/scene.svg",
+  "/regions/dragon-eye-lake/scene.svg",
+  "/regions/wasteland/scene.svg",
+  "/regions/digital-forest/scene.svg",
+  "/regions/digital-city/scene.svg",
+  "/regions/village-of-beginnings/scene.svg",
+  "/regions/ancient-dino-region/scene.svg",
+  "/regions/tropical-jungle/scene.svg",
+  "/regions/vamdemon-castle/scene.svg",
+  "/regions/upside-down-pyramid/scene.svg",
   "/manifest.webmanifest",
   "/favicon.ico",
   "/fonts/Silkscreen-Regular.ttf",

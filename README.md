@@ -36,6 +36,7 @@ If you previously installed `@sbugallo/opencode-vpet` or unscoped `opencode-vpet
 | --- | --- |
 | [`packages/cursor-digital-pet`](packages/cursor-digital-pet) | Cursor extension, packaged as a VSIX |
 | [`packages/opencode-digital-pet`](packages/opencode-digital-pet) | `@jcendal/opencode-digital-pet`, npm plugin and CLI |
+| [`packages/digital-pet-fields`](packages/digital-pet-fields) | Fields, regions, habitat rosters, and scenery assets; private workspace |
 | [`packages/digital-pet-core`](packages/digital-pet-core) | Shared catalog, evolution rules, use cases, and SQLite schema; private workspace |
 | [`packages/digital-pet-animation`](packages/digital-pet-animation) | Shared animation logic; private workspace |
 | [`packages/digital-pet-webviews`](packages/digital-pet-webviews) | Shared browser interface for Cursor and the web companion; private workspace |

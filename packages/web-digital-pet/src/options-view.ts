@@ -13,6 +13,7 @@ export const optionsMarkup = /* html */ `
       <p class="save-note"><span class="note-mark" aria-hidden="true"></span>Switching keeps both saves. Choice saved on this device.</p>
       <aside id="browser-options-hint" class="source-notice" hidden><strong>COMPUTER COMPANION</strong><p>Manage growth and new eggs in Cursor or OpenCode. Choose THIS BROWSER to use the options below.</p></aside>
     </section>
+    <section class="world-section"><h3>YOUR WORLD</h3><p class="section-description">Explore a new home with your companion.</p><button id="world-button" class="wide-action" type="button" aria-haspopup="dialog"><span>EXPLORE REGIONS<span id="world-current">Dragon Eye Lake</span></span><span aria-hidden="true">→</span></button></section>
     <fieldset id="browser-options"><legend class="sr-only">Browser companion options</legend>
       <section class="growth-section"><div class="section-heading"><h3>EXPERIENCE TO EVOLVE</h3><span id="experience-amount" class="value-badge">100%</span></div>
         <p class="section-description">Set the pace of your companion's journey.</p>

@@ -53,3 +53,16 @@ await build({
   sourcemap: false,
   logLevel: "info",
 })
+
+await build({
+  entryPoints: [resolve(root, "src/browser-world.ts")],
+  outfile: resolve(root, "dist/browser-world.js"),
+  external: ["/browser-local.js"],
+  bundle: true,
+  platform: "browser",
+  target: "es2022",
+  format: "esm",
+  charset: "utf8",
+  minify: true,
+  logLevel: "info",
+})
