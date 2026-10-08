@@ -6,7 +6,7 @@ import type { TuiCompositionApi } from "../tui.tsx"
 import { buildPartnerInputs } from "./build-partner-inputs.ts"
 import { DEV_EVOLUTION } from "./fixtures.ts"
 import { registerDevCommandLayer } from "./register-dev-command-layer.tsx"
-import { setupBattlePending, type DevScenarioRepository } from "./setup-scenario.ts"
+import { type DevScenarioRepository, setupBattlePending } from "./setup-scenario.ts"
 
 export type DevToolsRuntime = {
   readonly runFeed: () => void

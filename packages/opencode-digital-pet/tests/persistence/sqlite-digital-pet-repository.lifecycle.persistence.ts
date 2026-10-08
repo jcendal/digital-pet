@@ -1,10 +1,9 @@
+import { Database } from "bun:sqlite"
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test"
 import { mkdir } from "node:fs/promises"
 import { join } from "node:path"
-import { Database } from "bun:sqlite"
-
-import { openReadonlyDatabase, openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import type { Partner } from "@jcendal/digital-pet-core/domain/partner.ts"
+import { openReadonlyDatabase, openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import {
   createSqliteDigitalPetRepository,
   resolveHostDatabasePath,

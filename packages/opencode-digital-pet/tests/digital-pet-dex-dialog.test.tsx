@@ -1,9 +1,9 @@
 /** @jsxImportSource @opentui/solid */
-import { describe, expect, test, mock } from "bun:test"
+import { describe, expect, mock, test } from "bun:test"
+import type { DexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 import { ScrollBoxRenderable } from "@opentui/core"
 import { testRender } from "@opentui/solid"
 import { DigitalPetDexDialog } from "../src/tui/digital-pet-dex-dialog.tsx"
-import type { DexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 import { createMockTheme, createTrackedDialogApi } from "./digital-pet-dex-dialog-fixture.tsx"
 
 describe("DigitalPetDexDialog", () => {

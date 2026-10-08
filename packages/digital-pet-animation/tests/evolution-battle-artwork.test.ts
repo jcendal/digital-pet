@@ -1,7 +1,6 @@
-import { planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 import { describe, expect, test } from "bun:test"
-
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 
 import { EVOLUTION_BATTLE_HITS_TO_WIN } from "../src/constants/evolution-battle.ts"
 import {

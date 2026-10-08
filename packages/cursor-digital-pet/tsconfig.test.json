@@ -5,6 +5,6 @@
     "rootDir": ".",
     "types": ["bun", "node", "vscode"]
   },
-  "include": ["src", "tests"],
+  "include": ["src", "tests", "../../types/web-assets.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

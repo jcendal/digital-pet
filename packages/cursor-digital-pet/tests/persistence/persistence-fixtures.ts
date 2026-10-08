@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
 
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
-import { recordUsage, type CompletedUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import { type CompletedUsage, recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS, type StageThresholds } from "@jcendal/digital-pet-core/domain/evolution.ts"
 

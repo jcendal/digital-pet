@@ -3,14 +3,14 @@ import type * as vscode from "vscode"
 
 import { createDatabaseChangeWatcher } from "../adapters/sqlite/database-change-watcher.ts"
 import {
-  createSqliteDigitalPetRepository,
   type CursorSqliteDigitalPetRepository,
+  createSqliteDigitalPetRepository,
 } from "../adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { configureSqlJsWasmPath } from "../adapters/sqlite/sqljs-config.ts"
 import {
+  type DigitalPetExtensionSettings,
   getDigitalPetExtensionSettings,
   toDatabaseOptions,
-  type DigitalPetExtensionSettings,
 } from "../config/extension-settings.ts"
 import { DigitalPetSidebarProvider } from "../webview/digital-pet-sidebar-provider.ts"
 

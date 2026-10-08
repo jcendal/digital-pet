@@ -1,0 +1,8 @@
+---
+description: Shared Digital Pet coding conventions, package boundaries, browser assets, and validation
+alwaysApply: true
+---
+
+Follow `AGENTS.md` and `CONTRIBUTING.md` at the repository root. They are the
+shared source of truth for humans, Cursor, and other coding agents. Use the root
+Biome configuration and keep browser logic and styles in real source files.

@@ -4,10 +4,13 @@
     "includes": [
       "packages/**",
       "scripts/**",
+      "types/**",
+      ".vscode/*.json",
       "package.json",
+      "biome.json",
       "tsconfig*.json",
-      "!packages/**/dist/**",
-      "!packages/**/dist-static/**",
+      "!packages/**/dist",
+      "!packages/**/dist-static",
       "!packages/**/build",
       "!packages/cursor-digital-pet/hook-bridge.js",
       "!packages/digital-pet-core/src/data/monster-frame-data.ts",
@@ -20,6 +23,7 @@
   },
   "formatter": {
     "enabled": true,
+    "useEditorconfig": true,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 120
@@ -36,15 +40,47 @@
     }
   },
   "assist": {
-    "enabled": false
+    "enabled": true,
+    "actions": {
+      "recommended": false,
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "suspicious": {
+        "noDoubleEquals": "error",
+        "noExplicitAny": "error",
+        "noVar": "error"
+      },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      },
+      "style": {
+        "useConst": "error",
+        "useImportType": "error"
+      }
     }
   },
   "overrides": [
+    {
+      "includes": ["**/*.browser.js"],
+      "javascript": {
+        "globals": ["acquireVsCodeApi", "createPanelHelpers"]
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredVariables": "error"
+          }
+        }
+      }
+    },
     {
       "includes": [
         "packages/opencode-digital-pet/src/tui/sidebar-card.tsx",

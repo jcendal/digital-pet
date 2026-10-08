@@ -4,14 +4,14 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 import {
+  DIGITAL_PET_ANIMATION_IDLE_MODULES,
   FORBIDDEN_ADAPTER_IMPORTS,
   FORBIDDEN_DOMAIN_IMPORTS,
   FORBIDDEN_LEGACY_IMPORTS,
   FORBIDDEN_SERVER_HOOK_IMPORTS,
   FORBIDDEN_TUI_ANIMATION_IMPORTS,
-  PROJECT_ROOT,
-  DIGITAL_PET_ANIMATION_IDLE_MODULES,
   findForbiddenImports,
+  PROJECT_ROOT,
   scanForbiddenImports,
   scanTuiPresentationImports,
 } from "./architecture-boundary-helpers.ts"

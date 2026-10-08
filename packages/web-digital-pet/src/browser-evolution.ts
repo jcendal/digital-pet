@@ -1,13 +1,12 @@
+import { presentEvolution } from "@jcendal/digital-pet-animation/sessions/evolution-presentation.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
-import { presentEvolution } from "@jcendal/digital-pet-animation/sessions/evolution-presentation.ts"
-
+import { beginPresentation, endPresentation, presentationCurrent, presentationVersion } from "./browser-presentation.ts"
 import { finishLocalEvolution, peekLocalState, readLocalState } from "./browser-store.ts"
-import { pendingEvolutionKey } from "./local-progress.ts"
+import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
 import { settingsFor } from "./local-models.ts"
-import { runForegroundEvolution, PresentationCancelled } from "./foreground-evolution.ts"
-import { beginPresentation, endPresentation, presentationVersion, presentationCurrent } from "./browser-presentation.ts"
+import { pendingEvolutionKey } from "./local-progress.ts"
 
 export const presentPendingEvolution = async (
   width: number,

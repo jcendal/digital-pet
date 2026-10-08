@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test"
-
-import { MAX_BACKUP_BYTES, parsePetTransfer } from "../src/transfer-protocol.ts"
 import { advanceLocalPet } from "../src/local-progress.ts"
+import { MAX_BACKUP_BYTES, parsePetTransfer } from "../src/transfer-protocol.ts"
 
 const state = {
   partnerId: "sample-partner",

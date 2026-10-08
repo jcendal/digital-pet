@@ -1,9 +1,10 @@
 /** @jsxImportSource @opentui/solid */
-import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
-import { For } from "solid-js"
-import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import type { TuiTheme } from "@opencode-ai/plugin/tui"
+
 import type { HistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
+import type { TuiTheme } from "@opencode-ai/plugin/tui"
+import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
+import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
+import { For } from "solid-js"
 
 export type DigitalPetHistoryDialogTheme = {
   readonly current: Pick<TuiTheme["current"], "primary">

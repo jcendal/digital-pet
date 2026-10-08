@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "editorconfig.editorconfig",
+    "christian-kohler.path-intellisense",
+    "eamodio.gitlens",
+    "github.vscode-github-actions",
+    "redhat.vscode-yaml",
+    "jock.svg",
+    "pkief.material-icon-theme"
+  ]
+}

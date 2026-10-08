@@ -1,8 +1,8 @@
 import {
   advanceLandscape,
+  LANDSCAPE_MOTION_KEY,
   landscapeDirection,
   landscapeMotionEnabled,
-  LANDSCAPE_MOTION_KEY,
   type SceneMotion,
 } from "./scene-motion.ts"
 

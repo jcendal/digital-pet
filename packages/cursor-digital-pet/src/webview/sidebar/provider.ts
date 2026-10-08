@@ -1,10 +1,9 @@
-import * as vscode from "vscode"
-
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import * as vscode from "vscode"
 
-import { createAnimationSink, type AnimationSink } from "../../adapters/vscode/animation-sink.ts"
+import { type AnimationSink, createAnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import { createVsCodeNotificationPort, type NotificationPort } from "../../adapters/vscode/notification-port.ts"
 import { createIntervalScheduler, type IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
 import { createWebviewMessenger } from "../../adapters/vscode/webview-messenger.ts"

@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs"
 import { DatabaseSync } from "node:sqlite"
-
+import { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import {
   ACTIVE_PARTNER_SELECT,
   ARCHIVE_PARTNER_EVENTS_SELECT,
@@ -10,7 +10,6 @@ import {
   type TrainerStateRow,
   toPartner,
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
-import { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 

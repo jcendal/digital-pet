@@ -1,5 +1,5 @@
-import { DEFAULT_STAGE_THRESHOLDS, DEFAULT_DIGITAL_PET_SETTINGS } from "./defaults.ts"
-import type { ResolvedDigitalPetSettings, StageThresholdKey, DigitalPetLanguage } from "./types.ts"
+import { DEFAULT_DIGITAL_PET_SETTINGS, DEFAULT_STAGE_THRESHOLDS } from "./defaults.ts"
+import type { DigitalPetLanguage, ResolvedDigitalPetSettings, StageThresholdKey } from "./types.ts"
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> => {
   return typeof value === "object" && value !== null && !Array.isArray(value)

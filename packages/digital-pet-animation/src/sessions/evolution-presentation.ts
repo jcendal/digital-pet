@@ -1,9 +1,9 @@
+import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { type BattleOutcome, planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import { assertEvolutionBranch } from "@jcendal/digital-pet-core/domain/evolution-battle.ts"
-import { planCombat, type BattleOutcome } from "@jcendal/digital-pet-core/domain/combat.ts"
-import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { runDefeatAnimation } from "../sequences/defeat-artwork.ts"
-import { runEvolutionBattleAnimation, type BattleFrameListener } from "../sequences/evolution-battle-artwork.ts"
+import { type BattleFrameListener, runEvolutionBattleAnimation } from "../sequences/evolution-battle-artwork.ts"
 import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
 import type { PresentationStateListener } from "./presentation-state.ts"
 

@@ -1,10 +1,10 @@
-import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import {
   MonsterAnimationController,
   type MonsterAnimationIdentity,
   type MonsterAnimationOutput,
 } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { IntervalScheduler } from "../../adapters/vscode/scheduler.ts"

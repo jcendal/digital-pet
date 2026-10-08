@@ -1,11 +1,10 @@
+import { Database } from "bun:sqlite"
 import { afterEach, describe, expect, spyOn, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { Database } from "bun:sqlite"
-
-import { createSqliteSidebarSnapshotReader } from "../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteDigitalPetRepository } from "../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { createSqliteSidebarSnapshotReader } from "../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { isBunSqliteAvailable } from "./sqlite-capability.ts"
 
 const tempRoots: string[] = []

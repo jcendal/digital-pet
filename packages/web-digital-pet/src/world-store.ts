@@ -1,7 +1,8 @@
-import { resolveWorldVisit, isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import { isWorldVisit, resolveWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit, WorldVisitStore } from "@jcendal/digital-pet-fields/domain/world.ts"
-import { readLocalState, setWorldVisit } from "./browser-store.ts"
+
 import type { SaveSource } from "./browser-source.ts"
+import { readLocalState, setWorldVisit } from "./browser-store.ts"
 
 export const COMPUTER_WORLD_KEY = "digital-pet:computer-world"
 

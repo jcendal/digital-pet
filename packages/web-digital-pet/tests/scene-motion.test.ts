@@ -3,8 +3,8 @@ import {
   advanceLandscape,
   landscapeDirection,
   landscapeMotionEnabled,
-  sceneMotionFor,
   type SceneMotion,
+  sceneMotionFor,
 } from "../src/scene-motion.ts"
 
 const left: SceneMotion = { walking: true, offset: 0, facing: "left", partnerKey: "agumon:false", columns: 40 }

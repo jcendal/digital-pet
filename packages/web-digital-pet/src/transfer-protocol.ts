@@ -1,7 +1,7 @@
-import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./local-progress.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
+import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./local-progress.ts"
 
 export const TRANSFER_VERSION = 1
 export const MAX_TRANSFER_BYTES = 64 * 1024

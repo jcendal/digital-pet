@@ -1,5 +1,5 @@
-import type { DigimonStage } from "./stage.ts"
 import type { CombatStats } from "./combat.ts"
+import type { DigimonStage } from "./stage.ts"
 
 export type DigimonNode = {
   readonly id: string

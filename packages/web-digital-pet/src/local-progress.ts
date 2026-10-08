@@ -1,18 +1,18 @@
-import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
-import {
-  advanceFood,
-  feedingExperience,
-  scheduleFood,
-  type FoodState,
-} from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import {
   applyTokenProgress,
+  type EvolutionSelector,
   resolveEvolutionBattle,
   STAGE_GAUGE_THRESHOLDS,
-  type EvolutionSelector,
   type StageThresholds,
 } from "@jcendal/digital-pet-core/domain/evolution.ts"
+import {
+  advanceFood,
+  type FoodState,
+  feedingExperience,
+  scheduleFood,
+} from "@jcendal/digital-pet-core/domain/feeding.ts"
+import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 
 export const EXPERIENCE_INTERVAL_MS = 5 * 60 * 1000
 const TICKS_PER_STAGE = 24

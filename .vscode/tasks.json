@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Check workspace",
+      "type": "npm",
+      "script": "check",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test workspace",
+      "type": "npm",
+      "script": "test",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build workspace",
+      "type": "npm",
+      "script": "build",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Cursor extension",
+      "type": "npm",
+      "script": "build:dev",
+      "path": "packages/cursor-digital-pet",
+      "problemMatcher": []
+    }
+  ]
+}

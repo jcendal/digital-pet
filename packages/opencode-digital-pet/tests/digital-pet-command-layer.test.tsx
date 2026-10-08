@@ -1,9 +1,8 @@
 /** @jsxImportSource @opentui/solid */
 import { describe, expect, test } from "bun:test"
-import { testRender } from "@opentui/solid"
-
 import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
+import { testRender } from "@opentui/solid"
 import { createTui } from "../src/tui.tsx"
 import { partnerInputs, settle, TuiCompositionHarness } from "./tui-composition-fixture.ts"
 

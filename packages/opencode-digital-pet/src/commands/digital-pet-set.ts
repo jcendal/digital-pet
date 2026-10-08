@@ -1,8 +1,7 @@
-import type { Part } from "@opencode-ai/sdk"
-
 import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
 import { setDigitalPetCheatNode } from "@jcendal/digital-pet-core/application/use-cases/set-digital-pet-cheat-node.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
+import type { Part } from "@opencode-ai/sdk"
 import type { DigitalPetCommandResult } from "./digital-pet-command-result.ts"
 
 export type DigitalPetSetContext = {

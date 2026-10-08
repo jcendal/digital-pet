@@ -1,3 +1,5 @@
+import type { BrowserPairingControls } from "./browser-pairing.ts"
+import { ACTIVE_SOURCE_KEY, refreshBrowserViews, resolveSaveSource, SOURCE_PREFERENCE_KEY } from "./browser-source.ts"
 import {
   hasPreviousSave,
   readLocalState,
@@ -6,12 +8,10 @@ import {
   setExperienceLevel,
   startNewPartner,
 } from "./browser-store.ts"
-import { ACTIVE_SOURCE_KEY, SOURCE_PREFERENCE_KEY, refreshBrowserViews, resolveSaveSource } from "./browser-source.ts"
-import type { ExperienceLevel } from "./local-progress.ts"
-import type { BrowserPairingControls } from "./browser-pairing.ts"
-import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "./scene-motion.ts"
-import { MAX_BACKUP_BYTES, parsePetTransfer, TRANSFER_VERSION, type PetTransfer } from "./transfer-protocol.ts"
 import { checkComputerSave } from "./computer-save.ts"
+import type { ExperienceLevel } from "./local-progress.ts"
+import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "./scene-motion.ts"
+import { MAX_BACKUP_BYTES, type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "./transfer-protocol.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]

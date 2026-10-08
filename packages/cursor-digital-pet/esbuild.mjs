@@ -9,6 +9,7 @@ const packageRoot = dirname(fileURLToPath(import.meta.url))
 const distDirectory = resolve(packageRoot, "dist")
 const require = createRequire(import.meta.url)
 const wasmSource = require.resolve("sql.js/dist/sql-wasm.wasm")
+const development = process.argv.includes("--development") || process.argv.includes("--watch")
 await rm(distDirectory, { recursive: true, force: true })
 await mkdir(distDirectory, { recursive: true })
 await copyFile(wasmSource, resolve(distDirectory, "sql-wasm.wasm"))
@@ -22,8 +23,8 @@ const options = {
   format: "cjs",
   external: ["vscode", "bun:sqlite"],
   define: { __DIGITAL_PET_BUNDLE__: "true", "import.meta.url": "undefined" },
-  minify: true,
-  sourcemap: false,
+  minify: !development,
+  sourcemap: development,
   logLevel: "info",
 }
 

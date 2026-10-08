@@ -4,10 +4,10 @@ import {
   advanceLocalPet,
   beginNewPartner,
   completeLocalEvolution,
-  pendingEvolutionKey,
-  experienceThresholds,
   EXPERIENCE_INTERVAL_MS,
+  experienceThresholds,
   type LocalPetState,
+  pendingEvolutionKey,
 } from "../src/local-progress.ts"
 
 const initial: LocalPetState = {

@@ -41,6 +41,9 @@ jobs:
       - name: Run persistence tests
         run: npm run test:persistence
 
+      - name: Build all apps
+        run: npm run build
+
       - name: Inspect npm package
         run: npm pack --workspace @jcendal/opencode-digital-pet --dry-run --json
 

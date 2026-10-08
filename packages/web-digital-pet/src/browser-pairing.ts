@@ -1,5 +1,5 @@
 import type { DataConnection } from "peerjs"
-
+import { browserSaveSelected, refreshBrowserViews } from "./browser-source.ts"
 import {
   getDeviceCode,
   getPairedDevice,
@@ -9,7 +9,6 @@ import {
   restorePreviousSave,
   setPairedDevice,
 } from "./browser-store.ts"
-import { browserSaveSelected, refreshBrowserViews } from "./browser-source.ts"
 import {
   BrowserTransfer,
   CODE_LENGTH,
@@ -17,7 +16,7 @@ import {
   normalizeDeviceCode,
   validDeviceCode,
 } from "./browser-transfer.ts"
-import { parsePetTransfer, TRANSFER_VERSION, type PetTransfer } from "./transfer-protocol.ts"
+import { type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "./transfer-protocol.ts"
 
 type PairMessage =
   | { type: "request"; version: 1; sync: boolean }

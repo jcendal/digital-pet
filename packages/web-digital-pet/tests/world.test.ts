@@ -1,12 +1,12 @@
-import { getRegion } from "@jcendal/digital-pet-fields/application/world.ts"
 import { describe, expect, it } from "bun:test"
-import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { getRegion } from "@jcendal/digital-pet-fields/application/world.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 import { artworkToCenteredPixelArt } from "@jcendal/digital-pet-webviews/shared/pixel-artwork.ts"
-import { parsePetTransfer } from "../src/transfer-protocol.ts"
 import { advanceLocalPet, beginNewPartner } from "../src/local-progress.ts"
+import { parsePetTransfer } from "../src/transfer-protocol.ts"
 
 const worldVisit = { regionId: "digital-city", locationId: "digital-city" }
 const createdAt = new Date(Date.now() - 600_000).toISOString()

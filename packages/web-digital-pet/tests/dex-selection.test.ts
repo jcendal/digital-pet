@@ -1,5 +1,6 @@
-import { Script } from "node:vm"
 import { expect, it } from "bun:test"
+import { Script } from "node:vm"
+
 import { DEX_SCRIPT } from "@jcendal/digital-pet-webviews/panels/dex/dex-script.ts"
 
 class Node {

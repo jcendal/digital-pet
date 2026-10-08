@@ -1,11 +1,9 @@
 import { describe, expect, it } from "bun:test"
 import { existsSync } from "node:fs"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { FIELDS } from "../src/data/fields.ts"
-import { REGIONS, LOCATIONS } from "../src/data/regions.ts"
 import {
-  DEFAULT_WORLD_VISIT,
   auditHabitatCoverage,
+  DEFAULT_WORLD_VISIT,
   getRegion,
   getRegionLocations,
   getRegionProgress,
@@ -14,6 +12,8 @@ import {
   isWorldVisit,
   resolveWorldVisit,
 } from "../src/application/world.ts"
+import { FIELDS } from "../src/data/fields.ts"
+import { LOCATIONS, REGIONS } from "../src/data/regions.ts"
 
 describe("Digital World catalog", () => {
   it("assigns the entire shared catalog and detects new unclassified species", () => {

@@ -1,4 +1,4 @@
-import { validateCombatStats, type CombatStats } from "../domain/combat.ts"
+import { type CombatStats, validateCombatStats } from "../domain/combat.ts"
 
 /** Initial game balance, not official Digimon statistics. Explicit IDs make changes reviewable. */
 export const COMBAT_STATS: ReadonlyMap<string, CombatStats> = new Map(

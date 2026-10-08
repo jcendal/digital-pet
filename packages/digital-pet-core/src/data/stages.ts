@@ -1,7 +1,7 @@
 import type { StageLabels, StageThresholdKey } from "../config/types.ts"
-import { DIGIMON_STAGES, isDigimonStage, type DigimonStage } from "../domain/stage.ts"
+import { DIGIMON_STAGES, type DigimonStage, isDigimonStage } from "../domain/stage.ts"
 
-export { isDigimonStage, type DigimonStage }
+export { type DigimonStage, isDigimonStage }
 
 export const STAGE_VALUES = DIGIMON_STAGES
 

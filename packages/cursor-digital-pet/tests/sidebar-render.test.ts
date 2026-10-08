@@ -1,7 +1,5 @@
-import { Script } from "node:vm"
-import { SIDEBAR_SCRIPT } from "../src/webview/sidebar/sidebar-script.ts"
 import { describe, expect, test } from "bun:test"
-
+import { Script } from "node:vm"
 import {
   buildGaugeLine,
   buildNextCheckLine,
@@ -9,6 +7,7 @@ import {
   pixelWidthToArtworkColumns,
   toSidebarWebviewPayload,
 } from "../src/webview/sidebar/sidebar-render.ts"
+import { SIDEBAR_SCRIPT } from "../src/webview/sidebar/sidebar-script.ts"
 
 const partnerCard = {
   kind: "partner" as const,

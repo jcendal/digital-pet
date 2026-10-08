@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test"
-
-import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import { getSidebarCardInputs } from "@jcendal/digital-pet-core/application/use-cases/get-sidebar-card-inputs.ts"
+import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
 
 const agumon: DigimonNode = {
   id: "3-001",

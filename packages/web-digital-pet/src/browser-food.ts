@@ -1,15 +1,15 @@
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
 
 import { animation } from "./browser-animation.ts"
-import { consumeFood, peekLocalState, readLocalState } from "./browser-store.ts"
 import {
   beginPresentation,
   endPresentation,
+  isPresentingEvolution,
   presentationCurrent,
   presentationVersion,
-  isPresentingEvolution,
 } from "./browser-presentation.ts"
-import { runForegroundEvolution, PresentationCancelled } from "./foreground-evolution.ts"
+import { consumeFood, peekLocalState, readLocalState } from "./browser-store.ts"
+import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
 
 type FoodView = {
   readonly partnerId: string

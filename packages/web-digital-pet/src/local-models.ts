@@ -1,7 +1,7 @@
+import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { STAGE_THRESHOLD_KEYS, type StageThresholdSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonStage } from "@jcendal/digital-pet-core/domain/stage.ts"
-import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 
 import { experienceThresholds, type LocalPetState } from "./local-progress.ts"
 

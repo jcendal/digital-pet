@@ -60,4 +60,5 @@ export const MONSTER_FRAME_CATALOG = new MonsterFrameCatalog(
     frames.map(([frameName, content]) => [frameName, new MonsterFrame(content)]),
   ]),
 )
+
 import { MONSTER_FRAME_DATA } from "./monster-frame-data.ts"

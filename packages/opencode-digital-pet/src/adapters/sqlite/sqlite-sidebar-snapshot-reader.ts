@@ -1,20 +1,19 @@
 import { existsSync } from "node:fs"
-
+import {
+  type HostPathOptions,
+  resolveHostDatabasePath,
+} from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
+import {
+  ACTIVE_PARTNER_SELECT,
+  type PersistedPartnerRow,
+  type TrainerStateRow,
+  toPartner,
+} from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
 import type {
   SidebarSnapshot,
   SidebarSnapshotReader,
 } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
-import {
-  resolveHostDatabasePath,
-  type HostPathOptions,
-} from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import type { SqliteExecutor } from "@jcendal/digital-pet-core/ports/sqlite-executor.ts"
-import {
-  ACTIVE_PARTNER_SELECT,
-  toPartner,
-  type PersistedPartnerRow,
-  type TrainerStateRow,
-} from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
 
 import { createExecutor, openReadonlyDatabase } from "./bun-sqlite-driver.ts"
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import type { Part } from "@opencode-ai/sdk"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
+import type { Part } from "@opencode-ai/sdk"
 
 import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
 import { runDigitalPetSetCommand } from "../src/commands/digital-pet-set.ts"

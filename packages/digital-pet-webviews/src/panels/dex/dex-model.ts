@@ -2,8 +2,8 @@ import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/applicat
 import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { getStageLabel } from "@jcendal/digital-pet-core/data/stages.ts"
+import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 
 import { artworkToPixelPath } from "../../shared/pixel-artwork.ts"

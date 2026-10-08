@@ -1,5 +1,5 @@
-import type { BattleOutcome, BattlePlan, BattleShot, BattleSide } from "@jcendal/digital-pet-core/domain/combat.ts"
 import type { MonsterFrameCatalog, MonsterFrameName } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { BattleOutcome, BattlePlan, BattleShot, BattleSide } from "@jcendal/digital-pet-core/domain/combat.ts"
 
 import {
   BATTLE_GAP_COLUMNS,

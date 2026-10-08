@@ -2,8 +2,8 @@ import type { DigitalPetArchiveResult } from "../application/models/digital-pet-
 import type { ResolvedDigitalPetSettings } from "../config/types.ts"
 import type { DigimonCatalog } from "../data/catalog.ts"
 import { getStageLabel } from "../data/stages.ts"
-import { DIGIMON_STAGES } from "../domain/stage.ts"
 import type { DigimonNode } from "../domain/digimon-node.ts"
+import { DIGIMON_STAGES } from "../domain/stage.ts"
 
 export type DexRow = {
   readonly id: string

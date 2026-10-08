@@ -1,10 +1,9 @@
-import { mkdirSync } from "node:fs"
-import { watch } from "node:fs"
+import { mkdirSync, watch } from "node:fs"
 import { basename, dirname } from "node:path"
 
 import {
-  resolveHostDatabasePath,
   type HostPathOptions,
+  resolveHostDatabasePath,
 } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 
 export type DatabaseChangeWatcherOptions = HostPathOptions & {

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Digital Pet in Extension Host",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/cursor-digital-pet"],
+      "outFiles": ["${workspaceFolder}/packages/cursor-digital-pet/dist/**/*.js"],
+      "preLaunchTask": "Build Cursor extension"
+    }
+  ]
+}

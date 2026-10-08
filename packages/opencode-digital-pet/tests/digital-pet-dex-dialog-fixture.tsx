@@ -1,9 +1,9 @@
 /** @jsxImportSource @opentui/solid */
 import { mock } from "bun:test"
-import type { DigitalPetDexDialogTheme } from "../src/tui/digital-pet-dex-dialog.tsx"
 import type { TuiDialogProps } from "@opencode-ai/plugin/tui"
 import { parseColor } from "@opentui/core"
 import type { JSX } from "solid-js"
+import type { DigitalPetDexDialogTheme } from "../src/tui/digital-pet-dex-dialog.tsx"
 
 export const createMockTheme = (): DigitalPetDexDialogTheme => ({
   current: {

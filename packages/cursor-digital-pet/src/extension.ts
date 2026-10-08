@@ -3,11 +3,11 @@ import * as vscode from "vscode"
 
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { createUsagePipeline } from "./application/usage-pipeline.ts"
-import { isDevToolsEnabled, syncDevToolsContext } from "./config/extension-settings.ts"
 import { createDigitalPetContainer } from "./bootstrap/container.ts"
 import { ensureHooksInstalled } from "./bootstrap/ensure-hooks.ts"
 import { registerCommands } from "./bootstrap/register-commands.ts"
 import { registerSidebar } from "./bootstrap/register-sidebar.ts"
+import { isDevToolsEnabled, syncDevToolsContext } from "./config/extension-settings.ts"
 
 const isCursorRuntime = (): boolean => existsSync(resolveStateVscdbPath())
 

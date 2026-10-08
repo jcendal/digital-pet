@@ -2,12 +2,12 @@ import { expect, test } from "bun:test"
 import { FEEDING_POLICY } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import {
   advanceLocalPet,
+  beginNewPartner,
   completeLocalEvolution,
   consumeLocalFood,
   experienceThresholds,
-  pendingEvolutionKey,
-  beginNewPartner,
   type LocalPetState,
+  pendingEvolutionKey,
 } from "../src/local-progress.ts"
 import { parsePetTransfer } from "../src/transfer-protocol.ts"
 

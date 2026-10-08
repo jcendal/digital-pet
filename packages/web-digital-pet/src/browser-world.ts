@@ -1,11 +1,11 @@
 import { DEFAULT_WORLD_VISIT, getLocation, getRegion } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
-import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 import type { WorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
+import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 
-import { ACTIVE_SOURCE_KEY, SOURCE_PREFERENCE_KEY, resolveSaveSource, type SaveSource } from "./browser-source.ts"
-import { COMPUTER_WORLD_KEY, worldStoreFor } from "./world-store.ts"
+import { ACTIVE_SOURCE_KEY, resolveSaveSource, type SaveSource, SOURCE_PREFERENCE_KEY } from "./browser-source.ts"
 import { checkComputerSave } from "./computer-save.ts"
+import { COMPUTER_WORLD_KEY, worldStoreFor } from "./world-store.ts"
 
 export const initBrowserWorld = async (): Promise<void> => {
   const dialog = document.querySelector<HTMLDialogElement>("#world-dialog")!

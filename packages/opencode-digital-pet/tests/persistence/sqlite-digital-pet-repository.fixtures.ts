@@ -1,8 +1,7 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
-
-import { openReadonlyDatabase, openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import type { UsageReceiptMetadata } from "@jcendal/digital-pet-core/application/models/usage.ts"
+import { openReadonlyDatabase, openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import type { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 
 export type TempTestRoot = { readonly root: string; readonly appDataRoot: string }

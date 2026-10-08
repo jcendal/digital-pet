@@ -1,8 +1,8 @@
-import { DIGIMON_DATA } from "./digimon-data.ts"
-import { isDigimonStage } from "../domain/stage.ts"
-import type { DigimonCatalog, DigimonNode } from "../domain/digimon-node.ts"
-import { COMBAT_STATS } from "./combat-stats.ts"
 import { NEUTRAL_COMBAT_STATS } from "../domain/combat.ts"
+import type { DigimonCatalog, DigimonNode } from "../domain/digimon-node.ts"
+import { isDigimonStage } from "../domain/stage.ts"
+import { COMBAT_STATS } from "./combat-stats.ts"
+import { DIGIMON_DATA } from "./digimon-data.ts"
 
 export type { DigimonCatalog, DigimonNode } from "../domain/digimon-node.ts"
 

@@ -1,14 +1,13 @@
 import type { ResolveEvolutionBattleOutcome } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import {
-  resolveEvolutionBattleForPartner,
   type EvolutionBattleRepository,
+  resolveEvolutionBattleForPartner,
 } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-
-import { presentEvolution } from "./evolution-presentation.ts"
 import type { BattleFrameListener } from "../sequences/evolution-battle-artwork.ts"
+import { presentEvolution } from "./evolution-presentation.ts"
 
 import type { PresentationStateListener } from "./presentation-state.ts"
 

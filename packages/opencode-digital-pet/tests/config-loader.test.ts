@@ -2,13 +2,12 @@ import { afterEach, describe, expect, test } from "bun:test"
 import { mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join, posix, win32 } from "node:path"
-
+import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import {
   loadGlobalDigitalPetSettings,
   loadGlobalDigitalPetSettingsSync,
   resolveGlobalDigitalPetConfigPath,
 } from "../src/config/global-digital-pet-settings.ts"
-import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 
 const tempRoots: string[] = []
 

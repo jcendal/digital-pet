@@ -9,8 +9,8 @@ mock.module("../src/utils/sleep.ts", () => ({
   sleep: async () => {},
 }))
 
-import { runEvolutionBattleSession } from "../src/sessions/evolution-battle-session.ts"
 import type { BattleFrameHud } from "../src/sequences/evolution-battle-artwork.ts"
+import { runEvolutionBattleSession } from "../src/sessions/evolution-battle-session.ts"
 import { battleSidebarSnapshot } from "./session-fixtures.ts"
 
 const pendingBattleSnapshot = battleSidebarSnapshot()

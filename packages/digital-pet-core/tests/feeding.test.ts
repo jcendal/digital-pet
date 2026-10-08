@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { advanceFood, feedingExperience, FEEDING_POLICY, scheduleFood } from "../src/domain/feeding.ts"
+import { advanceFood, FEEDING_POLICY, feedingExperience, scheduleFood } from "../src/domain/feeding.ts"
 
 test("food appears after four hours; available food has no date and cannot accumulate", () => {
   const scheduled = scheduleFood(1000)

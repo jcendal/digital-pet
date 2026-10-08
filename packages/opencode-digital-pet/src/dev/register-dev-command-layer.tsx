@@ -1,8 +1,7 @@
 /** @jsxImportSource @opentui/solid */
 import type { TuiKeymap } from "@opencode-ai/plugin/tui"
-
-import { OPENCODE_DEV_ACTIONS, type OpencodeDevActionId } from "./catalog.ts"
 import type { DevToolsRuntime } from "./attach-dev-tools.ts"
+import { OPENCODE_DEV_ACTIONS, type OpencodeDevActionId } from "./catalog.ts"
 
 export type DevCommandLayerDependencies = {
   readonly keymap: Pick<TuiKeymap, "registerLayer">

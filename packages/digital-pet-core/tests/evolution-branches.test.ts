@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { DIGIMON_CATALOG } from "../src/data/catalog.ts"
-import { assertEvolutionBranch, pickEvolutionTarget } from "../src/domain/evolution-battle.ts"
 import { resolveEvolutionBattle } from "../src/domain/evolution.ts"
+import { assertEvolutionBranch, pickEvolutionTarget } from "../src/domain/evolution-battle.ts"
 
 test("the entire catalogue is reachable from the egg through explicit branches", () => {
   const reached = new Set(["0-001"])

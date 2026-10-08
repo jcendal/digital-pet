@@ -32,6 +32,9 @@ If you previously installed `@sbugallo/opencode-vpet` or unscoped `opencode-vpet
 
 ## Repository layout
 
+For workspace setup, Cursor extensions, code conventions, and validation commands,
+see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 | Workspace | Role |
 | --- | --- |
 | [`packages/cursor-digital-pet`](packages/cursor-digital-pet) | Cursor extension, packaged as a VSIX |

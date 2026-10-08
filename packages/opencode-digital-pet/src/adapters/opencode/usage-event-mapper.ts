@@ -1,6 +1,5 @@
-import type { AssistantMessage, Event, Message } from "@opencode-ai/sdk"
-
 import type { CompletedUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import type { AssistantMessage, Event, Message } from "@opencode-ai/sdk"
 
 const isCompletedAssistantMessage = (message: Message): message is AssistantMessage => {
   return message.role === "assistant" && "time" in message && message.time.completed !== undefined

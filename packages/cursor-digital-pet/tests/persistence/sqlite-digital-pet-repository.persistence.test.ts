@@ -7,12 +7,11 @@ import { resolveEvolutionBattleForPartner } from "@jcendal/digital-pet-core/appl
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
-
+import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import {
   createSqliteSidebarSnapshotReader,
   readSidebarSnapshot,
 } from "../../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
-import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 
 type TempTestRoot = { readonly root: string; readonly appDataRoot: string }
 

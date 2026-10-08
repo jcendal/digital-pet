@@ -1,20 +1,20 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test"
-import { testRender } from "@opentui/solid"
-import type { JSX } from "@opentui/solid"
 import { chmod, mkdir, readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
+import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
+import { mirrorMonsterFrame } from "@jcendal/digital-pet-animation/idle/monster-artwork-mirror.ts"
 
-import { MonsterFrame, MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { MONSTER_FRAME_CATALOG, MonsterFrame } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { JSX } from "@opentui/solid"
+import { testRender } from "@opentui/solid"
 import entryPlugin, { createCommandConfig, plugin } from "../src/index.ts"
 import tuiPlugin from "../src/tui.tsx"
-import { mirrorMonsterFrame } from "@jcendal/digital-pet-animation/idle/monster-artwork-mirror.ts"
-import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import {
   createPackageFixture,
   fixtureEntryUrl,
   hasFixtureArtifacts,
-  removePackageFixture,
   type PackageFixture,
+  removePackageFixture,
 } from "./package-fixture.ts"
 
 const partnerInputs = (sprite: string, stage = 3) => ({

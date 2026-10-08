@@ -1,18 +1,17 @@
 import { afterEach, describe, expect, test } from "bun:test"
-import type { AssistantMessage, Event } from "@opencode-ai/sdk"
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
 import { homedir, tmpdir } from "node:os"
 import { join, posix } from "node:path"
-
-import { createServerHooks, type ServerHookDependencies } from "../src/adapters/opencode/create-server-hooks.ts"
-import { createSessionMessagesFetcher } from "../src/adapters/opencode/session-messages.ts"
 import type { UsageReceiptMetadata } from "@jcendal/digital-pet-core/application/models/usage.ts"
+import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
 import type { PartnerLifecycle } from "@jcendal/digital-pet-core/application/ports/partner-lifecycle.ts"
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
-import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
-import { createSqliteDigitalPetRepository } from "../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { STAGE_GAUGE_THRESHOLDS, type StageThresholds } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import type { Partner, PartnerProgression } from "@jcendal/digital-pet-core/domain/partner.ts"
+import type { AssistantMessage, Event } from "@opencode-ai/sdk"
+import { createServerHooks, type ServerHookDependencies } from "../src/adapters/opencode/create-server-hooks.ts"
+import { createSessionMessagesFetcher } from "../src/adapters/opencode/session-messages.ts"
+import { createSqliteDigitalPetRepository } from "../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import {
   loadGlobalDigitalPetSettings,
   resolveGlobalDigitalPetConfigPath,

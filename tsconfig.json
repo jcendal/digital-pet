@@ -2,11 +2,14 @@
   "files": [],
   "references": [
     { "path": "./packages/digital-pet-core" },
+    { "path": "./packages/digital-pet-animation" },
+    { "path": "./packages/digital-pet-fields" },
+    { "path": "./packages/digital-pet-webviews" },
+    { "path": "./packages/web-digital-pet" },
     { "path": "./packages/opencode-digital-pet" },
     { "path": "./packages/opencode-digital-pet/tsconfig.scripts.json" },
     { "path": "./packages/opencode-digital-pet/tsconfig.test.json" },
     { "path": "./packages/cursor-digital-pet" },
-    { "path": "./packages/cursor-digital-pet/tsconfig.scripts.json" },
     { "path": "./packages/cursor-digital-pet/tsconfig.test.json" },
     { "path": "./tsconfig.release-metadata.json" }
   ]

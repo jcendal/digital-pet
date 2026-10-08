@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
-import { COMBAT_POLICY, hitProbability, planCombat, validateCombatStats } from "../src/domain/combat.ts"
-import { COMBAT_STATS } from "../src/data/combat-stats.ts"
 import { DIGIMON_CATALOG } from "../src/data/catalog.ts"
+import { COMBAT_STATS } from "../src/data/combat-stats.ts"
+import { COMBAT_POLICY, hitProbability, planCombat, validateCombatStats } from "../src/domain/combat.ts"
 
 const neutral = { strength: 50, evasion: 50 }
 describe("shared combat rules", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 
-import { loadDigimonCatalog, parseDigimonCatalog, type DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { type DigimonNode, loadDigimonCatalog, parseDigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { DIGIMON_DATA } from "@jcendal/digital-pet-core/data/digimon-data.ts"
 import type { DigimonNode as DomainDigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import {

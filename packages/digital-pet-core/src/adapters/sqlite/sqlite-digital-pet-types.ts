@@ -1,13 +1,13 @@
-import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
 import type {
   ApplyUsageReceiptOutcome,
   ResolveEvolutionBattleOutcome,
   UsageReceiptMetadata,
 } from "../../application/models/usage.ts"
+import type { DigitalPetControl } from "../../application/ports/digital-pet-control.ts"
 import type { PartnerLifecycle } from "../../application/ports/partner-lifecycle.ts"
 import type { UsageLedger } from "../../application/ports/usage-ledger.ts"
-import type { DigitalPetControl } from "../../application/ports/digital-pet-control.ts"
+import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 
 export type PersistedPartner = Partner
 

@@ -2,8 +2,8 @@ import type { UsageProcessingResult } from "@jcendal/digital-pet-core/applicatio
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
 
 import {
-  createCursorUsageEventSource,
   type CursorUsageEventSource,
+  createCursorUsageEventSource,
 } from "../adapters/cursor/cursor-usage-event-source.ts"
 
 export type UsagePipeline = CursorUsageEventSource
