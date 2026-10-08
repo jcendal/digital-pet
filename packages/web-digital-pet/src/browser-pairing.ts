@@ -321,7 +321,7 @@ export const initBrowserPairing = async (): Promise<BrowserPairingControls> => {
     if (connection && !finishing) finish({ type: "decline" }, "Transfer cancelled.")
   })
   copy.addEventListener("click", () => {
-    void navigator.clipboard.writeText(deviceCode).then(
+    void navigator.clipboard.writeText(displayDeviceCode(deviceCode)).then(
       () => note("Code copied."),
       () => note("Could not copy the code."),
     )

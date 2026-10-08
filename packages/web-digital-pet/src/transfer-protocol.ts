@@ -1,5 +1,7 @@
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "./local-progress.ts"
+import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
 
 export const TRANSFER_VERSION = 1
 export const MAX_TRANSFER_BYTES = 64 * 1024
@@ -70,7 +72,48 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     throw new Error("The received save has an invalid experience setting")
   if (state.worldVisit !== undefined && !isWorldVisit(state.worldVisit))
     throw new Error("The received save has an invalid destination")
+  let pendingEvolution: LocalPetState["pendingEvolution"]
+  if (state.pendingEvolution !== undefined) {
+    const pending = state.pendingEvolution
+    const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+    if (
+      !isRecord(pending) ||
+      !validNodeId(pending.targetNodeId) ||
+      !current?.nextEvolutions.includes(pending.targetNodeId) ||
+      typeof pending.readyAt !== "number" ||
+      !Number.isSafeInteger(pending.readyAt) ||
+      pending.readyAt < 0 ||
+      pending.readyAt > Date.now() + 24 * 60 * 60 * 1000 ||
+      state.isTerminal ||
+      (current.stage === 0
+        ? pending.opponentNodeId !== null
+        : !validNodeId(pending.opponentNodeId) ||
+          DIGIMON_CATALOG.byId.get(pending.opponentNodeId)?.stage !== current.stage)
+    )
+      throw new Error("The received save has an invalid pending evolution")
+    pendingEvolution = {
+      targetNodeId: pending.targetNodeId,
+      opponentNodeId: pending.opponentNodeId as string | null,
+      readyAt: pending.readyAt,
+    }
+  }
   let retiredPartners: LocalArchivedPartner[] | undefined
+  let food: FoodState | undefined
+  if (state.food !== undefined) {
+    const value = state.food
+    if (!isRecord(value) || DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage === 0)
+      throw new Error("The received save has invalid food")
+    if (value.kind === "available" && value.availableAt === undefined) food = { kind: "available" }
+    else if (
+      value.kind === "scheduled" &&
+      typeof value.availableAt === "number" &&
+      Number.isSafeInteger(value.availableAt) &&
+      value.availableAt >= 0 &&
+      value.availableAt <= Date.now() + 24 * 60 * 60 * 1000
+    )
+      food = { kind: "scheduled", availableAt: value.availableAt }
+    else throw new Error("The received save has invalid food")
+  }
   if (state.retiredPartners !== undefined) {
     if (!Array.isArray(state.retiredPartners) || state.retiredPartners.length > 128)
       throw new Error("The received save has an invalid archive")
@@ -104,6 +147,8 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
       events,
+      ...(pendingEvolution ? { pendingEvolution } : {}),
+      ...(food ? { food } : {}),
       ...(isWorldVisit(state.worldVisit)
         ? { worldVisit: { regionId: state.worldVisit.regionId, locationId: state.worldVisit.locationId } }
         : {}),

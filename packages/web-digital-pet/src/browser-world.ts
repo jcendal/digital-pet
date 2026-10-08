@@ -2,8 +2,10 @@ import { DEFAULT_WORLD_VISIT, getLocation, getRegion } from "@jcendal/digital-pe
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 import type { WorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
+
 import { ACTIVE_SOURCE_KEY, SOURCE_PREFERENCE_KEY, resolveSaveSource, type SaveSource } from "./browser-source.ts"
 import { COMPUTER_WORLD_KEY, worldStoreFor } from "./world-store.ts"
+import { checkComputerSave } from "./computer-save.ts"
 
 export const initBrowserWorld = async (): Promise<void> => {
   const dialog = document.querySelector<HTMLDialogElement>("#world-dialog")!
@@ -50,12 +52,7 @@ export const initBrowserWorld = async (): Promise<void> => {
   const refresh = async () => {
     const token = ++revision
     const preferred = localStorage.getItem(SOURCE_PREFERENCE_KEY)
-    let available: boolean | null = null
-    try {
-      available = (await (await fetch("/api/mode", { cache: "no-store" })).json()).mode === "sqlite"
-    } catch {
-      /* Saved browser visits also work offline. */
-    }
+    const available = await checkComputerSave(document.documentElement.dataset.saveHost === "browser")
     const selectedSource = resolveSaveSource(preferred, available, localStorage.getItem(ACTIVE_SOURCE_KEY))
     const next = await worldStoreFor(selectedSource).load()
     if (token !== revision) return

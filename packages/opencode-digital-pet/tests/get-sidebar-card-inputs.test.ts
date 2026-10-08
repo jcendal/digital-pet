@@ -12,6 +12,7 @@ const agumon: DigimonNode = {
   sprite: "agumon",
   stage: 3,
   url: "https://example.test/agumon",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const egg: DigimonNode = {
@@ -22,6 +23,7 @@ const egg: DigimonNode = {
   sprite: "egg",
   stage: 0,
   url: "https://example.test/egg",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const catalog: DigimonCatalog = {

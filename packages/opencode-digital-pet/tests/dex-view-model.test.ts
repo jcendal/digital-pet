@@ -14,6 +14,7 @@ const catalog = {
       sprite: "egg",
       stage: 0,
       url: "https://example.test/0-010",
+      combatStats: { strength: 50, evasion: 50 },
     },
     {
       id: "0-002",
@@ -23,6 +24,7 @@ const catalog = {
       sprite: "egg",
       stage: 0,
       url: "https://example.test/0-002",
+      combatStats: { strength: 50, evasion: 50 },
     },
     {
       id: "3-010",
@@ -32,6 +34,7 @@ const catalog = {
       sprite: "child",
       stage: 3,
       url: "https://example.test/3-010",
+      combatStats: { strength: 50, evasion: 50 },
     },
     {
       id: "3-002",
@@ -41,6 +44,7 @@ const catalog = {
       sprite: "child",
       stage: 3,
       url: "https://example.test/3-002",
+      combatStats: { strength: 50, evasion: 50 },
     },
   ],
   byId: new Map(),

@@ -31,6 +31,7 @@ const catalogNodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/0-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "1-001",
@@ -40,6 +41,7 @@ const catalogNodes = [
     sprite: "first",
     stage: 1,
     url: "https://example.test/1-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "2-001",
@@ -49,6 +51,7 @@ const catalogNodes = [
     sprite: "second",
     stage: 2,
     url: "https://example.test/2-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "7-001",
@@ -58,6 +61,7 @@ const catalogNodes = [
     sprite: "set-only",
     stage: 7,
     url: "https://example.test/7-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const satisfies readonly DigimonNode[]
 

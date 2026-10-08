@@ -1,6 +1,13 @@
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
-import { advanceLocalPet, beginNewPartner, type ExperienceLevel, type LocalPetState } from "./local-progress.ts"
+import {
+  advanceLocalPet,
+  beginNewPartner,
+  completeLocalEvolution,
+  consumeLocalFood,
+  type ExperienceLevel,
+  type LocalPetState,
+} from "./local-progress.ts"
 
 const DB_NAME = "web-digital-pet"
 const STORE_NAME = "pet"
@@ -57,6 +64,17 @@ export const readLocalState = async (): Promise<LocalPetState> => {
     if (state !== stored) store.put(state, STATE_KEY)
     await done
     return state
+  } finally {
+    database.close()
+  }
+}
+
+/** Animation checkpoints inspect identity without advancing time or taking a write transaction. */
+export const peekLocalState = async (): Promise<LocalPetState | undefined> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readonly")
+    return await resultOf<LocalPetState | undefined>(transaction.objectStore(STORE_NAME).get(STATE_KEY))
   } finally {
     database.close()
   }
@@ -149,8 +167,21 @@ const changeLocalState = async (change: (state: LocalPetState) => LocalPetState,
 export const setExperienceLevel = (level: ExperienceLevel): Promise<void> =>
   changeLocalState((state) => ({ ...state, experienceLevel: level }))
 
+export const finishLocalEvolution = (expectedKey: string, won: boolean, active: () => boolean): Promise<void> =>
+  changeLocalState((state) => (active() ? completeLocalEvolution(state, expectedKey, won, Date.now()) : state))
+
 export const startNewPartner = (): Promise<void> =>
   changeLocalState((state) => beginNewPartner(state, crypto.randomUUID(), Date.now()), true)
+
+export const consumeFood = async (partnerId: string, active: () => boolean): Promise<boolean> => {
+  let consumed = false
+  await changeLocalState((state) => {
+    const next = active() ? consumeLocalFood(state, partnerId, Date.now()) : state
+    consumed = next !== state
+    return next
+  })
+  return consumed
+}
 
 export const getPairedDevice = async (): Promise<string | null> => {
   const database = await openDatabase()

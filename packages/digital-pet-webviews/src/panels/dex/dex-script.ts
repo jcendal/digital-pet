@@ -14,6 +14,7 @@ export const DEX_SCRIPT = /* javascript */ `
   let mode = saved.mode === 'grid' ? 'grid' : 'list';
   let expanded = saved.expanded === true;
   let filtered = [];
+  let requestedId = null;
   search.value = typeof saved.search === 'string' ? saved.search : '';
   stage.value = typeof saved.stage === 'string' ? saved.stage : 'all';
   if (!stage.value) stage.value = 'all';
@@ -30,6 +31,7 @@ export const DEX_SCRIPT = /* javascript */ `
     return node;
   };
   const selectEntry = (id, focus = false) => {
+    requestedId = null;
     selectedId = id;
     renderSelection();
     remember();
@@ -84,6 +86,7 @@ export const DEX_SCRIPT = /* javascript */ `
     if (entry.alternateName && entry.alternateName !== entry.name) name.append(element('p', 'micro', entry.alternateName));
     const facts = element('div', 'facts');
     facts.append(fact('STAGE', entry.stage), fact('CATALOG ID', entry.id));
+    if (entry.combatStats) facts.append(fact('STRENGTH', entry.combatStats.strength + ' / 100'), fact('EVASION', entry.combatStats.evasion + ' / 100'));
     body.append(frame, name, facts);
     if (entry.discovered) {
       const extra = element('details', 'record-extra');
@@ -177,14 +180,22 @@ export const DEX_SCRIPT = /* javascript */ `
   });
   for (const value of ['grid', 'list']) document.getElementById(value + '-mode').addEventListener('click', () => { mode = value; render(); });
   document.getElementById('refresh').addEventListener('click', () => vscode.postMessage({ type: 'dex-refresh' }));
+  const applyRequestedSelection = () => {
+    const target = model.entries.find(entry => entry.id === requestedId && entry.discovered);
+    if (!target) return false;
+    search.value = ''; stage.value = 'all'; discovery.value = 'all'; selectedId = target.id;
+    render(); selectEntry(target.id, true);
+    return true;
+  };
   window.addEventListener('message', event => {
     if (event.data?.type === 'dex-select') {
-      const target = model.entries.find(entry => entry.id === event.data.id && entry.discovered);
-      if (target) { search.value = ''; stage.value = 'all'; discovery.value = 'all'; selectedId = target.id; render(); selectEntry(target.id, true); }
+      requestedId = event.data.id;
+      applyRequestedSelection();
       return;
     }
     if (event.data?.type !== 'dex-model') return;
     model = event.data.model;
+    if (applyRequestedSelection()) return;
     const scroll = entries.scrollTop;
     render(); entries.scrollTop = scroll;
   });

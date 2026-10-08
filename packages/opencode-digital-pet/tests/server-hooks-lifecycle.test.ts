@@ -37,6 +37,7 @@ const toastNodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/digitama",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "1-001",
@@ -46,6 +47,7 @@ const toastNodes = [
     sprite: "koromon",
     stage: 1,
     url: "https://example.test/koromon",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const satisfies readonly DigimonNode[]
 

@@ -15,6 +15,7 @@ const currentNode: DigimonNode = {
   sprite: "current.png",
   stage: 0,
   url: "https://example.test/current",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const targetNode: DigimonNode = {
@@ -25,6 +26,7 @@ const targetNode: DigimonNode = {
   sprite: "target.png",
   stage: 1,
   url: "https://example.test/target",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const catalogNodes = [currentNode, targetNode]

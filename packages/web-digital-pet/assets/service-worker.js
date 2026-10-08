@@ -1,4 +1,4 @@
-const CACHE_NAME = "web-digital-pet-v13"
+const CACHE_NAME = "web-digital-pet-v16"
 const CACHE_PREFIX = "web-digital-pet-"
 const APP_FILES = [
   "/",

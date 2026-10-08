@@ -14,6 +14,7 @@ const nodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/egg",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "7-001",
@@ -23,6 +24,7 @@ const nodes = [
     sprite: "susanoomon",
     stage: 7,
     url: "https://example.test/susanoomon",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const
 

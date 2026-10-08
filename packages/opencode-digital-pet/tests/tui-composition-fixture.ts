@@ -50,6 +50,7 @@ export const partnerInputs = (sprite: string, options: PartnerInputOptions = {})
     sprite,
     stage: options.stage ?? 3,
     url: `https://example.test/${sprite}`,
+    combatStats: { strength: 50, evasion: 50 },
   },
   gauge: options.isSetOverride ? 0 : 42,
   isTerminal: options.isSetOverride ?? false,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test"
 
 import { MAX_BACKUP_BYTES, parsePetTransfer } from "../src/transfer-protocol.ts"
+import { advanceLocalPet } from "../src/local-progress.ts"
 
 const state = {
   partnerId: "sample-partner",
@@ -13,6 +14,17 @@ const state = {
 }
 
 describe("browser save transfer", () => {
+  it("preserves a pending evolution through transfer and rejects unrelated targets", () => {
+    const pending = advanceLocalPet(state, Date.now(), () => 0)
+    expect(pending.pendingEvolution).toBeDefined()
+    expect(parsePetTransfer({ version: 1, state: pending }).state).toEqual(pending)
+    expect(() =>
+      parsePetTransfer({
+        version: 1,
+        state: { ...pending, pendingEvolution: { ...pending.pendingEvolution, targetNodeId: "7-001" } },
+      }),
+    ).toThrow("pending evolution")
+  })
   it("accepts a versioned save and discards unknown fields", () => {
     const transfer = parsePetTransfer({ version: 1, state: { ...state, unwanted: "data" } })
     expect(transfer.state).toEqual(state)

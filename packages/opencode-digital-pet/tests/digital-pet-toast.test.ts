@@ -16,6 +16,7 @@ const nodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/digitama",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "1-001",
@@ -25,6 +26,7 @@ const nodes = [
     sprite: "koromon",
     stage: 1,
     url: "https://example.test/koromon",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const
 

@@ -25,6 +25,7 @@ const controlledCurrent: DigimonNode = {
   sprite: "controlled-current.png",
   stage: 0,
   url: "https://example.test/controlled-current",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const controlledTarget: DigimonNode = {
@@ -35,6 +36,7 @@ const controlledTarget: DigimonNode = {
   sprite: "controlled-target.png",
   stage: 1,
   url: "https://example.test/controlled-target",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const controlledOpponent: DigimonNode = {
@@ -45,6 +47,7 @@ const controlledOpponent: DigimonNode = {
   sprite: "controlled-opponent.png",
   stage: 0,
   url: "https://example.test/controlled-opponent",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const controlledCatalogNodes = [controlledCurrent, controlledTarget, controlledOpponent]
@@ -88,7 +91,16 @@ describe("catalog and evolution", () => {
     expect(Object.isFrozen(current)).toBeTrue()
     expect(Object.isFrozen(current.nextEvolutions)).toBeTrue()
     expect(Object.isFrozen(catalog.nodes)).toBeTrue()
-    expect(Object.keys(current).sort()).toEqual(["id", "nameEn", "nameJp", "nextEvolutions", "sprite", "stage", "url"])
+    expect(Object.keys(current).sort()).toEqual([
+      "combatStats",
+      "id",
+      "nameEn",
+      "nameJp",
+      "nextEvolutions",
+      "sprite",
+      "stage",
+      "url",
+    ])
     expect(current.url).toBe(rawCurrent.url)
     expect(current).toMatchObject({ url: "https://example.test/controlled-current" })
   })

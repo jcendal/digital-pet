@@ -9,6 +9,7 @@ export const SIDEBAR_SCRIPT = /* javascript */ `
   const root = document.querySelector('.pet-module');
   const renderBattleHud = () => {
     const visible = battleHud !== null;
+    root.classList.toggle('battle-intro',state.phase === 'battle' && !visible);
     document.querySelector('.arena').classList.toggle('with-battle-hud',visible);
     byId('battle-scores').hidden = !visible;
     byId('battle-caption').hidden = !visible || !battleHud.caption;
@@ -27,7 +28,9 @@ export const SIDEBAR_SCRIPT = /* javascript */ `
     const svg = byId('artwork'); svg.replaceChildren();
     const lines = artwork.split('\\n');
     const width = Math.max(artworkColumns,...lines.map(line => Array.from(line).length));
-    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + Math.max(16,lines.length * 2));
+    const intro = state.phase === 'battle' && battleHud === null;
+    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + Math.max(intro ? 1 : 16,lines.length * 2));
+    svg.setAttribute('preserveAspectRatio', (state.phase === 'idle' || state.phase === 'feeding' ? svg.dataset.idleAlignment || 'xMidYMid' : 'xMidYMid') + ' meet');
     const append = (tag, attrs) => { const node = document.createElementNS('http://www.w3.org/2000/svg',tag); for (const [key,value] of Object.entries(attrs)) node.setAttribute(key,String(value)); svg.append(node); return node; };
     for (const [row,line] of lines.entries()) for (const [column,cell] of Array.from(line).entries()) {
       if (battleHud && (row === battleHud.scoreRow || row === battleHud.captionRow) && column >= battleHud.gapStartColumn && column < battleHud.gapStartColumn + battleHud.gapColumns) continue;
@@ -53,7 +56,7 @@ export const SIDEBAR_SCRIPT = /* javascript */ `
     if (!active) return;
     byId('name').textContent = model.name;
     byId('name').title = model.name;
-    byId('stage').textContent = state.phase === 'battle' ? (model.opponentName || '') : state.phase === 'evolving' ? 'TRANSFORMING...' : state.phase === 'defeated' ? 'DEFEAT · ' + model.stage : model.stage;
+    byId('stage').textContent = state.phase === 'battle' ? (model.opponentName || '') : state.phase === 'evolving' ? 'TRANSFORMING...' : state.phase === 'draw' ? 'DRAW · ' + model.stage : state.phase === 'defeated' ? 'DEFEAT · ' + model.stage : model.stage;
     byId('stage').title = byId('stage').textContent;
     const percent = Math.round(model.progress * 100);
     byId('progress-label').textContent = model.terminal ? 'FINAL STAGE' : 'NEXT CHECK';
@@ -83,7 +86,7 @@ export const SIDEBAR_SCRIPT = /* javascript */ `
   window.addEventListener('message', event => {
     const message = event.data;
     if (message?.type === 'sidebar-model') { model = message; render(); reportWidth(); }
-    if (message?.type === 'presentation-state') { state = message.state; if (state.phase !== 'battle') { battleHud = null; renderBattleHud(); } render(); reportWidth(); }
+    if (message?.type === 'presentation-state') { state = message.state; if (state.phase !== 'battle') battleHud = null; renderBattleHud(); render(); renderArtwork(); reportWidth(); }
     if (message?.type === 'animation-frame' && typeof message.artwork === 'string') { artwork = message.artwork; battleHud = message.hud || null; renderBattleHud(); renderArtwork(); }
   });
   new ResizeObserver(reportWidth).observe(root);

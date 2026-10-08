@@ -12,6 +12,7 @@ const eggNode: DigimonNode = {
   sprite: "egg",
   stage: 0,
   url: "https://example.test/0-001",
+  combatStats: { strength: 50, evasion: 50 },
 }
 const catalog = {
   nodes: [
@@ -24,6 +25,7 @@ const catalog = {
       sprite: "child",
       stage: 3,
       url: "https://example.test/3-001",
+      combatStats: { strength: 50, evasion: 50 },
     },
   ],
   byId: new Map([[eggNode.id, eggNode]]),

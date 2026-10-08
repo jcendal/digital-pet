@@ -22,6 +22,7 @@ const controlledCurrent: DigimonNode = {
   sprite: "controlled-current.png",
   stage: 0,
   url: "https://example.test/controlled-current",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const controlledTarget: DigimonNode = {
@@ -32,6 +33,7 @@ const controlledTarget: DigimonNode = {
   sprite: "controlled-target.png",
   stage: 1,
   url: "https://example.test/controlled-target",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const controlledCatalogNodes = [controlledCurrent, controlledTarget]

@@ -57,7 +57,10 @@ const maskable512Path = resolve(packageRoot, "assets", "icons", "digital-pet-mas
 const animation = new MonsterAnimationController(MONSTER_FRAME_CATALOG)
 let currentPartner = ""
 
-const dexModel = () => buildDexPanelModel(readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
+const dexModel = () => ({
+  ...buildDexPanelModel(readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS),
+  currentNodeId: readSidebarSnapshot()?.currentNodeId ?? null,
+})
 const historyModel = () => buildHistoryPanelModel(readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
 
 const sidebarData = (requestedWidth: number) => {
@@ -108,12 +111,21 @@ const webStyles = /* css */ `
   .panel-filters { flex: none; margin-bottom: 12px; }
   .partner-device .screen { display: flex; flex-direction: column; overflow: hidden; }
   .partner-device .arena { --artwork-pixel-size: 7.5; background: url("/regions/dragon-eye-lake/scene.svg") center / 100% 100% no-repeat; }
-  .partner-device .arena:not(.with-battle-hud) #artwork { height: 85%; align-self: start; }
+  .partner-device .pet-module:not(.animating) .arena #artwork { height: 85%; align-self: start; }
+  .partner-device .battle-intro .arena { background-image: none !important; }
+  .partner-device .battle-intro .world-scenery { visibility: hidden; }
+  .partner-device .battle-intro .identity { visibility: hidden; }
   .world-scenery { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
   .world-scenery-track { position: absolute; inset: 0 auto 0 -100%; width: 400%; display: flex; }
   .world-scenery-track img { width: 25%; height: 100%; flex: none; display: block; image-rendering: pixelated; }
   .world-scenery-track img:nth-child(odd) { transform: scaleX(-1); }
   .partner-device .arena #artwork { position: relative; }
+  .pet-food { position: absolute; right: 9%; bottom: 9%; z-index: 2; width: 48px; height: 48px; padding: 6px; color: var(--ink); background: transparent; border: 2px solid transparent; cursor: pointer; }
+  .pet-food[hidden] { display: none; }
+  .pet-food svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+  .pet-food:hover, .pet-food:focus-visible { border-color: currentColor; background: var(--lcd); outline: 2px dotted currentColor; outline-offset: 3px; }
+  .pet-food:disabled { cursor: default; opacity: .5; }
+  .food-feedback { position: absolute; bottom: 2%; inset-inline: 6%; text-align: center; color: var(--ink); background: var(--lcd); font-size: var(--type-small); z-index: 3; }
   #world-location { flex: none; padding: 8px 6px; margin: 0 0 8px; text-align: left; font: inherit; font-size: 10px; color: var(--muted); border: 0; border-bottom: 2px dotted var(--line); background: transparent; cursor: pointer; }
   #world-location:hover { color: var(--ink); }
   #world-location:focus-visible { outline: 2px dotted var(--ink); }
@@ -129,8 +141,6 @@ const webStyles = /* css */ `
   .pet-module .progress { height: auto; padding: 12px 6px; }
   .pet-module .pet-actions, .partner-spacer { display: none; }
   .pet-module #empty { flex: 1; display: grid; place-items: center; text-align: center; }
-  .pet-module.animating #content { grid-template-rows: 40px minmax(0, 1fr); }
-  .pet-module.animating .arena { height: 100%; }
   @media (max-height: 590px) { .pet-header { padding: 4px 6px 6px; } .footer { padding-top: 5px; }
     .web-nav { min-height: 48px; } .pet-module #content { grid-template-rows: 30px minmax(0, 1fr) 65px; } }
 `
@@ -142,8 +152,10 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
     let width = 40;
     let busy = false;
     let refreshRequested = false;
-    let hostBrowser = false;
+    let dexSelection = null;
+    const hostBrowser = document.documentElement.dataset.saveHost === 'browser';
     let scenery;
+    let localPresenter;
     if (page === 'sidebar') window.addEventListener('DOMContentLoaded', async () => {
       scenery = (await import('/browser-scenery.js')).initPartnerScenery();
     }, { once: true });
@@ -155,7 +167,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
     const pageVisible = () => document.visibilityState !== 'hidden' && (!window.frameElement || window.frameElement.classList.contains('active'));
     const browserSave = () => {
       const preferred = localStorage.getItem('digital-pet:preferred-source');
-      return preferred === 'browser' || (preferred !== 'sqlite' && localStorage.getItem('digital-pet:source') === 'browser');
+      return preferred === 'browser';
     };
     const refresh = async () => {
       if (!pageVisible()) return;
@@ -164,6 +176,11 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
       const preferred = localStorage.getItem('digital-pet:preferred-source');
       const deliverCurrent = data => {
         if (preferred !== localStorage.getItem('digital-pet:preferred-source')) { refreshRequested = true; return; }
+        if (data.type === 'dex-model' && dexSelection !== null) {
+          const id = dexSelection === 'current' ? data.model.currentNodeId : dexSelection;
+          dexSelection = null;
+          if (id) deliver({ type: 'dex-select', id });
+        }
         deliver(data);
         if (page === 'sidebar' && data.type === 'animation-frame') scenery?.update(data.motion);
       };
@@ -183,16 +200,31 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
         }
         if (preferred !== localStorage.getItem('digital-pet:preferred-source')) { refreshRequested = true; return; }
         if (data.mode === 'browser') {
-          hostBrowser = true;
           localStorage.setItem('digital-pet:source', 'browser');
           const local = await import('/browser-local.js');
           if (page === 'sidebar') {
+            localPresenter = local;
             const snapshot = await local.sidebar(width);
-            deliverCurrent(snapshot.model); deliverCurrent(snapshot.frame);
+            if (!local.isPresentingEvolution()) { deliverCurrent(snapshot.model); deliverCurrent(snapshot.frame); }
+            const active = () => pageVisible() && window.top.document.hasFocus() && !window.top.document.querySelector('dialog[open]');
+            const valid = () => preferred === localStorage.getItem('digital-pet:preferred-source') && localStorage.getItem('digital-pet:source') === 'browser';
+            local.updateFoodButton(snapshot.food, width, deliverCurrent, active, valid, () => {
+              window.parent.postMessage({ type: 'digital-pet:save-changed' }, location.origin);
+              refresh();
+            });
+            if (snapshot.pending) void local.presentPendingEvolution(width, deliverCurrent, active, valid, () => {
+              window.parent.postMessage({ type: 'digital-pet:save-changed' }, location.origin);
+            }).catch(error => {
+              const notice = document.getElementById('empty');
+              if (notice) { notice.hidden = false; notice.textContent = String(error); }
+            });
           } else {
             deliverCurrent({ type: page + '-model', model: await local[page]() });
           }
         } else {
+          localPresenter?.cancelEvolutionPresentation();
+          if (page === 'sidebar') localPresenter?.updateFoodButton(null, width, deliverCurrent, () => false, () => false, () => {});
+          deliverCurrent({ type: 'presentation-state', state: { phase: 'idle' } });
           localStorage.setItem('digital-pet:source', 'sqlite');
           if (page === 'sidebar') { deliverCurrent(data.model); deliverCurrent(data.frame); }
           else { deliverCurrent({ type: page + '-model', model: data }); }
@@ -222,10 +254,9 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
           return;
         }
         if (message.type.endsWith('-ready')) {
+          if (page === 'dex' && dexSelection === null) dexSelection = new URLSearchParams(location.search).get('selected') || 'current';
           refresh();
           setInterval(() => { if (pageVisible()) refresh(); }, page === 'sidebar' ? 800 : 5000);
-          const frame = window.frameElement;
-          if (frame) new MutationObserver(() => { if (pageVisible()) refresh(); }).observe(frame, { attributes: true, attributeFilter: ['class'] });
           document.addEventListener('visibilitychange', () => { if (pageVisible()) refresh(); });
           if (page === 'dex') {
             const selected = new URLSearchParams(location.search).get('selected');
@@ -237,7 +268,7 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
       }
     };
     window.addEventListener('storage', event => {
-      if (event.key === 'digital-pet:preferred-source') refresh();
+      if (event.key === 'digital-pet:preferred-source') { localPresenter?.cancelEvolutionPresentation(); refresh(); }
     });
     if (page === 'sidebar') {
       document.addEventListener('click', event => {
@@ -253,7 +284,11 @@ const bridgeScript = (page: "sidebar" | "dex" | "history") => /* javascript */ `
       });
     }
     window.addEventListener('message', event => {
-      if (event.source === window.parent && event.origin === location.origin && event.data?.type === 'browser-save-updated') refresh();
+      if (event.source === window.parent && event.origin === location.origin && event.data?.type === 'digital-pet:view-visible') {
+        if (page === 'dex') dexSelection = event.data.selected || 'current';
+        refresh();
+      }
+      if (event.source === window.parent && event.origin === location.origin && event.data?.type === 'browser-save-updated') { localPresenter?.cancelEvolutionPresentation(); refresh(); }
     });
   })();
 `
@@ -275,7 +310,11 @@ const renderPage = (page: "sidebar" | "dex" | "history"): string => {
         )
       : html
   return withWorld
-    .replace('<svg id="artwork"', '<svg id="artwork" preserveAspectRatio="xMidYMax"')
+    .replace(
+      "<html",
+      '<html data-save-host="' + (process.env.DIGITAL_PET_STATIC_EXPORT === "1" ? "browser" : "local") + '"',
+    )
+    .replace('<svg id="artwork"', '<svg id="artwork" data-idle-alignment="xMidYMax"')
     .replace("script-src 'nonce-", "script-src 'self' 'nonce-")
     .replace(
       "</style>",
@@ -303,14 +342,6 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
       const frames = Array.from(document.querySelectorAll('.web-view'));
       const links = Array.from(document.querySelectorAll('.web-nav a'));
       const pageFromPath = path => path === '/dex' ? 'dex' : path === '/history' ? 'history' : 'sidebar';
-      const selectRecord = path => {
-        const id = new URL(path, location.origin).searchParams.get('selected');
-        const frame = frames.find(node => node.dataset.page === 'dex');
-        if (!id || !frame) return;
-        const deliver = () => frame.contentWindow?.postMessage({ type: 'dex-select', id }, location.origin);
-        if (frame.contentDocument?.readyState === 'complete') deliver();
-        else frame.addEventListener('load', deliver, { once: true });
-      };
       const show = path => {
         const page = pageFromPath(new URL(path, location.origin).pathname);
         for (const frame of frames) {
@@ -323,7 +354,12 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
           if (link.dataset.page === page) link.setAttribute('aria-current', 'page');
           else link.removeAttribute('aria-current');
         }
-        if (page === 'dex') selectRecord(path);
+        const frame = frames.find(frame => frame.dataset.page === page);
+        const deliver = () => {
+          if (frame?.classList.contains('active')) frame.contentWindow?.postMessage({ type: 'digital-pet:view-visible', selected: new URL(path, location.origin).searchParams.get('selected') }, location.origin);
+        };
+        if (frame?.contentDocument?.readyState === 'complete') deliver();
+        else frame?.addEventListener('load', deliver, { once: true });
       };
       const navigate = path => { history.pushState(null, '', path); show(path); };
       for (const link of links) link.addEventListener('click', event => {
@@ -331,8 +367,14 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
         event.preventDefault(); navigate(link.getAttribute('href'));
       });
       window.addEventListener('message', event => {
-        if (event.origin !== location.origin || event.data?.type !== 'digital-pet:navigate') return;
+        if (event.origin !== location.origin) return;
         if (!frames.some(frame => frame.contentWindow === event.source)) return;
+        if (event.data?.type === 'digital-pet:save-changed') {
+          for (const frame of frames) frame.contentWindow?.postMessage({ type: 'browser-save-updated' }, location.origin);
+          window.dispatchEvent(new Event('digital-pet:save-updated'));
+          return;
+        }
+        if (event.data?.type !== 'digital-pet:navigate') return;
         navigate(event.data.path);
       });
       window.addEventListener('digital-pet:navigate', event => {
@@ -352,7 +394,7 @@ const renderShell = (page: "sidebar" | "dex" | "history"): string => {
       }
     })();
   `
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}${worldStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}${worldMarkup(availablePhotos)}<script nonce="${nonce}">${script}</script></body></html>`
+  return `<!DOCTYPE html><html lang="en" data-save-host="${process.env.DIGITAL_PET_STATIC_EXPORT === "1" ? "browser" : "local"}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/icons/digital-pet-16.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/digital-pet-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons/digital-pet-180.png"><title>Digital Pet</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }${PANEL_THEME}${webStyles}.view-stack { position: relative; flex: 1; min-height: 0; }.web-view { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; visibility: hidden; pointer-events: none; }.web-view.active { visibility: visible; pointer-events: auto; }${optionsStyles}${worldStyles}</style></head><body><div class="view-stack">${views}</div><nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-haspopup="dialog">OPTIONS</button></nav>${optionsMarkup}${worldMarkup(availablePhotos)}<script nonce="${nonce}">${script}</script></body></html>`
 }
 
 const send = (response: ServerResponse, status: number, contentType: string, body: string | Buffer): void => {

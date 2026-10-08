@@ -84,12 +84,20 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **Regions** | Explore ten classic Field destinations, visit Dragon Eye Lake, and change your companion’s LCD landscape |
 | **History** | Current and retired generations with recorded evolution journeys |
 | **SQLite mode** | Live view of the shared `pet.db` while Cursor or OpenCode records usage |
-| **Browser mode** | Digitama hatch, timed experience, automatic evolution, IndexedDB persistence |
+| **Browser mode** | Digitama hatch, timed experience, visible battles and evolution, IndexedDB persistence |
+| **Visible evolution** | Experience stops at 100% until Partner is visible and the app has focus. Battles and transformations pause when you leave; waiting time does not accumulate extra growth |
 | **PWA install** | Add to home screen or desktop with standalone window and cached shell |
 | **Options** | Fourth navigation button opens the save selector, growth settings, new egg, and device pairing |
 | **Evolution experience** | Low = 10% of the original requirement, Normal = 50%, High = 100% |
 | **New egg** | Start a fresh browser companion while keeping the previous generation in History |
+| **Food** | One pixel apple appears after four hours. Click to eat and gain 25% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
+| **Shared combat rules** | Strength and evasion from 0–100 determine each hit. Three hits win; a timeout draws. Only a victory evolves along the current Digimon's catalogue branches |
 | **Device pairing and Sync** | Approve the first exchange, remember the device, then request later transfers with one button and a rollback backup |
+
+Food belongs to your browser companion and survives closing the app or transferring its save.
+At a final stage, eating plays the animation without adding unused experience.
+The [gameplay architecture review](../../docs/gameplay-architecture.md) documents layer ownership,
+evolution coverage, the combat formula and research sources.
 
 ---
 

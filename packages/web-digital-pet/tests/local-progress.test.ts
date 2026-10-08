@@ -3,6 +3,8 @@ import { describe, expect, it } from "bun:test"
 import {
   advanceLocalPet,
   beginNewPartner,
+  completeLocalEvolution,
+  pendingEvolutionKey,
   experienceThresholds,
   EXPERIENCE_INTERVAL_MS,
   type LocalPetState,
@@ -28,14 +30,37 @@ describe("browser pet progression", () => {
     expect(advanceLocalPet(afterOne, initial.lastTickAt + EXPERIENCE_INTERVAL_MS, () => 0)).toBe(afterOne)
   })
 
-  it("catches up after the app is closed and records an evolution once", () => {
-    const now = initial.lastTickAt + 24 * EXPERIENCE_INTERVAL_MS
-    const evolved = advanceLocalPet(initial, now, () => 0)
-    expect(evolved.currentNodeId).not.toBe(initial.currentNodeId)
+  it("stops at the threshold after a long absence until the evolution is presented", () => {
+    const now = initial.lastTickAt + 1000 * EXPERIENCE_INTERVAL_MS
+    const ready = advanceLocalPet(initial, now, () => 0)
+    expect(ready.currentNodeId).toBe(initial.currentNodeId)
+    expect(ready.gauge).toBe(experienceThresholds()[0])
+    expect(ready.events).toEqual(initial.events)
+    expect(ready.pendingEvolution?.targetNodeId).toBe("1-001")
+    expect(ready.pendingEvolution?.opponentNodeId).toBeNull()
+    const later = now + 1000 * EXPERIENCE_INTERVAL_MS
+    expect(advanceLocalPet(ready, later)).toBe(ready)
+    const evolved = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, true, later)
+    expect(evolved.currentNodeId).toBe("1-001")
     expect(evolved.gauge).toBe(0)
+    expect(evolved.pendingEvolution).toBeUndefined()
     expect(evolved.events).toHaveLength(2)
-    expect(evolved.events[1]?.createdAt).toBe(new Date(now).toISOString())
-    expect(advanceLocalPet(evolved, now, () => 0)).toBe(evolved)
+    expect(evolved.events[1]?.createdAt).toBe(new Date(later).toISOString())
+    expect(advanceLocalPet(evolved, later + EXPERIENCE_INTERVAL_MS - 1)).toBe(evolved)
+    expect(completeLocalEvolution(evolved, pendingEvolutionKey(ready)!, true, later)).toBe(evolved)
+  })
+
+  it("keeps a battle pending without registering its target, and rejects a stale completion", () => {
+    const baby = { ...initial, currentNodeId: "1-001", events: [{ ...initial.events[0]!, currentNodeId: "1-001" }] }
+    const ready = advanceLocalPet(baby, baby.lastTickAt + 200 * EXPERIENCE_INTERVAL_MS, () => 0)
+    expect(ready.currentNodeId).toBe(baby.currentNodeId)
+    expect(ready.pendingEvolution?.opponentNodeId).not.toBeNull()
+    expect(ready.events).toEqual(baby.events)
+    const replacement = beginNewPartner(ready, "replacement", ready.lastTickAt)
+    expect(completeLocalEvolution(replacement, pendingEvolutionKey(ready)!, true, ready.lastTickAt)).toBe(replacement)
+    const won = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, true, ready.lastTickAt)
+    expect(won.currentNodeId).toBe(ready.pendingEvolution!.targetNodeId)
+    expect(won.events).toHaveLength(2)
   })
 
   it("uses the exact selected experience requirements without changing experience earned per tick", () => {
@@ -55,7 +80,8 @@ describe("browser pet progression", () => {
       const before = advanceLocalPet(configured, initial.lastTickAt + (ticks - 1) * EXPERIENCE_INTERVAL_MS, () => 0)
       expect(before.currentNodeId).toBe(initial.currentNodeId)
       const after = advanceLocalPet(configured, initial.lastTickAt + ticks * EXPERIENCE_INTERVAL_MS, () => 0)
-      expect(after.currentNodeId).not.toBe(initial.currentNodeId)
+      expect(after.currentNodeId).toBe(initial.currentNodeId)
+      expect(after.pendingEvolution).toBeDefined()
     }
   })
 

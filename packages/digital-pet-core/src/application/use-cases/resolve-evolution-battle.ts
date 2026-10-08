@@ -16,9 +16,18 @@ export const resolveEvolutionBattleForPartner = (
   won: boolean,
   digimonById: ReadonlyMap<string, DigimonNode>,
   createdAt: string,
+  expected?: Pick<Partner, "partnerId" | "currentNodeId" | "pendingEvolutionTargetId" | "battleOpponentNodeId">,
 ): ResolveEvolutionBattleOutcome => {
   const partner = repository.getActivePartner()
   if (partner === null) return { kind: "no_pending_battle" }
+  if (
+    expected &&
+    (partner.partnerId !== expected.partnerId ||
+      partner.currentNodeId !== expected.currentNodeId ||
+      partner.pendingEvolutionTargetId !== expected.pendingEvolutionTargetId ||
+      partner.battleOpponentNodeId !== expected.battleOpponentNodeId)
+  )
+    return { kind: "no_pending_battle" }
 
   const current = digimonById.get(partner.currentNodeId)
   if (current === undefined) {

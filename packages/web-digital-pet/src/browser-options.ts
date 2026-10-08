@@ -11,6 +11,7 @@ import type { ExperienceLevel } from "./local-progress.ts"
 import type { BrowserPairingControls } from "./browser-pairing.ts"
 import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "./scene-motion.ts"
 import { MAX_BACKUP_BYTES, parsePetTransfer, TRANSFER_VERSION, type PetTransfer } from "./transfer-protocol.ts"
+import { checkComputerSave } from "./computer-save.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
@@ -58,30 +59,28 @@ export const initBrowserOptions = async (): Promise<void> => {
     localStorage.getItem(ACTIVE_SOURCE_KEY),
   )
 
-  byId("options-button").addEventListener("click", () => {
-    byId("options-status").textContent = ""
-    dialog.showModal()
-    dialog.querySelector(".dialog-body")?.scrollTo(0, 0)
-  })
-  try {
-    const response = await fetch("/api/mode", { cache: "no-store" })
-    if (response.ok) {
-      const mode = (await response.json()) as { mode: string }
-      available = mode.mode === "sqlite"
-    }
-  } catch {
-    /* The browser save remains available offline. */
-  }
+  const browserOnly = document.documentElement.dataset.saveHost === "browser"
+  available = await checkComputerSave(browserOnly)
   source = resolveSaveSource(
     localStorage.getItem(SOURCE_PREFERENCE_KEY),
     available,
     localStorage.getItem(ACTIVE_SOURCE_KEY),
   )
-  computer.disabled = available !== true
-  if (available === false && localStorage.getItem(SOURCE_PREFERENCE_KEY) === "sqlite")
-    localStorage.setItem(SOURCE_PREFERENCE_KEY, "browser")
-  byId("computer-availability").textContent =
-    available === true ? "AVAILABLE" : available === false ? "UNAVAILABLE" : "OFFLINE"
+  const describeAvailability = () => {
+    computer.disabled = available !== true
+    byId("computer-availability").textContent =
+      available === true ? "AVAILABLE" : available === false ? "UNAVAILABLE" : "OFFLINE"
+    byId("computer-connection-hint").textContent =
+      available === true
+        ? "Your computer companion is ready."
+        : browserOnly
+          ? "Use the local app on your computer to open its companion."
+          : available === false
+            ? "No computer companion found. Start one in Cursor or OpenCode."
+            : "Open Digital Pet on this computer, then try connecting again."
+    byId("computer-retry").hidden = browserOnly || available === true
+  }
+  describeAvailability()
 
   const describe = (level: ExperienceLevel): void => {
     description.textContent = descriptions[level]
@@ -114,6 +113,39 @@ export const initBrowserOptions = async (): Promise<void> => {
   }
   describe("high")
   await updateSource()
+  let checking: Promise<void> | undefined
+  const refreshAvailability = (): Promise<void> => {
+    if (checking) return checking
+    checking = (async () => {
+      const previous = available
+      available = await checkComputerSave(browserOnly)
+      describeAvailability()
+      const next = resolveSaveSource(
+        localStorage.getItem(SOURCE_PREFERENCE_KEY),
+        available,
+        localStorage.getItem(ACTIVE_SOURCE_KEY),
+      )
+      if (next !== source || previous !== available) {
+        source = next
+        await updateSource()
+      } else await refreshSettings()
+    })().finally(() => {
+      checking = undefined
+    })
+    return checking
+  }
+  byId("options-button").addEventListener("click", () => {
+    byId("options-status").textContent = ""
+    dialog.showModal()
+    dialog.querySelector(".dialog-body")?.scrollTo(0, 0)
+    void refreshAvailability()
+  })
+  byId("computer-retry").addEventListener("click", () => {
+    void refreshAvailability()
+  })
+  window.addEventListener("online", () => {
+    void refreshAvailability()
+  })
   window.addEventListener("storage", (event) => {
     if (event.key !== SOURCE_PREFERENCE_KEY) return
     source = resolveSaveSource(event.newValue, available, localStorage.getItem(ACTIVE_SOURCE_KEY))

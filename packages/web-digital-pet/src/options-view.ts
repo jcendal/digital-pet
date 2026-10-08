@@ -8,6 +8,7 @@ export const optionsMarkup = /* html */ `
     <section class="save-section"><h3>YOUR SAVE</h3>
       <div class="save-choices">
         <label class="save-choice"><input id="source-computer" type="radio" name="save-source" value="sqlite"><span class="save-card"><span class="save-card-head"><strong>COMPUTER SAVE</strong><small id="computer-availability" class="save-badge"></small></span><small class="save-description">Your companion from Cursor or OpenCode on this computer.</small></span></label>
+        <p id="computer-connection-hint" class="hint" aria-live="polite"></p><button id="computer-retry" class="utility" type="button" hidden>TRY CONNECTING AGAIN</button>
         <label class="save-choice"><input id="source-browser" type="radio" name="save-source" value="browser"><span class="save-card"><span class="save-card-head"><strong>THIS BROWSER</strong><small class="save-badge">ON DEVICE</small></span><small class="save-description">A separate companion that grows over time. Take it to your other devices.</small></span></label>
       </div>
       <p class="save-note"><span class="note-mark" aria-hidden="true"></span>Switching keeps both saves. Choice saved on this device.</p>

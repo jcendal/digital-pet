@@ -1,4 +1,10 @@
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
+import {
+  advanceFood,
+  feedingExperience,
+  scheduleFood,
+  type FoodState,
+} from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import {
   applyTokenProgress,
@@ -46,6 +52,12 @@ export type LocalPetState = {
   readonly worldVisit?: WorldVisit
   readonly experienceLevel?: ExperienceLevel
   readonly retiredPartners?: readonly LocalArchivedPartner[]
+  readonly food?: FoodState
+  readonly pendingEvolution?: {
+    readonly targetNodeId: string
+    readonly opponentNodeId: string | null
+    readonly readyAt: number
+  }
 }
 
 export const advanceLocalPet = (
@@ -53,47 +65,108 @@ export const advanceLocalPet = (
   now: number,
   selector: EvolutionSelector = Math.random,
 ): LocalPetState => {
+  const current = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
+  if (!current) throw new Error(`Unknown browser partner: ${initial.currentNodeId}`)
+  const food = advanceFood(initial.food, current.stage === 0, now)
+  if (food !== initial.food) {
+    const { food: _old, ...rest } = initial
+    initial = { ...rest, ...(food ? { food } : {}) }
+  }
+  if (initial.pendingEvolution || initial.isTerminal) return initial
   const ticks = Math.min(1000, Math.max(0, Math.floor((now - initial.lastTickAt) / EXPERIENCE_INTERVAL_MS)))
-  if (ticks === 0) return initial
-
-  let currentNodeId = initial.currentNodeId
-  let gauge = initial.gauge
-  let isTerminal = initial.isTerminal
-  const events = [...initial.events]
   const thresholds = experienceThresholds(initial.experienceLevel)
-
-  for (let index = 0; index < ticks && !isTerminal; index++) {
-    const current = DIGIMON_CATALOG.byId.get(currentNodeId)
-    if (!current) throw new Error(`Unknown browser partner: ${currentNodeId}`)
-    const amount = Math.ceil(STAGE_GAUGE_THRESHOLDS[current.stage] / TICKS_PER_STAGE)
-    let next = applyTokenProgress(
-      { current, gauge, isTerminal, pendingEvolutionTargetId: null, battleOpponentNodeId: null },
+  if (ticks === 0 && initial.gauge < thresholds[current.stage]) return initial
+  let gauge = initial.gauge
+  for (let index = 0; index < Math.max(1, ticks); index++) {
+    const amount =
+      gauge >= thresholds[current.stage] ? 0 : Math.ceil(STAGE_GAUGE_THRESHOLDS[current.stage] / TICKS_PER_STAGE)
+    const next = applyTokenProgress(
+      { current, gauge, isTerminal: false, pendingEvolutionTargetId: null, battleOpponentNodeId: null },
       amount,
       selector,
       DIGIMON_CATALOG.byId,
       DIGIMON_CATALOG.nodes,
       thresholds,
     )
-    if (next.pendingEvolutionTargetId !== null) next = resolveEvolutionBattle(next, true, DIGIMON_CATALOG.byId)
-    if (next.current.id !== currentNodeId) {
-      events.push({
-        currentNodeId: next.current.id,
-        createdAt: new Date(initial.lastTickAt + (index + 1) * EXPERIENCE_INTERVAL_MS).toISOString(),
-      })
+    const targetNodeId = next.pendingEvolutionTargetId ?? (next.current.id !== current.id ? next.current.id : null)
+    if (targetNodeId) {
+      return {
+        ...initial,
+        gauge: thresholds[current.stage],
+        lastTickAt: now,
+        pendingEvolution: { targetNodeId, opponentNodeId: next.battleOpponentNodeId, readyAt: now },
+      }
     }
-    currentNodeId = next.current.id
+    if (next.isTerminal) return { ...initial, gauge: 0, isTerminal: true, lastTickAt: now }
     gauge = next.gauge
-    isTerminal = next.isTerminal
   }
+  return { ...initial, gauge, lastTickAt: initial.lastTickAt + ticks * EXPERIENCE_INTERVAL_MS }
+}
 
+export const pendingEvolutionKey = (state: LocalPetState): string | null =>
+  state.pendingEvolution ? JSON.stringify([state.partnerId, state.currentNodeId, state.pendingEvolution]) : null
+
+/** Commit only the presentation that is still pending; waiting time earns no extra experience. */
+export const completeLocalEvolution = (
+  state: LocalPetState,
+  expectedKey: string,
+  won: boolean,
+  now: number,
+): LocalPetState => {
+  if (!state.pendingEvolution || pendingEvolutionKey(state) !== expectedKey) return state
+  const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+  const pending = state.pendingEvolution
+  const target = DIGIMON_CATALOG.byId.get(pending.targetNodeId)
+  if (!current || !target || !current.nextEvolutions.includes(target.id)) throw new Error("Invalid pending evolution")
+  if ((current.stage === 0) !== (pending.opponentNodeId === null)) throw new Error("Invalid pending evolution battle")
+  const resolved =
+    pending.opponentNodeId === null
+      ? { current: target, isTerminal: target.nextEvolutions.length === 0 }
+      : resolveEvolutionBattle(
+          {
+            current,
+            gauge: state.gauge,
+            isTerminal: false,
+            pendingEvolutionTargetId: target.id,
+            battleOpponentNodeId: pending.opponentNodeId,
+          },
+          won,
+          DIGIMON_CATALOG.byId,
+        )
+  const { pendingEvolution: _pending, ...rest } = state
   return {
-    ...initial,
-    currentNodeId,
-    gauge,
-    isTerminal,
-    lastTickAt: initial.lastTickAt + ticks * EXPERIENCE_INTERVAL_MS,
-    events,
+    ...rest,
+    currentNodeId: resolved.current.id,
+    gauge: 0,
+    isTerminal: resolved.isTerminal,
+    ...(resolved.current.id === current.id ? {} : { food: scheduleFood(now) }),
+    lastTickAt: now,
+    events:
+      resolved.current.id === current.id
+        ? state.events
+        : [...state.events, { currentNodeId: resolved.current.id, createdAt: new Date(now).toISOString() }],
   }
+}
+
+/** Called inside the save transaction: a second click cannot consume the same apple. */
+export const consumeLocalFood = (state: LocalPetState, expectedPartnerId: string, now: number): LocalPetState => {
+  const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+  if (
+    !current ||
+    current.stage === 0 ||
+    state.partnerId !== expectedPartnerId ||
+    state.pendingEvolution ||
+    state.food?.kind !== "available"
+  )
+    return state
+  const fed = {
+    ...state,
+    food: scheduleFood(now),
+    gauge: state.isTerminal
+      ? state.gauge
+      : feedingExperience(state.gauge, experienceThresholds(state.experienceLevel)[current.stage]),
+  }
+  return advanceLocalPet(fed, now)
 }
 
 export const beginNewPartner = (previous: LocalPetState, partnerId: string, now: number): LocalPetState => {

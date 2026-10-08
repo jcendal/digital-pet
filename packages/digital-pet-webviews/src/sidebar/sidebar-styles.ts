@@ -28,9 +28,8 @@ export const SIDEBAR_STYLES = /* css */ `
   .pet-actions button { min-height: 22px; padding: 2px 6px; color: var(--ink); font: inherit; font-size: 12px; line-height: 1.2; border: 1px solid var(--muted); border-radius: 0; background: transparent; cursor: pointer; }
   .pet-actions button:hover { color: var(--lcd); background: var(--ink); }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
-  .animating #content { grid-template-areas: "name" "art"; grid-template-rows: 26px 200px; }
+  .animating #content { grid-template-rows: 26px 200px 64px; }
   .animating .arena { height: 200px; }
-  .animating .progress { display: none; }
   .animating .pet-actions { border-top: 2px solid var(--muted); padding-top: 6px; }
   #empty { padding: 20px 0; font-size: 14px; }
   .no-partner #content { display: none; }

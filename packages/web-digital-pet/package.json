@@ -19,5 +19,17 @@
     "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
     "@jcendal/digital-pet-fields": "0.1.0-dev.0",
     "peerjs": "^1.5.5"
-  }
+  },
+  "description": "An installable Digimon virtual pet with browser saves, exploration and device pairing.",
+  "keywords": [
+    "pwa",
+    "web",
+    "digimon",
+    "virtual-pet",
+    "digital-pet",
+    "game",
+    "games",
+    "entertainment",
+    "vpet"
+  ]
 }

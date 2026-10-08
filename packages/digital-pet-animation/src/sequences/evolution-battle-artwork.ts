@@ -1,3 +1,4 @@
+import type { BattleOutcome, BattlePlan, BattleShot, BattleSide } from "@jcendal/digital-pet-core/domain/combat.ts"
 import type { MonsterFrameCatalog, MonsterFrameName } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 
 import {
@@ -5,7 +6,6 @@ import {
   BATTLE_SCORE_HIT_PIP,
   BATTLE_SCORE_MISS_PIP,
   EVOLUTION_BATTLE_HITS_TO_WIN,
-  EVOLUTION_BATTLE_MAX_SHOTS,
 } from "../constants/evolution-battle.ts"
 import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
 import {
@@ -42,8 +42,8 @@ const IMPACT_LINES = Object.freeze([" ▄█▄ ", " █▀█ ", " ▀▀▀ "]
 const IMPACT_ROWS = IMPACT_LINES.length
 const IMPACT_START_ROW = FIREBALL_START_ROW
 
-export type EvolutionBattleShooter = "player" | "opponent"
-export type EvolutionBattleOutcome = EvolutionBattleShooter
+export type EvolutionBattleShooter = BattleSide
+export type EvolutionBattleOutcome = BattleOutcome
 export type BattleSpritePose = "attack" | "injured" | "happy" | "idle"
 export type EvolutionBattleResultLabel = "hit" | "miss" | null
 
@@ -61,10 +61,7 @@ export type BattleFrameHud = {
 
 export type BattleFrameListener = (artwork: string, hud?: BattleFrameHud) => Promise<void>
 
-export type EvolutionBattleShot = {
-  readonly shooter: EvolutionBattleShooter
-  readonly hit: boolean
-}
+export type EvolutionBattleShot = BattleShot
 
 export type EvolutionBattleScene = {
   readonly shooter: EvolutionBattleShooter | null
@@ -184,57 +181,6 @@ const renderHudInGap = (gapRows: string[], scene: EvolutionBattleScene): void =>
   } else if (scene.lastResult !== null) {
     gapRows[MONSTER_FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.lastResult === "hit" ? "HIT!" : "MISS")
   }
-}
-
-const hitsFor = (shooter: EvolutionBattleShooter, playerHits: number, opponentHits: number): number =>
-  shooter === "player" ? playerHits : opponentHits
-
-const rollShotHit = (
-  outcome: EvolutionBattleOutcome,
-  shooter: EvolutionBattleShooter,
-  playerHits: number,
-  opponentHits: number,
-  random: () => number,
-): boolean => {
-  const winner = outcome
-  const loser = outcome === "player" ? "opponent" : "player"
-  const winnerHits = hitsFor(winner, playerHits, opponentHits)
-  const loserHits = hitsFor(loser, playerHits, opponentHits)
-
-  if (shooter === winner) {
-    if (winnerHits === EVOLUTION_BATTLE_HITS_TO_WIN - 1) return true
-    if (loserHits === EVOLUTION_BATTLE_HITS_TO_WIN - 1) return true
-    return random() < 0.65
-  }
-
-  if (loserHits === EVOLUTION_BATTLE_HITS_TO_WIN - 1) return false
-  return random() < 0.45
-}
-
-export const planEvolutionBattle = (
-  outcome: EvolutionBattleOutcome,
-  random: () => number = Math.random,
-): readonly EvolutionBattleShot[] => {
-  const shots: EvolutionBattleShot[] = []
-  let playerHits = 0
-  let opponentHits = 0
-  let shooter: EvolutionBattleShooter = "player"
-
-  while (
-    playerHits < EVOLUTION_BATTLE_HITS_TO_WIN &&
-    opponentHits < EVOLUTION_BATTLE_HITS_TO_WIN &&
-    shots.length < EVOLUTION_BATTLE_MAX_SHOTS
-  ) {
-    const hit = rollShotHit(outcome, shooter, playerHits, opponentHits, random)
-    shots.push({ shooter, hit })
-    if (hit) {
-      if (shooter === "player") playerHits += 1
-      else opponentHits += 1
-    }
-    shooter = shooter === "player" ? "opponent" : "player"
-  }
-
-  return shots
 }
 
 export const defaultBattleScene = (overrides: Partial<EvolutionBattleScene> = {}): EvolutionBattleScene => ({
@@ -450,11 +396,11 @@ const animateOutcome = async (
       defaultBattleScene({
         playerHits,
         opponentHits,
-        playerPose: playerWon ? winnerPose : loserBlink,
-        opponentPose: playerWon ? loserBlink : winnerPose,
+        playerPose: outcome === "draw" ? "idle" : playerWon ? winnerPose : loserBlink,
+        opponentPose: outcome === "draw" ? "idle" : playerWon ? loserBlink : winnerPose,
         playerInjuredAlt: !playerWon && tick % 2 === 1,
         opponentInjuredAlt: playerWon && tick % 2 === 1,
-        outcomeLabel: playerWon ? "WIN!" : "LOSE!",
+        outcomeLabel: outcome === "draw" ? "DRAW!" : playerWon ? "WIN!" : "LOSE!",
       }),
       onFrame,
     )
@@ -467,13 +413,12 @@ export const runEvolutionBattleAnimation = async (
   playerSprite: string,
   opponentSprite: string,
   viewportWidth: number,
-  outcome: EvolutionBattleOutcome,
+  plan: BattlePlan,
   onFrame: BattleFrameListener,
-  random: () => number = Math.random,
 ): Promise<EvolutionBattleOutcome> => {
   await animateBattleIntro(viewportWidth, onFrame)
 
-  const shots = planEvolutionBattle(outcome, random)
+  const { shots, outcome } = plan
   let playerHits = 0
   let opponentHits = 0
 
