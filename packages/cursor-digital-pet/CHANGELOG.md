@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-09
+
+### Changed
+
+- Feat/gameplay combat evolution feeding
+
+
 ## [0.6.0] - 2026-10-07
 
 ### Changed
