@@ -13,6 +13,13 @@ const development = process.argv.includes("--development") || process.argv.inclu
 await rm(distDirectory, { recursive: true, force: true })
 await mkdir(distDirectory, { recursive: true })
 await copyFile(wasmSource, resolve(distDirectory, "sql-wasm.wasm"))
+const fontsDirectory = resolve(distDirectory, "assets/fonts")
+const iconsDirectory = resolve(distDirectory, "assets/icons")
+await mkdir(fontsDirectory, { recursive: true })
+await mkdir(iconsDirectory, { recursive: true })
+for (const name of ["Silkscreen-Regular.ttf", "OFL.txt"])
+  await copyFile(require.resolve(`@jcendal/digital-pet-webviews/assets/fonts/${name}`), resolve(fontsDirectory, name))
+await copyFile(resolve(packageRoot, "../../assets/branding/logo.png"), resolve(iconsDirectory, "logo.png"))
 
 const options = {
   entryPoints: [resolve(packageRoot, "src/extension.ts")],

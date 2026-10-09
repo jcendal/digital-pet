@@ -12,18 +12,29 @@ export const worldMarkup = (photos: readonly string[]) => /* html */ `
   <p id="world-status" class="dialog-feedback" role="status" aria-live="polite"></p>
 </dialog>`
 
-export const renderWorldOverview = (registered: ReadonlySet<string>, visit: WorldVisit): string => `
+const defaultSceneUrl = (locationId: string): string => `/regions/${locationId}/scene.svg`
+
+export const renderWorldOverview = (
+  registered: ReadonlySet<string>,
+  visit: WorldVisit,
+  sceneUrl = defaultSceneUrl,
+): string => `
 <p class="world-intro">Choose a place to explore with your companion.</p>
 <div class="world-grid">${REGIONS.map((region) => {
   const field = getField(region)
   const progress = getRegionProgress(region.id, registered)
   return `<button class="region-card" type="button" data-region="${region.id}" aria-label="Explore ${escapeHtml(region.name)}">
-    <img src="/regions/${region.defaultLocationId}/scene.svg" alt="" width="160" height="160">
+    <img src="${escapeHtml(sceneUrl(region.defaultLocationId))}" alt="" width="160" height="160">
     <span class="region-card-meta">${field.code}${visit.regionId === region.id ? '<span class="world-here">HERE</span>' : ""}</span>
     <strong>${escapeHtml(region.name)}</strong><small>${progress.registered} / ${progress.total} REGISTERED</small></button>`
 }).join("")}</div>`
 
-export const renderWorldRegion = (region: Region, model: WorldPanelModel, visit: WorldVisit): string => {
+export const renderWorldRegion = (
+  region: Region,
+  model: WorldPanelModel,
+  visit: WorldVisit,
+  sceneUrl = defaultSceneUrl,
+): string => {
   const field = getField(region)
   const locations = getRegionLocations(region.id)
   const selected = locations.find((location) => location.id === visit.locationId) ?? locations[0]!
@@ -36,7 +47,7 @@ export const renderWorldRegion = (region: Region, model: WorldPanelModel, visit:
       .join("")
   const remaining = model.residents.length - 5
   return `<button class="world-back text-action" type="button" data-world-back>← ALL REGIONS</button>
-    <div class="world-preview"><img id="world-preview-image" src="/regions/${selected.id}/scene.svg" alt="${escapeHtml(selected.name)} pixel landscape"><span>${escapeHtml(field.name)}</span></div>
+    <div class="world-preview"><img id="world-preview-image" src="${escapeHtml(sceneUrl(selected.id))}" alt="${escapeHtml(selected.name)} pixel landscape"><span>${escapeHtml(field.name)}</span></div>
     <h3 class="region-title">${escapeHtml(region.name)}</h3><p class="section-description">${escapeHtml(region.description)}</p>
     <p class="setting-caption">${escapeHtml(field.description)}</p>
     <div class="world-locations" role="group" aria-label="Locations">${locations.map((location) => `<button type="button" data-location="${location.id}" aria-pressed="${location.id === selected.id}">${escapeHtml(location.name)}</button>`).join("")}</div>

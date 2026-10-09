@@ -105,12 +105,12 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "dist", "assets")],
     }
 
     webviewView.webview.html = buildSidebarWebviewHtml(String(Date.now()), {
       fontUri: webviewView.webview
-        .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "media", "fonts", "Silkscreen-Regular.ttf"))
+        .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "dist", "assets", "fonts", "Silkscreen-Regular.ttf"))
         .toString(),
       cspSource: webviewView.webview.cspSource,
     })

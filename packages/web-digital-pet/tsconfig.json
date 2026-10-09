@@ -13,5 +13,6 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src", "../../types/web-assets.d.ts"]
+  "include": ["src", "../../types/web-assets.d.ts"],
+  "exclude": ["src/worker/service-worker.ts"]
 }

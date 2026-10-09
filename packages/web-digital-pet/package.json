@@ -3,23 +3,6 @@
   "version": "0.1.1-dev.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=24.11.0"
-  },
-  "scripts": {
-    "build": "node esbuild.mjs",
-    "build:static": "npm run build && node scripts/export-static.mjs",
-    "start": "node dist/server.js",
-    "check": "tsc --noEmit -p tsconfig.json",
-    "test": "bun test tests"
-  },
-  "dependencies": {
-    "@jcendal/digital-pet-animation": "0.2.0-dev.0",
-    "@jcendal/digital-pet-core": "0.2.0-dev.0",
-    "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
-    "@jcendal/digital-pet-fields": "0.1.0-dev.0",
-    "peerjs": "^1.5.5"
-  },
   "description": "An installable Digimon virtual pet with browser saves, exploration and device pairing.",
   "keywords": [
     "pwa",
@@ -31,5 +14,35 @@
     "games",
     "entertainment",
     "vpet"
-  ]
+  ],
+  "scripts": {
+    "build": "vite build --ssr && vite build",
+    "build:static": "npm run build && node scripts/export-static.mjs",
+    "start": "node dist/server.js",
+    "check": "npm run check:architecture && tsc --noEmit -p tsconfig.client.json && tsc --noEmit -p tsconfig.server.json && tsc --noEmit -p tsconfig.worker.json",
+    "test": "bun test ./tests/unit",
+    "dev": "node scripts/dev.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:browser": "npm run build:static && playwright test",
+    "check:architecture": "node tooling/check-boundaries.mjs"
+  },
+  "dependencies": {
+    "@jcendal/digital-pet-animation": "0.2.0-dev.0",
+    "@jcendal/digital-pet-core": "0.2.0-dev.0",
+    "@jcendal/digital-pet-fields": "0.1.0-dev.0",
+    "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
+    "peerjs": "^1.5.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "vite": "8.3.4",
+    "vite-plugin-pwa": "2.0.0",
+    "workbox-core": "7.4.1",
+    "workbox-precaching": "7.4.1",
+    "workbox-routing": "7.4.1",
+    "workbox-strategies": "7.4.1"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  }
 }

@@ -29,7 +29,7 @@
     "entertainment",
     "vpet"
   ],
-  "icon": "icon.png",
+  "icon": "dist/assets/icons/logo.png",
   "galleryBanner": {
     "color": "#1a1a2e",
     "theme": "dark"

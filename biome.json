@@ -12,6 +12,8 @@
       "!packages/**/dist",
       "!packages/**/dist-static",
       "!packages/**/build",
+      "!packages/**/test-results",
+      "!packages/**/playwright-report",
       "!packages/cursor-digital-pet/hook-bridge.js",
       "!packages/digital-pet-core/src/data/monster-frame-data.ts",
       "!tests/**/*.jsonc",

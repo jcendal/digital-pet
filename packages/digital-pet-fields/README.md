@@ -43,7 +43,7 @@ Coverage tests fail when a catalog record lacks a habitat or a roster references
 
 ## Add background images
 
-Put the supplied PNG in `assets/backgrounds/` using the filename above, then restart the web server. Available files are detected at startup. The web background uses the image when present and the location's atmosphere gradient otherwise. No changes to application logic are needed. The lake's old web URL remains supported.
+Put the supplied PNG in `assets/backgrounds/` using the filename above, then rebuild the web app. Available files are included by the Vite resource inventory. The web background uses the image when present and the location's atmosphere gradient otherwise. No changes to application logic are needed.
 
 Pixel landscapes live in `assets/scenes/<scene>.svg`. Keep the `160 × 160` viewBox, crisp square pixels, and muted LCD palette. Leave the center open for the animated companion. Multiple locations can reuse a scene, or add a new SceneId and SVG for a distinct environment.
 

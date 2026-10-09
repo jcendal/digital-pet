@@ -2,7 +2,7 @@
 <center>
   <p align="center" style="text-align: center;">
     <img
-      src="https://raw.githubusercontent.com/jcendal/digital-pet/main/_images/logo.png"
+      src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/branding/logo.png"
       alt="Web Digital Pet logo"
       width="160"
       style="display: block; margin: 0 auto; image-rendering: pixelated"
@@ -41,10 +41,10 @@
 
 <div align="center" style="text-align: center;">
 <center>
-<p><img src="images/partner-desktop.jpg" alt="Web Digital Pet with Greymon, green LCD, bottom navigation, and Digital World lake background" width="70%" /></p>
+<p><img src="assets/screenshots/partner-desktop.jpg" alt="Web Digital Pet with Greymon, green LCD, bottom navigation, and Digital World lake background" width="70%" /></p>
 <p style="white-space: nowrap;">
-<img src="images/digidex.jpg" alt="Digidex with Algomon selected, pixel artwork, and registered catalog entries" width="31%" />
-<img src="images/history.jpg" alt="Generation history with the current Greymon partner and previous generations" width="31%" />
+<img src="assets/screenshots/digidex.jpg" alt="Digidex with Algomon selected, pixel artwork, and registered catalog entries" width="31%" />
+<img src="assets/screenshots/history.jpg" alt="Generation history with the current Greymon partner and previous generations" width="31%" />
 </p>
 </center>
 </div>
@@ -139,15 +139,13 @@ Open **OPTIONS → YOUR WORLD → EXPLORE REGIONS**, or select the place name ab
 Each place has its own LCD pixel landscape. While your companion walks, the landscape drifts slowly in the same direction; it pauses during other actions. Reflected copies keep the edges continuous. **OPTIONS → YOUR WORLD → MOVING LANDSCAPE** turns the effect on or off for this device. It follows the device’s reduced motion preference until you choose a setting. The guide shows public species names and artwork, with a registration marker and Dex shortcut for species already in your save. Counts reflect your history; visiting does not register species or change evolution rules. All 650 catalog records have at least one habitat, combining reference Fields with explicit thematic choices where references are missing. Habitats can overlap between regions. The guide shows **five cards initially**; use the arrow below them to reveal the remaining inhabitants. The arrow disappears when expanded. See the [habitat catalog notes](../digital-pet-fields/README.md) for sources and classification details.
 
 <div align="center">
-  <img src="images/regions.jpg" alt="LCD region selector with pixel landscape cards and registration counts" width="70%" />
-  <img src="images/regions-mobile.jpg" alt="Region selector fitted to a 375 px phone screen" width="31%" />
-  <img src="images/habitat-guide-mobile.jpg" alt="Habitat Guide showing five Digimon and an arrow to reveal 93 more inhabitants" width="31%" />
-  <img src="images/partner-region.jpg" alt="Animated partner with its current location and pixel landscape" width="70%" />
+  <img src="assets/screenshots/regions.jpg" alt="LCD region selector with pixel landscape cards and registration counts" width="70%" />
+  <img src="assets/screenshots/regions-mobile.jpg" alt="Region selector fitted to a 375 px phone screen" width="31%" />
+  <img src="assets/screenshots/habitat-guide-mobile.jpg" alt="Habitat Guide showing five Digimon and an arrow to reveal 93 more inhabitants" width="31%" />
+  <img src="assets/screenshots/partner-region.jpg" alt="Animated partner with its current location and pixel landscape" width="70%" />
 </div>
 
 Travel is available for both saves. The browser destination travels with its save during Pair / Sync and remains when starting a new egg. The computer destination is a separate web preference, without changing SQLite. The four future Fields are documented but inactive.
-
-Only Dragon Eye Lake currently has a large page illustration. Other places use atmosphere colors until their images are supplied. Add the named PNG files in [`digital-pet-fields/assets/backgrounds`](../digital-pet-fields/assets/backgrounds) and restart the server; see the [Fields package guide](../digital-pet-fields/README.md#add-background-images). All eleven LCD scenes are cached for offline use; supplied photos are cached after they are viewed.
 
 ---
 
@@ -196,7 +194,7 @@ The package ships a web app manifest, favicons, standard and maskable icons, and
 Keep the app **open and online** on both devices, with **OPTIONS → THIS BROWSER** selected. Computer saves are not transferred.
 
 <div align="center">
-  <img src="images/device-transfer.jpg" alt="Device transfer dialog with this device's code and a field to request another device's save" width="70%" />
+  <img src="assets/screenshots/device-transfer.jpg" alt="Device transfer dialog with this device's code and a field to request another device's save" width="70%" />
 </div>
 
 1. On device **B**, open **OPTIONS → PAIR DEVICES** and copy its device code.
@@ -218,8 +216,8 @@ Each transfer replaces the receiving device's browser save and keeps a backup. *
 ### In-app options
 
 <div align="center">
-  <img src="images/options.jpg" alt="Options panel with computer or browser save choice and evolution experience slider" width="70%" />
-  <img src="images/manual-sync.jpg" alt="Paired browser companion options with new egg and manual Sync" width="70%" />
+  <img src="assets/screenshots/options.jpg" alt="Options panel with computer or browser save choice and evolution experience slider" width="70%" />
+  <img src="assets/screenshots/manual-sync.jpg" alt="Paired browser companion options with new egg and manual Sync" width="70%" />
 </div>
 
 **OPTIONS** opens a scrollable overlay from any section. Browser companion options are enabled when **THIS BROWSER** is selected:

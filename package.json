@@ -19,7 +19,7 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "imports:fix": "biome check --write --formatter-enabled=false --linter-enabled=false .",
-    "check": "biome ci . && node scripts/check-workspace-dependencies.mjs && npm run typecheck",
+    "check": "biome ci . && node scripts/check-workspace-dependencies.mjs && npm run check:assets && npm run typecheck",
     "typecheck": "npm run typecheck:release-metadata && npm run typecheck --workspace @jcendal/digital-pet-core && npm run typecheck --workspace @jcendal/digital-pet-fields && npm run typecheck --workspace @jcendal/digital-pet-animation && npm run typecheck --workspace @jcendal/digital-pet-webviews && npm run check --workspace @jcendal/opencode-digital-pet && npm run check --workspace cursor-digital-pet && npm run check --workspace @jcendal/web-digital-pet",
     "validate": "npm run check && npm run test && npm run build",
     "build": "npm run build --workspace @jcendal/opencode-digital-pet && npm run build --workspace cursor-digital-pet && npm run build --workspace @jcendal/web-digital-pet",
@@ -27,7 +27,8 @@
     "pack:opencode": "npm pack --workspace @jcendal/opencode-digital-pet",
     "release:check": "npm run release:check --workspace @jcendal/opencode-digital-pet",
     "release-metadata": "node --experimental-strip-types scripts/release-metadata.ts",
-    "typecheck:release-metadata": "tsc -p tsconfig.release-metadata.json --noEmit"
+    "typecheck:release-metadata": "tsc -p tsconfig.release-metadata.json --noEmit",
+    "check:assets": "node scripts/check-assets.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",

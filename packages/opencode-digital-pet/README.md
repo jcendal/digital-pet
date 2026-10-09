@@ -1,6 +1,6 @@
 <div align="center">
   <img 
-    src="https://raw.githubusercontent.com/jcendal/digital-pet/main/_images/logo.png" 
+    src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/branding/logo.png"
     alt="OpenCode Digital Pet logo" 
     width="160" 
     style="image-rendering: pixelated"
@@ -29,7 +29,7 @@
 
 <div align="center">
   <img 
-    src="https://raw.githubusercontent.com/jcendal/digital-pet/main/_images/digital-pet-overview.png" 
+    src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/screenshots/digital-pet-overview.png"
     alt="Illustrative OpenCode Digital Pet overview" 
     width="100%" 
   >

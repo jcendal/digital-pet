@@ -60,6 +60,6 @@ export const buildPanelWebviewHtml = <T>(
     <footer class="footer"><span>VPET · DATA ARCHIVE</span><span id="archive-status" class="archive-status">LOCAL ARCHIVE</span><span class="case-dots" aria-hidden="true">▪▪▪</span></footer>
   </main>
   <script id="${escapeHtml(document.dataId)}" type="application/json" nonce="${escapeHtml(nonce)}">${data}</script>
-  <script nonce="${escapeHtml(nonce)}">${document.script}</script>
+  <script${resources.moduleClient ? ' type="module"' : ""} nonce="${escapeHtml(nonce)}">${document.script}</script>
 </body></html>`
 }

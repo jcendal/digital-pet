@@ -1,6 +1,6 @@
 import type { FieldId } from "../domain/world.ts"
 import { FIELD_IDS } from "../domain/world.ts"
-import reference from "./field-reference.json"
+import reference from "./field-reference.json" with { type: "json" }
 import { HABITAT_FALLBACKS } from "./habitat-fallbacks.ts"
 
 // Preserve the original game habitats alongside the reference Fields.

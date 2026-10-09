@@ -6,6 +6,8 @@ dist/
 dist-static/
 packages/opencode-digital-pet/build/
 coverage/
+test-results/
+playwright-report/
 .turbo/
 *.tsbuildinfo
 

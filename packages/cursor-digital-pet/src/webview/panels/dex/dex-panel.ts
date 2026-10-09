@@ -35,10 +35,10 @@ export const openDexPanel = async (
     return
   }
   let model = buildDexPanelModel(archive, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
-  const mediaRoot = vscode.Uri.joinPath(context.extensionUri, "media")
+  const assetsRoot = vscode.Uri.joinPath(context.extensionUri, "dist", "assets")
   const panel = vscode.window.createWebviewPanel("cursorDigitalPetDex", "Digital Pet Digidex", vscode.ViewColumn.One, {
     enableScripts: true,
-    localResourceRoots: [mediaRoot],
+    localResourceRoots: [assetsRoot],
   })
   let disposed = false
   let pendingSelection = selectedId
@@ -83,7 +83,7 @@ export const openDexPanel = async (
   panels.set(databasePath, { panel, refresh })
   panel.webview.html = buildDexWebviewHtml(model, {
     nonce: randomBytes(16).toString("hex"),
-    fontUri: panel.webview.asWebviewUri(vscode.Uri.joinPath(mediaRoot, "fonts", "Silkscreen-Regular.ttf")).toString(),
+    fontUri: panel.webview.asWebviewUri(vscode.Uri.joinPath(assetsRoot, "fonts", "Silkscreen-Regular.ttf")).toString(),
     cspSource: panel.webview.cspSource,
   })
   context.subscriptions.push(panel)

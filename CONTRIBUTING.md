@@ -86,10 +86,10 @@ import styles from "./panel-styles.css" with { type: "text" }
 import script from "./sidebar-client.browser.js" with { type: "text" }
 ```
 
-Bun supports these imports in tests, and esbuild embeds the text in the production
-bundle. `types/web-assets.d.ts` supplies their TypeScript declarations; any new
+Bun supports these imports in tests. esbuild embeds them in extension bundles;
+the web Vite configuration translates them to raw imports. Web-only browser entry
+points use normal module imports, and their CSS is processed by Vite. `types/web-assets.d.ts` supplies their TypeScript declarations; any new
 workspace that consumes these renderers must include that file in its tsconfig.
-No runtime filesystem loader or extra copied source assets are needed.
 
 Keep executable logic out of TypeScript template strings. A small renderer glue
 string may call a browser initializer with JSON-serialized runtime configuration.

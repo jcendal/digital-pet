@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="_images/logo.png" alt="Digital Pet logo" width="160" style="image-rendering: pixelated">
+  <img src="assets/branding/logo.png" alt="Digital Pet logo" width="160" style="image-rendering: pixelated">
   <h1>Digital Pet</h1>
   <p>A Digimon virtual pet that evolves with AI token usage in Cursor and OpenCode, with a local web companion.</p>
 </div>
@@ -14,7 +14,7 @@ Digital Pet has a Cursor extension, an OpenCode plugin, and a local web companio
 | [OpenCode Digital Pet](packages/opencode-digital-pet/README.md) | Adds a TUI sidebar and `/digital-pet-*` commands; completed assistant messages provide experience. | Run `npx @jcendal/opencode-digital-pet init`, restart OpenCode, then run `/digital-pet-spawn`. See the [OpenCode guide](packages/opencode-digital-pet/README.md#quick-start). |
 | [Web Digital Pet](packages/web-digital-pet/README.md) | Shows the animated partner, Digidex, and generation history in a phone-width browser layout. | Run `npm run web`, then open `http://localhost:4173`. [AWS deployment guide](docs/web-deployment.md). |
 
-The [illustrative OpenCode preview](_images/digital-pet-overview.png) shows the partner, Dex, and history views. Each app's README describes its own commands, requirements, settings, and storage behavior.
+The [illustrative OpenCode preview](assets/screenshots/digital-pet-overview.png) shows the partner, Dex, and history views. Each app's README describes its own commands, requirements, settings, and storage behavior.
 
 ## Shared progress and migration
 
