@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 
-import { dispatchSelectedReleases, type DispatchOptions } from "../../../scripts/dispatch-merged-releases.ts"
+import { type DispatchOptions, dispatchSelectedReleases } from "../../../scripts/dispatch-merged-releases.ts"
 
 const options: DispatchOptions = {
   repository: "jcendal/digital-pet",

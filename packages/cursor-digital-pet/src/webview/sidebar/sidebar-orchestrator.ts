@@ -1,11 +1,11 @@
+import { runEvolutionBattleSession } from "@jcendal/digital-pet-animation/sessions/evolution-battle-session.ts"
+import { runEvolutionRevealSession } from "@jcendal/digital-pet-animation/sessions/evolution-reveal-session.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { UsageEvolutionTransition } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { runEvolutionBattleSession } from "@jcendal/digital-pet-animation/sessions/evolution-battle-session.ts"
-import { runEvolutionRevealSession } from "@jcendal/digital-pet-animation/sessions/evolution-reveal-session.ts"
 
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../adapters/vscode/notification-port.ts"

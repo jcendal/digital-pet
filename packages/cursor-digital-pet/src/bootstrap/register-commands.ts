@@ -1,10 +1,9 @@
 import { join } from "node:path"
-import * as vscode from "vscode"
-
 import { freezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/freeze-digital-pet.ts"
 import { setDigitalPetCheatNode } from "@jcendal/digital-pet-core/application/use-cases/set-digital-pet-cheat-node.ts"
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
 import { unfreezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/unfreeze-digital-pet.ts"
+import * as vscode from "vscode"
 
 import { installDigitalPetHooks, uninstallDigitalPetHooks } from "../adapters/cursor/install-hooks.ts"
 import { openDexPanel } from "../webview/panels/dex/dex-panel.ts"

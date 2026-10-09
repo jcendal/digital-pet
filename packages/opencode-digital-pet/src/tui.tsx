@@ -1,39 +1,38 @@
-import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
-/** @jsxImportSource @opentui/solid */
-import type { PluginOptions } from "@opencode-ai/plugin"
-import type { EventMessagePartUpdated, EventMessageUpdated, EventSessionStatus } from "@opencode-ai/sdk/v2"
-import type { TuiPlugin, TuiDialogProps, TuiDialogStack, TuiTheme, TuiKeymap } from "@opencode-ai/plugin/tui"
-import type { JSX } from "@opentui/solid"
-import { createSignal } from "solid-js"
-
-import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
-import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
-import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
-import { getSidebarCardInputs } from "@jcendal/digital-pet-core/application/use-cases/get-sidebar-card-inputs.ts"
-import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
-import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
-import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { buildSidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
 import {
   MonsterAnimationController,
   type MonsterAnimationOutput,
 } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { runEvolutionBattleSession } from "@jcendal/digital-pet-animation/sessions/evolution-battle-session.ts"
 import { runEvolutionRevealSession } from "@jcendal/digital-pet-animation/sessions/evolution-reveal-session.ts"
+import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
+import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
+import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
+import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
+import { getSidebarCardInputs } from "@jcendal/digital-pet-core/application/use-cases/get-sidebar-card-inputs.ts"
+import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
+import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { buildSidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
+/** @jsxImportSource @opentui/solid */
+import type { PluginOptions } from "@opencode-ai/plugin"
+import type { TuiDialogProps, TuiDialogStack, TuiKeymap, TuiPlugin, TuiTheme } from "@opencode-ai/plugin/tui"
+import type { EventMessagePartUpdated, EventMessageUpdated, EventSessionStatus } from "@opencode-ai/sdk/v2"
+import type { JSX } from "@opentui/solid"
+import { createSignal } from "solid-js"
 
 import {
-  formatDigitalPetToast,
   type DigitalPetToastEvent,
   type DigitalPetToastNotifier,
+  formatDigitalPetToast,
 } from "./adapters/opencode/digital-pet-toast.ts"
-import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteDigitalPetArchiveReader } from "./adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { createSqliteDigitalPetRepository } from "./adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { loadGlobalDigitalPetSettings } from "./config/global-digital-pet-settings.ts"
-import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
-import { DigitalPetSidebarCard } from "./tui/sidebar-card.tsx"
 import { registerDigitalPetCommandLayer } from "./tui/digital-pet-command-layer.tsx"
+import { DigitalPetSidebarCard } from "./tui/sidebar-card.tsx"
+import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
 
 const VISUAL_INTERVAL_MS = 500
 const DEFAULT_BATTLE_ARTWORK_WIDTH = 80

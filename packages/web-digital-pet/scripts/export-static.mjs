@@ -1,7 +1,10 @@
-import { dirname, resolve } from "node:path"
+import { cp, mkdir, rm } from "node:fs/promises"
+import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
-process.env.DIGITAL_PET_STATIC_EXPORT = "1"
-process.env.DIGITAL_PET_DATABASE_PATH = resolve(packageRoot, "dist-static", ".no-host-database")
-await import("../dist/server.js")
+const root = fileURLToPath(new URL("..", import.meta.url))
+const output = resolve(root, "dist-static")
+await rm(output, { recursive: true, force: true })
+await mkdir(output, { recursive: true })
+await cp(resolve(root, "dist/client"), output, { recursive: true, filter: (path) => !path.includes("/.vite") })
+console.log(`Static Digital Pet exported to ${output}`)

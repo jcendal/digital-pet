@@ -1,4 +1,4 @@
-import type { ResolvedDigitalPetSettings, StageLabels, StageThresholdSettings, DigitalPetStageLabels } from "./types.ts"
+import type { DigitalPetStageLabels, ResolvedDigitalPetSettings, StageLabels, StageThresholdSettings } from "./types.ts"
 
 const EN_STAGE_LABELS = Object.freeze({
   egg: "DigiEgg",

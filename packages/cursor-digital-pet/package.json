@@ -23,12 +23,13 @@
     "digital-pet",
     "virtual-pet",
     "digimon",
-    "agent",
-    "ai",
     "sidebar",
-    "opencode"
+    "game",
+    "games",
+    "entertainment",
+    "vpet"
   ],
-  "icon": "icon.png",
+  "icon": "dist/assets/icons/logo.png",
   "galleryBanner": {
     "color": "#1a1a2e",
     "theme": "dark"
@@ -39,6 +40,9 @@
     "bun": "1.3.5"
   },
   "categories": [
+    "Visualization",
+    "Game",
+    "Pet",
     "Other"
   ],
   "activationEvents": [
@@ -125,6 +129,7 @@
   },
   "scripts": {
     "build": "node esbuild.mjs",
+    "build:dev": "node esbuild.mjs --development",
     "watch": "node esbuild.mjs --watch",
     "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "bun test",

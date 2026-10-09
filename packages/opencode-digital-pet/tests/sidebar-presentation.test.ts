@@ -1,15 +1,14 @@
 import { describe, expect, test } from "bun:test"
-import { testRender } from "@opentui/solid"
-import { createSignal } from "solid-js"
-
-import type { SidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
-import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import {
   buildBattleScoreRow,
   defaultBattleScene,
   renderEvolutionBattleArtwork,
 } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
+import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { SidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
+import { testRender } from "@opentui/solid"
+import { createSignal } from "solid-js"
 import { DigitalPetSidebarCard } from "../src/tui/sidebar-card.tsx"
 
 const partner: SidebarCardModel = {

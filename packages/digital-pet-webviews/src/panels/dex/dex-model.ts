@@ -2,8 +2,8 @@ import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/applicat
 import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { getStageLabel } from "@jcendal/digital-pet-core/data/stages.ts"
+import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 
 import { artworkToPixelPath } from "../../shared/pixel-artwork.ts"
@@ -21,6 +21,7 @@ export type DexEntry = {
   readonly firstSeen: string | null
   readonly generations: number
   readonly url: string
+  readonly combatStats: { readonly strength: number; readonly evasion: number } | null
 }
 
 export type DexPanelModel = {
@@ -93,6 +94,7 @@ export const buildDexPanelModel = (
         firstSeen: seen?.firstSeen ?? null,
         generations: seen?.partners.size ?? 0,
         url: row.discovered ? node.url : "",
+        combatStats: row.discovered ? node.combatStats : null,
       }
     }),
   }

@@ -1,8 +1,8 @@
-import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { getStageLabel } from "@jcendal/digital-pet-core/data/stages.ts"
+import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import { getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
 import { artworkToCenteredPixelArt } from "../../shared/pixel-artwork.ts"
 

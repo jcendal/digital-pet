@@ -1,5 +1,4 @@
 /** @jsxImportSource @opentui/solid */
-import type { TuiDialogStack, TuiKeymap, TuiTheme } from "@opencode-ai/plugin/tui"
 
 import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
@@ -7,6 +6,7 @@ import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/confi
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 import { buildHistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
+import type { TuiDialogStack, TuiKeymap, TuiTheme } from "@opencode-ai/plugin/tui"
 import { DigitalPetDexDialog } from "./digital-pet-dex-dialog.tsx"
 import { DigitalPetHistoryDialog } from "./digital-pet-history-dialog.tsx"
 

@@ -7,9 +7,8 @@ import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/sp
 import { unfreezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/unfreeze-digital-pet.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
-
-import { createSqliteSidebarSnapshotReader } from "../../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { createSqliteSidebarSnapshotReader } from "../../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { applyTokenUsage, createTempTestRoot, removeTempTestRoot, type TempTestRoot } from "./persistence-fixtures.ts"
 
 let tempRoot: TempTestRoot | undefined

@@ -21,7 +21,12 @@
     "plugin",
     "virtual-pet",
     "digital-pet",
-    "tui"
+    "tui",
+    "digimon",
+    "game",
+    "games",
+    "entertainment",
+    "vpet"
   ],
   "publishConfig": {
     "access": "public"

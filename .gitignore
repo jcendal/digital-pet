@@ -6,11 +6,17 @@ dist/
 dist-static/
 packages/opencode-digital-pet/build/
 coverage/
+test-results/
+playwright-report/
 .turbo/
 *.tsbuildinfo
 
 # Editor and OS files
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .DS_Store
 Thumbs.db
 
@@ -28,7 +34,8 @@ Thumbs.db
 *.p12
 
 # Local user data and logs
-.cursor/
+.cursor/*
+!.cursor/rules/
 .opencode/
 *.db
 *.db-*

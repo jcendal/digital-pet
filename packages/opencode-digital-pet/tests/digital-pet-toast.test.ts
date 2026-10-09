@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test"
-
+import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import {
   createBestEffortDigitalPetToastNotifier,
-  formatDigitalPetToast,
   type DigitalPetToastPayload,
+  formatDigitalPetToast,
 } from "../src/adapters/opencode/digital-pet-toast.ts"
-import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 
 const nodes = [
   {
@@ -16,6 +15,7 @@ const nodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/digitama",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "1-001",
@@ -25,6 +25,7 @@ const nodes = [
     sprite: "koromon",
     stage: 1,
     url: "https://example.test/koromon",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const
 

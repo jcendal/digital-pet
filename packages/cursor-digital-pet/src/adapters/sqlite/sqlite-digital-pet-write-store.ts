@@ -3,18 +3,18 @@ import { createSqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adap
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
-import { readSidebarSnapshotFromExecutor } from "./sqlite-sidebar-snapshot-reader.ts"
 import { openWritableSqliteDatabase } from "./sqlite-driver.ts"
+import { readSidebarSnapshotFromExecutor } from "./sqlite-sidebar-snapshot-reader.ts"
 
 export type CreateSqliteDigitalPetRepositoryOptions = SqliteDatabaseOptions
 
-export { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
-export { resolveDatabasePath } from "./options.ts"
 export type { HostPathOptions } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
+export { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 export type {
   PersistedPartnerEvent,
   SqliteDigitalPetWriteStore,
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-types.ts"
+export { resolveDatabasePath } from "./options.ts"
 
 export type CursorSqliteDigitalPetRepository = SqliteDigitalPetWriteStore &
   SidebarSnapshotReader & {

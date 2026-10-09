@@ -7,21 +7,21 @@ import type {
 import { MONSTER_SLEEP_AFTER_MS } from "../constants/presentation-timing.ts"
 import { assertNever } from "../utils/assert-never.ts"
 import {
+  type CosmeticActionClip,
   resolveCosmeticActions,
   resolveEatClip,
   resolveSleepClip,
-  selectCosmeticAction,
-  type CosmeticActionClip,
   type SleepClip,
+  selectCosmeticAction,
 } from "./monster-action-policy.ts"
 import {
+  type ActionBoundaryState,
   initialWalkingPolicy,
   resizeActionBoundary,
   resizeWalkingPolicy,
   restartWalkingPolicy,
   resumeWalkingPolicy,
   tickWalkingPolicy,
-  type ActionBoundaryState,
   type WalkFrame,
   type WalkingFacing,
   type WalkingPolicyState,

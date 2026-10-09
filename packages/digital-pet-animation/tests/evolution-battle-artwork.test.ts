@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 
 import { EVOLUTION_BATTLE_HITS_TO_WIN } from "../src/constants/evolution-battle.ts"
 import {
@@ -9,7 +9,6 @@ import {
   buildBattleScoreRow,
   defaultBattleScene,
   FIREBALL_LINES,
-  planEvolutionBattle,
   renderBattleIntroArtwork,
   renderEvolutionBattleArtwork,
 } from "../src/sequences/evolution-battle-artwork.ts"
@@ -114,7 +113,7 @@ describe("evolution battle artwork", () => {
   })
 
   test("Given planned player victory When battle ends Then player reaches three hits first", () => {
-    const shots = planEvolutionBattle("player", () => 0.42)
+    const shots = planCombat({ strength: 80, evasion: 50 }, { strength: 30, evasion: 50 }, () => 0.42).shots
     const { playerHits, opponentHits } = countHits(shots)
 
     expect(playerHits).toBe(EVOLUTION_BATTLE_HITS_TO_WIN)
@@ -122,7 +121,7 @@ describe("evolution battle artwork", () => {
   })
 
   test("Given planned opponent victory When battle ends Then opponent reaches three hits first", () => {
-    const shots = planEvolutionBattle("opponent", () => 0.42)
+    const shots = planCombat({ strength: 30, evasion: 50 }, { strength: 80, evasion: 50 }, () => 0.42).shots
     const { playerHits, opponentHits } = countHits(shots)
 
     expect(opponentHits).toBe(EVOLUTION_BATTLE_HITS_TO_WIN)

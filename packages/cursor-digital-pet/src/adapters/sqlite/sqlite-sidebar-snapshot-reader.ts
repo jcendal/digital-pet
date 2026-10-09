@@ -2,9 +2,9 @@ import { existsSync } from "node:fs"
 
 import {
   ACTIVE_PARTNER_SELECT,
-  toPartner,
   type PersistedPartnerRow,
   type TrainerStateRow,
+  toPartner,
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
 import type {
   SidebarSnapshot,

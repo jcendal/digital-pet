@@ -1,5 +1,5 @@
-import type { PartnerLifecycle } from "../ports/partner-lifecycle.ts"
 import type { SpawnPartnerResult } from "../models/spawn-partner.ts"
+import type { PartnerLifecycle } from "../ports/partner-lifecycle.ts"
 
 export const spawnPartner = (lifecycle: PartnerLifecycle, createdAt: string): SpawnPartnerResult => {
   const partner = lifecycle.spawnPartner({

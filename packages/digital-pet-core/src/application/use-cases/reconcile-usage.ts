@@ -2,7 +2,7 @@ import type { DigimonNode } from "../../domain/digimon-node.ts"
 import type { EvolutionSelector, StageThresholds } from "../../domain/evolution.ts"
 import type { UsageProcessingResult } from "../models/usage.ts"
 import type { UsageLedger } from "../ports/usage-ledger.ts"
-import { recordUsage, type CompletedUsage } from "./record-usage.ts"
+import { type CompletedUsage, recordUsage } from "./record-usage.ts"
 
 export type ReconcileUsageInput = {
   readonly usages: readonly CompletedUsage[]

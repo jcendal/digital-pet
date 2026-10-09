@@ -9,9 +9,30 @@
   "background_color": "#594130",
   "theme_color": "#594130",
   "icons": [
-    { "src": "/icons/digital-pet-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/digital-pet-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/digital-pet-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/icons/digital-pet-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+    {
+      "src": "/icons/digital-pet-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/digital-pet-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/digital-pet-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/digital-pet-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"]
 }

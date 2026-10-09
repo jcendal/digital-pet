@@ -1,7 +1,5 @@
-import { Script } from "node:vm"
-import { SIDEBAR_SCRIPT } from "../src/webview/sidebar/sidebar-script.ts"
 import { describe, expect, test } from "bun:test"
-
+import { Script } from "node:vm"
 import {
   buildGaugeLine,
   buildNextCheckLine,
@@ -9,6 +7,7 @@ import {
   pixelWidthToArtworkColumns,
   toSidebarWebviewPayload,
 } from "../src/webview/sidebar/sidebar-render.ts"
+import { SIDEBAR_SCRIPT } from "../src/webview/sidebar/sidebar-script.ts"
 
 const partnerCard = {
   kind: "partner" as const,
@@ -29,6 +28,7 @@ class PreviewElement {
   readonly attributes: Record<string, string> = {}
   readonly children: PreviewElement[] = []
   readonly style: Record<string, string> = {}
+  readonly dataset: Record<string, string> = {}
   readonly classes = new Set<string>()
   readonly classList = {
     toggle: (name: string, enabled: boolean) => {
@@ -52,7 +52,7 @@ class PreviewElement {
   }
 }
 
-const sidebarPreview = () => {
+const sidebarPreview = (idleAlignment?: string) => {
   const nodes = new Map<string, PreviewElement>()
   const element = (id: string) => {
     let node = nodes.get(id)
@@ -62,6 +62,7 @@ const sidebarPreview = () => {
     }
     return node
   }
+  if (idleAlignment !== undefined) element("artwork").dataset.idleAlignment = idleAlignment
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
     acquireVsCodeApi: () => ({ postMessage: () => {} }),
@@ -94,6 +95,21 @@ describe("sidebar render", () => {
     send({ type: "animation-frame", artwork: "                              █" })
     expect(element("artwork").attributes.viewBox).toBe("0 0 50 16")
     expect(element("artwork").children[0]?.attributes.x).toBe("30")
+    expect(element("artwork").attributes.preserveAspectRatio).toBe("xMidYMid meet")
+  })
+
+  test("a grounded web partner moves to the center for the intro and combat, then returns to walking", () => {
+    const { element, send } = sidebarPreview("xMidYMax")
+    send({ type: "animation-frame", artwork: "█" })
+    expect(element("artwork").attributes.preserveAspectRatio).toBe("xMidYMax meet")
+    send({ type: "presentation-state", state: { phase: "battle", fromNodeId: "3-001", opponentNodeId: "3-051" } })
+    send({ type: "animation-frame", artwork: "█\n█\n█\n█\n█\n█" })
+    expect(element(".pet-module").classes.has("battle-intro")).toBe(true)
+    expect(element("artwork").attributes.viewBox).toBe("0 0 50 12")
+    expect(element("artwork").attributes.preserveAspectRatio).toBe("xMidYMid meet")
+    send({ type: "presentation-state", state: { phase: "idle" } })
+    expect(element(".pet-module").classes.has("battle-intro")).toBe(false)
+    expect(element("artwork").attributes.preserveAspectRatio).toBe("xMidYMax meet")
   })
 
   test("battle HUD shows both names and scores without duplicating ASCII HUD pixels, then clears on evolution", () => {
@@ -127,6 +143,8 @@ describe("sidebar render", () => {
       "score-pip",
     ])
     expect(element("battle-caption").textContent).toBe("HIT!")
+    expect(element(".pet-module").classes.has("battle-intro")).toBe(false)
+    expect(element("artwork").attributes.preserveAspectRatio).toBe("xMidYMid meet")
     expect(element("artwork").children.map((node) => node.attributes.x)).toEqual(["0", "0"])
     send({ type: "presentation-state", state: { phase: "evolving", fromNodeId: "3-001", toNodeId: "4-017" } })
     expect(element("battle-scores").hidden).toBe(true)

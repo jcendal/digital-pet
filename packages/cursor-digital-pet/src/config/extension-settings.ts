@@ -1,6 +1,5 @@
-import * as vscode from "vscode"
-
 import type { HostPathOptions } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
+import * as vscode from "vscode"
 
 export type DigitalPetExtensionSettings = {
   readonly databasePath?: string

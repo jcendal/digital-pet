@@ -4,8 +4,8 @@ import {
   MONSTER_FRAME_NAMES,
   MonsterFrame,
   MonsterFrameCatalog,
-  STANDARD_ANIMATION_SEQUENCE,
   type MonsterFrameName,
+  STANDARD_ANIMATION_SEQUENCE,
 } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 
 type Equal<Left, Right> =

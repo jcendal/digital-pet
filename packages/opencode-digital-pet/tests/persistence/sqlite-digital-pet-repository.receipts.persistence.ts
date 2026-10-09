@@ -6,10 +6,10 @@ import {
   applyReceipt,
   createTempTestRoot,
   getControlReceipts,
+  type ReceiptMode,
   removeTempTestRoot,
   setReceiptMode,
   spawn,
-  type ReceiptMode,
   type TempTestRoot,
   usageReceipt,
 } from "./sqlite-digital-pet-repository.fixtures.ts"

@@ -1,8 +1,8 @@
+import { spawnSync } from "node:child_process"
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import { createRequire } from "node:module"
 import { dirname, join, relative, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { spawnSync } from "node:child_process"
 
 import { build } from "esbuild"
 

@@ -1,15 +1,14 @@
-import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
-/** @jsxImportSource @opentui/solid */
-import { createTextAttributes, type BoxRenderable, type TextRenderable } from "@opentui/core"
-import { createEffect, type Accessor } from "solid-js"
-
-import type { SidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
 import { MONSTER_FRAME_ROWS } from "@jcendal/digital-pet-animation/constants/monster-artwork.ts"
 import type {
   MonsterAnimationOutput,
   MonsterAnimationResult,
 } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { renderPositionedArtworkRows } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
+import type { SidebarCardModel } from "@jcendal/digital-pet-core/view-models/sidebar-view-model.ts"
+/** @jsxImportSource @opentui/solid */
+import { type BoxRenderable, createTextAttributes, type TextRenderable } from "@opentui/core"
+import { type Accessor, createEffect } from "solid-js"
 
 import { openInBrowser } from "./open-in-browser.ts"
 

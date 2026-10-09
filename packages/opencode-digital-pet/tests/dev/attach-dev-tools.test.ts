@@ -1,11 +1,11 @@
 import { beforeAll, describe, expect, test } from "bun:test"
 import { existsSync } from "node:fs"
-import { fileURLToPath } from "node:url"
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
-import { createTui } from "../../src/tui.tsx"
 import { OPENCODE_DEV_ACTIONS } from "../../src/dev/catalog.ts"
+import { createTui } from "../../src/tui.tsx"
 import { partnerInputs, settle, TuiCompositionHarness } from "../tui-composition-fixture.ts"
 
 const PACKAGE_ROOT = fileURLToPath(new URL("../../", import.meta.url))

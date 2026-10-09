@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 
-import { MonsterFrame, MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { MONSTER_FRAME_CATALOG, MonsterFrame } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { MONSTER_FRAME_DATA } from "@jcendal/digital-pet-core/data/monster-frame-data.ts"
 
 import { mirrorMonsterFrame } from "../src/idle/monster-artwork-mirror.ts"

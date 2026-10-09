@@ -15,5 +15,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src", "src/types"]
+  "include": ["src", "../../types/web-assets.d.ts"]
 }

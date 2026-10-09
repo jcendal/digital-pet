@@ -1,5 +1,5 @@
 import type { DigimonNode } from "./digimon-node.ts"
-import { pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
+import { assertEvolutionBranch, pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
 import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
 
 export type StageThresholds = Readonly<Record<DigimonStage, number>>
@@ -97,9 +97,17 @@ export const resolveEvolutionBattle = (
   won: boolean,
   digimonById: ReadonlyMap<string, DigimonNode>,
 ): PartnerEvolutionState => {
-  if (!hasPendingBattle(state)) {
+  const targetId = state.pendingEvolutionTargetId
+  const opponentId = state.battleOpponentNodeId
+  if (targetId === null || opponentId === null) {
     throw new Error("Cannot resolve evolution battle without a pending battle")
   }
+
+  assertEvolutionBranch(state.current, targetId)
+  const current = digimonById.get(targetId)
+  if (current === undefined) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
+  const opponent = digimonById.get(opponentId)
+  if (!opponent || opponent.stage !== state.current.stage) throw new Error("Invalid evolution battle opponent")
 
   if (!won) {
     return {
@@ -110,11 +118,6 @@ export const resolveEvolutionBattle = (
       battleOpponentNodeId: null,
     }
   }
-
-  const targetId = state.pendingEvolutionTargetId
-  if (targetId === null) throw new Error("Pending evolution target is missing")
-  const current = digimonById.get(targetId)
-  if (current === undefined) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
 
   return {
     current,

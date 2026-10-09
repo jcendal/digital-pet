@@ -1,19 +1,13 @@
 import type { ResolveEvolutionBattleOutcome } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import {
-  resolveEvolutionBattleForPartner,
   type EvolutionBattleRepository,
+  resolveEvolutionBattleForPartner,
 } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-
-import { runDefeatAnimation } from "../sequences/defeat-artwork.ts"
-import {
-  runEvolutionBattleAnimation,
-  type EvolutionBattleOutcome,
-  type BattleFrameListener,
-} from "../sequences/evolution-battle-artwork.ts"
-import { runEvolutionRevealSession } from "./evolution-reveal-session.ts"
+import type { BattleFrameListener } from "../sequences/evolution-battle-artwork.ts"
+import { presentEvolution } from "./evolution-presentation.ts"
 
 import type { PresentationStateListener } from "./presentation-state.ts"
 
@@ -37,43 +31,29 @@ export const runEvolutionBattleSession = async (
   const player = dependencies.digimonCatalog.byId.get(snapshot.currentNodeId)
   const opponent = dependencies.digimonCatalog.byId.get(snapshot.battleOpponentNodeId)
   if (player === undefined || opponent === undefined) return false
-
-  const random = dependencies.random ?? Math.random
-  const outcome: EvolutionBattleOutcome = random() < 0.5 ? "player" : "opponent"
-  const postArtwork: BattleFrameListener = async (artwork, hud) => dependencies.onArtwork(artwork, hud)
-
-  await dependencies.onState?.({ phase: "battle", fromNodeId: player.id, opponentNodeId: opponent.id })
-  await runEvolutionBattleAnimation(
-    dependencies.frameCatalog,
-    player.sprite,
-    opponent.sprite,
-    viewportWidth,
-    outcome,
-    postArtwork,
-    random,
+  const expected = dependencies.repository.getActivePartner()
+  if (
+    !expected ||
+    expected.currentNodeId !== snapshot.currentNodeId ||
+    expected.pendingEvolutionTargetId !== snapshot.pendingEvolutionTargetId ||
+    expected.battleOpponentNodeId !== snapshot.battleOpponentNodeId
   )
+    return false
 
-  if (outcome === "player") {
-    await runEvolutionRevealSession(
-      { fromNodeId: snapshot.currentNodeId, toNodeId: snapshot.pendingEvolutionTargetId },
-      viewportWidth,
-      {
-        frameCatalog: dependencies.frameCatalog,
-        digimonCatalog: dependencies.digimonCatalog,
-        onArtwork: postArtwork,
-        ...(dependencies.onState === undefined ? {} : { onState: dependencies.onState }),
-      },
-    )
-  } else {
-    await dependencies.onState?.({ phase: "defeated", fromNodeId: player.id })
-    await runDefeatAnimation(dependencies.frameCatalog, player.sprite, viewportWidth, postArtwork)
-  }
+  const outcome = await presentEvolution(
+    snapshot.currentNodeId,
+    snapshot.pendingEvolutionTargetId,
+    snapshot.battleOpponentNodeId,
+    viewportWidth,
+    dependencies,
+  )
 
   const result = resolveEvolutionBattleForPartner(
     dependencies.repository,
     outcome === "player",
     dependencies.digimonCatalog.byId,
     new Date().toISOString(),
+    expected,
   )
   await dependencies.onResolved?.(result)
   return true

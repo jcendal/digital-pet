@@ -3,16 +3,15 @@ import { existsSync } from "node:fs"
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { testRender } from "@opentui/solid"
-import type { JSX } from "@opentui/solid"
-
-import { createSqliteSidebarSnapshotReader } from "../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
 import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
 import { getSidebarCardInputs } from "@jcendal/digital-pet-core/application/use-cases/get-sidebar-card-inputs.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
-import { loadGlobalDigitalPetSettings } from "../src/config/global-digital-pet-settings.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import type { JSX } from "@opentui/solid"
+import { testRender } from "@opentui/solid"
+import { createSqliteSidebarSnapshotReader } from "../src/adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
+import { loadGlobalDigitalPetSettings } from "../src/config/global-digital-pet-settings.ts"
 import { createTui } from "../src/tui.tsx"
 import { TuiCompositionHarness } from "./tui-composition-fixture.ts"
 
@@ -77,6 +76,7 @@ describe("TUI settings composition", () => {
         sprite: "agumon",
         stage: 3,
         url: "https://example.test/agumon",
+        combatStats: { strength: 50, evasion: 50 },
       },
       gauge: 42,
       isTerminal: false,
@@ -132,6 +132,7 @@ describe("TUI settings composition", () => {
         sprite: "tailmon",
         stage: 4,
         url: "https://example.test/tailmon",
+        combatStats: { strength: 50, evasion: 50 },
       },
       gauge: 777,
       isTerminal: false,
@@ -226,6 +227,7 @@ describe("TUI settings composition", () => {
               sprite: "tailmon",
               stage: 4,
               url: "https://example.test/tailmon",
+              combatStats: { strength: 50, evasion: 50 },
             },
             gauge: 75_000_000,
             isTerminal: false,

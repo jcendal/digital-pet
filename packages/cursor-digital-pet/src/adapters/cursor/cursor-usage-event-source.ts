@@ -3,8 +3,8 @@ import { open, stat, writeFile } from "node:fs/promises"
 
 import type { UsageProcessingResult } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
-import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import type { CompletedUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
 

@@ -9,9 +9,17 @@ const packageRoot = dirname(fileURLToPath(import.meta.url))
 const distDirectory = resolve(packageRoot, "dist")
 const require = createRequire(import.meta.url)
 const wasmSource = require.resolve("sql.js/dist/sql-wasm.wasm")
+const development = process.argv.includes("--development") || process.argv.includes("--watch")
 await rm(distDirectory, { recursive: true, force: true })
 await mkdir(distDirectory, { recursive: true })
 await copyFile(wasmSource, resolve(distDirectory, "sql-wasm.wasm"))
+const fontsDirectory = resolve(distDirectory, "assets/fonts")
+const iconsDirectory = resolve(distDirectory, "assets/icons")
+await mkdir(fontsDirectory, { recursive: true })
+await mkdir(iconsDirectory, { recursive: true })
+for (const name of ["Silkscreen-Regular.ttf", "OFL.txt"])
+  await copyFile(require.resolve(`@jcendal/digital-pet-webviews/assets/fonts/${name}`), resolve(fontsDirectory, name))
+await copyFile(resolve(packageRoot, "../../assets/branding/logo.png"), resolve(iconsDirectory, "logo.png"))
 
 const options = {
   entryPoints: [resolve(packageRoot, "src/extension.ts")],
@@ -22,8 +30,8 @@ const options = {
   format: "cjs",
   external: ["vscode", "bun:sqlite"],
   define: { __DIGITAL_PET_BUNDLE__: "true", "import.meta.url": "undefined" },
-  minify: true,
-  sourcemap: false,
+  minify: !development,
+  sourcemap: development,
   logLevel: "info",
 }
 

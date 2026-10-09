@@ -3,10 +3,9 @@ import { describe, expect, test } from "bun:test"
 import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-
-import { artworkToPixelPath } from "../src/webview/shared/pixel-artwork.ts"
 import { buildDexPanelModel } from "../src/webview/panels/dex/dex-model.ts"
 import { buildDexWebviewHtml } from "../src/webview/panels/dex/dex-render.ts"
+import { artworkToPixelPath } from "../src/webview/shared/pixel-artwork.ts"
 
 const archive: DigitalPetArchiveResult = {
   kind: "available",

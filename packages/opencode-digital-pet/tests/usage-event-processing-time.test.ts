@@ -1,14 +1,13 @@
 import { describe, expect, test } from "bun:test"
-import type { Event, Message } from "@opencode-ai/sdk"
-
-import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
 import type {
   ApplyUsageReceiptOutcome,
   UsageReceiptMetadata,
 } from "@jcendal/digital-pet-core/application/models/usage.ts"
+import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
 import type { PartnerLifecycle } from "@jcendal/digital-pet-core/application/ports/partner-lifecycle.ts"
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
-import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
+import type { Event, Message } from "@opencode-ai/sdk"
+import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
 
 const completedAssistantEvent = {
   type: "message.updated",

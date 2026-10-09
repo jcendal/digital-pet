@@ -1,6 +1,6 @@
 <div align="center" style="text-align: center;">
 <center>
-  <p align="center" style="text-align: center;"><img src="icon.png" alt="Cursor Digital Pet logo" width="160" style="display: block; margin: 0 auto;" /></p>
+  <p align="center" style="text-align: center;"><img src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/branding/logo.png" alt="Cursor Digital Pet logo" width="160" style="display: block; margin: 0 auto;" /></p>
   <h1 align="center" style="text-align: center;">Cursor Digital Pet</h1>
   <p align="center" style="text-align: center;"><strong>Digimon virtual pet for Cursor that evolves as you use Agent — shares progress with OpenCode Digital Pet</strong></p>
   <p align="center" style="text-align: center;">
@@ -26,9 +26,9 @@
 
 <div align="center" style="text-align: center; white-space: nowrap;">
 <center>
-<img src="images/sidebar-partner-lcd.jpg" alt="Cursor Digital Pet sidebar showing a partner and its evolution progress" width="31%" />
-<img src="images/sidebar-evolution-lcd.jpg" alt="Cursor Digital Pet partner animation in the sidebar" width="31%" />
-<img src="images/sidebar-battle-lcd.jpg" alt="Cursor Digital Pet battle scene in the sidebar" width="31%" />
+<img src="assets/screenshots/sidebar-partner-lcd.jpg" alt="Cursor Digital Pet sidebar showing a partner and its evolution progress" width="31%" />
+<img src="assets/screenshots/sidebar-evolution-lcd.jpg" alt="Cursor Digital Pet partner animation in the sidebar" width="31%" />
+<img src="assets/screenshots/sidebar-battle-lcd.jpg" alt="Cursor Digital Pet battle scene in the sidebar" width="31%" />
 </center>
 </div>
 
@@ -124,7 +124,7 @@ Registered Digimon show their pixel sprite, first registration, generation count
 Undiscovered entries stay hidden until you raise them. Arrow keys, Home and End navigate the catalog.
 The panel refreshes when your shared database changes and remembers your filters and selection.
 
-![Digidex with brown V-Pet casing, green LCD, collection list and Komondomon record (sample archive)](images/digidex-browser.jpg)
+![Digidex with brown V-Pet casing, green LCD, collection list and Komondomon record (sample archive)](assets/screenshots/digidex-browser.jpg)
 
 ### Other access methods
 
@@ -301,3 +301,10 @@ sprites were derived from community sources — see the
 <p align="center"><strong>Built with ❤️ for the developer community</strong></p>
 
 <p align="center"><a href="#cursor-digital-pet">⬆ Back to Top</a></p>
+
+## Static resources
+
+Documentation captures live in `assets/screenshots`. The build copies the shared
+project logo and the webviews package's font/license into `dist/assets`; the VSIX
+includes those files and webviews restrict resource access to that directory.
+Edit the canonical resources rather than generated copies.

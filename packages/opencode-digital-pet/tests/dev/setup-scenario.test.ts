@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
-
-import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { resolveEvolutionBattleForPartner } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { StageThresholds } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 

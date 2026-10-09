@@ -1,11 +1,11 @@
 /** @jsxImportSource @opentui/solid */
 import { describe, expect, test } from "bun:test"
-import { createMockMouse } from "@opentui/core/testing"
-import { testRender } from "@opentui/solid"
+import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
+import { mirrorMonsterFrame } from "@jcendal/digital-pet-animation/idle/monster-artwork-mirror.ts"
 
 import { MONSTER_FRAME_CATALOG, type MonsterFrame } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { mirrorMonsterFrame } from "@jcendal/digital-pet-animation/idle/monster-artwork-mirror.ts"
-import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
+import { createMockMouse } from "@opentui/core/testing"
+import { testRender } from "@opentui/solid"
 
 import { DigitalPetSidebarCard } from "../src/tui/sidebar-card.tsx"
 

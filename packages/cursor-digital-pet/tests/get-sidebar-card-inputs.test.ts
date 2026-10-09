@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test"
-
-import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import { getSidebarCardInputs } from "@jcendal/digital-pet-core/application/use-cases/get-sidebar-card-inputs.ts"
+import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
 
 const agumon: DigimonNode = {
   id: "3-001",
@@ -12,6 +11,7 @@ const agumon: DigimonNode = {
   sprite: "agumon",
   stage: 3,
   url: "https://example.test/agumon",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const egg: DigimonNode = {
@@ -22,6 +22,7 @@ const egg: DigimonNode = {
   sprite: "egg",
   stage: 0,
   url: "https://example.test/egg",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const catalog: DigimonCatalog = {

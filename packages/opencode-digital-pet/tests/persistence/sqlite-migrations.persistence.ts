@@ -1,12 +1,11 @@
+import { Database } from "bun:sqlite"
 import { describe, expect, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { Database } from "bun:sqlite"
-
-import { createExecutor } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import { runMigrations } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-migrations.ts"
 import type { QueryValue } from "@jcendal/digital-pet-core/ports/sqlite-executor.ts"
+import { createExecutor } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
 import { isBunSqliteAvailable } from "../sqlite-capability.ts"
 
 type MigrationExecutor = {

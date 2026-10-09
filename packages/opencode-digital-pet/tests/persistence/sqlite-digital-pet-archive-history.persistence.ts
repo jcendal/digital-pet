@@ -1,16 +1,15 @@
-import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test"
 import { Database } from "bun:sqlite"
-
-import { createSqliteDigitalPetArchiveReader } from "../../src/adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
-import { openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
-import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
-import { runDigitalPetSetCommand } from "../../src/commands/digital-pet-set.ts"
+import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { DigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 import { buildHistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
+import { openWritableDatabase } from "../../src/adapters/sqlite/bun-sqlite-driver.ts"
+import { createSqliteDigitalPetArchiveReader } from "../../src/adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { runDigitalPetSetCommand } from "../../src/commands/digital-pet-set.ts"
 import { isBunSqliteAvailable } from "../sqlite-capability.ts"
 import {
   applyReceipt,
@@ -31,6 +30,7 @@ const catalogNodes = [
     sprite: "egg",
     stage: 0,
     url: "https://example.test/0-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "1-001",
@@ -40,6 +40,7 @@ const catalogNodes = [
     sprite: "first",
     stage: 1,
     url: "https://example.test/1-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "2-001",
@@ -49,6 +50,7 @@ const catalogNodes = [
     sprite: "second",
     stage: 2,
     url: "https://example.test/2-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
   {
     id: "7-001",
@@ -58,6 +60,7 @@ const catalogNodes = [
     sprite: "set-only",
     stage: 7,
     url: "https://example.test/7-001",
+    combatStats: { strength: 50, evasion: 50 },
   },
 ] as const satisfies readonly DigimonNode[]
 

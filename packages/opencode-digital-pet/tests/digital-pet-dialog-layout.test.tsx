@@ -1,7 +1,7 @@
 /** @jsxImportSource @opentui/solid */
 import { describe, expect, mock, test } from "bun:test"
-import { testRender, useTerminalDimensions } from "@opentui/solid"
 import type { BoxRenderable } from "@opentui/core"
+import { testRender, useTerminalDimensions } from "@opentui/solid"
 import type { JSX } from "solid-js"
 import { DigitalPetDexDialog } from "../src/tui/digital-pet-dex-dialog.tsx"
 import { DigitalPetHistoryDialog } from "../src/tui/digital-pet-history-dialog.tsx"

@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import type { Part } from "@opencode-ai/sdk"
-
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
+import type { Part } from "@opencode-ai/sdk"
 import { createServerHooks } from "../src/adapters/opencode/create-server-hooks.ts"
 import { runDigitalPetSpawnCommand } from "../src/commands/digital-pet-spawn.ts"
 

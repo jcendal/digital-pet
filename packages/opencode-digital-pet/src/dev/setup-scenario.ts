@@ -1,3 +1,4 @@
+import type { SqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-types.ts"
 import type {
   SidebarSnapshot,
   SidebarSnapshotReader,
@@ -5,7 +6,6 @@ import type {
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
 import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
-import type { SqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-types.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { StageThresholds } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"

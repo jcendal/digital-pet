@@ -1,6 +1,6 @@
 import {
-  resolveHostDatabasePath,
   type HostPathOptions,
+  resolveHostDatabasePath,
 } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 
 export type SqliteDatabaseOptions = HostPathOptions & {

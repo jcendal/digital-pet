@@ -5,8 +5,8 @@ import { join } from "node:path"
 
 import {
   FORBIDDEN_APPLICATION_IMPORTS,
-  PROJECT_ROOT,
   findForbiddenImports,
+  PROJECT_ROOT,
   scanApplicationImports,
   scanDuplicateCorePartnerDeclarations,
   scanTechnicalLifecyclePorts,

@@ -1,17 +1,15 @@
 import { randomBytes } from "node:crypto"
-import * as vscode from "vscode"
-
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import * as vscode from "vscode"
 import { createDatabaseChangeWatcher } from "../../../adapters/sqlite/database-change-watcher.ts"
-import { readArchive } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
-import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { resolveDatabasePath } from "../../../adapters/sqlite/options.ts"
+import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import { readArchive } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { createAsyncRefreshQueue } from "../../../shared/async-refresh-queue.ts"
+import { openDexPanel } from "../dex/dex-panel.ts"
 import { buildHistoryPanelModel } from "./history-model.ts"
 import { buildHistoryWebviewHtml } from "./history-render.ts"
-
-import { openDexPanel } from "../dex/dex-panel.ts"
 
 const panels = new Map<string, { readonly panel: vscode.WebviewPanel; readonly refresh: () => Promise<void> }>()
 
@@ -34,14 +32,14 @@ export const openHistoryPanel = async (
     return opened.refresh()
   }
   let model = buildHistoryPanelModel(archive, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
-  const mediaRoot = vscode.Uri.joinPath(context.extensionUri, "media")
+  const assetsRoot = vscode.Uri.joinPath(context.extensionUri, "dist", "assets")
   const panel = vscode.window.createWebviewPanel(
     "cursorDigitalPetHistory",
     "Digital Pet History",
     vscode.ViewColumn.One,
     {
       enableScripts: true,
-      localResourceRoots: [mediaRoot],
+      localResourceRoots: [assetsRoot],
     },
   )
   let disposed = false
@@ -92,7 +90,7 @@ export const openHistoryPanel = async (
   panels.set(databasePath, { panel, refresh })
   panel.webview.html = buildHistoryWebviewHtml(model, {
     nonce: randomBytes(16).toString("hex"),
-    fontUri: panel.webview.asWebviewUri(vscode.Uri.joinPath(mediaRoot, "fonts", "Silkscreen-Regular.ttf")).toString(),
+    fontUri: panel.webview.asWebviewUri(vscode.Uri.joinPath(assetsRoot, "fonts", "Silkscreen-Regular.ttf")).toString(),
     cspSource: panel.webview.cspSource,
   })
   context.subscriptions.push(panel)

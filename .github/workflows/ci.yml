@@ -41,6 +41,16 @@ jobs:
       - name: Run persistence tests
         run: npm run test:persistence
 
+      - name: Build all apps
+        run: npm run build
+
+      - name: Install browser for web checks
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify web assets, offline mode and worker updates
+        working-directory: packages/web-digital-pet
+        run: npx playwright test
+
       - name: Inspect npm package
         run: npm pack --workspace @jcendal/opencode-digital-pet --dry-run --json
 

@@ -9,11 +9,15 @@ mock.module("../src/utils/sleep.ts", () => ({
   sleep: async () => {},
 }))
 
-import { runEvolutionBattleSession } from "../src/sessions/evolution-battle-session.ts"
 import type { BattleFrameHud } from "../src/sequences/evolution-battle-artwork.ts"
+import { runEvolutionBattleSession } from "../src/sessions/evolution-battle-session.ts"
 import { battleSidebarSnapshot } from "./session-fixtures.ts"
 
 const pendingBattleSnapshot = battleSidebarSnapshot()
+const losingRolls = () => {
+  let count = 0
+  return () => (count++ === 0 ? 0.99 : count % 2 === 0 ? 0 : 0.99)
+}
 
 const createRepository = (outcome: "won" | "lost"): EvolutionBattleRepository => ({
   getActivePartner: () => ({
@@ -32,16 +36,65 @@ const createRepository = (outcome: "won" | "lost"): EvolutionBattleRepository =>
 })
 
 describe("evolution battle session", () => {
+  test("a draw displays DRAW, never reveals a transformation and resolves without evolution", async () => {
+    const phases: string[] = []
+    const huds: BattleFrameHud[] = []
+    let won: boolean | undefined
+    const original = createRepository("lost")
+    await runEvolutionBattleSession(pendingBattleSnapshot, 80, {
+      frameCatalog: MONSTER_FRAME_CATALOG,
+      digimonCatalog: DIGIMON_CATALOG,
+      repository: {
+        ...original,
+        resolveEvolutionBattle: (next) => {
+          won = next.currentNodeId !== pendingBattleSnapshot.currentNodeId
+          return { kind: "lost" }
+        },
+      },
+      random: () => 0.99,
+      onState: async (state) => {
+        phases.push(state.phase)
+      },
+      onArtwork: async (_artwork, hud) => {
+        if (hud) huds.push(hud)
+      },
+    })
+    expect(phases).toEqual(["battle", "draw"])
+    expect(huds.at(-1)?.caption).toBe("DRAW!")
+    expect(won).toBe(false)
+  })
+  test("an unrelated target is rejected before rendering or persistence", async () => {
+    let frames = 0
+    const snapshot = { ...pendingBattleSnapshot, pendingEvolutionTargetId: "7-011" }
+    const original = createRepository("won")
+    const partner = original.getActivePartner()
+    if (!partner) throw new Error("Missing test partner")
+    await expect(
+      runEvolutionBattleSession(snapshot, 80, {
+        frameCatalog: MONSTER_FRAME_CATALOG,
+        digimonCatalog: DIGIMON_CATALOG,
+        repository: {
+          ...original,
+          getActivePartner: () => ({ ...partner, pendingEvolutionTargetId: snapshot.pendingEvolutionTargetId }),
+        },
+        onArtwork: async () => {
+          frames++
+        },
+      }),
+    ).rejects.toThrow("outside its branches")
+    expect(frames).toBe(0)
+  })
   test("legacy artwork-only consumers receive identical frames and outcomes to consumers of phase and HUD metadata", async () => {
     for (const outcome of ["won", "lost"] as const) {
       const legacyFrames: string[] = []
       const metadataFrames: string[] = []
       const results: ResolveEvolutionBattleOutcome[] = []
       let phase = "idle"
-      const random = () => (outcome === "won" ? 0 : 0.99)
+      const random = outcome === "won" ? () => 0 : losingRolls()
+      const catalog = DIGIMON_CATALOG
       const dependencies = {
         frameCatalog: MONSTER_FRAME_CATALOG,
-        digimonCatalog: DIGIMON_CATALOG,
+        digimonCatalog: catalog,
         repository: createRepository(outcome),
         random,
         onResolved: async (result: ResolveEvolutionBattleOutcome) => {
@@ -144,7 +197,7 @@ describe("evolution battle session", () => {
         phases.push(state.phase)
       },
       repository: createRepository("lost"),
-      random: () => 0.99,
+      random: losingRolls(),
       onArtwork: async (artwork) => {
         frames.push(artwork)
       },

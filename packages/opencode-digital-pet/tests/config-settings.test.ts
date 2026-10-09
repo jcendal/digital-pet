@@ -2,9 +2,9 @@ import { describe, expect, test } from "bun:test"
 
 import { normalizeDigitalPetSettings } from "@jcendal/digital-pet-core/config/normalize.ts"
 import {
-  STAGE_THRESHOLD_KEYS,
   DIGITAL_PET_LANGUAGES,
   type ResolvedDigitalPetSettings,
+  STAGE_THRESHOLD_KEYS,
 } from "@jcendal/digital-pet-core/config/types.ts"
 
 const expectedDefaults = {

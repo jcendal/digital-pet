@@ -1,3 +1,4 @@
+import type { CombatStats } from "./combat.ts"
 import type { DigimonStage } from "./stage.ts"
 
 export type DigimonNode = {
@@ -8,6 +9,7 @@ export type DigimonNode = {
   readonly sprite: string
   readonly stage: DigimonStage
   readonly url: string
+  readonly combatStats: CombatStats
 }
 
 export type DigimonCatalog = {

@@ -1,16 +1,15 @@
+import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
+import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
+import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
+import type { DigimonStage } from "@jcendal/digital-pet-core/domain/stage.ts"
+import type { TuiDialogProps, TuiTheme } from "@opencode-ai/plugin/tui"
 import type {
   EventMessagePartUpdated,
   EventMessageUpdated,
   EventSessionStatus,
   SessionStatus,
 } from "@opencode-ai/sdk/v2"
-import type { TuiDialogProps, TuiTheme } from "@opencode-ai/plugin/tui"
 import type { JSX } from "@opentui/solid"
-
-import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
-import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
-import type { DigimonStage } from "@jcendal/digital-pet-core/domain/stage.ts"
-import type { MonsterAnimationOutput } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 
 import { createTui, type TuiCompositionApi } from "../src/tui.tsx"
 
@@ -50,6 +49,7 @@ export const partnerInputs = (sprite: string, options: PartnerInputOptions = {})
     sprite,
     stage: options.stage ?? 3,
     url: `https://example.test/${sprite}`,
+    combatStats: { strength: 50, evasion: 50 },
   },
   gauge: options.isSetOverride ? 0 : 42,
   isTerminal: options.isSetOverride ?? false,

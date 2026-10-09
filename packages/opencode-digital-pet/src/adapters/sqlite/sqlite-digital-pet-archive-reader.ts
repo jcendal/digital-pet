@@ -1,23 +1,22 @@
-import { existsSync } from "node:fs"
 import { SQLiteError } from "bun:sqlite"
-
-import type {
-  DigitalPetArchiveEvent,
-  DigitalPetArchivePartner,
-  DigitalPetArchiveResult,
-} from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
-import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
+import { existsSync } from "node:fs"
 import {
-  resolveHostDatabasePath,
   type HostPathOptions,
+  resolveHostDatabasePath,
 } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
-import { createExecutor, openReadonlyDatabase, type SqliteExecutor } from "./bun-sqlite-driver.ts"
 import {
   ARCHIVE_PARTNER_EVENTS_SELECT,
   ARCHIVE_PARTNERS_SELECT,
   type PersistedPartnerEventRow,
   type PersistedPartnerRow,
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
+import type {
+  DigitalPetArchiveEvent,
+  DigitalPetArchivePartner,
+  DigitalPetArchiveResult,
+} from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
+import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
+import { createExecutor, openReadonlyDatabase, type SqliteExecutor } from "./bun-sqlite-driver.ts"
 
 export type CreateSqliteDigitalPetArchiveReaderOptions = HostPathOptions & { readonly databasePath?: string }
 

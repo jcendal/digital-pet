@@ -1,9 +1,10 @@
 /** @jsxImportSource @opentui/solid */
-import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
-import { For, createMemo } from "solid-js"
-import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import type { TuiTheme } from "@opencode-ai/plugin/tui"
+
 import type { DexRow, DexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
+import type { TuiTheme } from "@opencode-ai/plugin/tui"
+import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
+import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
+import { createMemo, For } from "solid-js"
 
 export type DigitalPetDexDialogTheme = {
   readonly current: Pick<TuiTheme["current"], "primary" | "success" | "textMuted">

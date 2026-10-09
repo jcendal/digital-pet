@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test"
-
-import type { DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
-import type { Partner } from "@jcendal/digital-pet-core/domain/partner.ts"
 import type { UsageReceiptMetadata } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { UsageLedger } from "@jcendal/digital-pet-core/application/ports/usage-ledger.ts"
-import { recordUsage, type CompletedUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import { type CompletedUsage, recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import type { DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
+import type { Partner } from "@jcendal/digital-pet-core/domain/partner.ts"
 
 const currentNode: DigimonNode = {
   id: "current",
@@ -15,6 +14,7 @@ const currentNode: DigimonNode = {
   sprite: "current.png",
   stage: 0,
   url: "https://example.test/current",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const targetNode: DigimonNode = {
@@ -25,6 +25,7 @@ const targetNode: DigimonNode = {
   sprite: "target.png",
   stage: 1,
   url: "https://example.test/target",
+  combatStats: { strength: 50, evasion: 50 },
 }
 
 const catalogNodes = [currentNode, targetNode]

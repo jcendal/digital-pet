@@ -15,6 +15,7 @@ describe("static sidebar model", () => {
       sprite: "tailmon",
       stage: 4,
       url: "https://example.test/tailmon",
+      combatStats: { strength: 50, evasion: 50 },
     },
     gauge: 25_000,
     isTerminal: false,

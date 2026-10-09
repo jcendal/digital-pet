@@ -1,10 +1,9 @@
 /** @jsxImportSource @opentui/solid */
-import { describe, expect, test, mock } from "bun:test"
-import { ScrollBoxRenderable } from "@opentui/core"
+import { describe, expect, mock, test } from "bun:test"
+import type { HistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
+import { parseColor, ScrollBoxRenderable } from "@opentui/core"
 import { testRender } from "@opentui/solid"
 import { DigitalPetHistoryDialog, type DigitalPetHistoryDialogTheme } from "../src/tui/digital-pet-history-dialog.tsx"
-import type { HistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
-import { parseColor } from "@opentui/core"
 import { createTrackedDialogApi } from "./digital-pet-dex-dialog-fixture.tsx"
 
 const createMockTheme = (): DigitalPetHistoryDialogTheme => {

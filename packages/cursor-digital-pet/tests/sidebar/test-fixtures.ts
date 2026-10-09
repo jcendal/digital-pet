@@ -3,8 +3,8 @@ import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/applic
 import type { AnimationSink } from "../../src/adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../src/adapters/vscode/notification-port.ts"
 import type { IntervalScheduler } from "../../src/adapters/vscode/scheduler.ts"
-import type { SidebarWebviewPayload } from "../../src/webview/sidebar/webview-messages.ts"
 import type { SidebarAnimationHost } from "../../src/webview/sidebar/sidebar-animation-host.ts"
+import type { SidebarWebviewPayload } from "../../src/webview/sidebar/webview-messages.ts"
 export const nullSidebarSnapshot = (): null => null
 
 export const partnerSidebarSnapshot = (): SidebarSnapshot => ({
