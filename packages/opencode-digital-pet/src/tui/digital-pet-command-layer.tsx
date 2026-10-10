@@ -7,6 +7,7 @@ import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
 import { buildHistoryViewModel } from "@jcendal/digital-pet-core/view-models/history-view-model.ts"
 import type { TuiDialogStack, TuiKeymap, TuiTheme } from "@opencode-ai/plugin/tui"
+import { IntlModule } from "../i18n.ts"
 import { DigitalPetDexDialog } from "./digital-pet-dex-dialog.tsx"
 import { DigitalPetHistoryDialog } from "./digital-pet-history-dialog.tsx"
 
@@ -28,7 +29,7 @@ export type DigitalPetCommandLayerDependencies = {
 
 const unavailableArchive = (): DigitalPetArchiveResult => ({
   kind: "unavailable",
-  message: "Digital Pet archive is unavailable.",
+  message: IntlModule.translate("sqliteDigitalPetArchiveReader.digitalPetArchiveIsUnavailable"),
 })
 
 const readArchive = (reader: DigitalPetArchiveReader): DigitalPetArchiveResult => {
@@ -80,18 +81,18 @@ export const registerDigitalPetCommandLayer = ({
     commands: [
       {
         name: "digital-pet.dex",
-        title: "Digital Pet Dex",
-        description: "Browse the Digital Pet discovery archive.",
-        category: "Digital Pet",
+        title: IntlModule.translate("digitalPetCommandLayer.digitalPetDex"),
+        description: IntlModule.translate("digitalPetCommandLayer.browseTheDigitalPetDiscoveryArchive"),
+        category: IntlModule.translate("digitalPetToast.digitalPet"),
         namespace: "palette",
         slashName: "digital-pet-dex",
         run: openDex,
       },
       {
         name: "digital-pet.history",
-        title: "Digital Pet History",
-        description: "Browse Digital Pet generation history.",
-        category: "Digital Pet",
+        title: IntlModule.translate("digitalPetCommandLayer.digitalPetHistory"),
+        description: IntlModule.translate("digitalPetCommandLayer.browseDigitalPetGenerationHistory"),
+        category: IntlModule.translate("digitalPetToast.digitalPet"),
         namespace: "palette",
         slashName: "digital-pet-history",
         run: openHistory,

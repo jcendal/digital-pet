@@ -1,4 +1,5 @@
 import Peer, { type DataConnection } from "peerjs"
+import { IntlModule } from "../../../shared/i18n.ts"
 
 const PREFIX = "web-digital-pet-battle-v1-"
 export const validBattleCode = (value: string): boolean => /^\d{6}$/.test(value)
@@ -54,7 +55,8 @@ export class BattleTransport {
   }
 
   connect(code: string): DataConnection {
-    if (!validBattleCode(code) || !this.peer?.open) throw new Error("The battle service is not ready")
+    if (!validBattleCode(code) || !this.peer?.open)
+      throw new Error(IntlModule.translate("transport.theBattleServiceIsNotReady"))
     return this.peer.connect(`${PREFIX}${code}`, { serialization: "json", reliable: true })
   }
 

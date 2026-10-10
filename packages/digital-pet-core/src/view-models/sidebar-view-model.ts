@@ -2,6 +2,7 @@ import type { SidebarCardInputs } from "../application/models/sidebar-card-input
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "../config/defaults.ts"
 import type { ResolvedDigitalPetSettings } from "../config/types.ts"
 import { getStageKey, getStageLabel } from "../data/stages.ts"
+import { IntlModule } from "../i18n.ts"
 
 export type SidebarCardModel =
   | { readonly kind: "no_partner"; readonly messageLine: string }
@@ -24,7 +25,8 @@ export const buildSidebarCardModel = (
   inputs: SidebarCardInputs,
   settings: ResolvedDigitalPetSettings = DEFAULT_DIGITAL_PET_SETTINGS,
 ): SidebarCardModel => {
-  if (inputs.kind === "no_partner") return { kind: "no_partner", messageLine: "No active partner" }
+  if (inputs.kind === "no_partner")
+    return { kind: "no_partner", messageLine: IntlModule.translate("sidebarViewModel.noActivePartner") }
 
   const stageKey = getStageKey(inputs.node.stage)
   return {

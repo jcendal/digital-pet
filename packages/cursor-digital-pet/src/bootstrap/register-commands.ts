@@ -4,8 +4,8 @@ import { setDigitalPetCheatNode } from "@jcendal/digital-pet-core/application/us
 import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/spawn-partner.ts"
 import { unfreezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/unfreeze-digital-pet.ts"
 import * as vscode from "vscode"
-
 import { installDigitalPetHooks, uninstallDigitalPetHooks } from "../adapters/cursor/install-hooks.ts"
+import { IntlModule } from "../i18n.ts"
 import { openDexPanel } from "../webview/panels/dex/dex-panel.ts"
 import { openHistoryPanel } from "../webview/panels/history/history-panel.ts"
 import type { DigitalPetContainer } from "./container.ts"
@@ -17,33 +17,39 @@ export const registerCommands = (context: vscode.ExtensionContext, container: Di
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (!event.affectsConfiguration("digital-pet")) return
       vscode.window.showInformationMessage(
-        "Digital Pet settings changed. Reload the window to apply database path changes.",
+        IntlModule.translate("registerCommands.digitalPetSettingsChangedReloadTheWindowTo"),
       )
     }),
     vscode.commands.registerCommand("cursorDigitalPet.spawn", async () => {
       spawnPartner(repository, new Date().toISOString())
-      vscode.window.showInformationMessage("Digital Pet partner spawned.")
+      vscode.window.showInformationMessage(IntlModule.translate("registerCommands.digitalPetPartnerSpawned"))
       refreshSidebar()
     }),
     vscode.commands.registerCommand("cursorDigitalPet.freeze", async () => {
       const result = freezeDigitalPet(repository)
       vscode.window.showInformationMessage(
-        result.kind === "frozen" ? "Digital Pet frozen." : "Digital Pet already frozen.",
+        result.kind === "frozen"
+          ? IntlModule.translate("registerCommands.digitalPetFrozen")
+          : IntlModule.translate("registerCommands.digitalPetAlreadyFrozen"),
       )
       refreshSidebar()
     }),
     vscode.commands.registerCommand("cursorDigitalPet.unfreeze", async () => {
       const result = unfreezeDigitalPet(repository)
       vscode.window.showInformationMessage(
-        result.kind === "unfrozen" ? "Digital Pet unfrozen." : "Digital Pet already active.",
+        result.kind === "unfrozen"
+          ? IntlModule.translate("registerCommands.digitalPetUnfrozen")
+          : IntlModule.translate("registerCommands.digitalPetAlreadyActive"),
       )
       refreshSidebar()
     }),
     vscode.commands.registerCommand("cursorDigitalPet.set", async () => {
-      const nodeId = await vscode.window.showInputBox({ prompt: "Digimon node ID (e.g. 0-001)" })
+      const nodeId = await vscode.window.showInputBox({
+        prompt: IntlModule.translate("registerCommands.digimonNodeIdEG0001"),
+      })
       if (nodeId === undefined || nodeId.length === 0) return
       const result = setDigitalPetCheatNode(repository, nodeId)
-      vscode.window.showInformationMessage(`Set result: ${result.kind}`)
+      vscode.window.showInformationMessage(IntlModule.translate("registerCommands.setResult", { kind: result.kind }))
       refreshSidebar()
     }),
     vscode.commands.registerCommand("cursorDigitalPet.dex", () => openDexPanel(context, databaseOptions())),

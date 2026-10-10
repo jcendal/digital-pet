@@ -1,25 +1,26 @@
+import { catalogs } from "../i18n.ts"
 import type { DigitalPetStageLabels, ResolvedDigitalPetSettings, StageLabels, StageThresholdSettings } from "./types.ts"
 
 const EN_STAGE_LABELS = Object.freeze({
-  egg: "DigiEgg",
-  babyI: "In Training I",
-  babyII: "In Training II",
-  child: "Rookie",
-  adult: "Champion",
-  perfect: "Ultimate",
-  ultimate: "Mega",
-  superUltimate: "Ultra",
+  egg: catalogs.en["stages.egg"],
+  babyI: catalogs.en["stages.babyI"],
+  babyII: catalogs.en["stages.babyII"],
+  child: catalogs.en["stages.child"],
+  adult: catalogs.en["stages.adult"],
+  perfect: catalogs.en["stages.perfect"],
+  ultimate: catalogs.en["stages.ultimate"],
+  superUltimate: catalogs.en["stages.superUltimate"],
 } as const satisfies StageLabels)
 
 const JP_STAGE_LABELS = Object.freeze({
-  egg: "Digitama",
-  babyI: "Baby I",
-  babyII: "Baby II",
-  child: "Child",
-  adult: "Adult",
-  perfect: "Perfect",
-  ultimate: "Ultimate",
-  superUltimate: "SuperUltimate",
+  egg: catalogs.en["legacyStages.egg"],
+  babyI: catalogs.en["legacyStages.babyI"],
+  babyII: catalogs.en["legacyStages.babyII"],
+  child: catalogs.en["legacyStages.child"],
+  adult: catalogs.en["legacyStages.adult"],
+  perfect: catalogs.en["legacyStages.perfect"],
+  ultimate: catalogs.en["legacyStages.ultimate"],
+  superUltimate: catalogs.en["legacyStages.superUltimate"],
 } as const satisfies StageLabels)
 
 export const DIGITAL_PET_STAGE_LABELS = Object.freeze({

@@ -11,7 +11,8 @@
     "lib": ["ESNext", "DOM"],
     "types": ["node"],
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["src", "../../types/web-assets.d.ts"],
   "exclude": ["src/worker/service-worker.ts"]

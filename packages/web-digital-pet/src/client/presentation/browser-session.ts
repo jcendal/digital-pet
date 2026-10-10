@@ -7,6 +7,7 @@ import { buildHistoryPanelModel } from "@jcendal/digital-pet-webviews/panels/his
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { archiveFor, settingsFor } from "../../domain/pet/models.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 import { isPresentingEvolution } from "../features/partner/presentation.ts"
 import { cleanPoop as persistCleanPoop, readLocalState, readPendingBattle } from "../persistence/pet-store.ts"
 
@@ -84,7 +85,12 @@ export const cleanPoop = async (partnerId: string, poopId: number, active: () =>
 export const dex = async () => {
   const state = await readLocalState()
   const model = buildDexPanelModel(archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
-  return { ...model, currentNodeId: state.currentNodeId, message: "Discoveries are saved in this browser." }
+  return {
+    ...model,
+    currentNodeId: state.currentNodeId,
+    message: IntlModule.translate("browserSession.discoveriesAreSavedInThisBrowser"),
+    messageKey: "web:browserSession.discoveriesAreSavedInThisBrowser",
+  }
 }
 
 export const history = async () => {

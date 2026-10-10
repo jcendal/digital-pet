@@ -4,6 +4,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { settingsFor } from "../../../domain/pet/models.ts"
 import { pendingEvolutionKey } from "../../../domain/pet/progress.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { finishLocalEvolution, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
 import { beginPresentation, endPresentation, presentationCurrent, presentationVersion } from "./presentation.ts"
@@ -25,7 +26,8 @@ export const presentPendingEvolution = async (
     if (!pending || !key) return
     const player = DIGIMON_CATALOG.byId.get(state.currentNodeId)
     const opponent = pending.opponentNodeId ? DIGIMON_CATALOG.byId.get(pending.opponentNodeId) : null
-    if (!player || (pending.opponentNodeId && !opponent)) throw new Error("Invalid pending battle")
+    if (!player || (pending.opponentNodeId && !opponent))
+      throw new Error(IntlModule.translate("evolution.invalidPendingBattle"))
     let won = true
     await runForegroundEvolution({
       active,

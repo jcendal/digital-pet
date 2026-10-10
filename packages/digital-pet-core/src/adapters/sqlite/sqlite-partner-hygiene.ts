@@ -1,5 +1,6 @@
 import type { PartnerHygieneStore } from "../../application/ports/partner-hygiene.ts"
 import { parseHygiene } from "../../domain/hygiene.ts"
+import { IntlModule } from "../../i18n.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sqlite-digital-pet-schema.ts"
 
@@ -11,7 +12,7 @@ export const createSqlitePartnerHygiene = (executor: SqliteExecutor): PartnerHyg
       const control = executor.get<{ frozen: number; cheat_node_id: string | null }>(
         "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1",
       )
-      if (!control) throw new Error("Digital Pet control state row is missing")
+      if (!control) throw new Error(IntlModule.translate("errors.missingControlState"))
       const stored = executor.get<{ state: string }>("SELECT state FROM partner_hygiene WHERE partner_id = ?", [
         row.partner_id,
       ])

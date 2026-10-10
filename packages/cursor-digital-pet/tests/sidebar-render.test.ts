@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Script } from "node:vm"
+import { IntlModule as runtime } from "@jcendal/digital-pet-intl"
+import { IntlModule } from "@jcendal/digital-pet-webviews/i18n"
 import {
   buildGaugeLine,
   buildNextCheckLine,
@@ -84,6 +86,8 @@ const sidebarPreview = (idleAlignment?: string) => {
   const messages: unknown[] = []
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
+    IntlModule,
+    getIntlModule: () => runtime,
     acquireVsCodeApi: () => ({ postMessage: (message: unknown) => messages.push(message) }),
     getComputedStyle: () => ({ getPropertyValue: () => "6" }),
     document: {
@@ -209,7 +213,9 @@ describe("sidebar render", () => {
     const cursorHtml = buildSidebarWebviewHtml("cursor")
     const webHtml = buildSidebarWebviewHtml("web", { fontUri: "font.ttf", cspSource: "'self'", webShell: true })
 
-    expect(cursorHtml).toContain('<main class="pet-module" aria-label="Digital Pet">')
+    expect(cursorHtml).toContain(
+      '<main class="pet-module" aria-label="Digital Pet" data-i18n-aria-label="webviews:sidebarDocument.digitalPet">',
+    )
     expect(cursorHtml).not.toContain('class="device partner-device"')
     expect(cursorHtml).not.toContain('class="masthead"')
     expect(webHtml).toContain('class="device partner-device"')

@@ -58,6 +58,12 @@ manually arrange code against the formatter.
 - Keep domain and application code independent of Cursor, OpenCode, and browser
   APIs. Use ports and adapters for host APIs and persistence. Extend existing
   shared modules rather than copying logic into each app.
+- Keep user-facing copy in each package's `assets/i18n/en.json`, `ko.json`,
+  `es.json`, and `gl.json`. Use a package-scoped `IntlModule` from
+  `digital-pet-intl`; keep matching keys and `{name}` placeholders across all
+  languages. Keep markup in renderers, not translation files. See
+  [Digital Pet Intl](packages/digital-pet-intl/README.md) for the shared API and
+  browser integration.
 - Reuse shared CSS custom properties for colors and typography. Keep styles next
   to their view and preserve accessibility, keyboard interactions, reduced
   motion, and narrow-screen layouts.

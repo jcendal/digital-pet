@@ -6,6 +6,7 @@ import { createDatabaseChangeWatcher } from "../../../adapters/sqlite/database-c
 import { resolveDatabasePath } from "../../../adapters/sqlite/options.ts"
 import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { readArchive } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import { IntlModule } from "../../../i18n.ts"
 import { createAsyncRefreshQueue } from "../../../shared/async-refresh-queue.ts"
 import { openDexPanel } from "../dex/dex-panel.ts"
 import { buildHistoryPanelModel } from "./history-model.ts"
@@ -35,7 +36,7 @@ export const openHistoryPanel = async (
   const assetsRoot = vscode.Uri.joinPath(context.extensionUri, "dist", "assets")
   const panel = vscode.window.createWebviewPanel(
     "cursorDigitalPetHistory",
-    "Digital Pet History",
+    IntlModule.translate("historyPanel.digitalPetHistory"),
     vscode.ViewColumn.One,
     {
       enableScripts: true,
@@ -52,7 +53,10 @@ export const openHistoryPanel = async (
     })
   const requestRefresh = (): void => {
     void refresh().catch((error: unknown) => {
-      if (!disposed) void vscode.window.showWarningMessage(`Digital Pet History could not refresh: ${String(error)}`)
+      if (!disposed)
+        void vscode.window.showWarningMessage(
+          IntlModule.translate("historyPanel.digitalPetHistoryCouldNotRefresh", { value0: String(error) }),
+        )
     })
   }
   const watcher = createDatabaseChangeWatcher({ ...options, databasePath, onChange: requestRefresh })
@@ -71,7 +75,9 @@ export const openHistoryPanel = async (
       const step = generation?.steps.at(-1)
       if (step?.catalogued && step.id === message.id) {
         void openDexPanel(context, options, step.id).catch((error: unknown) => {
-          void vscode.window.showWarningMessage(`Digital Pet Dex could not open: ${String(error)}`)
+          void vscode.window.showWarningMessage(
+            IntlModule.translate("historyPanel.digitalPetDexCouldNotOpen", { value0: String(error) }),
+          )
         })
       }
     }

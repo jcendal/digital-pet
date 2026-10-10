@@ -2,6 +2,7 @@ import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { parseHygiene } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "../pet/progress.ts"
 
 export const TRANSFER_VERSION = 1
@@ -20,13 +21,13 @@ const validNodeId = (value: unknown): value is string => typeof value === "strin
 
 const parseEvents = (value: unknown): LocalPetState["events"] => {
   if (!Array.isArray(value) || value.length < 1 || value.length > 256)
-    throw new Error("The received save contains an invalid history")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsAnInvalidHistory"))
   let previousTime = 0
   return value.map((event) => {
     if (!isRecord(event) || !validNodeId(event.currentNodeId) || !validDate(event.createdAt))
-      throw new Error("The received save contains an invalid history")
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsAnInvalidHistory"))
     const timestamp = Date.parse(event.createdAt)
-    if (timestamp < previousTime) throw new Error("The received save has an unordered history")
+    if (timestamp < previousTime) throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnUnorderedHistory"))
     previousTime = timestamp
     return { currentNodeId: event.currentNodeId, createdAt: event.createdAt }
   })
@@ -34,9 +35,9 @@ const parseEvents = (value: unknown): LocalPetState["events"] => {
 
 export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES): PetTransfer => {
   if (!isRecord(input) || input.version !== TRANSFER_VERSION || !isRecord(input.state))
-    throw new Error("Unsupported save format")
+    throw new Error(IntlModule.translate("protocol.unsupportedSaveFormat"))
   if (new TextEncoder().encode(JSON.stringify(input)).byteLength > maxBytes)
-    throw new Error("The received save is too large")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveIsTooLarge"))
 
   const state = input.state
   if (
@@ -58,11 +59,11 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     state.events.length < 1 ||
     state.events.length > 256
   )
-    throw new Error("The received save contains invalid partner data")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
 
   const events = parseEvents(state.events)
   if (events.at(-1)?.currentNodeId !== state.currentNodeId)
-    throw new Error("The received save does not match its history")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveDoesNotMatchItsHistory"))
 
   if (
     state.experienceLevel !== undefined &&
@@ -70,9 +71,9 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     state.experienceLevel !== "normal" &&
     state.experienceLevel !== "high"
   )
-    throw new Error("The received save has an invalid experience setting")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidExperienceSetting"))
   if (state.worldVisit !== undefined && !isWorldVisit(state.worldVisit))
-    throw new Error("The received save has an invalid destination")
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidDestination"))
   let pendingEvolution: LocalPetState["pendingEvolution"]
   if (state.pendingEvolution !== undefined) {
     const pending = state.pendingEvolution
@@ -91,7 +92,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
         : !validNodeId(pending.opponentNodeId) ||
           DIGIMON_CATALOG.byId.get(pending.opponentNodeId)?.stage !== current.stage)
     )
-      throw new Error("The received save has an invalid pending evolution")
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidPendingEvolution"))
     pendingEvolution = {
       targetNodeId: pending.targetNodeId,
       opponentNodeId: pending.opponentNodeId as string | null,
@@ -103,7 +104,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
   if (state.food !== undefined) {
     const value = state.food
     if (!isRecord(value) || DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage === 0)
-      throw new Error("The received save has invalid food")
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveHasInvalidFood"))
     if (value.kind === "available" && value.availableAt === undefined) food = { kind: "available" }
     else if (
       value.kind === "scheduled" &&
@@ -113,11 +114,11 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       value.availableAt <= Date.now() + 24 * 60 * 60 * 1000
     )
       food = { kind: "scheduled", availableAt: value.availableAt }
-    else throw new Error("The received save has invalid food")
+    else throw new Error(IntlModule.translate("protocol.theReceivedSaveHasInvalidFood"))
   }
   if (state.retiredPartners !== undefined) {
     if (!Array.isArray(state.retiredPartners) || state.retiredPartners.length > 128)
-      throw new Error("The received save has an invalid archive")
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidArchive"))
     retiredPartners = state.retiredPartners.map((partner) => {
       if (
         !isRecord(partner) ||
@@ -128,7 +129,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
         !validDate(partner.retiredAt) ||
         Date.parse(partner.retiredAt) < Date.parse(partner.createdAt)
       )
-        throw new Error("The received save has an invalid archived partner")
+        throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidArchivedPartner"))
       return {
         partnerId: partner.partnerId,
         createdAt: partner.createdAt,

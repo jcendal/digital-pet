@@ -1,4 +1,5 @@
 import type { CompletedUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
+import { IntlModule } from "../../i18n.ts"
 
 import { CURSOR_USAGE_EVENTS_URL } from "../../shared/constants/cursor.ts"
 import { sleep } from "../../shared/sleep.ts"
@@ -52,7 +53,7 @@ const fetchUsagePage = async (
   })
 
   if (!response.ok) {
-    throw new Error(`Usage API failed: ${response.status}`)
+    throw new Error(IntlModule.translate("cursorApiWatermark.usageApiFailed", { status: response.status }))
   }
 
   return (await response.json()) as UsageApiResponse

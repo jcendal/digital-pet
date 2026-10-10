@@ -2,6 +2,7 @@ import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { BattleNegotiation, battleNode, type Fighter } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import type { LocalPetState } from "../../../domain/pet/progress.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { readLocalState, readPendingBattle, settleBattle } from "../../persistence/pet-store.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
@@ -10,7 +11,7 @@ import { BattleTransport, battleCodeOf, validBattleCode } from "./transport.ts"
 
 const element = <T extends HTMLElement>(id: string): T => {
   const found = document.getElementById(id)
-  if (!found) throw new Error(`Missing battle control: ${id}`)
+  if (!found) throw new Error(IntlModule.translate("controller.missingBattleControl", { id: id }))
   return found as T
 }
 const randomSecret = (): string =>
@@ -49,7 +50,9 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   }
   const update = (): void => {
     button.disabled = !enabled
-    button.title = enabled ? "Player battle" : "Choose THIS BROWSER in Options to battle"
+    button.title = enabled
+      ? IntlModule.translate("controller.playerBattle")
+      : IntlModule.translate("controller.chooseThisBrowserInOptionsToBattle")
     request.disabled = !enabled || !ready || Boolean(session || playback || pending)
   }
   const open = (): void => {
@@ -83,7 +86,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       })
       .catch((error: unknown) => {
         if (session !== current) return
-        cancel(error instanceof Error ? error.message : "The battle could not be completed")
+        cancel(error instanceof Error ? error.message : IntlModule.translate("controller.theBattleCouldNotBeCompleted"))
       })
   }
   const reservePresentation = async (current: { release?: () => void }): Promise<void> => {
@@ -94,7 +97,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       await new Promise<void>((resolve, reject) => {
         void navigator.locks
           .request("digital-pet:evolution", { ifAvailable: true }, async (lock) => {
-            if (!lock) return reject(new Error("Your companion is busy in another view or tab. Try again shortly."))
+            if (!lock) return reject(new Error(IntlModule.translate("controller.yourCompanionIsBusyInAnotherViewOr")))
             resolve()
             await hold
           })
@@ -110,10 +113,11 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     update()
     const checkpoint = async (): Promise<void> => {
       while (playback === current && document.hidden) await new Promise((resolve) => window.setTimeout(resolve, 100))
-      if (playback !== current || !enabled || !browserSaveSelected()) throw new Error("Battle playback paused")
+      if (playback !== current || !enabled || !browserSaveSelected())
+        throw new Error(IntlModule.translate("controller.battlePlaybackPaused"))
     }
     try {
-      if (otherBusy()) throw new Error("Finish your device transfer to resume the saved battle")
+      if (otherBusy()) throw new Error(IntlModule.translate("controller.finishYourDeviceTransferToResumeTheSaved"))
       await reservePresentation(current)
       await checkpoint()
       const saved = await readPendingBattle()
@@ -123,7 +127,13 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       incoming.hidden = true
       arena.hidden = false
       open()
-      note(saved.completedShots > 0 ? "Resuming saved battle…" : owner ? "Battle started!" : "Resuming saved battle…")
+      note(
+        saved.completedShots > 0
+          ? IntlModule.translate("controller.resumingSavedBattle")
+          : owner
+            ? IntlModule.translate("controller.battleStarted")
+            : IntlModule.translate("controller.resumingSavedBattle"),
+      )
       const result = await playSavedBattle(saved, {
         checkpoint,
         artwork: (text) => {
@@ -140,7 +150,9 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     } catch (error) {
       if (playback === current)
         note(
-          error instanceof Error ? `${error.message}. Reopen BATTLE to continue.` : "Could not resume the saved battle",
+          error instanceof Error
+            ? IntlModule.translate("controller.reopenBattleToContinue", { message: error.message })
+            : IntlModule.translate("controller.couldNotResumeTheSavedBattle"),
         )
     } finally {
       if (playback === current) stopPlayback()
@@ -149,14 +161,17 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     }
   }
   const prepare = async (current: Session): Promise<Fighter> => {
-    if (!enabled || !browserSaveSelected() || otherBusy()) throw new Error("Finish your device transfer first")
-    if (await readPendingBattle()) throw new Error("Finish the saved battle first")
+    if (!enabled || !browserSaveSelected() || otherBusy())
+      throw new Error(IntlModule.translate("controller.finishYourDeviceTransferFirst"))
+    if (await readPendingBattle()) throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
     await reservePresentation(current)
     const state = await readLocalState()
-    if (session !== current || !enabled || !browserSaveSelected()) throw new Error("Battle cancelled")
+    if (session !== current || !enabled || !browserSaveSelected())
+      throw new Error(IntlModule.translate("controller.battleCancelled"))
     if (!DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage)
-      throw new Error("Wait for your egg to hatch before battling")
-    if (state.pendingEvolution) throw new Error("Finish your companion's evolution before battling")
+      throw new Error(IntlModule.translate("controller.waitForYourEggToHatchBeforeBattling"))
+    if (state.pendingEvolution)
+      throw new Error(IntlModule.translate("controller.finishYourCompanionSEvolutionBeforeBattling"))
     current.local = state
     return { partnerId: state.partnerId, nodeId: state.currentNodeId }
   }
@@ -176,12 +191,14 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
           if (session === current) connection.send(message)
         },
         requested: (fighter) => {
-          element("battle-incoming-text").textContent =
-            `${battleNode(fighter.nodeId).nameEn} (${battleCodeOf(connection)}) challenges your companion.`
+          element("battle-incoming-text").textContent = IntlModule.translate("controller.challengesYourCompanion", {
+            nameEn: battleNode(fighter.nodeId).nameEn,
+            value1: battleCodeOf(connection),
+          })
           incoming.hidden = false
           arena.hidden = true
           open()
-          note("A player wants to battle. Accept to use your current Digimon.")
+          note(IntlModule.translate("controller.aPlayerWantsToBattleAcceptToUse"))
           decline.focus()
         },
         agreed: async (battleId, challengerFighter, receiver, plan, seed) => {
@@ -203,7 +220,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
           if (session !== current) return
           if (!pending) {
             reset()
-            note("This battle was already completed.")
+            note(IntlModule.translate("controller.thisBattleWasAlreadyCompleted"))
             return
           }
           await resume(current)
@@ -215,25 +232,26 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     arena.hidden = true
     update()
     current.timer = window.setTimeout(() => {
-      if (session === current) cancel("Battle request timed out. Keep both apps open and try again.")
+      if (session === current) cancel(IntlModule.translate("controller.battleRequestTimedOutKeepBothAppsOpen"))
     }, 120_000)
     connection.on("open", () => {
       if (!challenger) return
       enqueue(current, async () => {
         const fighter = await prepare(current)
         await current.negotiation.start(crypto.randomUUID(), fighter)
-        note("Waiting for the other player to accept…")
+        note(IntlModule.translate("controller.waitingForTheOtherPlayerToAccept"))
       })
     })
     connection.on("data", (data) => enqueue(current, () => current.negotiation.receive(data)))
     connection.on("close", () => {
       if (session === current && !current.agreed) {
         reset()
-        note("The other player disconnected. No reward awarded.")
+        note(IntlModule.translate("controller.theOtherPlayerDisconnectedNoRewardAwarded"))
       }
     })
     connection.on("error", (error) => {
-      if (session === current && !current.agreed) cancel(`Battle connection failed: ${error.message}`)
+      if (session === current && !current.agreed)
+        cancel(IntlModule.translate("controller.battleConnectionFailed", { message: error.message }))
     })
   }
 
@@ -242,18 +260,19 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       ready = true
       ownCode.textContent = code
       update()
-      if (!session && !playback && !pending) note("Share your six-digit code to receive a battle request.")
+      if (!session && !playback && !pending) note(IntlModule.translate("controller.shareYourSixDigitCodeToReceiveA"))
     },
     incoming: (connection) => bind(connection, false),
     disconnected: () => {
       ready = false
       update()
-      if (!session && !playback && !pending) note("Reconnecting to the battle service…")
+      if (!session && !playback && !pending) note(IntlModule.translate("controller.reconnectingToTheBattleService"))
     },
     error: (message) => {
       ready = transport.connected
       update()
-      if (!session?.agreed && !pending && !playback) cancel(`Could not connect: ${message}`)
+      if (!session?.agreed && !pending && !playback)
+        cancel(IntlModule.translate("controller.couldNotConnect", { message: message }))
     },
   })
   button.addEventListener("click", () => {
@@ -262,14 +281,14 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   })
   request.addEventListener("click", () => {
     const target = input.value.trim()
-    if (!validBattleCode(target)) return note("Enter a six-digit battle code.")
-    if (target === transport.code) return note("Enter the other player's code.")
-    if (otherBusy()) return note("Finish the current device transfer first.")
+    if (!validBattleCode(target)) return note(IntlModule.translate("controller.enterASixDigitBattleCode"))
+    if (target === transport.code) return note(IntlModule.translate("controller.enterTheOtherPlayerSCode"))
+    if (otherBusy()) return note(IntlModule.translate("controller.finishTheCurrentDeviceTransferFirst"))
     try {
       bind(transport.connect(target), true)
-      note("Contacting the other player…")
+      note(IntlModule.translate("controller.contactingTheOtherPlayer"))
     } catch (error) {
-      note(error instanceof Error ? error.message : "Could not connect")
+      note(error instanceof Error ? error.message : IntlModule.translate("controller.couldNotConnect2"))
     }
   })
   accept.addEventListener("click", () => {
@@ -279,15 +298,15 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     enqueue(current, async () => {
       await current.negotiation.accept(await prepare(current))
       incoming.hidden = true
-      note("Preparing the battle…")
+      note(IntlModule.translate("controller.preparingTheBattle"))
     })
   })
-  decline.addEventListener("click", () => cancel("Battle declined."))
+  decline.addEventListener("click", () => cancel(IntlModule.translate("controller.battleDeclined")))
   element("battle-copy").addEventListener("click", () => {
     if (ready)
       void navigator.clipboard.writeText(transport.code).then(
-        () => note("Battle code copied."),
-        () => note("Could not copy the battle code."),
+        () => note(IntlModule.translate("controller.battleCodeCopied")),
+        () => note(IntlModule.translate("controller.couldNotCopyTheBattleCode")),
       )
   })
   dialog.addEventListener("close", () => {
@@ -295,7 +314,11 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     if (session || playback) {
       const agreed = Boolean(pending || session?.agreed)
       stopPlayback()
-      cancel(agreed ? "Battle paused. Reopen BATTLE to continue." : "Battle cancelled.")
+      cancel(
+        agreed
+          ? IntlModule.translate("controller.battlePausedReopenBattleToContinue")
+          : IntlModule.translate("controller.battleCancelled2"),
+      )
       refreshBrowserViews()
     }
   })
@@ -317,7 +340,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       enabled = value
       if (!value) {
         stopPlayback()
-        if (session) cancel("Choose THIS BROWSER to battle with your companion.")
+        if (session) cancel(IntlModule.translate("controller.chooseThisBrowserToBattleWithYourCompanion"))
       }
       if (!value && dialog.open) dialog.close()
       update()

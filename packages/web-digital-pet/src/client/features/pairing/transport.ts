@@ -1,4 +1,5 @@
 import Peer, { type DataConnection } from "peerjs"
+import { IntlModule } from "../../../shared/i18n.ts"
 
 const PEER_PREFIX = "web-digital-pet-"
 export const CODE_LENGTH = 16
@@ -32,7 +33,7 @@ export class BrowserTransfer {
   }
 
   connect(code: string): DataConnection {
-    if (!this.peer.open) throw new Error("The pairing service is not connected yet")
+    if (!this.peer.open) throw new Error(IntlModule.translate("transport.thePairingServiceIsNotConnectedYet"))
     return this.peer.connect(`${PEER_PREFIX}${code}`, { serialization: "json", reliable: true })
   }
 

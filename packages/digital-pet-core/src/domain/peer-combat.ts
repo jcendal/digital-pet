@@ -1,10 +1,11 @@
+import { IntlModule } from "../i18n.ts"
 import { type BattlePlan, type CombatStats, planCombat } from "./combat.ts"
 
 export const BATTLE_EXPERIENCE_FRACTION = 0.2
 
 /** Protocol v1: canonical player is always the challenger, on both machines. */
 export const planSeededCombat = (player: CombatStats, opponent: CombatStats, seed: string): BattlePlan => {
-  if (!/^[a-f0-9]{64}$/.test(seed)) throw new Error("Invalid combat seed")
+  if (!/^[a-f0-9]{64}$/.test(seed)) throw new Error(IntlModule.translate("errors.invalidCombatSeed"))
   const word = (index: number): number => Number.parseInt(seed.slice(index * 8, index * 8 + 8), 16)
   let a = (word(0) ^ word(4)) >>> 0
   let b = (word(1) ^ word(5)) >>> 0

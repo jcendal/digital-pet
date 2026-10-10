@@ -1,5 +1,6 @@
 import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/ports/digital-pet-control.ts"
 import { freezeDigitalPet } from "@jcendal/digital-pet-core/application/use-cases/freeze-digital-pet.ts"
+import { IntlModule } from "../i18n.ts"
 import type { DigitalPetCommandResult } from "./digital-pet-command-result.ts"
 
 export type DigitalPetFreezeContext = {
@@ -18,7 +19,7 @@ export const runDigitalPetFreezeCommand = async (
       sessionID: context.sessionID,
       messageID: context.messageID,
       type: "text" as const,
-      text: "Digital Pet frozen.",
+      text: IntlModule.translate("digitalPetFreeze.digitalPetFrozen"),
     },
   ]
 

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "rootDir": ".",
-    "types": ["bun", "node", "vscode"]
+    "types": ["bun", "node", "vscode"],
+    "resolveJsonModule": true
   },
   "include": ["src", "tests", "../../types/web-assets.d.ts"],
   "exclude": ["node_modules", "dist"]

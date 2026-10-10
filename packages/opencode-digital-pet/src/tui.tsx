@@ -20,7 +20,6 @@ import type { TuiDialogProps, TuiDialogStack, TuiKeymap, TuiPlugin, TuiTheme } f
 import type { EventMessagePartUpdated, EventMessageUpdated, EventSessionStatus } from "@opencode-ai/sdk/v2"
 import type { JSX } from "@opentui/solid"
 import { createSignal } from "solid-js"
-
 import {
   type DigitalPetToastEvent,
   type DigitalPetToastNotifier,
@@ -30,6 +29,7 @@ import { createSqliteDigitalPetArchiveReader } from "./adapters/sqlite/sqlite-di
 import { createSqliteDigitalPetRepository } from "./adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { createSqliteSidebarSnapshotReader } from "./adapters/sqlite/sqlite-sidebar-snapshot-reader.ts"
 import { loadGlobalDigitalPetSettings } from "./config/global-digital-pet-settings.ts"
+import { initializeUiLanguage } from "./config/ui-language.ts"
 import { registerDigitalPetCommandLayer } from "./tui/digital-pet-command-layer.tsx"
 import { DigitalPetSidebarCard } from "./tui/sidebar-card.tsx"
 import { createSidebarPollLoop } from "./tui/sidebar-poll-loop.ts"
@@ -392,6 +392,7 @@ export const createTui =
   }
 
 export const tui: TuiPlugin = async (api, options) => {
+  initializeUiLanguage()
   const databaseOptions = readerOptions(options)
   const reader = createSqliteSidebarSnapshotReader(databaseOptions)
   const battleRepository = await createSqliteDigitalPetRepository(databaseOptions)

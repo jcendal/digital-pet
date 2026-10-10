@@ -1,0 +1,12 @@
+{
+  "evolutionBattleArtwork.hit": "명중!",
+  "evolutionBattleArtwork.miss": "빗나감",
+  "evolutionBattleArtwork.draw": "무승부!",
+  "evolutionBattleArtwork.win": "승리!",
+  "evolutionBattleArtwork.lose": "패배!",
+  "evolutionBattleArtwork.invalidBattlePlaybackCheckpoint": "전투 재생 지점이 올바르지 않습니다",
+  "evolutionPresentation.unknownEvolutionParticipant": "진화 참가자를 찾을 수 없습니다",
+  "evolutionPresentation.invalidEvolutionOpponent": "진화 상대가 올바르지 않습니다",
+  "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "알만 전투 없이 진화할 수 있습니다",
+  "battle.intro": "전투"
+}

@@ -1,4 +1,5 @@
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { consumeFood, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { animation } from "./animation.ts"
 import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
@@ -52,7 +53,7 @@ const eat = async (): Promise<void> => {
     if (button) button.hidden = true
     if (feedback) {
       feedback.hidden = false
-      feedback.textContent = view.givesExperience ? "+10% EXPERIENCE" : "YUM!"
+      feedback.textContent = view.givesExperience ? "+10% EXPERIENCE" : IntlModule.translate("food.yum")
     }
     await runForegroundEvolution({
       active: actions.active,
@@ -84,7 +85,7 @@ const eat = async (): Promise<void> => {
     else await play()
   } catch (error) {
     if (!(error instanceof PresentationCancelled)) {
-      if (button) button.title = "Could not feed your companion. Try again."
+      if (button) button.title = IntlModule.translate("food.couldNotFeedYourCompanionTryAgain")
       throw error
     }
   } finally {
@@ -115,7 +116,7 @@ export const updateFoodButton = (
       void eat().catch(() => {
         if (feedback) {
           feedback.hidden = false
-          feedback.textContent = "Could not feed. Try again."
+          feedback.textContent = IntlModule.translate("food.couldNotFeedTryAgain")
         }
       })
     })
@@ -130,7 +131,9 @@ export const updateFoodButton = (
   if (feedback && !isPresentingEvolution()) feedback.hidden = true
   button.hidden = !view?.available || isPresentingEvolution()
   button.disabled = !view?.canEat || isPresentingEvolution()
-  const label = view?.givesExperience ? "Feed your companion · +10% experience" : "Feed your companion"
+  const label = view?.givesExperience
+    ? IntlModule.translate("food.feedYourCompanion10Experience")
+    : IntlModule.translate("food.feedYourCompanion")
   button.setAttribute("aria-label", label)
   button.title = label
 }

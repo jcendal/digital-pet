@@ -11,7 +11,8 @@
     "lib": ["ESNext"],
     "types": ["bun"],
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["src", "tests"]
 }

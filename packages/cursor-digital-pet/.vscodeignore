@@ -15,3 +15,5 @@
 !dist/assets/fonts/
 !dist/assets/fonts/Silkscreen-Regular.ttf
 !dist/assets/fonts/OFL.txt
+
+!package.nls*.json

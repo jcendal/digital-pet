@@ -48,7 +48,8 @@ const inspect = (path) => {
       report(`missing dependency ${specifier}`)
       return
     }
-    if (allowed[area] && !allowed[area].has(areaOf(target)))
+    const translationAsset = dirname(target) === resolve(root, "assets/i18n") && extname(target) === ".json"
+    if (allowed[area] && !allowed[area].has(areaOf(target)) && !translationAsset)
       report(`${area} must not depend on ${relative(root, target)}`)
     dependencies.push(target)
   }

@@ -9,6 +9,7 @@ import { spawnPartner } from "@jcendal/digital-pet-core/application/use-cases/sp
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { StageThresholds } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
+import { IntlModule } from "../i18n.ts"
 
 const DEV_INSTANT_BATTLE_THRESHOLDS: StageThresholds = Object.freeze(
   Object.fromEntries(DIGIMON_STAGES.map((stage) => [stage, 1])) as StageThresholds,
@@ -40,16 +41,20 @@ const hasPendingBattle = (snapshot: SidebarSnapshot): boolean =>
 const assertPartnerCanBattle = (snapshot: SidebarSnapshot): void => {
   const current = DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)
   if (current === undefined) {
-    throw new Error(`Digital Pet dev: partner node ${snapshot.currentNodeId} is missing from the catalog.`)
+    throw new Error(
+      IntlModule.translate("setupScenario.digitalPetDevPartnerNodeIsMissingFrom", {
+        currentNodeId: snapshot.currentNodeId,
+      }),
+    )
   }
   if (snapshot.frozen) {
-    throw new Error("Digital Pet dev: partner is frozen. Unfreeze before opening an evolution battle.")
+    throw new Error(IntlModule.translate("setupScenario.digitalPetDevPartnerIsFrozenUnfreezeBefore"))
   }
   if (snapshot.isSetOverride) {
-    throw new Error("Digital Pet dev: clear the digimon override before opening an evolution battle.")
+    throw new Error(IntlModule.translate("setupScenario.digitalPetDevClearTheDigimonOverrideBefore"))
   }
   if (snapshot.isTerminal || current.nextEvolutions.length === 0) {
-    throw new Error("Digital Pet dev: partner cannot evolve further, so no evolution battle can be opened.")
+    throw new Error(IntlModule.translate("setupScenario.digitalPetDevPartnerCannotEvolveFurtherSo"))
   }
 }
 
@@ -62,7 +67,7 @@ export const setupBattlePending = (repository: DevScenarioRepository): void => {
   ensureActivePartner(repository)
   const initialSnapshot = repository.getSidebarSnapshot()
   if (initialSnapshot === null) {
-    throw new Error("Digital Pet dev: could not read the active partner snapshot.")
+    throw new Error(IntlModule.translate("setupScenario.digitalPetDevCouldNotReadTheActive"))
   }
   if (hasPendingBattle(initialSnapshot)) return
 
@@ -71,7 +76,11 @@ export const setupBattlePending = (repository: DevScenarioRepository): void => {
   const receiptSuffix = Date.now().toString(36)
   const current = DIGIMON_CATALOG.byId.get(initialSnapshot.currentNodeId)
   if (current === undefined) {
-    throw new Error(`Digital Pet dev: partner node ${initialSnapshot.currentNodeId} is missing from the catalog.`)
+    throw new Error(
+      IntlModule.translate("setupScenario.digitalPetDevPartnerNodeIsMissingFrom", {
+        currentNodeId: initialSnapshot.currentNodeId,
+      }),
+    )
   }
 
   if (current.stage === 0) {
@@ -85,6 +94,6 @@ export const setupBattlePending = (repository: DevScenarioRepository): void => {
 
   const pending = repository.getSidebarSnapshot()
   if (pending === null || !hasPendingBattle(pending)) {
-    throw new Error("Digital Pet dev: could not open a pending evolution battle for the current partner.")
+    throw new Error(IntlModule.translate("setupScenario.digitalPetDevCouldNotOpenAPending"))
   }
 }

@@ -6,6 +6,7 @@ import semver from "semver"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const workspaces = [
+  "digital-pet-intl",
   "digital-pet-core",
   "digital-pet-fields",
   "digital-pet-animation",

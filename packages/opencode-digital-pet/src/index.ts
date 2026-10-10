@@ -6,6 +6,7 @@ import { createBestEffortDigitalPetToastNotifier } from "./adapters/opencode/dig
 import { createSessionMessagesFetcher } from "./adapters/opencode/session-messages.ts"
 import { createSqliteDigitalPetRepository } from "./adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { loadGlobalDigitalPetSettings } from "./config/global-digital-pet-settings.ts"
+import { initializeUiLanguage } from "./config/ui-language.ts"
 
 export type { DigimonId, DigimonRecord, DigimonStage } from "@jcendal/digital-pet-core/data/digimon-data.ts"
 export { DIGIMON_DATA } from "@jcendal/digital-pet-core/data/digimon-data.ts"
@@ -29,6 +30,7 @@ const toEvolutionThresholds = (settings: ResolvedDigitalPetSettings): StageThres
   })
 
 export const plugin: Plugin = async (input, options) => {
+  initializeUiLanguage()
   const appDataRoot = getStringOption(options, "appDataRoot")
   const databasePath = getStringOption(options, "databasePath")
   const settings = await loadGlobalDigitalPetSettings()

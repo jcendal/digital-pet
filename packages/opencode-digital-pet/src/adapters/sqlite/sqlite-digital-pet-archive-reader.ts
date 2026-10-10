@@ -16,11 +16,13 @@ import type {
   DigitalPetArchiveResult,
 } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
+import { IntlModule } from "../../i18n.ts"
 import { createExecutor, openReadonlyDatabase, type SqliteExecutor } from "./bun-sqlite-driver.ts"
 
 export type CreateSqliteDigitalPetArchiveReaderOptions = HostPathOptions & { readonly databasePath?: string }
 
-const UNAVAILABLE_ARCHIVE_MESSAGE = "Digital Pet archive is unavailable."
+const unavailableArchiveMessage = () =>
+  IntlModule.translate("sqliteDigitalPetArchiveReader.digitalPetArchiveIsUnavailable")
 
 export const isRecoverableSqliteReadError = (error: unknown): error is SQLiteError => {
   return (
@@ -78,7 +80,7 @@ export const readSqliteDigitalPetArchive = (
       partners: partners.map((partner) => toArchivePartner(partner, eventsByPartnerId.get(partner.partner_id) ?? [])),
     }
   } catch (error) {
-    if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: UNAVAILABLE_ARCHIVE_MESSAGE }
+    if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: unavailableArchiveMessage() }
     throw error
   } finally {
     close()
@@ -98,7 +100,7 @@ export const createSqliteDigitalPetArchiveReader = (
         const database = openReadonlyDatabase(databasePath)
         return readSqliteDigitalPetArchive(createExecutor(database), () => database.close())
       } catch (error) {
-        if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: UNAVAILABLE_ARCHIVE_MESSAGE }
+        if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: unavailableArchiveMessage() }
         throw error
       }
     },

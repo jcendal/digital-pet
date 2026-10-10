@@ -1,5 +1,7 @@
 import { expect, it } from "bun:test"
 import { Script } from "node:vm"
+import { IntlModule as runtime } from "@jcendal/digital-pet-intl"
+import { IntlModule } from "@jcendal/digital-pet-webviews/i18n"
 
 import { DEX_SCRIPT } from "@jcendal/digital-pet-webviews/panels/dex/dex-script.ts"
 
@@ -63,6 +65,8 @@ const preview = () => {
   let receive!: (event: { data: unknown }) => void
   let selection = ""
   new Script(DEX_SCRIPT).runInNewContext({
+    IntlModule,
+    getIntlModule: () => runtime,
     window: {
       digitalPetBridge: {
         getState: () => ({ selectedId: "1-001" }),

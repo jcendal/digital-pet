@@ -3,6 +3,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import { battlePlanForOpponent } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
 import { battleNode } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { checkpointBattle, finishPendingBattle } from "../../persistence/pet-store.ts"
 
 type PlaybackActions = {
@@ -33,18 +34,23 @@ export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackAc
       onShotComplete: async (completedShots) => {
         await actions.checkpoint()
         if (!(await checkpointBattle(battle.battleId, completedShots)))
-          throw new Error("The saved battle is no longer pending")
+          throw new Error(IntlModule.translate("playback.theSavedBattleIsNoLongerPending"))
       },
     },
   )
   await actions.checkpoint()
-  if (!(await finishPendingBattle(battle.battleId))) throw new Error("The saved battle is no longer pending")
-  if (plan.outcome === "draw") return "Draw! No experience awarded."
+  if (!(await finishPendingBattle(battle.battleId)))
+    throw new Error(IntlModule.translate("playback.theSavedBattleIsNoLongerPending"))
+  if (plan.outcome === "draw") return IntlModule.translate("playback.drawNoExperienceAwarded")
   const winner = plan.outcome === "player" ? local : remote
   const reward = battle.rewarded
-    ? " · +20% EXPERIENCE"
+    ? IntlModule.translate("battle.reward")
     : plan.outcome === "player"
-      ? " · No experience added: this companion is at a final stage or its save changed."
+      ? IntlModule.translate("playback.noExperienceAddedThisCompanionIsAtA")
       : ""
-  return `${plan.outcome === "player" ? "You win" : "You lose"}! ${winner.nameEn} wins.${reward}`
+  return IntlModule.translate("playback.wins", {
+    value0: IntlModule.translate(plan.outcome === "player" ? "battle.win" : "battle.lose"),
+    nameEn: winner.nameEn,
+    reward: reward,
+  })
 }

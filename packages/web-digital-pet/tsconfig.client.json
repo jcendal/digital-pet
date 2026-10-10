@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": [],
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "resolveJsonModule": true
   },
   "include": ["src/client", "src/domain", "src/shared", "src/types", "../../types/web-assets.d.ts"],
   "exclude": []

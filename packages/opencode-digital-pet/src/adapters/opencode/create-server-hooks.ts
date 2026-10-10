@@ -18,6 +18,7 @@ import { runDigitalPetFreezeCommand } from "../../commands/digital-pet-freeze.ts
 import { runDigitalPetSetCommand } from "../../commands/digital-pet-set.ts"
 import { runDigitalPetSpawnCommand } from "../../commands/digital-pet-spawn.ts"
 import { runDigitalPetUnfreezeCommand } from "../../commands/digital-pet-unfreeze.ts"
+import { IntlModule } from "../../i18n.ts"
 import { type DigitalPetToastEvent, type DigitalPetToastNotifier, formatDigitalPetToast } from "./digital-pet-toast.ts"
 import type { SessionMessagesFetcher } from "./session-messages.ts"
 import { toCompletedUsageFromEvent, toCompletedUsageFromMessage } from "./usage-event-mapper.ts"
@@ -86,10 +87,10 @@ const requiresCatalog = (event: DigitalPetToastEvent): boolean => {
 }
 
 export const createCommandConfig = () => ({
-  "digital-pet-spawn": { template: "Spawn a new virtual pet." },
-  "digital-pet-freeze": { template: "Freeze virtual pet progression." },
-  "digital-pet-unfreeze": { template: "Unfreeze virtual pet progression." },
-  "digital-pet-set": { template: "Set the virtual pet to a Digimon ID: $ARGUMENTS" },
+  "digital-pet-spawn": { template: IntlModule.translate("createServerHooks.spawnANewVirtualPet") },
+  "digital-pet-freeze": { template: IntlModule.translate("createServerHooks.freezeVirtualPetProgression") },
+  "digital-pet-unfreeze": { template: IntlModule.translate("createServerHooks.unfreezeVirtualPetProgression") },
+  "digital-pet-set": { template: IntlModule.translate("createServerHooks.setTheVirtualPetToADigimonId") },
 })
 
 export const createServerHooks = ({

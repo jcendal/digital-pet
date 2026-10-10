@@ -5,6 +5,7 @@ import type { TuiTheme } from "@opencode-ai/plugin/tui"
 import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { For } from "solid-js"
+import { IntlModule } from "../i18n.ts"
 
 export type DigitalPetHistoryDialogTheme = {
   readonly current: Pick<TuiTheme["current"], "primary">
@@ -39,10 +40,10 @@ export function DigitalPetHistoryDialog(props: DigitalPetHistoryDialogProps) {
   return (
     <box flexDirection="column" width="100%" height={height} paddingX={1}>
       <text attributes={BOLD} fg={props.theme.current.primary} flexShrink={0}>
-        Digital Pet History
+        {IntlModule.translate("digitalPetCommandLayer.digitalPetHistory")}
       </text>
       <box flexDirection="column" width="100%" height={height - 2} flexShrink={0} overflow="hidden">
-        {props.model.kind === "empty" && <text>No data available</text>}
+        {props.model.kind === "empty" && <text>{IntlModule.translate("digitalPetDexDialog.noDataAvailable")}</text>}
         {props.model.kind === "unavailable" && <text>{props.model.message}</text>}
         {props.model.kind === "available" && (
           <scrollbox
@@ -64,10 +65,19 @@ export function DigitalPetHistoryDialog(props: DigitalPetHistoryDialogProps) {
           >
             <For each={props.model.generations}>
               {(generation) => {
-                const status = generation.retiredAt === null ? "Active" : "Retired"
-                const header = `Generation ${generation.generation} — ${generation.createdAt} — ${status}`
+                const status =
+                  generation.retiredAt === null
+                    ? IntlModule.translate("digitalPetHistoryDialog.active")
+                    : IntlModule.translate("digitalPetHistoryDialog.retired")
+                const header = IntlModule.translate("digitalPetHistoryDialog.generation", {
+                  generation: generation.generation,
+                  createdAt: generation.createdAt,
+                  status: status,
+                })
                 const pathText =
-                  generation.path.length === 0 ? "No canonical events recorded" : generation.path.join(" → ")
+                  generation.path.length === 0
+                    ? IntlModule.translate("digitalPetHistoryDialog.noCanonicalEventsRecorded")
+                    : generation.path.join(" → ")
 
                 return (
                   <box flexDirection="column" width="100%" paddingBottom={1}>
@@ -85,7 +95,7 @@ export function DigitalPetHistoryDialog(props: DigitalPetHistoryDialogProps) {
         )}
       </box>
       <text flexShrink={0} onMouseDown={props.onClose}>
-        ↑↓: 1 item · ←→: 10 items · Esc: Close
+        {IntlModule.translate("digitalPetDexDialog.1Item10ItemsEscClose")}
       </text>
     </box>
   )

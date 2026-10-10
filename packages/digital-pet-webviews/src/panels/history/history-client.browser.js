@@ -11,7 +11,7 @@ search.value = typeof saved.search === "string" ? saved.search : ""
 status.value = ["all", "current", "retired"].includes(saved.status) ? saved.status : "all"
 const remember = () =>
   vscode.setState({ selectedId, search: search.value, status: status.value, scroll: entries.scrollTop })
-const { element, sprite } = createPanelHelpers(entries)
+const { element, sprite, translateReference, translateStage } = createPanelHelpers(entries)
 const date = (value, time = false) => {
   if (!value || !Number.isFinite(Date.parse(value))) return "--"
   return new Date(value).toLocaleString(undefined, {
@@ -21,8 +21,11 @@ const date = (value, time = false) => {
     ...(time ? { hour: "2-digit", minute: "2-digit" } : {}),
   })
 }
-const title = (generation) => "GEN " + String(generation.generation).padStart(2, "0")
-const state = (generation) => (generation.retiredAt === null ? "CURRENT" : "RETIRED")
+const title = (generation) => IntlModule.translate("historyClient.gen") + String(generation.generation).padStart(2, "0")
+const state = (generation) =>
+  generation.retiredAt === null
+    ? IntlModule.translate("historyClient.current")
+    : IntlModule.translate("historyClient.retired")
 const renderSelection = () => {
   for (const button of entries.children) {
     const selected = button.dataset.id === selectedId
@@ -37,8 +40,8 @@ const renderSelection = () => {
         "p",
         "no-results",
         model.status === "unavailable"
-          ? "History unavailable. Refresh to retry."
-          : "Select a generation to see its recorded journey.",
+          ? IntlModule.translate("historyClient.historyUnavailableRefreshToRetry")
+          : IntlModule.translate("historyClient.selectAGenerationToSeeItsRecordedJourney"),
       ),
     )
     return
@@ -53,15 +56,19 @@ const renderSelection = () => {
   frame.append(lcd)
   const name = element("div", "detail-name")
   name.append(
-    element("h2", "", latest?.name || "No recorded Digimon"),
-    element("p", "micro", latest?.stage || "No evolution events"),
+    element("h2", "", latest?.name || IntlModule.translate("historyClient.noRecordedDigimon")),
+    element("p", "micro", latest ? translateStage(latest) : IntlModule.translate("historyClient.noEvolutionEvents")),
   )
-  name.append(element("span", "generation-date", "CREATED · " + date(generation.createdAt)))
+  name.append(
+    element("span", "generation-date", IntlModule.translate("history.created", { date: date(generation.createdAt) })),
+  )
   if (generation.retiredAt !== null)
-    name.append(element("span", "generation-date", "RETIRED · " + date(generation.retiredAt)))
-  body.append(frame, name, element("h3", "journey-title", "RECORDED JOURNEY"))
+    name.append(
+      element("span", "generation-date", IntlModule.translate("history.retired", { date: date(generation.retiredAt) })),
+    )
+  body.append(frame, name, element("h3", "journey-title", IntlModule.translate("historyClient.recordedJourney")))
   const timeline = element("ol", "timeline")
-  timeline.setAttribute("aria-label", "Recorded evolution journey")
+  timeline.setAttribute("aria-label", IntlModule.translate("historyClient.recordedEvolutionJourney"))
   for (const step of generation.steps) {
     const item = element("li", "")
     item.append(
@@ -71,9 +78,10 @@ const renderSelection = () => {
     timeline.append(item)
   }
   body.append(timeline)
-  if (!generation.steps.length) body.append(element("p", "hint", "No evolution events recorded for this generation."))
+  if (!generation.steps.length)
+    body.append(element("p", "hint", IntlModule.translate("historyClient.noEvolutionEventsRecordedForThisGeneration")))
   const nav = element("div", "detail-nav")
-  const button = element("button", "utility", "VIEW IN DIGIDEX >")
+  const button = element("button", "utility", IntlModule.translate("history.viewInDex"))
   button.type = "button"
   button.disabled = !latest?.catalogued
   button.addEventListener("click", () => {
@@ -108,17 +116,19 @@ const render = () => {
   document.getElementById("result-count").textContent = filtered.length + " / " + model.generations.length
   const notice = document.getElementById("notice")
   notice.hidden = model.status !== "unavailable"
-  notice.textContent = model.status === "unavailable" ? model.message : ""
+  notice.textContent = model.status === "unavailable" ? translateReference(model.messageKey, model.message) : ""
   document.getElementById("archive-status").textContent =
-    model.status === "unavailable" ? "ARCHIVE UNAVAILABLE" : "LOCAL ARCHIVE"
+    model.status === "unavailable"
+      ? IntlModule.translate("historyClient.archiveUnavailable")
+      : IntlModule.translate("dexClient.localArchive")
   const empty = document.getElementById("no-results")
   empty.hidden = filtered.length > 0
   empty.textContent =
     model.status === "unavailable"
-      ? "Could not read partner history."
+      ? IntlModule.translate("historyClient.couldNotReadPartnerHistory")
       : model.generations.length
-        ? "No matching generations. Change your search or status filter."
-        : model.message
+        ? IntlModule.translate("historyClient.noMatchingGenerationsChangeYourSearchOrStatus")
+        : translateReference(model.messageKey, model.message)
   entries.replaceChildren()
   for (const generation of filtered) {
     const button = element("button", "entry generation")

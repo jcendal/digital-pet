@@ -1,18 +1,8 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises"
-
 import { installGlobalPlugin } from "./cli/install.ts"
-
-const HELP = `Usage: opencode-digital-pet <init|update> [--dry-run]
-
-Commands:
-  init       Install the current package version through OpenCode's global plugin installer.
-  update     Reinstall the current package version through the same installer.
-
-Options:
-  --dry-run  Show the native OpenCode command without running it.
-  --help      Show this help text.
-`
+import { initializeUiLanguage } from "./config/ui-language.ts"
+import { IntlModule } from "./i18n.ts"
 
 type Command = "init" | "update"
 
@@ -36,37 +26,41 @@ const isPackageManifest = (value: unknown): value is PackageManifest => {
 const readPackageManifest = async (): Promise<PackageManifest> => {
   const source = await readFile(new URL("../package.json", import.meta.url), "utf8")
   const manifest: unknown = JSON.parse(source)
-  if (!isPackageManifest(manifest)) throw new Error("Invalid opencode-digital-pet package manifest.")
+  if (!isPackageManifest(manifest))
+    throw new Error(IntlModule.translate("cli.invalidOpencodeDigitalPetPackageManifest"))
   return manifest
 }
 
 const parseArguments = (arguments_: readonly string[]): ParsedArguments => {
   if (arguments_.length === 1 && arguments_[0] === "--help") return { kind: "help" }
   const [command, ...options] = arguments_
-  if (command !== "init" && command !== "update") return { kind: "invalid", message: "Expected init or update." }
+  if (command !== "init" && command !== "update")
+    return { kind: "invalid", message: IntlModule.translate("cli.expectedInitOrUpdate") }
   if (options.length === 0) return { kind: "command", command, dryRun: false }
   if (options.length === 1 && options[0] === "--dry-run") return { kind: "command", command, dryRun: true }
-  return { kind: "invalid", message: "Only --dry-run is supported after a command." }
+  return { kind: "invalid", message: IntlModule.translate("cli.onlyDryRunIsSupportedAfterACommand") }
 }
 
 const run = async (): Promise<number> => {
+  initializeUiLanguage()
   const parsed = parseArguments(process.argv.slice(2))
   switch (parsed.kind) {
     case "help":
-      process.stdout.write(HELP)
+      process.stdout.write(IntlModule.translate("cli.help"))
       return 0
     case "invalid":
-      process.stderr.write(`${parsed.message}\n\n${HELP}`)
+      process.stderr.write(`${parsed.message}\n\n${IntlModule.translate("cli.help")}`)
       return 2
     case "command": {
       const manifest = await readPackageManifest()
       const packageSpec = `${manifest.name}@${manifest.version}`
       if (parsed.dryRun) {
-        process.stdout.write(`opencode plugin ${packageSpec} --global --force\n`)
+        process.stdout.write(`opencode plugin ${packageSpec} --global --force
+`)
         return 0
       }
       await installGlobalPlugin(packageSpec)
-      process.stdout.write("OpenCode plugin installation completed. Restart OpenCode.\n")
+      process.stdout.write(IntlModule.translate("cli.installed"))
       return 0
     }
   }
@@ -77,7 +71,7 @@ run()
     process.exitCode = exitCode
   })
   .catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : "Unexpected CLI failure."
+    const message = error instanceof Error ? error.message : IntlModule.translate("cli.unexpectedCliFailure")
     process.stderr.write(`${message}\n`)
     process.exitCode = 1
   })

@@ -4,7 +4,8 @@
     "noEmit": true,
     "rootDir": ".",
     "jsx": "react-jsx",
-    "jsxImportSource": "@opentui/solid"
+    "jsxImportSource": "@opentui/solid",
+    "resolveJsonModule": true
   },
   "include": ["src", "tests"],
   "exclude": [

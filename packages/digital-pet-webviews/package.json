@@ -5,12 +5,14 @@
   "type": "module",
   "exports": {
     "./assets/*": "./assets/*",
-    "./*": "./src/*"
+    "./*": "./src/*",
+    "./i18n": "./src/i18n.ts"
   },
   "dependencies": {
     "@jcendal/digital-pet-core": "0.2.0-dev.0",
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
-    "@jcendal/digital-pet-fields": "0.1.0-dev.0"
+    "@jcendal/digital-pet-fields": "0.1.0-dev.0",
+    "@jcendal/digital-pet-intl": "0.1.0-dev.0"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
