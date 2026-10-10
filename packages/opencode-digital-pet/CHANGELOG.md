@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-10
+
+### Changed
+
+- feat: add egg petting rewards in web and Cursor
+
+
 ## [0.8.0] - 2026-10-10
 
 ### Changed
