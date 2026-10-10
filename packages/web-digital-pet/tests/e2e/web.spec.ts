@@ -33,7 +33,9 @@ const controlled = async (page: import("@playwright/test").Page) => {
   })
 }
 
-test("static pages initialize shared clients, scenery, options and all panels without errors", async ({ page }) => {
+test("static pages initialize shared clients, scenery, options and all panels without errors", async ({
+  page,
+}, testInfo) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   page.on("console", (message) => {
@@ -41,6 +43,29 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   })
   await page.goto("/")
   await ready(page)
+  const navigation = page.getByRole("navigation", { name: "Digital Pet" })
+  await expect(navigation.locator("svg")).toHaveCount(5)
+  await expect(page.locator("#options-dialog #battle-button")).toHaveCount(0)
+  for (const width of [320, 430]) {
+    await page.setViewportSize({ width, height: 800 })
+    const nav = await navigation.boundingBox()
+    if (!nav) throw new Error("Missing navigation")
+    for (const control of await navigation.locator("a, button").all()) {
+      const box = await control.boundingBox()
+      if (!box) throw new Error("Missing navigation control")
+      expect(box.width).toBeGreaterThanOrEqual(44)
+      expect(box.height).toBeGreaterThanOrEqual(44)
+      expect(box.x).toBeGreaterThanOrEqual(nav.x)
+      expect(box.x + box.width).toBeLessThanOrEqual(nav.x + nav.width)
+    }
+    await page.screenshot({ path: testInfo.outputPath(`navigation-${width}.png`) })
+  }
+  await navigation.getByRole("button", { name: "BATTLE", exact: true }).click()
+  await expect(page.locator("#battle-dialog")).toBeVisible()
+  await expect(page.locator("#options-dialog")).not.toBeVisible()
+  await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "true")
+  await page.locator("#battle-dialog .dialog-close").click()
+  await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "false")
   await page.getByRole("button", { name: "OPTIONS", exact: true }).click()
   await expect(page.locator("#options-dialog")).toBeVisible()
   await page.locator("#world-button").click()

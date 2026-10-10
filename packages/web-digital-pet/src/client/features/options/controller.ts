@@ -62,6 +62,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   const backupRestore = byId<HTMLButtonElement>("backup-restore")
   let pendingBackup: PetTransfer | null = null
   let pairing: BrowserPairingControls | undefined
+  let battles: BrowserPairingControls | undefined
   let available: boolean | null = null
   let source = resolveSaveSource(
     localStorage.getItem(SOURCE_PREFERENCE_KEY),
@@ -118,6 +119,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     backupConfirm.hidden = true
     pendingBackup = null
     pairing?.setBrowserEnabled(source === "browser")
+    battles?.setBrowserEnabled(source === "browser")
     await refreshSettings()
     refreshBrowserViews()
   }
@@ -147,9 +149,11 @@ export const initBrowserOptions = async (): Promise<void> => {
   byId("options-button").addEventListener("click", () => {
     byId("options-status").textContent = ""
     dialog.showModal()
+    byId("options-button").setAttribute("aria-expanded", "true")
     dialog.querySelector(".dialog-body")?.scrollTo(0, 0)
     void refreshAvailability()
   })
+  dialog.addEventListener("close", () => byId("options-button").setAttribute("aria-expanded", "false"))
   byId("computer-retry").addEventListener("click", () => {
     void refreshAvailability()
   })
@@ -220,8 +224,8 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   byId("backup-accept").addEventListener("click", async () => {
     if (source !== "browser" || !pendingBackup) return
-    if (pairing?.busy) {
-      status.textContent = "Finish the current device transfer first."
+    if (pairing?.busy || battles?.busy) {
+      status.textContent = "Finish the current transfer or battle first."
       return
     }
     try {
@@ -236,8 +240,8 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   backupRestore.addEventListener("click", async () => {
     if (source !== "browser") return
-    if (pairing?.busy) {
-      status.textContent = "Finish the current device transfer first."
+    if (pairing?.busy || battles?.busy) {
+      status.textContent = "Finish the current transfer or battle first."
       return
     }
     try {
@@ -260,8 +264,8 @@ export const initBrowserOptions = async (): Promise<void> => {
     })
   slider.addEventListener("change", async () => {
     if (source !== "browser") return
-    if (pairing?.busy) {
-      status.textContent = "Finish the current device transfer first."
+    if (pairing?.busy || battles?.busy) {
+      status.textContent = "Finish the current transfer or battle first."
       await refreshSettings()
       return
     }
@@ -283,8 +287,8 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   byId("new-partner-accept").addEventListener("click", async () => {
     if (source !== "browser") return
-    if (pairing?.busy) {
-      status.textContent = "Finish the current device transfer first."
+    if (pairing?.busy || battles?.busy) {
+      status.textContent = "Finish the current transfer or battle first."
       return
     }
     try {
@@ -301,9 +305,18 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   try {
     const module = await import("../pairing/controller.ts")
-    pairing = await module.initBrowserPairing()
+    pairing = await module.initBrowserPairing(() => Boolean(battles?.busy))
     pairing.setBrowserEnabled(source === "browser")
   } catch (error) {
     byId("pair-summary").textContent = `Device pairing unavailable: ${String(error)}`
+  }
+  try {
+    const module = await import("../battle/controller.ts")
+    battles = await module.initBrowserBattles(() => Boolean(pairing?.busy))
+    battles.setBrowserEnabled(source === "browser")
+  } catch (error) {
+    byId("battle-status").textContent = `Player battles unavailable: ${String(error)}`
+    byId<HTMLButtonElement>("battle-button").disabled = true
+    byId("battle-button").title = "Player battles unavailable. Reload to try again."
   }
 }

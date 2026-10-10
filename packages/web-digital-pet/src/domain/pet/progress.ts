@@ -12,10 +12,18 @@ import {
   feedingExperience,
   scheduleFood,
 } from "@jcendal/digital-pet-core/domain/feeding.ts"
+import {
+  advanceHygiene,
+  cleanHygiene,
+  cleaningExperience,
+  createHygiene,
+  type HygieneState,
+} from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 
-export const EXPERIENCE_INTERVAL_MS = 5 * 60 * 1000
-const TICKS_PER_STAGE = 24
+export const EXPERIENCE_INTERVAL_MS = 2 * 60 * 60 * 1000
+export const BROWSER_FEEDING_POLICY = Object.freeze({ intervalMs: 60 * 60 * 1000, experienceFraction: 0.1 })
+const TIMED_EXPERIENCE_FRACTION = 0.02
 
 export type ExperienceLevel = "low" | "normal" | "high"
 export const isExperienceLevel = (value: unknown): value is ExperienceLevel =>
@@ -53,6 +61,7 @@ export type LocalPetState = {
   readonly experienceLevel?: ExperienceLevel
   readonly retiredPartners?: readonly LocalArchivedPartner[]
   readonly food?: FoodState
+  readonly hygiene?: HygieneState
   readonly pendingEvolution?: {
     readonly targetNodeId: string
     readonly opponentNodeId: string | null
@@ -67,7 +76,18 @@ export const advanceLocalPet = (
 ): LocalPetState => {
   const current = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
   if (!current) throw new Error(`Unknown browser partner: ${initial.currentNodeId}`)
-  const food = advanceFood(initial.food, current.stage === 0, now)
+  const hygiene = advanceHygiene(initial.hygiene, current.stage === 0, now)
+  if (hygiene !== initial.hygiene) {
+    const { hygiene: _old, ...rest } = initial
+    initial = { ...rest, ...(hygiene ? { hygiene } : {}) }
+  }
+  // Shorten a legacy four-hour schedule on its first visit under the hourly policy.
+  const scheduled = initial.food
+  const adjusted =
+    scheduled?.kind === "scheduled" && scheduled.availableAt > now + BROWSER_FEEDING_POLICY.intervalMs
+      ? scheduleFood(now, BROWSER_FEEDING_POLICY)
+      : scheduled
+  const food = advanceFood(adjusted, current.stage === 0, now, BROWSER_FEEDING_POLICY)
   if (food !== initial.food) {
     const { food: _old, ...rest } = initial
     initial = { ...rest, ...(food ? { food } : {}) }
@@ -79,7 +99,7 @@ export const advanceLocalPet = (
   let gauge = initial.gauge
   for (let index = 0; index < Math.max(1, ticks); index++) {
     const amount =
-      gauge >= thresholds[current.stage] ? 0 : Math.ceil(STAGE_GAUGE_THRESHOLDS[current.stage] / TICKS_PER_STAGE)
+      gauge >= thresholds[current.stage] ? 0 : Math.ceil(thresholds[current.stage] * TIMED_EXPERIENCE_FRACTION)
     const next = applyTokenProgress(
       { current, gauge, isTerminal: false, pendingEvolutionTargetId: null, battleOpponentNodeId: null },
       amount,
@@ -139,7 +159,8 @@ export const completeLocalEvolution = (
     currentNodeId: resolved.current.id,
     gauge: 0,
     isTerminal: resolved.isTerminal,
-    ...(resolved.current.id === current.id ? {} : { food: scheduleFood(now) }),
+    ...(current.stage === 0 ? { hygiene: createHygiene(now) } : {}),
+    ...(resolved.current.id === current.id ? {} : { food: scheduleFood(now, BROWSER_FEEDING_POLICY) }),
     lastTickAt: now,
     events:
       resolved.current.id === current.id
@@ -161,12 +182,33 @@ export const consumeLocalFood = (state: LocalPetState, expectedPartnerId: string
     return state
   const fed = {
     ...state,
-    food: scheduleFood(now),
+    food: scheduleFood(now, BROWSER_FEEDING_POLICY),
     gauge: state.isTerminal
       ? state.gauge
-      : feedingExperience(state.gauge, experienceThresholds(state.experienceLevel)[current.stage]),
+      : feedingExperience(
+          state.gauge,
+          experienceThresholds(state.experienceLevel)[current.stage],
+          BROWSER_FEEDING_POLICY,
+        ),
   }
   return advanceLocalPet(fed, now)
+}
+
+export const cleanLocalPoop = (state: LocalPetState, partnerId: string, poopId: number, now: number): LocalPetState => {
+  const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+  if (!current?.stage || state.partnerId !== partnerId || state.pendingEvolution || !state.hygiene) return state
+  const hygiene = cleanHygiene(state.hygiene, poopId, now)
+  if (hygiene === state.hygiene) return state
+  return advanceLocalPet(
+    {
+      ...state,
+      hygiene,
+      gauge: state.isTerminal
+        ? state.gauge
+        : cleaningExperience(state.gauge, experienceThresholds(state.experienceLevel)[current.stage]),
+    },
+    now,
+  )
 }
 
 export const beginNewPartner = (previous: LocalPetState, partnerId: string, now: number): LocalPetState => {

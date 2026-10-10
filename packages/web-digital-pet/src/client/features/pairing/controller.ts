@@ -30,7 +30,7 @@ const element = <T extends HTMLElement>(id: string): T => {
 }
 const remoteCode = (connection: DataConnection): string => connection.peer.replace(/^web-digital-pet-/, "")
 
-export const initBrowserPairing = async (): Promise<BrowserPairingControls> => {
+export const initBrowserPairing = async (otherBusy: () => boolean = () => false): Promise<BrowserPairingControls> => {
   const button = element<HTMLButtonElement>("pair-button")
   const sync = element<HTMLButtonElement>("pair-sync")
   const forget = element<HTMLButtonElement>("pair-forget")
@@ -134,7 +134,7 @@ export const initBrowserPairing = async (): Promise<BrowserPairingControls> => {
       note("Ready to connect your devices.")
     },
     incoming: (remote) => {
-      if (connection || !enabled || !validDeviceCode(remoteCode(remote))) {
+      if (connection || otherBusy() || !enabled || !validDeviceCode(remoteCode(remote))) {
         remote.close()
         return
       }
@@ -302,6 +302,7 @@ export const initBrowserPairing = async (): Promise<BrowserPairingControls> => {
     if (!validDeviceCode(target)) return note("Enter the full 16-character device code.")
     if (target === deviceCode) return note("Enter a different device's code.")
     if (connection) return note("Finish the current transfer first.")
+    if (otherBusy()) return note("Finish the current battle first.")
     requireBrowser()
     bind(transfer.connect(target), "receive", syncRequest)
   }
@@ -348,7 +349,7 @@ export const initBrowserPairing = async (): Promise<BrowserPairingControls> => {
     finish({ type: "result", accepted: false }, "Your current companion was kept."),
   )
   restore.addEventListener("click", async () => {
-    if (connection) return note("Finish the current transfer first.")
+    if (connection || otherBusy()) return note("Finish the current transfer or battle first.")
     requireBrowser()
     if (!window.confirm("Restore the previous save on this device? The current save will become the backup.")) return
     if (await restorePreviousSave()) {

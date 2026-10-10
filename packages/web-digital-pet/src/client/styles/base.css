@@ -34,14 +34,18 @@ body {
 .web-nav a,
 .web-nav button {
   flex: 1;
+  min-width: 0;
+  min-height: 48px;
   display: grid;
+  align-content: center;
+  gap: 4px;
   place-items: center;
   padding: 8px 3px;
   color: var(--case-ink);
   text-align: center;
   text-decoration: none;
   font: inherit;
-  font-size: 12px;
+  font-size: 9px;
   border: 0;
   border-top: 3px solid #342b21;
   background: transparent;
@@ -50,9 +54,39 @@ body {
 .web-nav button[hidden] {
   display: none;
 }
-.web-nav a[aria-current="page"] {
+.web-nav a[aria-current="page"],
+.web-nav button[aria-expanded="true"] {
   color: var(--lcd);
   border-color: var(--lcd);
+}
+.nav-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+.nav-label {
+  line-height: 1.2;
+}
+.nav-battle .nav-icon {
+  width: 28px;
+  height: 28px;
+}
+.web-nav a:hover,
+.web-nav button:hover:not(:disabled) {
+  color: var(--lcd);
+}
+.web-nav button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 350px) {
+  .web-nav {
+    padding-inline: 4px;
+  }
+  .web-nav a,
+  .web-nav button {
+    font-size: 8px;
+  }
 }
 .web-nav a:focus-visible,
 .web-nav button:focus-visible {

@@ -6,6 +6,7 @@ import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/applicatio
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../adapters/vscode/notification-port.ts"
@@ -29,6 +30,7 @@ export type CreateSidebarOrchestratorOptions = {
   readonly notification: NotificationPort
   readonly random?: () => number
   readonly onPresentationEnd?: () => void
+  readonly readHygiene?: () => HygieneView | undefined
 }
 
 export const createSidebarOrchestrator = ({
@@ -38,6 +40,7 @@ export const createSidebarOrchestrator = ({
   notification,
   random = Math.random,
   onPresentationEnd,
+  readHygiene,
 }: CreateSidebarOrchestratorOptions): SidebarOrchestrator => {
   const refreshQueue = createAsyncRefreshQueue()
   let sink: AnimationSink | undefined
@@ -67,10 +70,15 @@ export const createSidebarOrchestrator = ({
   const publishSidebarModel = async (): Promise<void> => {
     if (sink === undefined) return
     const presentation = buildSidebarPresentation(snapshotReader.getSidebarSnapshot())
-    cachedPayload = presentation.payload
-    await sink.postModel(presentation.payload)
+    const hygiene = readHygiene?.()
+    cachedPayload =
+      presentation.payload.kind === "partner"
+        ? { ...presentation.payload, ...(hygiene ? { hygiene } : {}) }
+        : presentation.payload
+    await sink.postModel(cachedPayload)
     if (presentationInProgress) return
     animationHost.syncPartner(presentation.partner)
+    animationHost.setMood(hygiene?.mood ?? "neutral")
     await animationHost.postCurrentFrame()
   }
 

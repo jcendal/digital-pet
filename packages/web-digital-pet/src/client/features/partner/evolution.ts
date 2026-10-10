@@ -4,7 +4,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { settingsFor } from "../../../domain/pet/models.ts"
 import { pendingEvolutionKey } from "../../../domain/pet/progress.ts"
-import { finishLocalEvolution, peekLocalState, readLocalState } from "../../persistence/pet-store.ts"
+import { finishLocalEvolution, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
 import { beginPresentation, endPresentation, presentationCurrent, presentationVersion } from "./presentation.ts"
 
@@ -18,6 +18,7 @@ export const presentPendingEvolution = async (
   if (!active() || !valid() || !beginPresentation()) return
   const revision = presentationVersion()
   const play = async () => {
+    if (await readPendingBattle()) return
     const state = await readLocalState()
     const pending = state.pendingEvolution
     const key = pendingEvolutionKey(state)

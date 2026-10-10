@@ -1,6 +1,8 @@
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
+import type { PartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import { CLEANING_HAPPY_MS, type HygieneView, hygieneMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import * as vscode from "vscode"
 
 import { type AnimationSink, createAnimationSink } from "../../adapters/vscode/animation-sink.ts"
@@ -17,6 +19,7 @@ export type DigitalPetSidebarProviderOptions = {
   readonly scheduler?: IntervalScheduler
   readonly random?: () => number
   readonly nowMs?: () => number
+  readonly hygieneService?: PartnerHygieneService
 }
 
 const createDeferredAnimationSink = (): { readonly sink: AnimationSink; setSink(next: AnimationSink): void } => {
@@ -45,12 +48,14 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   private readonly animationHost: SidebarAnimationHost
   private readonly orchestrator: SidebarOrchestrator
   private readonly deferredSink: ReturnType<typeof createDeferredAnimationSink>
+  private happyTimer: ReturnType<typeof setTimeout> | undefined
+  private hygieneView: HygieneView | undefined
 
   constructor(
     private readonly extensionUri: vscode.Uri,
-    snapshotReader: SidebarSnapshotReader,
+    private readonly snapshotReader: SidebarSnapshotReader,
     battleRepository: EvolutionBattleRepository,
-    options: DigitalPetSidebarProviderOptions = {},
+    private readonly options: DigitalPetSidebarProviderOptions = {},
   ) {
     this.notification = options.notification ?? createVsCodeNotificationPort()
     this.scheduler = options.scheduler ?? createIntervalScheduler()
@@ -71,6 +76,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
       snapshotReader,
       battleRepository,
       animationHost: this.animationHost,
+      readHygiene: () => this.hygieneView,
       notification: this.notification,
       random,
       onPresentationEnd: () => {
@@ -94,6 +100,16 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   }
 
   async refresh(): Promise<void> {
+    const saved = this.options.hygieneService?.refreshHygiene(Date.now())
+    const snapshot = this.options.hygieneService ? this.snapshotReader.getSidebarSnapshot() : undefined
+    this.hygieneView = saved
+      ? {
+          partnerId: saved.partnerId,
+          poops: saved.hygiene.poops,
+          mood: hygieneMood(saved.hygiene, Date.now()),
+          canClean: !this.isPresentationInProgress() && !snapshot?.frozen && !snapshot?.pendingEvolutionTargetId,
+        }
+      : undefined
     await this.orchestrator.refresh()
   }
 
@@ -118,6 +134,16 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((message: unknown) => {
       const inbound = parseWebviewInboundMessage(message)
       if (inbound === null) return
+      if (inbound.type === "clean-poop") {
+        if (!this.isPresentationInProgress())
+          this.options.hygieneService?.cleanPoop(inbound.partnerId, inbound.poopId, Date.now())
+        void this.refresh()
+        clearTimeout(this.happyTimer)
+        this.happyTimer = setTimeout(() => {
+          void this.refresh()
+        }, CLEANING_HAPPY_MS)
+        return
+      }
       if (inbound.type === "sidebar-ready") {
         this.orchestrator.setSink(sink)
         const payload = this.orchestrator.getCachedPayload()
@@ -161,6 +187,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   }
 
   dispose(): void {
+    clearTimeout(this.happyTimer)
     this.animationHost.stop()
     delete this.view
   }

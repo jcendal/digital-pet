@@ -59,7 +59,7 @@
 
 When a shared `pet.db` is present on the host machine, the web app **reads** the same archive as
 [@jcendal/cursor-digital-pet](https://open-vsx.org/extension/jcendal/cursor-digital-pet) and
-[@jcendal/opencode-digital-pet](https://www.npmjs.com/package/@jcendal/opencode-digital-pet). When that file is absent, the app runs in **browser mode**: progress lives in IndexedDB, experience ticks on a five-minute schedule, and you can install the app as a PWA or move saves between devices from **OPTIONS → PAIR DEVICES**. You can also choose a browser companion even when a computer save is available.
+[@jcendal/opencode-digital-pet](https://www.npmjs.com/package/@jcendal/opencode-digital-pet). When that file is absent, the app runs in **browser mode**: progress lives in IndexedDB, experience grows by 2% of the selected level requirement every two hours, and you can install the app as a PWA or move saves between devices from **OPTIONS → PAIR DEVICES**. You can also choose a browser companion even when a computer save is available.
 
 ### 🎯 Key Highlights
 
@@ -90,12 +90,16 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **Options** | Fourth navigation button opens the save selector, growth settings, new egg, and device pairing |
 | **Evolution experience** | Low = 10% of the original requirement, Normal = 50%, High = 100% |
 | **New egg** | Start a fresh browser companion while keeping the previous generation in History |
-| **Food** | One pixel apple appears after four hours. Click to eat and gain 25% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
+| **Food** | One pixel apple appears after one hour. Click to eat and gain 10% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
+| **Hygiene** | Piles appear 2 hours after hatching, then 8 and 16 hours later (maximum three). Click each pile for 5% of the selected stage requirement. Two or more piles make the companion sad; cleaning makes it happy for three seconds |
+| **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. The winner earns 20% of their selected level requirement |
 | **Shared combat rules** | Strength and evasion from 0–100 determine each hit. Three hits win; a timeout draws. Only a victory evolves along the current Digimon's catalogue branches |
 | **Device pairing and Sync** | Approve the first exchange, remember the device, then request later transfers with one button and a rollback backup |
 
+Hygiene timers and piles belong to the companion, survive reloads and transfers, and continue while closed. Cleaning restarts the next timer according to the remaining number of piles (2/8/16 hours); a new egg starts fresh. Final stages can be cleaned without adding unused XP.
+
 Food belongs to your browser companion and survives closing the app or transferring its save.
-At a final stage, eating plays the animation without adding unused experience.
+At a final stage, eating plays the animation without adding unused experience. Final-stage companions can also battle, without gaining unused experience. Existing four-hour food schedules are shortened to at most one hour on the next visit.
 The [gameplay architecture review](../../docs/gameplay-architecture.md) documents layer ownership,
 evolution coverage, the combat formula and research sources.
 
@@ -157,7 +161,7 @@ Open **OPTIONS → YOUR SAVE** to choose **COMPUTER SAVE** (the companion raised
 | --- | --- | --- |
 | **When** | Choose COMPUTER SAVE while the configured `pet.db` exists | Choose THIS BROWSER, or no computer save is available |
 | **Partner** | Shared with Cursor and OpenCode on that computer | Separate partner, starting with a Digitama |
-| **Experience** | Token usage from the integrations | One twenty-fourth of the original stage threshold per completed five-minute interval; evolution requirements are adjustable |
+| **Experience** | Token usage from the integrations | 2% of the selected stage requirement per completed two-hour interval |
 | **Persistence** | Existing database (read-only from the web app) | IndexedDB for this browser origin |
 | **Offline** | Live progress needs the local server | UI and save after the service worker cache |
 | **Growth / new egg** | Managed in Cursor or OpenCode | Configurable in OPTIONS; retired companions stay in History |
@@ -173,7 +177,7 @@ Default `pet.db` location (same as the other apps):
 
 Override with `DIGITAL_PET_DATABASE_PATH`. In SQLite mode, partner progression and history are updated only by Cursor or OpenCode.
 
-In browser mode, elapsed five-minute intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and the selected evolution experience and location. The stable device code and paired device are stored separately, so importing a save keeps this device's identity. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
+In browser mode, elapsed two-hour intervals are applied when you reopen the app; evolution is automatic. The save includes partner progress, discoveries, history, and the selected evolution experience and location. The stable device code and paired device are stored separately, so importing a save keeps this device's identity. It is tied to this site's origin — another browser, host, or port has separate storage. Clearing site data removes the save and its local backup.
 
 ---
 
@@ -185,7 +189,7 @@ The public browser-only version can be built with `npm run build:static --worksp
 2. Use the browser **Install app** or **Add to Home Screen** action when offered.
 3. Launch Digital Pet from the installed icon.
 
-The package ships a web app manifest, favicons, standard and maskable icons, and a service worker that caches the shell for offline use. A browser save can keep progressing offline; **Pair / Sync** needs a network connection, and SQLite mode needs the local server. Installation away from `localhost` requires HTTPS.
+The package ships a web app manifest, favicons, standard and maskable icons, and a service worker that caches the shell for offline use. A browser save can keep progressing offline; **Pair / Sync** and **Player Battle** need a network connection, and SQLite mode needs the local server. Installation away from `localhost` requires HTTPS.
 
 ---
 
@@ -211,6 +215,31 @@ Each transfer replaces the receiving device's browser save and keeps a backup. *
 
 ---
 
+## Player battles
+
+Choose **BATTLE** in the bottom navigation on two browsers with **THIS BROWSER** selected.
+Share the six-digit battle code, enter it on the other browser and choose
+**CHALLENGE**. The receiving player must choose **ACCEPT BATTLE**. Eggs and companions
+with an evolution pending cannot enter a player battle. Codes belong to the live
+page and change on reload; collisions are retried by registering a different code.
+They are separate from the persistent 16-character codes used for save transfers.
+
+Both clients use the actual selected Digimon's catalogue combat stats, commit and
+reveal independently generated randomness, calculate the same battle plan and
+compare its SHA-256 digest before playback. The challenger is the canonical first
+participant, so the same winner is shown from each player's perspective. The
+winner receives 20% of their own selected level requirement, capped at the evolution
+threshold. There is no loss penalty and a draw awards no experience. The prize and
+a local battle receipt, seed, fighters and complete plan are saved atomically before animation, preventing duplicate
+awards on the same browser even after reloading or restoring a backup.
+
+Both apps must remain connected through agreement. A declined, expired or
+interrupted negotiation gives no reward. Once a result is agreed, closing playback
+pauses its locally saved playback. Reopening BATTLE or returning to the app resumes from the last completed attack, even offline, and does not award XP again. A connection failure during final agreement
+can leave only one client with a confirmed result; there is no durable shared
+recovery service. See [the protocol and AWS assessment](docs/player-battles.md)
+for the trust boundary and the proposed authoritative upgrade.
+
 ## ⚙️ Configuration
 
 ### In-app options
@@ -228,7 +257,7 @@ Each transfer replaces the receiving device's browser save and keeps a backup. *
 | **NORMAL** | 50% of HIGH | Half the original requirement |
 | **HIGH** | 100% | Original progression (default) |
 
-The amount earned every five minutes stays the same. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting, location, and paired device.
+Each two-hour tick earns 2% of the selected requirement. Food gives 10% and a player battle win gives 20% of that requirement. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting, location, and paired device.
 
 ### Server settings
 
@@ -262,7 +291,7 @@ This package adds the local server, SQLite read adapter, IndexedDB save, timed b
 - ✅ No analytics or telemetry in the web package
 - ✅ SQLite mode keeps partner data in your local `pet.db` only
 - ✅ Browser saves stay in IndexedDB on your device; no account or cloud sync
-- ⚠️ **Pair / Sync** uses PeerJS Cloud for signaling and exchanges save data directly between browsers you approve
+- ⚠️ **Pair / Sync** and **Player Battle** use PeerJS Cloud for signaling and exchange data directly between browsers you approve
 - ⚠️ Clearing site data or uninstalling the PWA removes browser saves unless you transferred them elsewhere
 
 ---

@@ -197,3 +197,38 @@ body {
     padding: 8px;
   }
 }
+
+#pet-poops {
+  position: absolute;
+  left: 2%;
+  bottom: 2%;
+  width: 144px;
+  height: 44px;
+  z-index: 2;
+}
+#pet-poops[hidden] {
+  display: none;
+}
+.pet-poop {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.pet-poop:hover,
+.pet-poop:focus-visible {
+  border-color: var(--ink);
+  background: var(--lcd);
+}
+.pet-poop:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.pet-poop svg {
+  width: 100%;
+  height: 100%;
+}

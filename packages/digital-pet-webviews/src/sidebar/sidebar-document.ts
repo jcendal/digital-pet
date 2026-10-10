@@ -18,7 +18,7 @@ export const buildSidebarWebviewHtml = (
 <style>${resources ? `@font-face { font-family: 'Digital Pet Pixel'; src: url('${escapeHtml(resources.fontUri)}') format('truetype'); font-display: swap; }` : ""}${PANEL_THEME}${resources?.webShell ? PANEL_STYLES : ""}${SIDEBAR_STYLES}</style></head>
 <body>${resources?.webShell ? '<main class="device partner-device"><header class="masthead"><p class="brand">DIGITAL MONSTER</p><h1>PARTNER</h1></header><div class="screen">' : ""}<${resources?.webShell ? "section" : "main"} class="pet-module" aria-label="Digital Pet">
 <header class="pet-header"><span id="phase" role="status" aria-live="polite">LOADING</span><span class="micro">VPET</span></header>
-<div id="content"><div class="arena" role="img" aria-label="Partner animation"><div id="battle-scores" hidden><span id="player-score"></span><span id="opponent-score"></span></div><svg id="artwork" aria-hidden="true"></svg><span id="battle-caption" aria-live="polite" hidden></span></div>
+<div id="content"><div class="arena" role="group" aria-label="Partner animation"><div id="battle-scores" hidden><span id="player-score"></span><span id="opponent-score"></span></div><svg id="artwork" aria-hidden="true"></svg><span id="battle-caption" aria-live="polite" hidden></span><div id="pet-poops" aria-label="Clean your companion's poop"></div></div>
 <div class="identity"><h2 id="name"></h2><p id="stage" class="micro"></p></div>
 <div class="progress"><div class="progress-heading"><span id="progress-label">NEXT CHECK</span><span id="percent"></span></div>
 <div id="meter" role="progressbar" aria-label="Evolution check progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="meter-fill"></span></div><p id="gauge" class="micro"></p></div></div>

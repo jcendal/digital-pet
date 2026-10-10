@@ -14,7 +14,7 @@ const state = {
 
 describe("browser save transfer", () => {
   it("preserves a pending evolution through transfer and rejects unrelated targets", () => {
-    const pending = advanceLocalPet(state, Date.now(), () => 0)
+    const pending = advanceLocalPet({ ...state, gauge: 5_000_000 }, Date.now(), () => 0)
     expect(pending.pendingEvolution).toBeDefined()
     expect(parsePetTransfer({ version: 1, state: pending }).state).toEqual(pending)
     expect(() =>

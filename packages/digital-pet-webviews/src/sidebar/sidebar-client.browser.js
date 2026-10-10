@@ -94,7 +94,42 @@ const renderArtwork = () => {
       }
     }
 }
+const renderPoops = () => {
+  const group = byId("pet-poops")
+  if (!group) return
+  group.hidden = state.phase !== "idle"
+  const hygiene = model?.kind === "partner" ? model.hygiene : null
+  const ids = hygiene?.poops || []
+  for (const button of group.querySelectorAll("button"))
+    if (!ids.includes(Number(button.dataset.poopId)) || button.dataset.partnerId !== hygiene?.partnerId) button.remove()
+  for (const [index, id] of ids.entries()) {
+    let button = group.querySelector('[data-poop-id="' + id + '"]')
+    if (!button) {
+      button = document.createElement("button")
+      button.type = "button"
+      button.className = "pet-poop"
+      button.dataset.poopId = String(id)
+      button.dataset.partnerId = hygiene.partnerId
+      button.innerHTML =
+        '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M7 2h3v2h2v3h2v3h1v4H1v-4h2V7h2V4h2z"/><path fill="var(--lcd)" d="M7 5h4v1H7zM5 8h8v1H5zM3 11h10v1H3z"/></svg>'
+      button.addEventListener("click", () => {
+        button.disabled = true
+        vscode.postMessage({
+          type: "clean-poop",
+          partnerId: button.dataset.partnerId,
+          poopId: Number(button.dataset.poopId),
+        })
+      })
+      group.append(button)
+    }
+    button.style.left = index * 48 + "px"
+    button.disabled = !hygiene.canClean || state.phase !== "idle"
+    button.title = "Clean poop · +5% experience"
+    button.setAttribute("aria-label", "Clean poop " + (index + 1) + " · +5% experience")
+  }
+}
 const render = () => {
+  renderPoops()
   const active = model?.kind === "partner"
   root.classList.toggle("no-partner", !active)
   root.classList.toggle("animating", state.phase !== "idle")
@@ -106,7 +141,11 @@ const render = () => {
     : state.phase === "idle"
       ? model.frozen
         ? "FROZEN"
-        : "ACTIVE"
+        : model.hygiene?.mood === "sad"
+          ? "SAD"
+          : model.hygiene?.mood === "happy"
+            ? "HAPPY"
+            : "ACTIVE"
       : state.phase.toUpperCase()
   if (!active) return
   byId("name").textContent = model.name

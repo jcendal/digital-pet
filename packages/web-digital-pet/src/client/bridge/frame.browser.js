@@ -1,5 +1,6 @@
 import { LOCATIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
 import { webAsset } from "../platform/assets.ts"
+import { browserSaveSelected } from "../platform/save-source.ts"
 import "./styles.css"
 
 function initWebBridge(page, locationIds) {
@@ -29,10 +30,7 @@ function initWebBridge(page, locationIds) {
   }
   const pageVisible = () =>
     document.visibilityState !== "hidden" && (!window.frameElement || window.frameElement.classList.contains("active"))
-  const browserSave = () => {
-    const preferred = localStorage.getItem("digital-pet:preferred-source")
-    return preferred === "browser"
-  }
+  const browserSave = browserSaveSelected
   const refresh = async () => {
     if (!pageVisible()) return
     if (busy) {
@@ -150,6 +148,21 @@ function initWebBridge(page, locationIds) {
     },
     setState: (state) => sessionStorage.setItem(key, JSON.stringify(state)),
     postMessage: (message) => {
+      if (message.type === "clean-poop" && page === "sidebar") {
+        if (localStorage.getItem("digital-pet:source") === "browser")
+          void import("../presentation/browser-session.ts")
+            .then(async (local) => {
+              await local.cleanPoop(
+                message.partnerId,
+                message.poopId,
+                () => pageVisible() && browserSave() && !window.top.document.querySelector("dialog[open]"),
+              )
+              window.parent.postMessage({ type: "digital-pet:save-changed" }, location.origin)
+              refresh()
+            })
+            .catch(() => refresh())
+        return
+      }
       if (message.type === "artwork-width") {
         width = message.width
         return

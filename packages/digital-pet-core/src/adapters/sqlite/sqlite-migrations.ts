@@ -113,6 +113,12 @@ const MIGRATIONS = [
       "ALTER TABLE partners ADD COLUMN battle_opponent_node_id TEXT",
     ],
   },
+  {
+    version: 5,
+    sql: [
+      "CREATE TABLE IF NOT EXISTS partner_hygiene (partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id), state TEXT NOT NULL)",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

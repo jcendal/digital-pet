@@ -112,6 +112,12 @@ and animated artwork.
 
 Your partner starts as an egg and evolves as you complete Agent turns.
 
+### Hygiene
+
+After hatching, a pile appears after 2 hours, another 8 hours later, and a third 16 hours later. Up to three piles are kept in the partner database, including while Cursor is closed. Click a pile in the sidebar to clean it and earn 5% of the current stage requirement. A double click cannot grant the same reward twice. Two or more piles make the partner sad; cleaning shows a happy reaction for three seconds before returning to its current mood.
+
+Cleaning restarts the timer at 2, 8 or 16 hours according to the number of remaining piles. Eggs have no piles, a new partner starts fresh, and final stages can be cleaned without gaining unused XP. Cleaning waits during evolution and is disabled while frozen or using a node override.
+
 ### Evolution battles
 
 Evolution sequences can show your partner in a battle scene inside the sidebar.
