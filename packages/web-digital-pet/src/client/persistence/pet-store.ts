@@ -1,8 +1,11 @@
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
+import { rewardBattleWinner } from "../../domain/battle/reward.ts"
+import { type AgreedBattle, type PendingBattle, parsePendingBattle } from "../../domain/battle/saved-battle.ts"
 import {
   advanceLocalPet,
   beginNewPartner,
+  cleanLocalPoop,
   completeLocalEvolution,
   consumeLocalFood,
   type ExperienceLevel,
@@ -15,7 +18,95 @@ const STATE_KEY = "current"
 const DEVICE_KEY = "device-code"
 const BACKUP_KEY = "previous-save"
 const PAIRED_KEY = "paired-device"
+const PENDING_BATTLE_KEY = "pending-battle"
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+/** Receipt, prize and recoverable playback are committed together before the first frame. */
+export const settleBattle = async (
+  battle: AgreedBattle,
+  expected: LocalPetState,
+): Promise<PendingBattle | undefined> => {
+  const prepared = parsePendingBattle({ ...battle, completedShots: 0, rewarded: false, agreedAt: Date.now() })
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const key = `battle:${battle.battleId}`
+    const receipt = await resultOf(store.get(key))
+    const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
+    const pending = storedPending === undefined ? undefined : parsePendingBattle(storedPending)
+    const state = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
+    if (pending && pending.battleId !== battle.battleId) throw new Error("Finish the saved battle first")
+    const won = battle.plan.outcome === battle.localSide
+    let rewarded = false
+    let saved = pending
+    if (!receipt) {
+      if (state && won) {
+        const next = rewardBattleWinner(state, expected, Date.now())
+        rewarded = next !== state
+        if (rewarded) store.put(next, STATE_KEY)
+      }
+      store.put({ won, settledAt: Date.now() }, key)
+      saved = { ...prepared, rewarded }
+      store.put(saved, PENDING_BATTLE_KEY)
+    }
+    await done
+    return saved
+  } finally {
+    database.close()
+  }
+}
+
+export const readPendingBattle = async (): Promise<PendingBattle | undefined> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readonly")
+    const value = await resultOf(transaction.objectStore(STORE_NAME).get(PENDING_BATTLE_KEY))
+    return value === undefined ? undefined : parsePendingBattle(value)
+  } finally {
+    database.close()
+  }
+}
+
+const updatePendingBattle = async (
+  battleId: string,
+  change: (pending: PendingBattle) => PendingBattle | undefined,
+): Promise<boolean> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const value = await resultOf(store.get(PENDING_BATTLE_KEY))
+    const pending = value === undefined ? undefined : parsePendingBattle(value)
+    if (!pending || pending.battleId !== battleId) {
+      await done
+      return false
+    }
+    const next = change(pending)
+    if (next) store.put(next, PENDING_BATTLE_KEY)
+    else store.delete(PENDING_BATTLE_KEY)
+    await done
+    return true
+  } finally {
+    database.close()
+  }
+}
+
+export const checkpointBattle = (battleId: string, completedShots: number): Promise<boolean> =>
+  updatePendingBattle(battleId, (pending) => {
+    if (!Number.isInteger(completedShots) || completedShots < 0 || completedShots > pending.plan.shots.length)
+      throw new Error("Invalid battle playback checkpoint")
+    return { ...pending, completedShots: Math.max(pending.completedShots, completedShots) }
+  })
+
+/** Clear playback only after its outcome was shown; the reward receipt remains. */
+export const finishPendingBattle = (battleId: string): Promise<boolean> =>
+  updatePendingBattle(battleId, (pending) => {
+    if (pending.completedShots !== pending.plan.shots.length) throw new Error("The saved battle is not finished")
+    return undefined
+  })
 
 const openDatabase = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
@@ -172,6 +263,16 @@ export const finishLocalEvolution = (expectedKey: string, won: boolean, active: 
 
 export const startNewPartner = (): Promise<void> =>
   changeLocalState((state) => beginNewPartner(state, crypto.randomUUID(), Date.now()), true)
+
+export const cleanPoop = async (partnerId: string, poopId: number, active: () => boolean): Promise<boolean> => {
+  let cleaned = false
+  await changeLocalState((state) => {
+    const next = active() ? cleanLocalPoop(state, partnerId, poopId, Date.now()) : state
+    cleaned = next !== state
+    return next
+  })
+  return cleaned
+}
 
 export const consumeFood = async (partnerId: string, active: () => boolean): Promise<boolean> => {
   let consumed = false

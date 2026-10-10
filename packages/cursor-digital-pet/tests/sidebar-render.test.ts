@@ -36,6 +36,9 @@ class PreviewElement {
       else this.classes.delete(name)
     },
   }
+  private parent: PreviewElement | undefined
+  readonly listeners = new Map<string, () => void>()
+  disabled = false
   clientWidth = 300
   hidden = false
   className = ""
@@ -48,7 +51,22 @@ class PreviewElement {
     this.children.length = 0
   }
   append(node: PreviewElement) {
+    node.parent = this
     this.children.push(node)
+  }
+  querySelectorAll() {
+    return this.children
+  }
+  querySelector(selector: string) {
+    const id = selector.match(/data-poop-id="(\d+)"/)?.[1]
+    return this.children.find((node) => node.dataset.poopId === id) ?? null
+  }
+  addEventListener(name: string, listener: () => void) {
+    this.listeners.set(name, listener)
+  }
+  remove() {
+    const parent = this.parent
+    if (parent) parent.children.splice(parent.children.indexOf(this), 1)
   }
 }
 
@@ -63,9 +81,10 @@ const sidebarPreview = (idleAlignment?: string) => {
     return node
   }
   if (idleAlignment !== undefined) element("artwork").dataset.idleAlignment = idleAlignment
+  const messages: unknown[] = []
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
-    acquireVsCodeApi: () => ({ postMessage: () => {} }),
+    acquireVsCodeApi: () => ({ postMessage: (message: unknown) => messages.push(message) }),
     getComputedStyle: () => ({ getPropertyValue: () => "6" }),
     document: {
       getElementById: element,
@@ -83,10 +102,25 @@ const sidebarPreview = (idleAlignment?: string) => {
       observe() {}
     },
   })
-  return { element, send: (data: unknown) => receive({ data }) }
+  return { element, messages, send: (data: unknown) => receive({ data }) }
 }
 
 describe("sidebar render", () => {
+  test("piles are clickable, report their saved identity, and display the current mood", () => {
+    const { element, send, messages } = sidebarPreview()
+    const payload = toSidebarWebviewPayload(partnerCard)
+    send({ ...payload, hygiene: { partnerId: "pet", poops: [10, 20], mood: "sad", canClean: true } })
+    expect(element("phase").textContent).toBe("SAD")
+    expect(element("pet-poops").children).toHaveLength(2)
+    element("pet-poops").children[0]?.listeners.get("click")?.()
+    expect(messages.at(-1)).toEqual({ type: "clean-poop", partnerId: "pet", poopId: 10 })
+    expect(element("pet-poops").children[0]?.disabled).toBe(true)
+    send({ ...payload, hygiene: { partnerId: "pet", poops: [20], mood: "happy", canClean: true } })
+    expect(element("phase").textContent).toBe("HAPPY")
+    expect(element("pet-poops").children).toHaveLength(1)
+    send({ type: "presentation-state", state: { phase: "battle" } })
+    expect(element("pet-poops").hidden).toBe(true)
+  })
   test("walking frames keep the arena scale while their pixel position changes", () => {
     const { element, send } = sidebarPreview()
     send({ type: "animation-frame", artwork: " █" })

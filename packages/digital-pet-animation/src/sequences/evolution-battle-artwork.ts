@@ -415,14 +415,21 @@ export const runEvolutionBattleAnimation = async (
   viewportWidth: number,
   plan: BattlePlan,
   onFrame: BattleFrameListener,
+  playback: {
+    readonly completedShots?: number
+    readonly onShotComplete?: (completedShots: number) => Promise<void>
+  } = {},
 ): Promise<EvolutionBattleOutcome> => {
-  await animateBattleIntro(viewportWidth, onFrame)
+  const completedShots = playback.completedShots ?? 0
+  if (!Number.isInteger(completedShots) || completedShots < 0 || completedShots > plan.shots.length)
+    throw new Error("Invalid battle playback checkpoint")
+  if (completedShots === 0) await animateBattleIntro(viewportWidth, onFrame)
 
   const { shots, outcome } = plan
-  let playerHits = 0
-  let opponentHits = 0
+  let playerHits = shots.slice(0, completedShots).filter((shot) => shot.shooter === "player" && shot.hit).length
+  let opponentHits = shots.slice(0, completedShots).filter((shot) => shot.shooter === "opponent" && shot.hit).length
 
-  for (let index = 0; index < shots.length; index += 1) {
+  for (let index = completedShots; index < shots.length; index += 1) {
     const shot = shots[index]
     if (shot === undefined) continue
 
@@ -432,6 +439,7 @@ export const runEvolutionBattleAnimation = async (
       else opponentHits += 1
     }
     await animateImpact(catalog, playerSprite, opponentSprite, viewportWidth, shot, playerHits, opponentHits, onFrame)
+    await playback.onShotComplete?.(index + 1)
 
     const battleOver = playerHits >= EVOLUTION_BATTLE_HITS_TO_WIN || opponentHits >= EVOLUTION_BATTLE_HITS_TO_WIN
     const isLastShot = index === shots.length - 1

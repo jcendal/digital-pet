@@ -1,5 +1,7 @@
 import type { SqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-types.ts"
 import { createSqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { createSqlitePartnerHygiene } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-partner-hygiene.ts"
+import type { PartnerHygieneStore } from "@jcendal/digital-pet-core/application/ports/partner-hygiene.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
@@ -17,6 +19,7 @@ export type {
 export { resolveDatabasePath } from "./options.ts"
 
 export type CursorSqliteDigitalPetRepository = SqliteDigitalPetWriteStore &
+  PartnerHygieneStore &
   SidebarSnapshotReader & {
     reloadFromDisk(): void
   }
@@ -37,6 +40,7 @@ export const createSqliteDigitalPetRepository = async (
 
   return {
     ...writeStore,
+    ...createSqlitePartnerHygiene(database.executor),
     getSidebarSnapshot: () => readSidebarSnapshotFromExecutor(database.executor),
     reloadFromDisk: () => {
       database.reloadFromDisk()

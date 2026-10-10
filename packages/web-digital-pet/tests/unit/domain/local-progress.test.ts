@@ -21,11 +21,21 @@ const initial: LocalPetState = {
 }
 
 describe("browser pet progression", () => {
-  it("adds experience once per complete five-minute interval", () => {
+  it("awards 2% per two hours for every experience setting, retaining partial intervals", () => {
+    expect(EXPERIENCE_INTERVAL_MS).toBe(2 * 60 * 60 * 1000)
+    for (const experienceLevel of ["low", "normal", "high"] as const) {
+      const state = { ...initial, experienceLevel }
+      const now = initial.lastTickAt + 3 * EXPERIENCE_INTERVAL_MS + 60_000
+      const result = advanceLocalPet(state, now)
+      expect(result.gauge).toBe(experienceThresholds(experienceLevel)[0] * 0.06)
+      expect(result.lastTickAt).toBe(now - 60_000)
+      expect(advanceLocalPet(result, now)).toBe(result)
+    }
+  })
+  it("adds experience once per complete two-hour interval", () => {
     expect(advanceLocalPet(initial, initial.lastTickAt + EXPERIENCE_INTERVAL_MS - 1)).toBe(initial)
     const afterOne = advanceLocalPet(initial, initial.lastTickAt + EXPERIENCE_INTERVAL_MS, () => 0)
-    expect(afterOne.gauge).toBeGreaterThan(0)
-    expect(afterOne.gauge).toBeLessThan(5_000_000)
+    expect(afterOne.gauge).toBe(experienceThresholds()[0] * 0.02)
     expect(afterOne.lastTickAt).toBe(initial.lastTickAt + EXPERIENCE_INTERVAL_MS)
     expect(advanceLocalPet(afterOne, initial.lastTickAt + EXPERIENCE_INTERVAL_MS, () => 0)).toBe(afterOne)
   })
@@ -46,7 +56,7 @@ describe("browser pet progression", () => {
     expect(evolved.pendingEvolution).toBeUndefined()
     expect(evolved.events).toHaveLength(2)
     expect(evolved.events[1]?.createdAt).toBe(new Date(later).toISOString())
-    expect(advanceLocalPet(evolved, later + EXPERIENCE_INTERVAL_MS - 1)).toBe(evolved)
+    expect(advanceLocalPet(evolved, later + EXPERIENCE_INTERVAL_MS - 1).gauge).toBe(0)
     expect(completeLocalEvolution(evolved, pendingEvolutionKey(ready)!, true, later)).toBe(evolved)
   })
 
@@ -63,7 +73,7 @@ describe("browser pet progression", () => {
     expect(won.events).toHaveLength(2)
   })
 
-  it("uses the exact selected experience requirements without changing experience earned per tick", () => {
+  it("uses the exact selected experience requirements and earns 2% of each selected requirement per tick", () => {
     const high = experienceThresholds("high")
     const normal = experienceThresholds("normal")
     const low = experienceThresholds("low")
@@ -72,13 +82,13 @@ describe("browser pet progression", () => {
       expect(low[stage]).toBe(high[stage] / 10)
     }
     for (const [level, ticks] of [
-      ["high", 24],
-      ["normal", 12],
-      ["low", 3],
+      ["high", 50],
+      ["normal", 50],
+      ["low", 50],
     ] as const) {
       const configured = { ...initial, experienceLevel: level }
       const before = advanceLocalPet(configured, initial.lastTickAt + (ticks - 1) * EXPERIENCE_INTERVAL_MS, () => 0)
-      expect(before.currentNodeId).toBe(initial.currentNodeId)
+      expect(before.pendingEvolution).toBeUndefined()
       const after = advanceLocalPet(configured, initial.lastTickAt + ticks * EXPERIENCE_INTERVAL_MS, () => 0)
       expect(after.currentNodeId).toBe(initial.currentNodeId)
       expect(after.pendingEvolution).toBeDefined()

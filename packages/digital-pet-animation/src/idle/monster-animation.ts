@@ -3,7 +3,6 @@ import type {
   MonsterFrameCatalog,
   MonsterFrameName,
 } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-
 import { MONSTER_SLEEP_AFTER_MS } from "../constants/presentation-timing.ts"
 import { assertNever } from "../utils/assert-never.ts"
 import {
@@ -27,12 +26,15 @@ import {
   type WalkingPolicyState,
 } from "./monster-walking-policy.ts"
 
+export type MonsterMood = "neutral" | "sad" | "happy"
+
 export type MonsterAnimationIdentity = {
   readonly sprite: string
   readonly isDigitama: boolean
 }
 
 export type MonsterAnimationEvent =
+  | { readonly kind: "mood_changed"; readonly mood: MonsterMood }
   | { readonly kind: "partner_changed"; readonly partner: MonsterAnimationIdentity | undefined }
   | { readonly kind: "tick" }
   | { readonly kind: "activity" }
@@ -111,6 +113,8 @@ export class MonsterAnimationController {
   #lastActivityMs: number | undefined
   #latestViewportWidth: number | undefined
   #state: MonsterAnimationState = { kind: "blank" }
+  #mood: MonsterMood = "neutral"
+  #moodPhase = false
 
   constructor(
     catalog: MonsterFrameCatalog,
@@ -124,10 +128,17 @@ export class MonsterAnimationController {
 
   dispatch(event: MonsterAnimationEvent): MonsterAnimationOutput {
     switch (event.kind) {
+      case "mood_changed":
+        if (this.#mood !== event.mood) {
+          this.#mood = event.mood
+          if (event.mood !== "neutral") this.#state = this.#activity()
+        }
+        break
       case "partner_changed":
         this.#state = this.#changePartner(event.partner)
         break
       case "tick":
+        this.#moodPhase = !this.#moodPhase
         this.#state = this.#tick()
         break
       case "activity":
@@ -274,7 +285,7 @@ export class MonsterAnimationController {
 
   #inactive(): boolean {
     const baseline = this.#lastActivityMs
-    return baseline !== undefined && this.#nowMs() - baseline >= MONSTER_SLEEP_AFTER_MS
+    return this.#mood === "neutral" && baseline !== undefined && this.#nowMs() - baseline >= MONSTER_SLEEP_AFTER_MS
   }
 
   #sleep(identity: MonsterAnimationIdentity, boundary: ActionBoundaryState): SleepingState {
@@ -353,6 +364,18 @@ export class MonsterAnimationController {
   }
 
   #frameResult(sprite: string, frameName: MonsterFrameName): { readonly kind: "frame"; readonly frame: MonsterFrame } {
+    const moodFrames: readonly MonsterFrameName[] =
+      this.#mood === "happy"
+        ? ["happy"]
+        : this.#mood === "sad"
+          ? [this.#moodPhase ? "injured_1" : "injured_2", "injured_1", "injured_2", "refuse"]
+          : []
+    if (this.#state.kind !== "digitama") {
+      for (const name of moodFrames) {
+        const moodFrame = this.#catalog.get(sprite, name)
+        if (moodFrame) return { kind: "frame", frame: moodFrame }
+      }
+    }
     const frame = this.#catalog.get(sprite, frameName)
     if (frame === undefined) throw new Error(`Animation state references unavailable frame: ${sprite}/${frameName}`)
     return { kind: "frame", frame }

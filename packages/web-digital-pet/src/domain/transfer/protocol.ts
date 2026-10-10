@@ -1,5 +1,6 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
+import { parseHygiene } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "../pet/progress.ts"
 
@@ -149,6 +150,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       events,
       ...(pendingEvolution ? { pendingEvolution } : {}),
       ...(food ? { food } : {}),
+      ...(state.hygiene !== undefined ? { hygiene: parseHygiene(state.hygiene) } : {}),
       ...(isWorldVisit(state.worldVisit)
         ? { worldVisit: { regionId: state.worldVisit.regionId, locationId: state.worldVisit.locationId } }
         : {}),

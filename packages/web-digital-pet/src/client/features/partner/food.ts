@@ -1,5 +1,5 @@
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
-import { consumeFood, peekLocalState, readLocalState } from "../../persistence/pet-store.ts"
+import { consumeFood, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { animation } from "./animation.ts"
 import { PresentationCancelled, runForegroundEvolution } from "./foreground-evolution.ts"
 import {
@@ -46,12 +46,13 @@ const eat = async (): Promise<void> => {
   if (button) button.disabled = true
   const valid = () => presentationCurrent(revision) && actions.valid()
   const play = async () => {
+    if (await readPendingBattle()) return
     const before = await readLocalState()
     if (!valid() || !actions.active() || !(await consumeFood(view.partnerId, () => valid() && actions.active()))) return
     if (button) button.hidden = true
     if (feedback) {
       feedback.hidden = false
-      feedback.textContent = view.givesExperience ? "+25% EXPERIENCE" : "YUM!"
+      feedback.textContent = view.givesExperience ? "+10% EXPERIENCE" : "YUM!"
     }
     await runForegroundEvolution({
       active: actions.active,
@@ -129,7 +130,7 @@ export const updateFoodButton = (
   if (feedback && !isPresentingEvolution()) feedback.hidden = true
   button.hidden = !view?.available || isPresentingEvolution()
   button.disabled = !view?.canEat || isPresentingEvolution()
-  const label = view?.givesExperience ? "Feed your companion · +25% experience" : "Feed your companion"
+  const label = view?.givesExperience ? "Feed your companion · +10% experience" : "Feed your companion"
   button.setAttribute("aria-label", label)
   button.title = label
 }

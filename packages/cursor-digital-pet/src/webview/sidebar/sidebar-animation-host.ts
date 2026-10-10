@@ -5,6 +5,7 @@ import {
 } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { PetMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { IntervalScheduler } from "../../adapters/vscode/scheduler.ts"
@@ -19,6 +20,7 @@ export type SidebarAnimationHost = {
   clearArtwork(): void
   postCurrentFrame(animation?: MonsterAnimationOutput): Promise<void>
   playFeedAnimation(): void
+  setMood(mood: PetMood): void
   isPresentationBlocked(): boolean
   setPresentationBlocked(blocked: boolean): void
   getArtworkWidth(): number
@@ -84,6 +86,9 @@ export const createSidebarAnimationHost = ({
       if (presentationBlocked) return
       const nextAnimation = animation.dispatch({ kind: "feed" })
       void postCurrentFrame(nextAnimation)
+    },
+    setMood(mood): void {
+      animation.dispatch({ kind: "mood_changed", mood })
     },
     isPresentationBlocked(): boolean {
       return presentationBlocked

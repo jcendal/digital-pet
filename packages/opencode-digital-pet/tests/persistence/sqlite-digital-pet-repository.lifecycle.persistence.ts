@@ -54,7 +54,7 @@ describe.if(isBunSqliteAvailable)("sqlite digital-pet repository lifecycle", () 
       expect(repository.databasePath).toBe(join(tempRoot.appDataRoot, "opencode-digital-pet", "pet.db"))
       expect(resolveHostDatabasePath({ appDataRoot: tempRoot.appDataRoot })).toBe(repository.databasePath)
       expect(await Bun.file(repository.databasePath).exists()).toBe(true)
-      expect(repository.getAppliedMigrations()).toEqual([1, 2, 3, 4])
+      expect(repository.getAppliedMigrations()).toEqual([1, 2, 3, 4, 5])
     } finally {
       await repository.close()
     }
@@ -69,7 +69,7 @@ describe.if(isBunSqliteAvailable)("sqlite digital-pet repository lifecycle", () 
     const repository = await createSqliteDigitalPetRepository({ appDataRoot: tempRoot.appDataRoot })
     try {
       expect(repository.databasePath).toBe(legacyPath)
-      expect(repository.getAppliedMigrations()).toEqual([1, 2, 3, 4])
+      expect(repository.getAppliedMigrations()).toEqual([1, 2, 3, 4, 5])
     } finally {
       await repository.close()
     }
@@ -113,7 +113,7 @@ describe.if(isBunSqliteAvailable)("sqlite digital-pet repository lifecycle", () 
     await firstRepository.close()
     const reopenedRepository = await createSqliteDigitalPetRepository({ databasePath })
     try {
-      expect(reopenedRepository.getAppliedMigrations()).toEqual([1, 2, 3, 4])
+      expect(reopenedRepository.getAppliedMigrations()).toEqual([1, 2, 3, 4, 5])
       expect(reopenedRepository.getActivePartner()).toEqual(expectedPartner)
       expect(reopenedRepository.listPartnerEvents(partner.partnerId)).toEqual(expectedEvents)
       expect(reopenedRepository.listUsageReceipts()).toEqual(expectedReceipts)

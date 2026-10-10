@@ -472,10 +472,25 @@
   overflow-wrap: anywhere;
   font-size: 12px;
 }
-#pair-dialog label {
+#pair-dialog label,
+#battle-dialog label {
   display: block;
   margin: 18px 0 8px;
   font-size: 11px;
+}
+
+#battle-arena {
+  overflow-x: auto;
+  border: 2px solid var(--muted);
+  padding: 8px;
+}
+#battle-artwork {
+  margin: 8px 0;
+  font: 9px / 1 monospace;
+  white-space: pre;
+}
+#battle-score {
+  font-size: 10px;
 }
 #pair-restore {
   margin-top: 20px;

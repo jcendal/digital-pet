@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
-import { FEEDING_POLICY } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import {
   advanceLocalPet,
+  BROWSER_FEEDING_POLICY,
   beginNewPartner,
   completeLocalEvolution,
   consumeLocalFood,
@@ -22,22 +22,33 @@ const partner: LocalPetState = {
   events: [{ currentNodeId: "3-001", createdAt: new Date(now).toISOString() }],
 }
 
+test("hourly food respects the exact boundary and shortens legacy four-hour schedules", () => {
+  expect(BROWSER_FEEDING_POLICY.intervalMs).toBe(60 * 60 * 1000)
+  const old = { ...partner, food: { kind: "scheduled" as const, availableAt: now + 4 * 60 * 60 * 1000 } }
+  const scheduled = advanceLocalPet(old, now)
+  expect(scheduled.food).toEqual({ kind: "scheduled", availableAt: now + 60 * 60 * 1000 })
+  expect(advanceLocalPet(scheduled, now + 60 * 60 * 1000 - 1).food?.kind).toBe("scheduled")
+  expect(advanceLocalPet(scheduled, now + 60 * 60 * 1000).food?.kind).toBe("available")
+})
+
 test("old saves schedule one apple without retroactive feeding; eggs never have food", () => {
   const scheduled = advanceLocalPet(partner, now)
-  expect(scheduled.food).toEqual({ kind: "scheduled", availableAt: now + FEEDING_POLICY.intervalMs })
-  const available = advanceLocalPet({ ...scheduled, isTerminal: true }, now + FEEDING_POLICY.intervalMs)
+  expect(scheduled.food).toEqual({ kind: "scheduled", availableAt: now + BROWSER_FEEDING_POLICY.intervalMs })
+  const available = advanceLocalPet({ ...scheduled, isTerminal: true }, now + BROWSER_FEEDING_POLICY.intervalMs)
   expect(available.food).toEqual({ kind: "available" })
-  expect(advanceLocalPet(available, now + 100 * FEEDING_POLICY.intervalMs)).toBe(available)
+  const later = advanceLocalPet(available, now + 100 * BROWSER_FEEDING_POLICY.intervalMs)
+  expect(later.food).toBe(available.food)
+  expect(later.gauge).toBe(available.gauge)
   const egg = beginNewPartner(available, "new-egg", now)
   expect(advanceLocalPet(egg, now).food).toBeUndefined()
 })
 
-test("an apple awards exactly 25% of the chosen stage requirement and resets its clock", () => {
+test("an apple awards exactly 10% of the chosen stage requirement and resets its clock", () => {
   for (const experienceLevel of ["low", "normal", "high"] as const) {
     const hungry = { ...partner, experienceLevel, food: { kind: "available" as const } }
     const fed = consumeLocalFood(hungry, partner.partnerId, now)
-    expect(fed.gauge).toBe(experienceThresholds(experienceLevel)[3] / 4)
-    expect(fed.food).toEqual({ kind: "scheduled", availableAt: now + FEEDING_POLICY.intervalMs })
+    expect(fed.gauge).toBe(experienceThresholds(experienceLevel)[3] / 10)
+    expect(fed.food).toEqual({ kind: "scheduled", availableAt: now + BROWSER_FEEDING_POLICY.intervalMs })
     expect(consumeLocalFood(fed, partner.partnerId, now)).toBe(fed)
     expect(consumeLocalFood(hungry, "replaced-pet", now)).toBe(hungry)
   }
@@ -52,7 +63,7 @@ test("feeding caps experience and queues a visible evolution without registering
   expect(ready.events).toEqual(partner.events)
   expect(consumeLocalFood({ ...ready, food: { kind: "available" } }, partner.partnerId, now).gauge).toBe(ready.gauge)
   const evolved = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, true, now + 1000)
-  expect(evolved.food).toEqual({ kind: "scheduled", availableAt: now + 1000 + FEEDING_POLICY.intervalMs })
+  expect(evolved.food).toEqual({ kind: "scheduled", availableAt: now + 1000 + BROWSER_FEEDING_POLICY.intervalMs })
   const lost = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, false, now + 1000)
   expect(lost.food).toEqual(ready.food)
 })
@@ -60,7 +71,7 @@ test("feeding caps experience and queues a visible evolution without registering
 test("food survives transfers; ambiguous clocks and egg food are rejected", () => {
   for (const food of [
     { kind: "available" } as const,
-    { kind: "scheduled", availableAt: now + FEEDING_POLICY.intervalMs } as const,
+    { kind: "scheduled", availableAt: now + BROWSER_FEEDING_POLICY.intervalMs } as const,
   ]) {
     const state = { ...partner, food }
     expect(parsePetTransfer({ version: 1, state }).state).toEqual(state)
