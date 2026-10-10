@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-10
+
+### Changed
+
+- feat: add shared translations and persistent web language selection
+
+
 ## [0.3.0] - 2026-10-10
 
 ### Changed
