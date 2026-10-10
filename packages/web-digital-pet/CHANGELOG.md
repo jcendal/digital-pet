@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-10
+
+### Changed
+
+- feat: add egg petting rewards in web and Cursor
+
+
 ## [0.4.0] - 2026-10-10
 
 ### Changed
