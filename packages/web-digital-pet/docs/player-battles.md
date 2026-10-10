@@ -31,9 +31,15 @@ See the [PeerJS networking FAQ](https://peerjs.com/client/faq).
    the canonical plan for local playback without rerolling any attacks. Winner
    earns 20% of its selected current stage threshold, capped at that threshold;
    final stages receive no XP. Normal evolution remains a separate presentation.
-6. The seed, fighters, complete plan, last completed attack, local receipt and any prize are written in one IndexedDB transaction before
-   playback. Every completed attack checkpoints progress. Reloading or reopening BATTLE resumes locally, even offline, without negotiating or rolling again. The pending entry is cleared only after the final outcome is shown; its receipt remains. Repeated messages cannot award a second prize. Partner identity,
-   node and selected experience setting must still match the accepted snapshot.
+6. The seed, fighters, complete plan, accepted reward target and local agreement
+   receipt are saved before playback, without changing XP. Every completed attack
+   checkpoints progress. Returning to the viewer or reloading resumes locally,
+   even offline, without negotiating or rolling again. After the full outcome
+   animation, one IndexedDB transaction awards XP, records completion and clears
+   the pending entry. Repeated messages cannot award a second prize. Partner
+   identity, node and selected experience setting must still match the accepted
+   snapshot. Legacy pending battles that already received their prize never earn
+   it again.
 
 Requests expire after two minutes. Unknown participants, eggs, malformed messages,
 wrong battle IDs, out-of-order messages, invalid reveals and mismatched plans are

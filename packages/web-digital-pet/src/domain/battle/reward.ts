@@ -3,7 +3,9 @@ import { BATTLE_EXPERIENCE_FRACTION } from "@jcendal/digital-pet-core/domain/pee
 import { advanceLocalPet, experienceThresholds, type LocalPetState } from "../pet/progress.ts"
 
 /** Never reward a replacement/evolved companion or a changed experience setting. */
-export const rewardBattleWinner = (state: LocalPetState, expected: LocalPetState, now: number): LocalPetState => {
+export type BattleRewardTarget = Pick<LocalPetState, "partnerId" | "currentNodeId" | "experienceLevel">
+
+export const rewardBattleWinner = (state: LocalPetState, expected: BattleRewardTarget, now: number): LocalPetState => {
   if (
     state.partnerId !== expected.partnerId ||
     state.currentNodeId !== expected.currentNodeId ||

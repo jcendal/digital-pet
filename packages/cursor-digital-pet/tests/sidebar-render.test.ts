@@ -110,6 +110,23 @@ const sidebarPreview = (idleAlignment?: string) => {
 }
 
 describe("sidebar render", () => {
+  test("feeding keeps the idle canvas size, alignment and column count in narrow views", () => {
+    for (const alignment of ["xMidYMid", "xMidYMax"]) {
+      const { element, send } = sidebarPreview(alignment)
+      element(".arena").clientWidth = 120
+      send(toSidebarWebviewPayload(partnerCard))
+      send({ type: "animation-frame", artwork: "█" })
+      const viewBox = element("artwork").attributes.viewBox
+      expect(viewBox).toBe("0 0 20 16")
+      send({ type: "presentation-state", state: { phase: "feeding", fromNodeId: "3-001" } })
+      expect(element(".pet-module").classes.has("animating")).toBe(false)
+      expect(element("artwork").attributes.viewBox).toBe(viewBox)
+      expect(element("artwork").attributes.preserveAspectRatio).toBe(alignment + " meet")
+      send({ type: "presentation-state", state: { phase: "idle" } })
+      expect(element("artwork").attributes.viewBox).toBe(viewBox)
+    }
+  })
+
   test("piles are clickable, report their saved identity, and display the current mood", () => {
     const { element, send, messages } = sidebarPreview()
     const payload = toSidebarWebviewPayload(partnerCard)

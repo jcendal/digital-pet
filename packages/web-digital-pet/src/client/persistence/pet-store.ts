@@ -23,12 +23,22 @@ const PAIRED_KEY = "paired-device"
 const PENDING_BATTLE_KEY = "pending-battle"
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
-/** Receipt, prize and recoverable playback are committed together before the first frame. */
+/** Save agreement and recoverable playback before the first frame; XP waits for the outcome. */
 export const settleBattle = async (
   battle: AgreedBattle,
   expected: LocalPetState,
 ): Promise<PendingBattle | undefined> => {
-  const prepared = parsePendingBattle({ ...battle, completedShots: 0, rewarded: false, agreedAt: Date.now() })
+  const prepared = parsePendingBattle({
+    ...battle,
+    completedShots: 0,
+    rewarded: false,
+    agreedAt: Date.now(),
+    rewardTarget: {
+      partnerId: expected.partnerId,
+      currentNodeId: expected.currentNodeId,
+      experienceLevel: expected.experienceLevel ?? "high",
+    },
+  })
   const database = await openDatabase()
   try {
     const transaction = database.transaction(STORE_NAME, "readwrite")
@@ -38,20 +48,13 @@ export const settleBattle = async (
     const receipt = await resultOf(store.get(key))
     const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
     const pending = storedPending === undefined ? undefined : parsePendingBattle(storedPending)
-    const state = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
     if (pending && pending.battleId !== battle.battleId)
       throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
     const won = battle.plan.outcome === battle.localSide
-    let rewarded = false
     let saved = pending
     if (!receipt) {
-      if (state && won) {
-        const next = rewardBattleWinner(state, expected, Date.now())
-        rewarded = next !== state
-        if (rewarded) store.put(next, STATE_KEY)
-      }
       store.put({ won, settledAt: Date.now() }, key)
-      saved = { ...prepared, rewarded }
+      saved = prepared
       store.put(saved, PENDING_BATTLE_KEY)
     }
     await done
@@ -104,13 +107,41 @@ export const checkpointBattle = (battleId: string, completedShots: number): Prom
     return { ...pending, completedShots: Math.max(pending.completedShots, completedShots) }
   })
 
-/** Clear playback only after its outcome was shown; the reward receipt remains. */
-export const finishPendingBattle = (battleId: string): Promise<boolean> =>
-  updatePendingBattle(battleId, (pending) => {
+/** Award XP, record completion and clear playback atomically after the outcome was shown. */
+export const finishPendingBattle = async (battleId: string): Promise<{ readonly rewarded: boolean } | undefined> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const value = await resultOf(store.get(PENDING_BATTLE_KEY))
+    const pending = value === undefined ? undefined : parsePendingBattle(value)
+    if (!pending || pending.battleId !== battleId) {
+      await done
+      return undefined
+    }
     if (pending.completedShots !== pending.plan.shots.length)
       throw new Error(IntlModule.translate("petStore.theSavedBattleIsNotFinished"))
-    return undefined
-  })
+    const receiptKey = `battle:${battleId}`
+    const receipt = await resultOf<{ won: boolean; settledAt: number; completedAt?: number } | undefined>(
+      store.get(receiptKey),
+    )
+    const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
+    const won = pending.plan.outcome === pending.localSide
+    const next =
+      state && won && !pending.rewarded && pending.rewardTarget && receipt?.completedAt === undefined
+        ? rewardBattleWinner(state, pending.rewardTarget, Date.now())
+        : state
+    const rewarded = pending.rewarded || Boolean(state && next !== state)
+    if (next !== state) store.put(next, STATE_KEY)
+    store.put({ won, settledAt: receipt?.settledAt ?? pending.agreedAt, rewarded, completedAt: Date.now() }, receiptKey)
+    store.delete(PENDING_BATTLE_KEY)
+    await done
+    return { rewarded }
+  } finally {
+    database.close()
+  }
+}
 
 const openDatabase = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
