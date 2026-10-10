@@ -46,6 +46,13 @@ test("browser piles persist offline, show sadness, and cleaning grants one 5% re
   })
   await page.reload()
   await expect(sidebar.locator(".pet-poop")).toHaveCount(3)
+  await expect(sidebar.locator(".poop-fly")).toHaveCount(6)
+  const fly = sidebar.locator(".poop-fly").first()
+  await expect(fly).toHaveCSS("animation-name", "poop-fly-one")
+  await expect(fly).toHaveCSS("animation-timing-function", "steps(1)")
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await expect(fly).toHaveCSS("animation-name", "none")
+  await page.emulateMedia({ reducedMotion: "no-preference" })
   await expect(sidebar.locator("#phase")).toHaveText("SAD")
   await expect(sidebar.locator(".pet-food")).toBeVisible()
   const buttons = await sidebar.locator(".pet-poop").evaluateAll((nodes) =>

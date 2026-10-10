@@ -238,9 +238,14 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     incoming.hidden = true
     update()
     current.timer = window.setTimeout(() => {
-      if (session === current) cancel(IntlModule.translate("controller.battleRequestTimedOutKeepBothAppsOpen"))
-    }, 120_000)
+      if (session === current) cancel(IntlModule.translate("connection.battleTimedOut"))
+    }, 20_000)
     connection.on("open", () => {
+      if (session !== current) return
+      window.clearTimeout(current.timer)
+      current.timer = window.setTimeout(() => {
+        if (session === current) cancel(IntlModule.translate("controller.battleRequestTimedOutKeepBothAppsOpen"))
+      }, 120_000)
       if (!challenger) return
       enqueue(current, async () => {
         const fighter = await prepare(current)
@@ -271,6 +276,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     incoming: (connection) => bind(connection, false),
     disconnected: () => {
       ready = false
+      ownCode.textContent = IntlModule.translate("battleMarkup.connecting")
       update()
       if (!session && !playback && !pending) note(IntlModule.translate("controller.reconnectingToTheBattleService"))
     },
@@ -331,9 +337,19 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     stopPlayback()
     reset()
     transport.stop()
+    ready = false
+    update()
   })
+  const reconnect = (): void => {
+    transport.resume()
+    if (pending && !playback) void resume()
+  }
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) reconnect()
+  })
+  window.addEventListener("online", reconnect)
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && pending && !playback) void resume()
+    if (!document.hidden) reconnect()
   })
   update()
   if (pending && enabled) void resume()

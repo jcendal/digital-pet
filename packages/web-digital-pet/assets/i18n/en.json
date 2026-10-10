@@ -261,5 +261,9 @@
   "battle.description": "Keep both apps open with THIS BROWSER selected. Use your hatched companions. A win gives 20% experience; a draw gives none. Final-stage Digimon can battle without gaining experience.",
   "battle.win": "You win",
   "battle.lose": "You lose",
-  "battle.reward": " · +20% EXPERIENCE"
+  "battle.reward": " · +20% EXPERIENCE",
+  "installation.action": "Install app",
+  "installation.dismiss": "Dismiss installation suggestion",
+  "installation.failed": "Could not open installation. Try again.",
+  "connection.battleTimedOut": "Could not reach the other player. Keep both apps open and try again, or use another network."
 }

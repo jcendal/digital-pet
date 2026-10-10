@@ -1,5 +1,6 @@
 import Peer, { type DataConnection } from "peerjs"
 import { IntlModule } from "../../../shared/i18n.ts"
+import { PeerRetry } from "../../platform/peer-retry.ts"
 
 const PREFIX = "web-digital-pet-battle-v1-"
 export const validBattleCode = (value: string): boolean => /^\d{6}$/.test(value)
@@ -25,6 +26,7 @@ export class BattleTransport {
   private peer: Peer | undefined
   private stopped = false
   private attempts = 0
+  private readonly retry = new PeerRetry(() => this.resume())
   code = ""
 
   constructor(private readonly listeners: Listeners) {
@@ -35,22 +37,36 @@ export class BattleTransport {
     this.code = newCode()
     const peer = new Peer(`${PREFIX}${this.code}`)
     this.peer = peer
-    peer.on("open", () => this.listeners.ready(this.code))
+    peer.on("open", () => {
+      if (!this.stopped && this.peer === peer) {
+        this.retry.reset()
+        this.listeners.ready(this.code)
+      }
+    })
     peer.on("connection", (connection) => {
-      if (!connection.peer.startsWith(PREFIX) || !validBattleCode(battleCodeOf(connection))) connection.close()
+      if (
+        this.stopped ||
+        this.peer !== peer ||
+        !connection.peer.startsWith(PREFIX) ||
+        !validBattleCode(battleCodeOf(connection))
+      )
+        connection.close()
       else this.listeners.incoming(connection)
     })
     peer.on("disconnected", () => {
+      if (this.stopped || this.peer !== peer) return
       this.listeners.disconnected()
-      window.setTimeout(() => {
-        if (!this.stopped && this.peer === peer && peer.disconnected) peer.reconnect()
-      }, 2500)
+      this.retry.schedule()
     })
     peer.on("error", (error) => {
-      if (error.type === "unavailable-id" && !this.stopped && ++this.attempts < 10) {
+      if (this.stopped || this.peer !== peer) return
+      if (error.type === "unavailable-id" && ++this.attempts < 10) {
         peer.destroy()
         this.register()
-      } else this.listeners.error(error.message)
+      } else {
+        this.listeners.error(error.message)
+        if (["network", "server-error", "socket-error", "socket-closed"].includes(error.type)) this.retry.schedule()
+      }
     })
   }
 
@@ -64,8 +80,19 @@ export class BattleTransport {
     return this.peer?.open ?? false
   }
 
+  /** Safari can restore a page whose peer was destroyed on pagehide. */
+  resume(): void {
+    this.retry.stop()
+    this.stopped = false
+    if (!this.peer || this.peer.destroyed) {
+      this.attempts = 0
+      this.register()
+    } else if (this.peer.disconnected) this.peer.reconnect()
+  }
+
   stop(): void {
     this.stopped = true
+    this.retry.stop()
     this.peer?.destroy()
   }
 }

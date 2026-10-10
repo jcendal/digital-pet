@@ -213,7 +213,7 @@ body {
   position: absolute;
   width: 44px;
   height: 44px;
-  padding: 8px;
+  padding: 4px;
   border: 2px solid transparent;
   background: transparent;
   color: var(--ink);
@@ -229,8 +229,44 @@ body {
   opacity: 0.5;
 }
 .pet-poop svg {
+  display: block;
   width: 100%;
   height: 100%;
+}
+.poop-fly {
+  animation: poop-fly-one 1.6s steps(1, end) infinite;
+}
+.poop-fly-two {
+  animation-name: poop-fly-two;
+  animation-duration: 2s;
+  animation-delay: -0.7s;
+}
+@keyframes poop-fly-one {
+  25% {
+    transform: translate(2px, -1px);
+  }
+  50% {
+    transform: translate(1px, -2px);
+  }
+  75% {
+    transform: translate(-1px, -1px);
+  }
+}
+@keyframes poop-fly-two {
+  25% {
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    transform: translate(-1px, -1px);
+  }
+  75% {
+    transform: translate(1px, 1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .poop-fly {
+    animation: none;
+  }
 }
 
 #pet-egg,

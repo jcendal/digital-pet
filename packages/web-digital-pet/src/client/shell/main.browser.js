@@ -1,6 +1,8 @@
+import { initBrowserInstallation } from "../features/installation/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
 import "./styles.css"
 ;(() => {
+  initBrowserInstallation()
   const frames = Array.from(document.querySelectorAll(".web-view"))
   const links = Array.from(document.querySelectorAll(".web-nav a"))
   const pageFromPath = (path) => (path === "/dex" ? "dex" : path === "/history" ? "history" : "sidebar")

@@ -171,7 +171,7 @@ const renderPoops = () => {
       button.dataset.poopId = String(id)
       button.dataset.partnerId = hygiene.partnerId
       button.innerHTML =
-        '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M7 2h3v2h2v3h2v3h1v4H1v-4h2V7h2V4h2z"/><path fill="var(--lcd)" d="M7 5h4v1H7zM5 8h8v1H5zM3 11h10v1H3z"/></svg>'
+        '<svg viewBox="0 0 16 20" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M8 6h2v2h1v2h2v3h2v5H1v-5h2v-3h2V8h3z"/><path fill="var(--lcd)" d="M6 10h5v1H6zM4 13h9v1H4zM3 16h10v1H3z"/><rect class="poop-fly poop-fly-one" fill="currentColor" x="4" y="3" width="1" height="1"/><rect class="poop-fly poop-fly-two" fill="currentColor" x="12" y="2" width="1" height="1"/></svg>'
       button.addEventListener("click", () => {
         button.disabled = true
         vscode.postMessage({

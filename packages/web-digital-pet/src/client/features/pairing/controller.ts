@@ -372,7 +372,19 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       note(IntlModule.translate("controller.previousSaveRestored"))
     }
   })
-  window.addEventListener("pagehide", () => transfer.stop())
+  window.addEventListener("pagehide", () => {
+    resetConnection()
+    transfer.stop()
+    ready = false
+    updateControls()
+  })
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) transfer.resume()
+  })
+  window.addEventListener("online", () => transfer.resume())
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) transfer.resume()
+  })
   updateControls()
   return {
     get busy() {
