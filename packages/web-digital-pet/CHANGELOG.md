@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-10
+
+### Changed
+
+- feat: add player battles and shared pet care
+
+
 ## [0.2.0] - 2026-10-09
 
 ### Changed
