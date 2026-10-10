@@ -1,5 +1,6 @@
 import { join } from "node:path"
 import { createPartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
+import { createEggPettingService } from "@jcendal/digital-pet-core/application/use-cases/pet-egg.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import type * as vscode from "vscode"
@@ -36,6 +37,7 @@ export const createDigitalPetContainer = async (context: vscode.ExtensionContext
 
   const sidebarProvider = new DigitalPetSidebarProvider(context.extensionUri, repository, repository, {
     hygieneService: createPartnerHygieneService(repository, DIGIMON_CATALOG, STAGE_GAUGE_THRESHOLDS),
+    eggPettingService: createEggPettingService(repository, DIGIMON_CATALOG, STAGE_GAUGE_THRESHOLDS),
   })
   const refreshSidebar = (): void => {
     void sidebarProvider.refresh()

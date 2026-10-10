@@ -1,4 +1,5 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { eggPettingExperience } from "@jcendal/digital-pet-core/domain/egg-petting.ts"
 import {
   applyTokenProgress,
   type EvolutionSelector,
@@ -127,6 +128,22 @@ export const advanceLocalPet = (
 
 export const pendingEvolutionKey = (state: LocalPetState): string | null =>
   state.pendingEvolution ? JSON.stringify([state.partnerId, state.currentNodeId, state.pendingEvolution]) : null
+
+export const petLocalEgg = (state: LocalPetState, expectedPartnerId: string, now: number): LocalPetState => {
+  const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+  if (
+    !current ||
+    current.stage !== 0 ||
+    state.partnerId !== expectedPartnerId ||
+    state.pendingEvolution ||
+    state.isTerminal
+  )
+    return state
+  return advanceLocalPet(
+    { ...state, gauge: eggPettingExperience(state.gauge, experienceThresholds(state.experienceLevel)[0]) },
+    now,
+  )
+}
 
 /** Commit only the presentation that is still pending; waiting time earns no extra experience. */
 export const completeLocalEvolution = (

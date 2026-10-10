@@ -58,6 +58,54 @@ const createStubWebviewView = (visible = true) => {
 }
 
 describe("sidebar provider", () => {
+  test("egg interactions acknowledge saved rewards and reject a hidden sidebar", async () => {
+    const DigitalPetSidebarProvider = await loadProvider()
+    const stub = createStubWebviewView()
+    const calls: string[][] = []
+    const provider = new DigitalPetSidebarProvider(
+      extensionUri as import("vscode").Uri,
+      {
+        getSidebarSnapshot: () => ({
+          partnerId: "egg",
+          currentNodeId: "0-001",
+          gauge: 0,
+          isTerminal: false,
+          frozen: false,
+          isSetOverride: false,
+          trainerTotalTokens: 0,
+          pendingEvolutionTargetId: null,
+          battleOpponentNodeId: null,
+        }),
+      },
+      { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
+      {
+        scheduler: { start: () => () => undefined },
+        eggPettingService: {
+          petEgg: (partnerId, interactionId) => {
+            calls.push([partnerId, interactionId])
+            return { accepted: true }
+          },
+        },
+      },
+    )
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
+    await provider.refresh()
+    expect(
+      stub.posted.some((message) => (message as { egg?: { partnerId: string; canPet: boolean } }).egg?.canPet === true),
+    ).toBe(true)
+    stub.sendMessage({ type: "pet-egg", partnerId: "egg", interactionId: "first" })
+    await Promise.resolve()
+    expect(calls).toEqual([["egg", "first"]])
+    expect(stub.posted).toContainEqual({ type: "egg-petted", interactionId: "first", accepted: true })
+    stub.webviewView.visible = false
+    stub.sendMessage({ type: "pet-egg", partnerId: "egg", interactionId: "hidden" })
+    stub.sendMessage({ type: "pet-egg", partnerId: "egg", interactionId: "" })
+    await Promise.resolve()
+    expect(calls).toHaveLength(1)
+    expect(stub.posted).toContainEqual({ type: "egg-petted", interactionId: "hidden", accepted: false })
+    provider.dispose()
+  })
+
   test("sidebar actions open only the Dex and History commands", async () => {
     const DigitalPetSidebarProvider = await loadProvider()
     executedCommands.length = 0

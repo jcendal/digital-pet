@@ -149,6 +149,29 @@ function initWebBridge(page, locationIds) {
     },
     setState: (state) => sessionStorage.setItem(key, JSON.stringify(state)),
     postMessage: (message) => {
+      if (message.type === "pet-egg" && page === "sidebar") {
+        const reply = (accepted) => deliver({ type: "egg-petted", interactionId: message.interactionId, accepted })
+        if (!browserSave()) {
+          reply(false)
+          return
+        }
+        void import("../presentation/browser-session.ts")
+          .then(async (local) => {
+            const accepted = await local.petEgg(
+              message.partnerId,
+              message.interactionId,
+              () => pageVisible() && browserSave() && !window.top.document.querySelector("dialog[open]"),
+            )
+            reply(accepted)
+            if (accepted) window.parent.postMessage({ type: "digital-pet:save-changed" }, location.origin)
+            refresh()
+          })
+          .catch(() => {
+            reply(false)
+            refresh()
+          })
+        return
+      }
       if (message.type === "clean-poop" && page === "sidebar") {
         if (localStorage.getItem("digital-pet:source") === "browser")
           void import("../presentation/browser-session.ts")

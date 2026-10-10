@@ -1,6 +1,8 @@
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import type { PartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
+import type { EggPettingService } from "@jcendal/digital-pet-core/application/use-cases/pet-egg.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { CLEANING_HAPPY_MS, type HygieneView, hygieneMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import * as vscode from "vscode"
@@ -12,7 +14,7 @@ import { createWebviewMessenger } from "../../adapters/vscode/webview-messenger.
 import { createSidebarAnimationHost, type SidebarAnimationHost } from "./sidebar-animation-host.ts"
 import { createSidebarOrchestrator, type SidebarOrchestrator } from "./sidebar-orchestrator.ts"
 import { buildSidebarWebviewHtml } from "./sidebar-render.ts"
-import { parseWebviewInboundMessage } from "./webview-messages.ts"
+import { type EggPettingView, parseWebviewInboundMessage } from "./webview-messages.ts"
 
 export type DigitalPetSidebarProviderOptions = {
   readonly notification?: NotificationPort
@@ -20,6 +22,7 @@ export type DigitalPetSidebarProviderOptions = {
   readonly random?: () => number
   readonly nowMs?: () => number
   readonly hygieneService?: PartnerHygieneService
+  readonly eggPettingService?: EggPettingService
 }
 
 const createDeferredAnimationSink = (): { readonly sink: AnimationSink; setSink(next: AnimationSink): void } => {
@@ -50,6 +53,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   private readonly deferredSink: ReturnType<typeof createDeferredAnimationSink>
   private happyTimer: ReturnType<typeof setTimeout> | undefined
   private hygieneView: HygieneView | undefined
+  private eggView: EggPettingView | undefined
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -77,6 +81,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
       battleRepository,
       animationHost: this.animationHost,
       readHygiene: () => this.hygieneView,
+      readEgg: () => this.eggView,
       notification: this.notification,
       random,
       onPresentationEnd: () => {
@@ -101,7 +106,24 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
 
   async refresh(): Promise<void> {
     const saved = this.options.hygieneService?.refreshHygiene(Date.now())
-    const snapshot = this.options.hygieneService ? this.snapshotReader.getSidebarSnapshot() : undefined
+    const snapshot =
+      this.options.hygieneService || this.options.eggPettingService
+        ? this.snapshotReader.getSidebarSnapshot()
+        : undefined
+    this.eggView =
+      this.options.eggPettingService &&
+      snapshot?.partnerId &&
+      DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)?.stage === 0
+        ? {
+            partnerId: snapshot.partnerId,
+            canPet:
+              !snapshot.frozen &&
+              !snapshot.isSetOverride &&
+              !snapshot.isTerminal &&
+              !snapshot.pendingEvolutionTargetId &&
+              !this.isPresentationInProgress(),
+          }
+        : undefined
     this.hygieneView = saved
       ? {
           partnerId: saved.partnerId,
@@ -115,7 +137,8 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
     this.view = webviewView
-    const sink = createAnimationSink(createWebviewMessenger(webviewView.webview))
+    const messenger = createWebviewMessenger(webviewView.webview)
+    const sink = createAnimationSink(messenger)
     this.deferredSink.setSink(sink)
     this.orchestrator.setSink(sink)
 
@@ -134,6 +157,20 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((message: unknown) => {
       const inbound = parseWebviewInboundMessage(message)
       if (inbound === null) return
+      if (inbound.type === "pet-egg") {
+        let accepted = false
+        try {
+          if (webviewView.visible && !this.isPresentationInProgress()) {
+            const result = this.options.eggPettingService?.petEgg(inbound.partnerId, inbound.interactionId, Date.now())
+            accepted = result?.accepted === true
+            if (result?.accepted && result.evolution) this.queueEvolutionReveal(result.evolution)
+          }
+        } finally {
+          void messenger.post({ type: "egg-petted", interactionId: inbound.interactionId, accepted })
+          void this.refresh()
+        }
+        return
+      }
       if (inbound.type === "clean-poop") {
         if (!this.isPresentationInProgress())
           this.options.hygieneService?.cleanPoop(inbound.partnerId, inbound.poopId, Date.now())

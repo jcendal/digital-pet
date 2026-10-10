@@ -10,6 +10,7 @@ import {
   consumeLocalFood,
   type ExperienceLevel,
   type LocalPetState,
+  petLocalEgg,
 } from "../../domain/pet/progress.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 
@@ -267,6 +268,29 @@ export const finishLocalEvolution = (expectedKey: string, won: boolean, active: 
 
 export const startNewPartner = (): Promise<void> =>
   changeLocalState((state) => beginNewPartner(state, crypto.randomUUID(), Date.now()), true)
+
+export const petEgg = async (partnerId: string, interactionId: string, active: () => boolean): Promise<boolean> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const receiptKey = `egg:${interactionId}`
+    const receipt = await resultOf(store.get(receiptKey))
+    const battle = await resultOf(store.get(PENDING_BATTLE_KEY))
+    const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
+    const next = state && active() && !receipt && !battle ? petLocalEgg(state, partnerId, Date.now()) : state
+    const accepted = Boolean(state && next !== state)
+    if (accepted) {
+      store.put(next, STATE_KEY)
+      store.put({ partnerId }, receiptKey)
+    }
+    await done
+    return accepted
+  } finally {
+    database.close()
+  }
+}
 
 export const cleanPoop = async (partnerId: string, poopId: number, active: () => boolean): Promise<boolean> => {
   let cleaned = false

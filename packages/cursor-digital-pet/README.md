@@ -112,6 +112,8 @@ and animated artwork.
 
 Your partner starts as an egg and evolves as you complete Agent turns.
 
+Click the egg in the sidebar to pet it: each click adds 1% of its hatching requirement and shows pixel stars. The reward is saved locally, respects Freeze, and stops when hatching begins. Keyboard activation works too.
+
 ### Hygiene
 
 After hatching, a pile appears after 2 hours, another 8 hours later, and a third 16 hours later. Up to three piles are kept in the partner database, including while Cursor is closed. Click a pile in the sidebar to clean it and earn 5% of the current stage requirement. A double click cannot grant the same reward twice. Two or more piles make the partner sad; cleaning shows a happy reaction for three seconds before returning to its current mood.

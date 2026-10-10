@@ -156,5 +156,8 @@
   "phase.draw": "무승부",
   "phase.feeding": "먹는 중",
   "history.created": "생성 · {date}",
-  "history.retired": "은퇴 · {date}"
+  "history.retired": "은퇴 · {date}",
+  "egg.pet": "알 쓰다듬기 · 경험치 +1%",
+  "egg.hint": "알 쓰다듬기 · +1%",
+  "egg.reward": "경험치 +1%"
 }
