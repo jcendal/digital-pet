@@ -1,7 +1,8 @@
 html {
+  --viewport-height: 100vh;
   width: 100%;
   height: 100%;
-  min-height: 100dvh;
+  min-height: var(--viewport-height);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -11,7 +12,7 @@ html {
 }
 body {
   width: min(100vw, 430px);
-  height: min(100dvh, 880px);
+  height: min(var(--viewport-height), 880px);
   min-height: 0;
   margin: 0;
   padding: 0;
@@ -26,10 +27,15 @@ body {
   flex: none;
   gap: 0;
   min-height: 64px;
-  padding: 0 8px 6px;
+  padding: 0 8px max(6px, env(safe-area-inset-bottom));
   background: var(--case);
   border: 4px solid var(--case-edge);
   border-top: 0;
+}
+@supports (height: 100dvh) {
+  html {
+    --viewport-height: 100dvh;
+  }
 }
 .web-nav a,
 .web-nav button {

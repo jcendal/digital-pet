@@ -30,7 +30,7 @@ let latest: { readonly view: FoodView; readonly actions: FoodActions } | undefin
 
 // Whole pixel coordinates and currentColor preserve the LCD palette and crisp scaling.
 const APPLE =
-  '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M8 1h2v3H8zM10 2h3v2h-3zM3 5h3V4h2v1h2V4h3v1h1v2h1v5h-1v2h-2v1H9v-1H7v1H4v-1H2v-2H1V7h1V5z"/><path fill="var(--lcd)" d="M3 7h2v2H3zM3 9h1v2H3z"/></svg>'
+  '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M7 1h2v4H7zM10 1h3v1h-1v1H9V2h1zM3 4h3v1h4V4h3v1h1v2h1v5h-1v2h-2v1H9v-1H7v1H4v-1H2v-2H1V7h1V5h1z"/><path fill="var(--lcd)" d="M3 6h3v1h4V6h3v1h1v5h-1v1h-2v1H9v-1H7v1H5v-1H3v-1H2V7h1z"/><path fill="currentColor" d="M4 8h1v3H4zM5 7h2v1H5zM11 11h2v1h-2z"/></svg>'
 
 const eat = async (): Promise<void> => {
   const request = latest

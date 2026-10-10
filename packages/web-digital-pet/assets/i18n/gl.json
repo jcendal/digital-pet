@@ -261,5 +261,9 @@
   "battle.description": "Mantén ambas aplicacións abertas con ESTE NAVEGADOR seleccionado. Usa os teus compañeiros eclosionados. Unha vitoria dá un 20% de experiencia; un empate non dá experiencia. Os Digimon de etapa final poden combater sen gañar experiencia.",
   "battle.win": "Gañaches",
   "battle.lose": "Perdiches",
-  "battle.reward": " · +20% DE EXPERIENCIA"
+  "battle.reward": " · +20% DE EXPERIENCIA",
+  "installation.action": "Instalar app",
+  "installation.dismiss": "Pechar a suxestión de instalación",
+  "installation.failed": "Non se puido abrir a instalación. Téntao de novo.",
+  "connection.battleTimedOut": "Non se puido conectar co outro xogador. Mantén ambas aplicacións abertas e téntao de novo, ou proba outra rede."
 }

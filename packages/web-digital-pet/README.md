@@ -188,10 +188,16 @@ In browser mode, elapsed two-hour intervals are applied when you reopen the app;
 The public browser-only version can be built with `npm run build:static --workspace @jcendal/web-digital-pet` from the repository root. It writes `dist-static` without starting the local server or including `pet.db`. See the [AWS deployment guide](../../docs/web-deployment.md) for the one-time subdomain setup and automatic GitHub deployment.
 
 1. Open the app and wait for the first load to finish.
-2. Use the browser **Install app** or **Add to Home Screen** action when offered.
+2. Select **Install app** in a browser that provides a native installation prompt. Safari does not expose this prompt, so the app hides the install button there; use Safari’s own Share menu to **Add to Home Screen**.
 3. Launch Digital Pet from the installed icon.
 
 The package ships a web app manifest, favicons, standard and maskable icons, and a service worker that caches the shell for offline use. A browser save can keep progressing offline; **Pair / Sync** and **Player Battle** need a network connection, and SQLite mode needs the local server. Installation away from `localhost` requires HTTPS.
+
+Installation suggestions disappear when the app is already running as an installed app. Battle and device-transfer connections restart when Safari restores a page from its back/forward cache or returns online.
+
+Both transports use PeerJS's default connection configuration. Signaling failures retry after 5 seconds, increasing to at most 30 seconds while the service remains unavailable. A successful connection resets the delay; leaving the page cancels retries.
+
+To check the mobile UI with WebKit, install the test engine with `npm exec playwright install webkit`, then run `PLAYWRIGHT_WEBKIT=1 npm run test:browser --workspace @jcendal/web-digital-pet -- mobile-safari.spec.ts battle.spec.ts hygiene.spec.ts feeding.spec.ts` from the repository root. WebKit automation covers layout and application behavior; the battle test replaces the remote signaling transport with ordered messages between isolated browser saves.
 
 ---
 
@@ -213,7 +219,7 @@ After the first accepted transfer, both devices remember each other. In **OPTION
 
 Each transfer replaces the receiving device's browser save and keeps a backup. **B** keeps its save, **A** keeps its device code, and progress can diverge afterward. **SYNC always brings the other device's save here**; it does not merge progress, pick the newest save, or run continuously. Switching Partner, Dex, or History does not cancel an active request.
 
-[PeerJS Cloud](https://peerjs.com/server/cloud) provides free signaling; WebRTC carries the save peer-to-peer. The public service has no TURN relay, so some networks may block the connection. Incoming requests appear only while the app is open — there are no background push notifications.
+[PeerJS Cloud](https://peerjs.com/server/cloud) provides free signaling; WebRTC carries the save peer-to-peer. PeerJS's default configuration includes public STUN and TURN services, but connectivity still depends on their availability and the network. Incoming requests appear only while the app is open — there are no background push notifications.
 
 ---
 

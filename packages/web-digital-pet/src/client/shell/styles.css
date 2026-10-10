@@ -20,3 +20,33 @@
   visibility: visible;
   pointer-events: auto;
 }
+.install-banner {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--case);
+  color: var(--case-ink);
+}
+.install-banner[hidden] {
+  display: none;
+}
+.install-banner button {
+  min-height: 44px;
+  color: inherit;
+  background: transparent;
+  border: 2px solid var(--case-edge);
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+#install-open {
+  flex: 1;
+}
+#install-dismiss {
+  width: 44px;
+}
+.install-banner button:focus-visible {
+  outline: 2px dotted var(--lcd);
+  outline-offset: 2px;
+}

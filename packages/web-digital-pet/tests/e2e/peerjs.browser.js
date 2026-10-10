@@ -31,7 +31,14 @@ class Connection extends Events {
   }
 }
 window.testPeerEvent = (event) => {
-  if (event.type === "incoming") {
+  if (event.type === "peer-failed") {
+    const peer = peers.get(event.peer)
+    if (peer) {
+      peer.destroy()
+      peer.emit("error", { type: "network", message: "Signaling service unavailable" })
+      peer.emit("disconnected")
+    }
+  } else if (event.type === "incoming") {
     peers.get(event.target)?.emit("connection", new Connection(event.peer, event.connectionId))
     connections.get(event.connectionId)?.emit("open")
   } else {
@@ -45,8 +52,10 @@ export default class Peer extends Events {
     super()
     this.id = id
     this.open = false
+    this.destroyed = false
     peers.set(id, this)
     void window.testPeerSend({ type: "register", id }).then(() => {
+      if (this.destroyed) return
       this.open = true
       this.emit("open", id)
     })
@@ -56,12 +65,15 @@ export default class Peer extends Events {
     window.setTimeout(() => {
       void window
         .testPeerSend({ type: "connect", target, peer: this.id, connectionId: connection.connectionId })
-        .then(() => connection.emit("open"))
+        .then((opened) => {
+          if (opened !== false) connection.emit("open")
+        })
     }, 0)
     return connection
   }
   destroy() {
     this.open = false
+    this.destroyed = true
     peers.delete(this.id)
   }
 }

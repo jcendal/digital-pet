@@ -1,6 +1,6 @@
 .web-dialog {
   width: min(94vw, 410px);
-  max-height: min(90dvh, 820px);
+  max-height: min(calc(var(--viewport-height, 100vh) * 0.9), 820px);
   padding: 0;
   overflow: hidden;
   color: var(--ink);
@@ -16,7 +16,11 @@
   flex-direction: column;
 }
 #options-dialog {
-  height: min(90dvh, 820px);
+  height: min(calc(var(--viewport-height, 100vh) * 0.9), 820px);
+}
+#battle-dialog,
+#pair-dialog {
+  height: min(calc(var(--viewport-height, 100vh) * 0.8), 600px);
 }
 .web-dialog::backdrop {
   background: #071211b8;
@@ -96,7 +100,7 @@
   font-size: 16px;
 }
 .dialog-body {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;

@@ -26,6 +26,7 @@ const label = (key: string): string =>
 const battleButton = `<button id="battle-button" class="nav-battle" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.battle"))}" data-i18n-aria-label="web:navigationMarkup.battle" title="${escapeHtml(IntlModule.translate("controller.playerBattle"))}" data-i18n-title="web:controller.playerBattle" aria-haspopup="dialog" aria-controls="battle-dialog" aria-expanded="false" disabled>${icons.battle}${label("navigationMarkup.battle")}</button>`
 
 export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string => {
+  const installation = `<div id="install-banner" class="install-banner" hidden><button id="install-open" type="button" data-i18n="web:installation.action">${escapeHtml(IntlModule.translate("installation.action"))}</button><button id="install-dismiss" type="button" aria-label="${escapeHtml(IntlModule.translate("installation.dismiss"))}" data-i18n-aria-label="web:installation.dismiss">✕</button></div>`
   const links = (["sidebar", "dex", "history"] as const)
     .map((view) => {
       const key = view === "sidebar" ? "navigationMarkup.partner" : `navigation.${view}`
@@ -35,5 +36,5 @@ export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string =>
       return view === "dex" ? link + battleButton : link
     })
     .join("")
-  return `<nav class="web-nav" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}" data-i18n-aria-label="web:navigationMarkup.digitalPet">${links}<button id="options-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.options"))}" data-i18n-aria-label="web:navigationMarkup.options" title="${escapeHtml(IntlModule.translate("navigationMarkup.options2"))}" data-i18n-title="web:navigationMarkup.options2" aria-haspopup="dialog" aria-controls="options-dialog" aria-expanded="false">${icons.options}${label("navigationMarkup.options")}</button></nav>`
+  return `${installation}<nav class="web-nav" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}" data-i18n-aria-label="web:navigationMarkup.digitalPet">${links}<button id="options-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.options"))}" data-i18n-aria-label="web:navigationMarkup.options" title="${escapeHtml(IntlModule.translate("navigationMarkup.options2"))}" data-i18n-title="web:navigationMarkup.options2" aria-haspopup="dialog" aria-controls="options-dialog" aria-expanded="false">${icons.options}${label("navigationMarkup.options")}</button></nav>`
 }

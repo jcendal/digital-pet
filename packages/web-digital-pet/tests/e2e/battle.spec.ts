@@ -46,6 +46,12 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       })
     }
     await Promise.all(pages.map((page) => page.goto("http://127.0.0.1:4177")))
+    await expect(alice.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+    await alice.evaluate(() => {
+      window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }))
+      window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }))
+    })
+    await expect(alice.locator("#battle-request")).toBeEnabled()
     for (const [page, nodeId, partnerId] of [
       [alice, "3-001", "alice"],
       [bob, "4-001", "bob"],

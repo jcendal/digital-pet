@@ -1,4 +1,6 @@
-import { defineConfig } from "@playwright/test"
+import { defineConfig, devices } from "@playwright/test"
+
+const safari = process.env.PLAYWRIGHT_WEBKIT === "1"
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -6,11 +8,13 @@ export default defineConfig({
   workers: 1,
   timeout: 45_000,
   use: {
+    ...(safari ? devices["iPhone 13"] : {}),
     baseURL: "http://127.0.0.1:4175",
-    browserName: "chromium",
-    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE
-      ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE }
-      : {},
+    browserName: safari ? "webkit" : "chromium",
+    launchOptions:
+      !safari && process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE
+        ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE }
+        : {},
   },
   webServer: [
     { command: "node tests/e2e/server.mjs", url: "http://127.0.0.1:4175", reuseExistingServer: false },

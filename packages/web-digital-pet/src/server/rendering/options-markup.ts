@@ -16,6 +16,9 @@ export const optionsMarkup = /* html */ `
         ${["en", "ko", "es", "gl"].map((locale) => `<option value="${locale}">${escapeHtml(languageIntl.translate(`language.${locale}`))}</option>`).join("")}
       </select>
     </section>
+    <section id="install-section" hidden>
+      <button id="install-app" class="wide-action" type="button" data-i18n="web:installation.action">${escapeHtml(IntlModule.translate("installation.action"))}</button>
+    </section>
     <section class="save-section"><h3 data-i18n="web:optionsMarkup.yourSave">${escapeHtml(IntlModule.translate("optionsMarkup.yourSave"))}</h3>
       <div class="save-choices">
         <label class="save-choice"><input id="source-computer" type="radio" name="save-source" value="sqlite"><span class="save-card"><span class="save-card-head"><strong data-i18n="web:optionsMarkup.computerSave">${escapeHtml(IntlModule.translate("optionsMarkup.computerSave"))}</strong><small id="computer-availability" class="save-badge"></small></span><small class="save-description" data-i18n="web:optionsMarkup.yourCompanionFromCursorOrOpencodeOnThis">${escapeHtml(IntlModule.translate("optionsMarkup.yourCompanionFromCursorOrOpencodeOnThis"))}</small></span></label>
