@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-10
+
+### Changed
+
+- feat: add shared translations and persistent web language selection
+
+
 ## [0.8.0] - 2026-10-10
 
 ### Changed
