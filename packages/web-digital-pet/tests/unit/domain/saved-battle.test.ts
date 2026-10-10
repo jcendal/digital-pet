@@ -25,3 +25,16 @@ test("saved battle recovery rejects impossible checkpoints and changed results",
   expect(() => parsePendingBattle({ ...saved, seed: "random" })).toThrow()
   expect(() => parsePendingBattle({ ...saved, plan: { ...saved.plan, outcome: "draw" } })).toThrow()
 })
+
+test("deferred rewards preserve the agreed companion and level; legacy battles remain readable", () => {
+  const rewardTarget = { partnerId: "alice", currentNodeId: "3-001", experienceLevel: "normal" }
+  expect(parsePendingBattle({ ...saved, rewardTarget }).rewardTarget).toEqual(rewardTarget)
+  expect(parsePendingBattle(saved).rewardTarget).toBeUndefined()
+  for (const target of [
+    { ...rewardTarget, partnerId: "replacement" },
+    { ...rewardTarget, currentNodeId: "4-001" },
+    { ...rewardTarget, experienceLevel: "invalid" },
+    null,
+  ])
+    expect(() => parsePendingBattle({ ...saved, rewardTarget: target })).toThrow()
+})

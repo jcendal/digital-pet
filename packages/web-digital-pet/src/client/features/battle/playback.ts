@@ -15,7 +15,7 @@ type PlaybackActions = {
   readonly frame: BattleFrameListener
 }
 
-/** Playback consumes the saved attacks only. It never negotiates or awards experience. */
+/** Replay saved attacks without rerolling, then commit the reward after the complete outcome. */
 export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackActions): Promise<string> => {
   const plan = battle.localSide === "player" ? battle.plan : battlePlanForOpponent(battle.plan)
   const local = battleNode((battle.localSide === "player" ? battle.challenger : battle.receiver).nodeId)
@@ -41,11 +41,11 @@ export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackAc
     },
   )
   await actions.checkpoint()
-  if (!(await finishPendingBattle(battle.battleId)))
-    throw new Error(IntlModule.translate("playback.theSavedBattleIsNoLongerPending"))
+  const finished = await finishPendingBattle(battle.battleId)
+  if (!finished) throw new Error(IntlModule.translate("playback.theSavedBattleIsNoLongerPending"))
   if (plan.outcome === "draw") return IntlModule.translate("playback.drawNoExperienceAwarded")
   const winner = plan.outcome === "player" ? local : remote
-  const reward = battle.rewarded
+  const reward = finished.rewarded
     ? IntlModule.translate("battle.reward")
     : plan.outcome === "player"
       ? IntlModule.translate("playback.noExperienceAddedThisCompanionIsAtA")

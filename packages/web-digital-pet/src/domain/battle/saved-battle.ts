@@ -5,7 +5,9 @@ import {
   COMBAT_POLICY,
 } from "@jcendal/digital-pet-core/domain/combat.ts"
 import { IntlModule } from "../../shared/i18n.ts"
+import { isExperienceLevel } from "../pet/progress.ts"
 import { type Fighter, parseFighter } from "./protocol.ts"
+import type { BattleRewardTarget } from "./reward.ts"
 
 export type AgreedBattle = {
   readonly version: 1
@@ -21,6 +23,7 @@ export type PendingBattle = AgreedBattle & {
   readonly completedShots: number
   readonly rewarded: boolean
   readonly agreedAt: number
+  readonly rewardTarget?: BattleRewardTarget
 }
 
 const record = (value: unknown): value is Record<string, unknown> =>
@@ -67,16 +70,32 @@ export const parsePendingBattle = (value: unknown): PendingBattle => {
     hits.player === COMBAT_POLICY.hitsToWin ? "player" : hits.opponent === COMBAT_POLICY.hitsToWin ? "opponent" : "draw"
   if (value.plan.outcome !== outcome || (outcome === "draw" && shots.length !== COMBAT_POLICY.maxShots))
     throw new Error(IntlModule.translate("savedBattle.invalidSavedBattleResult"))
+  const challenger = parseFighter(value.challenger)
+  const receiver = parseFighter(value.receiver)
+  const local = value.localSide === "player" ? challenger : receiver
+  const target = value.rewardTarget
+  let rewardTarget: BattleRewardTarget | undefined
+  if (target !== undefined) {
+    if (
+      !record(target) ||
+      target.partnerId !== local.partnerId ||
+      target.currentNodeId !== local.nodeId ||
+      !isExperienceLevel(target.experienceLevel)
+    )
+      throw new Error(IntlModule.translate("savedBattle.invalidSavedBattle"))
+    rewardTarget = { partnerId: local.partnerId, currentNodeId: local.nodeId, experienceLevel: target.experienceLevel }
+  }
   return {
     version: 1,
     battleId: value.battleId,
     seed: value.seed,
-    challenger: parseFighter(value.challenger),
-    receiver: parseFighter(value.receiver),
+    challenger,
+    receiver,
     localSide: value.localSide,
     plan: { shots, outcome },
     completedShots: value.completedShots,
     rewarded: value.rewarded,
     agreedAt: value.agreedAt,
+    ...(rewardTarget ? { rewardTarget } : {}),
   }
 }

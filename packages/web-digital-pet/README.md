@@ -235,9 +235,11 @@ reveal independently generated randomness, calculate the same battle plan and
 compare its SHA-256 digest before playback. The challenger is the canonical first
 participant, so the same winner is shown from each player's perspective. The
 winner receives 20% of their own selected level requirement, capped at the evolution
-threshold. There is no loss penalty and a draw awards no experience. The prize and
-a local battle receipt, seed, fighters and complete plan are saved atomically before animation, preventing duplicate
-awards on the same browser even after reloading or restoring a backup.
+threshold. There is no loss penalty and a draw awards no experience. The seed,
+fighters, complete plan, accepted companion and selected level are saved before
+animation. XP stays unchanged until the complete outcome has been shown. The prize,
+completion receipt and removal of pending playback are then committed atomically,
+preventing duplicate awards even after reloading or restoring a backup.
 
 Both apps must remain connected through agreement. A declined, expired or
 interrupted negotiation gives no reward. Once a result is agreed, leaving the

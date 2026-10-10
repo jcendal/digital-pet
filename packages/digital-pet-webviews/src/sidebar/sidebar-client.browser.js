@@ -193,7 +193,7 @@ const render = () => {
   renderPoops()
   const active = model?.kind === "partner"
   root.classList.toggle("no-partner", !active)
-  root.classList.toggle("animating", state.phase !== "idle")
+  root.classList.toggle("animating", state.phase !== "idle" && state.phase !== "feeding")
   root.classList.toggle("battling", state.phase === "battle")
   byId("empty").hidden = active
   const [messageNamespace, messageKey] = (model?.messageKey || "").split(":")
@@ -268,7 +268,10 @@ const reportWidth = () => {
   const width = arena.clientWidth
   if (width > 0) {
     const pixelSize = parseFloat(getComputedStyle(arena).getPropertyValue("--artwork-pixel-size")) || 6
-    const columns = Math.max(state.phase === "idle" ? 16 : 36, Math.floor(width / pixelSize))
+    const columns = Math.max(
+      state.phase === "idle" || state.phase === "feeding" ? 16 : 36,
+      Math.floor(width / pixelSize),
+    )
     if (columns !== artworkColumns) {
       artworkColumns = columns
       renderArtwork()

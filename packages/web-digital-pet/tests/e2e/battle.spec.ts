@@ -137,7 +137,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
                 const index = keys.result.findIndex((key) => String(key).startsWith("battle:"))
                 resolve({
                   gauge: state.result.gauge,
-                  receipt: values.result[index],
+                  receipt: { won: values.result[index].won },
                   battleId: String(keys.result[index]).slice(7),
                 })
               }
@@ -149,8 +149,10 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     const first = await Promise.all(pages.map(readSave))
     expect(first[0]?.battleId).toBe(first[1]?.battleId)
     expect(first.filter((save) => save.receipt.won).length).toBeLessThanOrEqual(1)
-    expect(first[0]?.gauge).toBe(first[0]?.receipt.won ? 8_000_000 : 0)
-    expect(first[1]?.gauge).toBe(first[1]?.receipt.won ? 15_000_000 : 0)
+    expect(first[0]?.gauge).toBe(0)
+    expect(first[1]?.gauge).toBe(0)
+    for (const page of pages)
+      await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#percent")).toHaveText("0%")
     // Retry the persisted receipt concurrently through the actual browser storage adapter.
     for (const page of pages) {
       await page.evaluate(async () => {
@@ -175,6 +177,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     // Navigating away pauses the pet's playback without reopening or cancelling the panel.
     await Promise.all(pages.map((page) => page.locator('a[data-page="history"]').click()))
     const paused = await Promise.all(pages.map(pendingFor))
+    expect(await Promise.all(pages.map(readSave))).toEqual(first)
     expect(paused[0]?.seed).toBe(paused[1]?.seed)
     expect(paused[0]?.plan).toEqual(paused[1]?.plan)
     await Promise.all(pages.map((page) => page.reload()))
@@ -189,6 +192,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       expect(recovered?.plan).toEqual(paused[index]?.plan)
       expect(recovered?.completedShots).toBeGreaterThanOrEqual(paused[index]?.completedShots ?? 0)
     }
+    expect(await Promise.all(pages.map(readSave))).toEqual(first)
     // The agreed animation finishes with network access disabled, without another prize.
     await Promise.all(contexts.map((context) => context.setOffline(true)))
     for (const page of pages)
@@ -199,7 +203,17 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#phase")).toHaveText("ACTIVE")
       await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#battle-scores")).toBeHidden()
     }
-    expect(await Promise.all(pages.map(readSave))).toEqual(first)
+    const finished = await Promise.all(pages.map(readSave))
+    expect(finished[0]?.gauge).toBe(first[0]?.receipt.won ? 8_000_000 : 0)
+    expect(finished[1]?.gauge).toBe(first[1]?.receipt.won ? 15_000_000 : 0)
+    for (const [index, page] of pages.entries()) {
+      await page.evaluate(async (battleId) => {
+        const url = "/src/client/persistence/pet-store.ts"
+        const store = await import(url)
+        await Promise.all([store.finishPendingBattle(battleId), store.finishPendingBattle(battleId)])
+      }, first[index]?.battleId)
+    }
+    expect(await Promise.all(pages.map(readSave))).toEqual(finished)
     expect(errors).toEqual([])
   } finally {
     await Promise.all(contexts.map((context) => context.close()))
