@@ -13,6 +13,7 @@ function initWebBridge(page, locationIds) {
   const hostBrowser = document.documentElement.dataset.saveHost === "browser"
   let scenery
   let localPresenter
+  let playerBattle = null
   if (page === "sidebar")
     window.addEventListener(
       "DOMContentLoaded",
@@ -22,6 +23,44 @@ function initWebBridge(page, locationIds) {
       { once: true },
     )
   const deliver = (data) => window.dispatchEvent(new MessageEvent("message", { data }))
+  const receiveBattle = (event) => {
+    if (
+      page !== "sidebar" ||
+      event.source !== window.parent ||
+      event.origin !== location.origin ||
+      event.data?.type !== "digital-pet:battle-presentation" ||
+      typeof event.data.battleId !== "string"
+    )
+      return
+    const { battleId, message } = event.data
+    const ending = message?.type === "presentation-state" && message.state?.phase === "idle"
+    if (!browserSave() && !ending) return
+    if (message?.type === "sidebar-model" && message.kind === "partner") {
+      playerBattle = battleId
+      localPresenter?.cancelEvolutionPresentation()
+      localPresenter?.updateFoodButton(
+        null,
+        width,
+        deliver,
+        () => false,
+        () => false,
+        () => {},
+      )
+    }
+    if (playerBattle !== battleId) return
+    if (
+      message?.type !== "sidebar-model" &&
+      message?.type !== "presentation-state" &&
+      message?.type !== "animation-frame"
+    )
+      return
+    deliver(message)
+    if (ending) {
+      playerBattle = null
+      refresh()
+    }
+  }
+  window.addEventListener("message", receiveBattle)
   const navigate = (path) => {
     if (window.parent === window) {
       location.href = path
@@ -33,7 +72,7 @@ function initWebBridge(page, locationIds) {
     document.visibilityState !== "hidden" && (!window.frameElement || window.frameElement.classList.contains("active"))
   const browserSave = browserSaveSelected
   const refresh = async () => {
-    if (!pageVisible()) return
+    if (!pageVisible() || playerBattle !== null) return
     if (busy) {
       refreshRequested = true
       return
@@ -41,6 +80,7 @@ function initWebBridge(page, locationIds) {
     busy = true
     const preferred = localStorage.getItem("digital-pet:preferred-source")
     const deliverCurrent = (data) => {
+      if (playerBattle !== null) return
       if (preferred !== localStorage.getItem("digital-pet:preferred-source")) {
         refreshRequested = true
         return
@@ -77,6 +117,7 @@ function initWebBridge(page, locationIds) {
         if (page === "sidebar") {
           localPresenter = local
           const snapshot = await local.sidebar(width)
+          if (playerBattle !== null) return
           if (!local.isPresentingEvolution()) {
             deliverCurrent(snapshot.model)
             deliverCurrent(snapshot.frame)

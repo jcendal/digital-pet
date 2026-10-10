@@ -8,6 +8,7 @@ import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-so
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { playSavedBattle } from "./playback.ts"
 import { BattleTransport, battleCodeOf, validBattleCode } from "./transport.ts"
+import { createBattleViewer } from "./viewer.ts"
 
 const element = <T extends HTMLElement>(id: string): T => {
   const found = document.getElementById(id)
@@ -30,11 +31,11 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   const accept = element<HTMLButtonElement>("battle-accept")
   const decline = element<HTMLButtonElement>("battle-decline")
   const incoming = element("battle-incoming")
-  const arena = element("battle-arena")
   let enabled = browserSaveSelected()
   let ready = false
   let pending: PendingBattle | undefined = await readPendingBattle()
-  let playback: { release?: () => void } | undefined
+  type Playback = { release?: () => void; viewer?: ReturnType<typeof createBattleViewer> }
+  let playback: Playback | undefined
   type Session = {
     connection: import("peerjs").DataConnection
     negotiation: BattleNegotiation
@@ -43,6 +44,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     timer?: number
     release?: () => void
     agreed: boolean
+    accepted: boolean
   }
   let session: Session | undefined
   const note = (message: string): void => {
@@ -72,6 +74,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   const stopPlayback = (): void => {
     const previous = playback
     playback = undefined
+    previous?.viewer?.finish()
     previous?.release?.()
   }
   const cancel = (message: string): void => {
@@ -107,12 +110,18 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   }
   const resume = async (owner = session?.agreed ? session : undefined): Promise<void> => {
     if (playback || !enabled || !browserSaveSelected() || document.hidden || (!owner && session)) return
-    const current: { release?: () => void } = owner?.release ? { release: owner.release } : {}
+    const current: Playback = owner?.release ? { release: owner.release } : {}
     if (owner) delete owner.release
     playback = current
     update()
     const checkpoint = async (): Promise<void> => {
-      while (playback === current && document.hidden) await new Promise((resolve) => window.setTimeout(resolve, 100))
+      while (
+        playback === current &&
+        enabled &&
+        browserSaveSelected() &&
+        (document.hidden || (current.viewer && !current.viewer.active))
+      )
+        await new Promise((resolve) => window.setTimeout(resolve, 100))
       if (playback !== current || !enabled || !browserSaveSelected())
         throw new Error(IntlModule.translate("controller.battlePlaybackPaused"))
     }
@@ -125,8 +134,10 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       pending = saved
       if (!saved) return
       incoming.hidden = true
-      arena.hidden = false
-      open()
+      if (dialog.open) dialog.close()
+      current.viewer = createBattleViewer(saved)
+      await current.viewer.show()
+      await checkpoint()
       note(
         saved.completedShots > 0
           ? IntlModule.translate("controller.resumingSavedBattle")
@@ -136,12 +147,8 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       )
       const result = await playSavedBattle(saved, {
         checkpoint,
-        artwork: (text) => {
-          element("battle-artwork").textContent = text
-        },
-        score: (text) => {
-          element("battle-score").textContent = text
-        },
+        width: current.viewer.width,
+        frame: async (artwork, hud) => current.viewer?.frame(artwork, hud),
       })
       // The complete outcome has been shown and its pending entry has been cleared.
       pending = undefined
@@ -185,6 +192,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       connection,
       queue: Promise.resolve(),
       agreed: false,
+      accepted: false,
       negotiation: new BattleNegotiation(challenger, randomSecret(), {
         hash,
         send: (message) => {
@@ -196,7 +204,6 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
             value1: battleCodeOf(connection),
           })
           incoming.hidden = false
-          arena.hidden = true
           open()
           note(IntlModule.translate("controller.aPlayerWantsToBattleAcceptToUse"))
           decline.focus()
@@ -229,7 +236,6 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     }
     session = current
     incoming.hidden = true
-    arena.hidden = true
     update()
     current.timer = window.setTimeout(() => {
       if (session === current) cancel(IntlModule.translate("controller.battleRequestTimedOutKeepBothAppsOpen"))
@@ -276,8 +282,10 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     },
   })
   button.addEventListener("click", () => {
-    open()
-    if (pending) void resume()
+    if (playback || pending) {
+      window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: "/" }))
+      if (pending && !playback) void resume()
+    } else open()
   })
   request.addEventListener("click", () => {
     const target = input.value.trim()
@@ -296,9 +304,12 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     if (!current || accept.disabled) return
     accept.disabled = true
     enqueue(current, async () => {
-      await current.negotiation.accept(await prepare(current))
+      const fighter = await prepare(current)
+      current.accepted = true
       incoming.hidden = true
       note(IntlModule.translate("controller.preparingTheBattle"))
+      if (dialog.open) dialog.close()
+      await current.negotiation.accept(fighter)
     })
   })
   decline.addEventListener("click", () => cancel(IntlModule.translate("controller.battleDeclined")))
@@ -311,14 +322,8 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   })
   dialog.addEventListener("close", () => {
     button.setAttribute("aria-expanded", "false")
-    if (session || playback) {
-      const agreed = Boolean(pending || session?.agreed)
-      stopPlayback()
-      cancel(
-        agreed
-          ? IntlModule.translate("controller.battlePausedReopenBattleToContinue")
-          : IntlModule.translate("controller.battleCancelled2"),
-      )
+    if (session && !session.accepted && !session.agreed && !playback) {
+      cancel(IntlModule.translate("controller.battleCancelled2"))
       refreshBrowserViews()
     }
   })
