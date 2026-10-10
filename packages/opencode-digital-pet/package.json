@@ -1,6 +1,6 @@
 {
   "name": "@jcendal/opencode-digital-pet",
-  "version": "0.6.1-dev.0",
+  "version": "0.7.0",
   "description": "An OpenCode virtual-pet plugin with /digital-pet-spawn, /digital-pet-freeze, /digital-pet-unfreeze, /digital-pet-set, /digital-pet-dex, and /digital-pet-history commands.",
   "author": "Jorge Cendal",
   "contributors": [
