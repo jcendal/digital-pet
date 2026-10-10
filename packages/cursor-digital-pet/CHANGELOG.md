@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-10-10
+
+### Changed
+
+- fix: defer battle rewards and preserve feeding position
+
+
 ## [0.10.0] - 2026-10-10
 
 ### Changed
