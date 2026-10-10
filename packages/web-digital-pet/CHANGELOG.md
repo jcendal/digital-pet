@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-10-10
+
+### Changed
+
+- fix: improve Safari battles, installation and pet care visuals
+
+
 ## [0.5.2] - 2026-10-10
 
 ### Changed
