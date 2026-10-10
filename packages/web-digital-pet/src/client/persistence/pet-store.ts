@@ -11,6 +11,7 @@ import {
   type ExperienceLevel,
   type LocalPetState,
 } from "../../domain/pet/progress.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 
 const DB_NAME = "web-digital-pet"
 const STORE_NAME = "pet"
@@ -37,7 +38,8 @@ export const settleBattle = async (
     const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
     const pending = storedPending === undefined ? undefined : parsePendingBattle(storedPending)
     const state = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
-    if (pending && pending.battleId !== battle.battleId) throw new Error("Finish the saved battle first")
+    if (pending && pending.battleId !== battle.battleId)
+      throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
     const won = battle.plan.outcome === battle.localSide
     let rewarded = false
     let saved = pending
@@ -97,14 +99,15 @@ const updatePendingBattle = async (
 export const checkpointBattle = (battleId: string, completedShots: number): Promise<boolean> =>
   updatePendingBattle(battleId, (pending) => {
     if (!Number.isInteger(completedShots) || completedShots < 0 || completedShots > pending.plan.shots.length)
-      throw new Error("Invalid battle playback checkpoint")
+      throw new Error(IntlModule.translate("petStore.invalidBattlePlaybackCheckpoint"))
     return { ...pending, completedShots: Math.max(pending.completedShots, completedShots) }
   })
 
 /** Clear playback only after its outcome was shown; the reward receipt remains. */
 export const finishPendingBattle = (battleId: string): Promise<boolean> =>
   updatePendingBattle(battleId, (pending) => {
-    if (pending.completedShots !== pending.plan.shots.length) throw new Error("The saved battle is not finished")
+    if (pending.completedShots !== pending.plan.shots.length)
+      throw new Error(IntlModule.translate("petStore.theSavedBattleIsNotFinished"))
     return undefined
   })
 
@@ -114,14 +117,15 @@ const openDatabase = (): Promise<IDBDatabase> =>
     request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME)
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error)
-    request.onblocked = () => reject(new Error("Browser pet storage is blocked"))
+    request.onblocked = () => reject(new Error(IntlModule.translate("petStore.browserPetStorageIsBlocked")))
   })
 
 const completed = (transaction: IDBTransaction): Promise<void> =>
   new Promise((resolve, reject) => {
     transaction.oncomplete = () => resolve()
     transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () => reject(transaction.error ?? new Error("Browser pet storage was interrupted"))
+    transaction.onabort = () =>
+      reject(transaction.error ?? new Error(IntlModule.translate("petStore.browserPetStorageWasInterrupted")))
   })
 
 const resultOf = <T>(request: IDBRequest<T>): Promise<T> =>
@@ -310,6 +314,6 @@ export const setPairedDevice = async (code: string | null): Promise<void> => {
 }
 
 export const setWorldVisit = (worldVisit: WorldVisit): Promise<void> => {
-  if (!isWorldVisit(worldVisit)) throw new Error("Unknown destination")
+  if (!isWorldVisit(worldVisit)) throw new Error(IntlModule.translate("petStore.unknownDestination"))
   return changeLocalState((state) => ({ ...state, worldVisit }))
 }

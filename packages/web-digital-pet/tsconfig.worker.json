@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "lib": ["ESNext", "WebWorker"], "types": [] },
+  "compilerOptions": {
+    "lib": ["ESNext", "WebWorker"],
+    "types": [],
+    "resolveJsonModule": true
+  },
   "include": ["src/worker/service-worker.ts"],
   "exclude": []
 }

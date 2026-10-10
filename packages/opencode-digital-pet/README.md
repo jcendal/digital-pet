@@ -134,6 +134,8 @@ Available settings are:
 | `language` | Sets the naming convention. Valid values are `jp` (Japanese, e.g., Omegamon, Child, Adult...) and `en` (English, e.g., Omnimon, Rookie, Champion...). |
 | `stageThresholds` | Defines the experience thresholds for each evolution stage. |
 
+The interface supports English, Korean, Spanish and Galician. Set `DIGITAL_PET_LANGUAGE` to `en`, `ko`, `es` or `gl` to choose one explicitly; otherwise it uses `LC_ALL`, `LC_MESSAGES` or `LANG`, with English as the fallback. This is independent of the Digimon naming convention.
+
 Default values are:
 
 ```json

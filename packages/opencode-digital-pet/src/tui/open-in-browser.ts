@@ -1,3 +1,4 @@
+import { IntlModule } from "../i18n.ts"
 export type ProcessSpawner = (command: readonly string[]) => void
 
 const spawnDetached: ProcessSpawner = (command) => {
@@ -13,7 +14,7 @@ const openerCommand = (platform: NodeJS.Platform, url: string): readonly string[
     case "linux":
       return ["xdg-open", url]
     default:
-      throw new Error(`Unsupported platform for opening URLs: ${platform}`)
+      throw new Error(IntlModule.translate("openInBrowser.unsupportedPlatformForOpeningUrls", { platform: platform }))
   }
 }
 

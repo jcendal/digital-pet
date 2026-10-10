@@ -4,6 +4,7 @@ import {
   type BattleSide,
   COMBAT_POLICY,
 } from "@jcendal/digital-pet-core/domain/combat.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 import { type Fighter, parseFighter } from "./protocol.ts"
 
 export type AgreedBattle = {
@@ -49,23 +50,23 @@ export const parsePendingBattle = (value: unknown): PendingBattle => {
     value.completedShots < 0 ||
     value.completedShots > value.plan.shots.length
   )
-    throw new Error("Invalid saved battle")
+    throw new Error(IntlModule.translate("savedBattle.invalidSavedBattle"))
   const hits = { player: 0, opponent: 0 }
   let previous: BattleSide | undefined
   const plannedShots = value.plan.shots
   const shots: BattleShot[] = plannedShots.map((shot: unknown, index: number) => {
     if (!record(shot) || !side(shot.shooter) || typeof shot.hit !== "boolean" || shot.shooter === previous)
-      throw new Error("Invalid saved battle attacks")
+      throw new Error(IntlModule.translate("savedBattle.invalidSavedBattleAttacks"))
     previous = shot.shooter
     if (shot.hit) hits[shot.shooter]++
     if (hits[shot.shooter] === COMBAT_POLICY.hitsToWin && index !== plannedShots.length - 1)
-      throw new Error("Saved battle continues after its winner")
+      throw new Error(IntlModule.translate("savedBattle.savedBattleContinuesAfterItsWinner"))
     return { shooter: shot.shooter, hit: shot.hit }
   })
   const outcome =
     hits.player === COMBAT_POLICY.hitsToWin ? "player" : hits.opponent === COMBAT_POLICY.hitsToWin ? "opponent" : "draw"
   if (value.plan.outcome !== outcome || (outcome === "draw" && shots.length !== COMBAT_POLICY.maxShots))
-    throw new Error("Invalid saved battle result")
+    throw new Error(IntlModule.translate("savedBattle.invalidSavedBattleResult"))
   return {
     version: 1,
     battleId: value.battleId,

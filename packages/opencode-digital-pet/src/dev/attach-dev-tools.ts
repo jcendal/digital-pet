@@ -1,6 +1,7 @@
 import type { SidebarCardInputs } from "@jcendal/digital-pet-core/application/models/sidebar-card-inputs.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { IntlModule } from "../i18n.ts"
 
 import type { TuiCompositionApi } from "../tui.tsx"
 import { buildPartnerInputs } from "./build-partner-inputs.ts"
@@ -43,14 +44,15 @@ export const attachDevTools = (deps: AttachDevToolsDependencies): (() => void) =
       if (deps.isDisposed() || deps.isBusy()) return
       deps.setLastPresentedNodeId(DEV_EVOLUTION.fromNodeId)
       const played = await deps.tryPlayEvolutionReveal(buildPartnerInputs(DIGIMON_CATALOG, DEV_EVOLUTION.toNodeId))
-      if (!played) throw new Error("Evolution reveal did not play. Ensure the sidebar is visible.")
+      if (!played) throw new Error(IntlModule.translate("attachDevTools.evolutionRevealDidNotPlayEnsureTheSidebar"))
     },
     runEvolutionBattle: async () => {
       if (deps.isDisposed() || deps.isBusy()) return
-      if (deps.battleRepository === undefined) throw new Error("Battle repository is unavailable.")
+      if (deps.battleRepository === undefined)
+        throw new Error(IntlModule.translate("attachDevTools.battleRepositoryIsUnavailable"))
       setupBattlePending(deps.battleRepository as DevScenarioRepository)
       const battled = await deps.tryResolveEvolutionBattle()
-      if (!battled) throw new Error("Evolution battle did not start. Ensure a partner is active.")
+      if (!battled) throw new Error(IntlModule.translate("attachDevTools.evolutionBattleDidNotStartEnsureAPartner"))
     },
   }
 

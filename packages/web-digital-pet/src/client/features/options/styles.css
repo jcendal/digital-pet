@@ -526,3 +526,22 @@
     font-size: 12px;
   }
 }
+
+.language-section {
+  padding-bottom: 16px;
+}
+#language-select {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 10px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--lcd);
+  border: 2px solid var(--muted);
+  border-radius: 0;
+}
+#language-select:focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: 3px;
+}

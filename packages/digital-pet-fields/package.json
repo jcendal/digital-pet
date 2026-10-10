@@ -7,10 +7,12 @@
     "./domain/*": "./src/domain/*",
     "./data/*": "./src/data/*",
     "./application/*": "./src/application/*",
-    "./assets/*": "./assets/*"
+    "./assets/*": "./assets/*",
+    "./i18n": "./src/i18n.ts"
   },
   "dependencies": {
-    "@jcendal/digital-pet-core": "0.2.0-dev.0"
+    "@jcendal/digital-pet-core": "0.2.0-dev.0",
+    "@jcendal/digital-pet-intl": "0.1.0-dev.0"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

@@ -9,16 +9,17 @@ import type { SidebarCardModel } from "@jcendal/digital-pet-core/view-models/sid
 /** @jsxImportSource @opentui/solid */
 import { type BoxRenderable, createTextAttributes, type TextRenderable } from "@opentui/core"
 import { type Accessor, createEffect } from "solid-js"
+import { IntlModule } from "../i18n.ts"
 
 import { openInBrowser } from "./open-in-browser.ts"
 
 const ARTWORK_ROWS = MONSTER_FRAME_ROWS
-const NEXT_CHECK_PREFIX = "Next check: "
-const URL_LABEL = "Encyclopedia entry"
+const nextCheckPrefix = (): string => IntlModule.translate("sidebarCard.nextCheck")
+const urlLabel = (): string => IntlModule.translate("sidebarCard.encyclopediaEntry")
 const LINK_ATTRIBUTES = createTextAttributes({ underline: true })
 const LINK_COLOR = "#5f87ff"
 
-const formatCount = (value: number): string => value.toLocaleString("en-US")
+const formatCount = (value: number): string => value.toLocaleString(IntlModule.locale)
 
 const customArtworkRows = (artwork: string): readonly string[] => {
   const rows = artwork.split("\n")
@@ -28,13 +29,15 @@ const customArtworkRows = (artwork: string): readonly string[] => {
 
 const buildNextCheckLine = (model: SidebarCardModel, width: number): string => {
   if (model.kind === "no_partner") return ""
-  if (model.evolutionBattlePending) return `${NEXT_CHECK_PREFIX}Evolution battle!`
-  if (model.isTerminal && !model.isSetOverride) return `${NEXT_CHECK_PREFIX}None`
+  if (model.evolutionBattlePending)
+    return IntlModule.translate("sidebarCard.evolutionBattle", { NEXT_CHECK_PREFIX: nextCheckPrefix() })
+  if (model.isTerminal && !model.isSetOverride)
+    return IntlModule.translate("sidebarCard.none", { NEXT_CHECK_PREFIX: nextCheckPrefix() })
 
-  const barWidth = Math.max(width - NEXT_CHECK_PREFIX.length - 2, 0)
+  const barWidth = Math.max(width - nextCheckPrefix().length - 2, 0)
   const progress = model.isTerminal ? 1 : Math.min(Math.max(model.gauge / model.threshold, 0), 1)
   const filled = Math.floor(progress * barWidth)
-  return `${NEXT_CHECK_PREFIX}[${"█".repeat(filled)}${"░".repeat(barWidth - filled)}]`
+  return `${nextCheckPrefix()}[${"█".repeat(filled)}${"░".repeat(barWidth - filled)}]`
 }
 
 export const DigitalPetSidebarCard = (props: {
@@ -88,15 +91,23 @@ export const DigitalPetSidebarCard = (props: {
         updateText(url, "")
         return
       case "partner": {
-        updateText(name, model.isSetOverride ? `${model.name} (set)` : model.name)
-        updateText(stage, model.frozen ? `${model.stage} (frozen)` : model.stage)
+        updateText(
+          name,
+          model.isSetOverride ? IntlModule.translate("sidebarCard.set", { name: model.name }) : model.name,
+        )
+        updateText(
+          stage,
+          model.frozen ? IntlModule.translate("sidebarCard.frozen", { stage: model.stage }) : model.stage,
+        )
         const phase = props.presentationState?.().phase ?? "idle"
         updateText(
           nextCheck,
-          phase === "idle" ? buildNextCheckLine(model, nextCheckWidth?.width ?? 0) : phase.toUpperCase(),
+          phase === "idle"
+            ? buildNextCheckLine(model, nextCheckWidth?.width ?? 0)
+            : IntlModule.translate(`phase.${phase}`),
         )
         updateText(gauge, model.isTerminal ? "-/-" : `${formatCount(model.gauge)}/${formatCount(model.threshold)}`)
-        updateText(url, URL_LABEL)
+        updateText(url, urlLabel())
         return
       }
     }

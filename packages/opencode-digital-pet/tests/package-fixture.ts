@@ -41,14 +41,12 @@ const copyPackage = async (root: string): Promise<string> => {
     recursive: true,
     filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
   })
-  await cp(join(PROJECT_ROOT, "../digital-pet-core"), join(packagesDirectory, "digital-pet-core"), {
-    recursive: true,
-    filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
-  })
-  await cp(join(PROJECT_ROOT, "../digital-pet-animation"), join(packagesDirectory, "digital-pet-animation"), {
-    recursive: true,
-    filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
-  })
+  for (const name of ["digital-pet-core", "digital-pet-animation", "digital-pet-intl"]) {
+    await cp(join(PROJECT_ROOT, "..", name), join(packagesDirectory, name), {
+      recursive: true,
+      filter: (source) => !EXCLUDED_COPY_DIRECTORIES.has(basename(source)),
+    })
+  }
   await symlink(join(MONOREPO_ROOT, "node_modules"), join(packageDirectory, "node_modules"), "dir")
   return packageDirectory
 }

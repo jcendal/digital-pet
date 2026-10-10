@@ -48,7 +48,8 @@
   "dependencies": {
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
     "@jcendal/digital-pet-core": "0.2.0-dev.0",
-    "solid-js": "1.9.12"
+    "solid-js": "1.9.12",
+    "@jcendal/digital-pet-intl": "0.1.0-dev.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",

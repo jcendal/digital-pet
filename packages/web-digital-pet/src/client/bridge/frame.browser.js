@@ -1,4 +1,5 @@
 import { LOCATIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 import { webAsset } from "../platform/assets.ts"
 import { browserSaveSelected } from "../platform/save-source.ts"
 import "./styles.css"
@@ -59,7 +60,7 @@ function initWebBridge(page, locationIds) {
         if (hostBrowser || browserSave()) data = { mode: "browser" }
         else {
           const response = await fetch(path, { cache: "no-store" })
-          if (!response.ok) throw new Error("Could not read Digital Pet data")
+          if (!response.ok) throw new Error(IntlModule.translate("frame.couldNotReadDigitalPetData"))
           data = await response.json()
         }
       } catch (error) {

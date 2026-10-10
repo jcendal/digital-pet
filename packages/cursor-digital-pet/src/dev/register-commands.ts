@@ -1,12 +1,14 @@
 import * as vscode from "vscode"
-
 import type { DigitalPetContainer } from "../bootstrap/container.ts"
+import { IntlModule } from "../i18n.ts"
 import { CURSOR_DEV_ACTIONS, type CursorDevActionId, DEV_SHOW_MENU_COMMAND } from "./catalog.ts"
 import { DEV_EVOLUTION } from "./fixtures.ts"
 import { setupBattlePending } from "./setup-scenario.ts"
 
 const warnBusy = (): void => {
-  void vscode.window.showWarningMessage("Digital Pet dev: presentation already in progress.")
+  void vscode.window.showWarningMessage(
+    IntlModule.translate("registerCommands.digitalPetDevPresentationAlreadyInProgress"),
+  )
 }
 
 export const registerDevCommands = (context: vscode.ExtensionContext, container: DigitalPetContainer): void => {
@@ -38,7 +40,9 @@ export const registerDevCommands = (context: vscode.ExtensionContext, container:
         await sidebarProvider.refresh()
       } catch (error) {
         void vscode.window.showErrorMessage(
-          `Digital Pet dev: ${error instanceof Error ? error.message : String(error)}`,
+          IntlModule.translate("registerCommands.digitalPetDev", {
+            value0: error instanceof Error ? error.message : String(error),
+          }),
         )
       }
     },
@@ -48,7 +52,7 @@ export const registerDevCommands = (context: vscode.ExtensionContext, container:
     vscode.commands.registerCommand(DEV_SHOW_MENU_COMMAND, async () => {
       const picked = await vscode.window.showQuickPick(
         CURSOR_DEV_ACTIONS.map((action) => ({ label: action.label, actionId: action.id })),
-        { title: "Digital Pet Dev Tools" },
+        { title: IntlModule.translate("registerCommands.digitalPetDevTools") },
       )
       if (picked === undefined) return
       void handlers[picked.actionId]()

@@ -1,6 +1,5 @@
 import type { MonsterFrameCatalog, MonsterFrameName } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import type { BattleOutcome, BattlePlan, BattleShot, BattleSide } from "@jcendal/digital-pet-core/domain/combat.ts"
-
 import {
   BATTLE_GAP_COLUMNS,
   BATTLE_SCORE_HIT_PIP,
@@ -16,20 +15,14 @@ import {
   EVOLUTION_BATTLE_TICK_MS,
   EVOLUTION_BATTLE_TRAVEL_MS,
 } from "../constants/presentation-timing.ts"
+import { catalogs, IntlModule } from "../i18n.ts"
 import { mirrorMonsterFrame } from "../idle/monster-artwork-mirror.ts"
 import { sleep } from "../utils/sleep.ts"
 
 /** FIGlet-style BATTLE banner. */
-export const BATTLE_FIGLET_LINES = Object.freeze([
-  "██████╗  █████╗ ████████╗████████╗██╗     ███████╗",
-  "██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝",
-  "██████╔╝███████║   ██║      ██║   ██║     █████╗  ",
-  "██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  ",
-  "██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗",
-  "╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝",
-])
+export const BATTLE_FIGLET_LINES = Object.freeze(catalogs.en["battle.intro"].split("\n"))
 
-export const buildBattleIntroTextLines = (): readonly string[] => BATTLE_FIGLET_LINES
+export const buildBattleIntroTextLines = (): readonly string[] => IntlModule.translate("battle.intro").split("\n")
 
 /** Block-style flame sprite matching Digimon ASCII art. */
 export const FIREBALL_LINES = Object.freeze([" ▄▀▄ ", "▄█▀▀█", " ▀▀▀ "])
@@ -179,7 +172,12 @@ const renderHudInGap = (gapRows: string[], scene: EvolutionBattleScene): void =>
   if (scene.outcomeLabel !== null) {
     gapRows[MONSTER_FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.outcomeLabel)
   } else if (scene.lastResult !== null) {
-    gapRows[MONSTER_FRAME_ROWS - 1] = centerText(BATTLE_GAP_COLUMNS, scene.lastResult === "hit" ? "HIT!" : "MISS")
+    gapRows[MONSTER_FRAME_ROWS - 1] = centerText(
+      BATTLE_GAP_COLUMNS,
+      scene.lastResult === "hit"
+        ? IntlModule.translate("evolutionBattleArtwork.hit")
+        : IntlModule.translate("evolutionBattleArtwork.miss"),
+    )
   }
 }
 
@@ -260,7 +258,13 @@ const postScene = async (
     playerHits: scene.playerHits,
     opponentHits: scene.opponentHits,
     hitsToWin: EVOLUTION_BATTLE_HITS_TO_WIN,
-    caption: scene.outcomeLabel ?? (scene.lastResult === null ? null : scene.lastResult === "hit" ? "HIT!" : "MISS"),
+    caption:
+      scene.outcomeLabel ??
+      (scene.lastResult === null
+        ? null
+        : scene.lastResult === "hit"
+          ? IntlModule.translate("evolutionBattleArtwork.hit")
+          : IntlModule.translate("evolutionBattleArtwork.miss")),
     gapStartColumn: Math.max(Math.floor((viewportWidth - battleWidth) / 2), 0) + MONSTER_FRAME_COLUMNS,
     gapColumns: BATTLE_GAP_COLUMNS,
     scoreRow: 0,
@@ -400,7 +404,12 @@ const animateOutcome = async (
         opponentPose: outcome === "draw" ? "idle" : playerWon ? loserBlink : winnerPose,
         playerInjuredAlt: !playerWon && tick % 2 === 1,
         opponentInjuredAlt: playerWon && tick % 2 === 1,
-        outcomeLabel: outcome === "draw" ? "DRAW!" : playerWon ? "WIN!" : "LOSE!",
+        outcomeLabel:
+          outcome === "draw"
+            ? IntlModule.translate("evolutionBattleArtwork.draw")
+            : playerWon
+              ? IntlModule.translate("evolutionBattleArtwork.win")
+              : IntlModule.translate("evolutionBattleArtwork.lose"),
       }),
       onFrame,
     )
@@ -422,7 +431,7 @@ export const runEvolutionBattleAnimation = async (
 ): Promise<EvolutionBattleOutcome> => {
   const completedShots = playback.completedShots ?? 0
   if (!Number.isInteger(completedShots) || completedShots < 0 || completedShots > plan.shots.length)
-    throw new Error("Invalid battle playback checkpoint")
+    throw new Error(IntlModule.translate("evolutionBattleArtwork.invalidBattlePlaybackCheckpoint"))
   if (completedShots === 0) await animateBattleIntro(viewportWidth, onFrame)
 
   const { shots, outcome } = plan

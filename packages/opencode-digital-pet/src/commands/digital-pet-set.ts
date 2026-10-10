@@ -2,6 +2,7 @@ import type { DigitalPetControl } from "@jcendal/digital-pet-core/application/po
 import { setDigitalPetCheatNode } from "@jcendal/digital-pet-core/application/use-cases/set-digital-pet-cheat-node.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { Part } from "@opencode-ai/sdk"
+import { IntlModule } from "../i18n.ts"
 import type { DigitalPetCommandResult } from "./digital-pet-command-result.ts"
 
 export type DigitalPetSetContext = {
@@ -33,10 +34,15 @@ export const runDigitalPetSetCommand = async (
   const requestedId = tokens[0]
   if (requestedId === undefined) return { parts: [textPart(context, "Usage: /digital-pet-set <id>.")] }
   const node = (await loadCatalog()).byId.get(requestedId)
-  if (node === undefined) return { parts: [textPart(context, `Unknown Digimon ID: ${requestedId}.`)] }
+  if (node === undefined)
+    return {
+      parts: [textPart(context, IntlModule.translate("digitalPetSet.unknownDigimonId", { requestedId: requestedId }))],
+    }
 
   const outcome = setDigitalPetCheatNode(control, node.id)
-  const parts = [textPart(context, `Digital Pet set to ${node.nameEn} (${node.id}).`)]
+  const parts = [
+    textPart(context, IntlModule.translate("digitalPetSet.digitalPetSetTo", { nameEn: node.nameEn, id: node.id })),
+  ]
 
   switch (outcome.kind) {
     case "set":

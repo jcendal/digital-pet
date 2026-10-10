@@ -1,5 +1,6 @@
 import type { DataConnection } from "peerjs"
 import { type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "../../../domain/transfer/protocol.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import {
   getDeviceCode,
   getPairedDevice,
@@ -25,7 +26,7 @@ export type BrowserPairingControls = {
 
 const element = <T extends HTMLElement>(id: string): T => {
   const found = document.getElementById(id)
-  if (!found) throw new Error(`Missing pairing control: ${id}`)
+  if (!found) throw new Error(IntlModule.translate("controller.missingPairingControl", { id: id }))
   return found as T
 }
 const remoteCode = (connection: DataConnection): string => connection.peer.replace(/^web-digital-pet-/, "")
@@ -79,7 +80,9 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   function updateControls(): void {
     paired.hidden = pairedCode === null
     forget.hidden = pairedCode === null
-    element("pair-button-label").textContent = pairedCode ? "PAIR ANOTHER DEVICE" : "PAIR DEVICES"
+    element("pair-button-label").textContent = pairedCode
+      ? IntlModule.translate("controller.pairAnotherDevice")
+      : IntlModule.translate("controller.pairDevices")
     linked.textContent = pairedCode ? displayDeviceCode(pairedCode) : ""
     request.disabled = !ready || !enabled || connection !== null
     sync.disabled = !ready || !enabled || connection !== null || pairedCode === null
@@ -117,11 +120,11 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   }
   function requireBrowser(): void {
     if (!enabled || !browserSaveSelected())
-      throw new Error("Choose THIS BROWSER on both devices to transfer a companion.")
+      throw new Error(IntlModule.translate("controller.chooseThisBrowserOnBothDevicesToTransfer"))
   }
   async function remember(remote: DataConnection): Promise<void> {
     const code = remoteCode(remote)
-    if (!validDeviceCode(code)) throw new Error("The other device has an invalid code")
+    if (!validDeviceCode(code)) throw new Error(IntlModule.translate("controller.theOtherDeviceHasAnInvalidCode"))
     await setPairedDevice(code)
     pairedCode = code
     updateControls()
@@ -131,7 +134,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     ready: () => {
       ready = true
       updateControls()
-      note("Ready to connect your devices.")
+      note(IntlModule.translate("controller.readyToConnectYourDevices"))
     },
     incoming: (remote) => {
       if (connection || otherBusy() || !enabled || !validDeviceCode(remoteCode(remote))) {
@@ -143,13 +146,13 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     disconnected: () => {
       ready = false
       updateControls()
-      note("Device connection lost. Reconnecting…")
+      note(IntlModule.translate("controller.deviceConnectionLostReconnecting"))
     },
     error: (message) => {
       ready = transfer.connected
       if (connection) resetConnection()
       updateControls()
-      note(`Could not connect: ${message}. Check that the other app is open with THIS BROWSER selected.`)
+      note(IntlModule.translate("controller.couldNotConnectCheckThatTheOtherApp", { message: message }))
     },
   })
 
@@ -161,11 +164,15 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     approved = false
     receiving = false
     updateControls()
-    note(role === "receive" ? "Contacting the other device…" : "Incoming connection…")
+    note(
+      role === "receive"
+        ? IntlModule.translate("controller.contactingTheOtherDevice")
+        : IntlModule.translate("controller.incomingConnection"),
+    )
     timer = window.setTimeout(() => {
       if (connection === remote) {
         resetConnection()
-        note("Request timed out. Keep both apps open with THIS BROWSER selected.")
+        note(IntlModule.translate("controller.requestTimedOutKeepBothAppsOpenWith"))
       }
     }, 120_000)
     remote.on("open", () => {
@@ -174,8 +181,8 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
         remote.send({ type: "request", version: TRANSFER_VERSION, sync: syncRequest } satisfies PairMessage)
         note(
           syncRequest
-            ? "Requesting the latest save from your paired device…"
-            : "Waiting for the other device to approve pairing…",
+            ? IntlModule.translate("controller.requestingTheLatestSaveFromYourPairedDevice")
+            : IntlModule.translate("controller.waitingForTheOtherDeviceToApprovePairing"),
         )
       }
     })
@@ -183,20 +190,20 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       void receive(remote, data).catch((error: unknown) => {
         if (remote !== connection) return
         resetConnection()
-        note(error instanceof Error ? error.message : "The transfer could not be completed")
+        note(error instanceof Error ? error.message : IntlModule.translate("controller.theTransferCouldNotBeCompleted"))
       })
     })
     remote.on("close", () => {
       if (connection === remote) {
         resetConnection()
-        if (!finishing) note("The other device disconnected. Try again with both apps open.")
+        if (!finishing) note(IntlModule.translate("controller.theOtherDeviceDisconnectedTryAgainWithBoth"))
         finishing = false
       }
     })
     remote.on("error", (error) => {
       if (connection === remote) {
         resetConnection()
-        note(`Connection failed: ${error.message}`)
+        note(IntlModule.translate("controller.connectionFailed", { message: error.message }))
       }
     })
   }
@@ -213,7 +220,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       transfer: parsePetTransfer({ version: TRANSFER_VERSION, state }),
     } satisfies PairMessage)
     incoming.hidden = true
-    note("Save sent. Waiting for the other device to accept it…")
+    note(IntlModule.translate("controller.saveSentWaitingForTheOtherDeviceTo"))
   }
 
   async function importSnapshot(remote: DataConnection, snapshot: PetTransfer): Promise<void> {
@@ -227,8 +234,8 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       finish(
         { type: "result", accepted: true },
         automatic
-          ? "Synced. Your companion is up to date with the other device."
-          : "Paired. The other device's companion is now saved here.",
+          ? IntlModule.translate("controller.syncedYourCompanionIsUpToDateWith")
+          : IntlModule.translate("controller.pairedTheOtherDeviceSCompanionIsNow"),
       )
       restore.hidden = !(await hasPreviousSave())
       refreshBrowserViews()
@@ -250,9 +257,12 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
         await sendSnapshot(remote)
       } else {
         incomingCode.textContent = displayDeviceCode(remoteCode(remote))
+        element("pair-incoming-description").textContent = IntlModule.translate("pairing.requestDescription", {
+          code: incomingCode.textContent,
+        })
         incoming.hidden = false
-        document.title = "PAIRING REQUEST · Digital Pet"
-        note("Another device wants to receive your companion and pair with you.")
+        document.title = IntlModule.translate("controller.pairingRequestDigitalPet")
+        note(IntlModule.translate("controller.anotherDeviceWantsToReceiveYourCompanionAnd"))
         openDialog()
       }
       return
@@ -268,16 +278,19 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
         !catalog.isKnownNode(parsed.state.currentNodeId) ||
         events.some((event) => !catalog.isKnownNode(event.currentNodeId))
       )
-        throw new Error("The received save contains an unknown Digimon")
+        throw new Error(IntlModule.translate("controller.theReceivedSaveContainsAnUnknownDigimon"))
       if (remote !== connection) return
       requireBrowser()
       pendingTransfer = parsed
       if (automatic && pairedCode === remoteCode(remote)) {
         await importSnapshot(remote, parsed)
       } else {
-        previewText.textContent = `Companion ${parsed.state.currentNodeId} · ${(parsed.state.retiredPartners?.length ?? 0) + 1} generations. Your current save will be kept as a backup. After pairing, either device can use SYNC to bring the other's save.`
+        previewText.textContent = IntlModule.translate("controller.companionGenerationsYourCurrentSaveWillBeKept", {
+          currentNodeId: parsed.state.currentNodeId,
+          value1: (parsed.state.retiredPartners?.length ?? 0) + 1,
+        })
         preview.hidden = false
-        note("Save received. Choose whether to replace your save and remember this device.")
+        note(IntlModule.translate("controller.saveReceivedChooseWhetherToReplaceYourSave"))
         openDialog()
       }
       return
@@ -287,36 +300,36 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       resetConnection()
       note(
         message.accepted
-          ? "Save accepted. Your devices are paired for manual sync."
-          : "The other device kept its companion.",
+          ? IntlModule.translate("controller.saveAcceptedYourDevicesArePairedForManual")
+          : IntlModule.translate("controller.theOtherDeviceKeptItsCompanion"),
       )
       return
     }
     if (message.type === "decline") {
       resetConnection()
-      note("The request was declined.")
+      note(IntlModule.translate("controller.theRequestWasDeclined"))
     }
   }
 
   async function requestFrom(target: string, syncRequest: boolean): Promise<void> {
-    if (!validDeviceCode(target)) return note("Enter the full 16-character device code.")
-    if (target === deviceCode) return note("Enter a different device's code.")
-    if (connection) return note("Finish the current transfer first.")
-    if (otherBusy()) return note("Finish the current battle first.")
+    if (!validDeviceCode(target)) return note(IntlModule.translate("controller.enterTheFull16CharacterDeviceCode"))
+    if (target === deviceCode) return note(IntlModule.translate("controller.enterADifferentDeviceSCode"))
+    if (connection) return note(IntlModule.translate("controller.finishTheCurrentTransferFirst"))
+    if (otherBusy()) return note(IntlModule.translate("controller.finishTheCurrentBattleFirst"))
     requireBrowser()
     bind(transfer.connect(target), "receive", syncRequest)
   }
   const showError = (error: unknown): void =>
-    note(error instanceof Error ? error.message : "Could not complete the request")
+    note(error instanceof Error ? error.message : IntlModule.translate("controller.couldNotCompleteTheRequest"))
 
   button.addEventListener("click", openDialog)
   dialog.addEventListener("close", () => {
-    if (connection && !finishing) finish({ type: "decline" }, "Transfer cancelled.")
+    if (connection && !finishing) finish({ type: "decline" }, IntlModule.translate("controller.transferCancelled"))
   })
   copy.addEventListener("click", () => {
     void navigator.clipboard.writeText(displayDeviceCode(deviceCode)).then(
-      () => note("Code copied."),
-      () => note("Could not copy the code."),
+      () => note(IntlModule.translate("controller.codeCopied")),
+      () => note(IntlModule.translate("controller.couldNotCopyTheCode")),
     )
   })
   request.addEventListener("click", () => {
@@ -330,7 +343,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     await setPairedDevice(null)
     pairedCode = null
     updateControls()
-    note("Device forgotten. Pair again to use manual sync.")
+    note(IntlModule.translate("controller.deviceForgottenPairAgainToUseManualSync"))
   })
   send.addEventListener("click", () => {
     if (!connection) return
@@ -341,20 +354,22 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
         send.disabled = false
       })
   })
-  decline.addEventListener("click", () => finish({ type: "decline" }, "Pairing declined."))
+  decline.addEventListener("click", () =>
+    finish({ type: "decline" }, IntlModule.translate("controller.pairingDeclined")),
+  )
   importSave.addEventListener("click", () => {
     if (connection && pendingTransfer) void importSnapshot(connection, pendingTransfer).catch(showError)
   })
   rejectSave.addEventListener("click", () =>
-    finish({ type: "result", accepted: false }, "Your current companion was kept."),
+    finish({ type: "result", accepted: false }, IntlModule.translate("controller.yourCurrentCompanionWasKept")),
   )
   restore.addEventListener("click", async () => {
-    if (connection || otherBusy()) return note("Finish the current transfer or battle first.")
+    if (connection || otherBusy()) return note(IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst"))
     requireBrowser()
-    if (!window.confirm("Restore the previous save on this device? The current save will become the backup.")) return
+    if (!window.confirm(IntlModule.translate("controller.restoreThePreviousSaveOnThisDeviceThe"))) return
     if (await restorePreviousSave()) {
       refreshBrowserViews()
-      note("Previous save restored.")
+      note(IntlModule.translate("controller.previousSaveRestored"))
     }
   })
   window.addEventListener("pagehide", () => transfer.stop())
@@ -366,7 +381,8 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     setBrowserEnabled(value) {
       enabled = value
       if (!value) {
-        if (connection) finish({ type: "decline" }, "Choose THIS BROWSER to use device pairing.")
+        if (connection)
+          finish({ type: "decline" }, IntlModule.translate("controller.chooseThisBrowserToUseDevicePairing"))
         if (dialog.open) dialog.close()
       }
       updateControls()

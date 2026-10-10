@@ -6,7 +6,8 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "dist/digital-pet-core",
-    "rootDir": "build/digital-pet-core-src"
+    "rootDir": "build/digital-pet-core/src",
+    "resolveJsonModule": true
   },
-  "include": ["build/digital-pet-core-src"]
+  "include": ["build/digital-pet-core/src"]
 }

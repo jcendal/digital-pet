@@ -67,6 +67,12 @@ export const textImportsPlugin = (): Plugin => ({
   enforce: "pre",
   transform(code, id) {
     if (!/\.[jt]s$/.test(id) || !code.includes('type: "text"')) return
-    return { code: code.replace(/from "([^"]+)" with \{ type: "text" \}/g, 'from "$1?raw"'), map: null }
+    return {
+      code: code.replace(
+        /from "([^"]+)" with \{ type: "text" \}/g,
+        (_match, path: string) => `from "${path.endsWith("?raw") ? path : `${path}?raw`}"`,
+      ),
+      map: null,
+    }
   },
 })

@@ -13,7 +13,8 @@
     "types": ["bun", "node"],
     "noEmit": true,
     "rootDir": "scripts",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["scripts/**/*.ts"]
 }

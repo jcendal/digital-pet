@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process"
+import { IntlModule } from "../i18n.ts"
 
 export class OpenCodePluginInstallError extends Error {
   readonly name = "OpenCodePluginInstallError"
@@ -6,8 +7,8 @@ export class OpenCodePluginInstallError extends Error {
   constructor(readonly exitCode: number | null) {
     super(
       exitCode === null
-        ? "OpenCode plugin installer exited without a status."
-        : `OpenCode plugin installer exited with status ${exitCode}.`,
+        ? IntlModule.translate("install.opencodePluginInstallerExitedWithoutAStatus")
+        : IntlModule.translate("install.opencodePluginInstallerExitedWithStatus", { exitCode: exitCode }),
     )
   }
 }

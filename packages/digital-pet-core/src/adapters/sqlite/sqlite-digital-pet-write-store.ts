@@ -1,6 +1,7 @@
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
 import type { ResolveEvolutionBattleOutcome, UsageReceiptMetadata } from "../../application/models/usage.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
+import { IntlModule } from "../../i18n.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import {
   ACTIVE_PARTNER_SELECT,
@@ -50,7 +51,7 @@ export const createSqliteDigitalPetWriteStore = (
     },
     getTrainerState() {
       const trainerState = executor.get<TrainerStateRow>("SELECT total_tokens FROM trainer_state WHERE trainer_id = 1")
-      if (trainerState === null) throw new Error("Trainer state row is missing")
+      if (trainerState === null) throw new Error(IntlModule.translate("errors.missingTrainerState"))
       return { totalTokens: trainerState.total_tokens }
     },
     getActivePartner() {
@@ -69,7 +70,7 @@ export const createSqliteDigitalPetWriteStore = (
         const controlState = executor.get<ControlStateRow>(
           "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1",
         )
-        if (controlState === null) throw new Error("Digital Pet control state row is missing")
+        if (controlState === null) throw new Error(IntlModule.translate("errors.missingControlState"))
         if (controlState.frozen === 1) return { kind: "already_frozen" } as const
         executor.run("UPDATE vpet_control_state SET frozen = 1 WHERE control_id = 1")
         return { kind: "frozen" } as const
@@ -80,7 +81,7 @@ export const createSqliteDigitalPetWriteStore = (
         const controlState = executor.get<ControlStateRow>(
           "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1",
         )
-        if (controlState === null) throw new Error("Digital Pet control state row is missing")
+        if (controlState === null) throw new Error(IntlModule.translate("errors.missingControlState"))
         if (controlState.frozen === 0) return { kind: "already_unfrozen" } as const
         executor.run("UPDATE vpet_control_state SET frozen = 0 WHERE control_id = 1")
         return { kind: "unfrozen" } as const
@@ -91,7 +92,7 @@ export const createSqliteDigitalPetWriteStore = (
         const controlState = executor.get<ControlStateRow>(
           "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1",
         )
-        if (controlState === null) throw new Error("Digital Pet control state row is missing")
+        if (controlState === null) throw new Error(IntlModule.translate("errors.missingControlState"))
         if (controlState.cheat_node_id === cheatNodeId) return { kind: "already_set", cheatNodeId } as const
         executor.run("UPDATE vpet_control_state SET cheat_node_id = ? WHERE control_id = 1", [cheatNodeId])
         return { kind: "set", cheatNodeId } as const
@@ -122,7 +123,7 @@ export const createSqliteDigitalPetWriteStore = (
         const generationRow = executor.get<{ readonly generation: number }>(
           "SELECT COALESCE(MAX(generation), 0) + 1 AS generation FROM partners",
         )
-        if (generationRow === null) throw new Error("Generation allocation failed")
+        if (generationRow === null) throw new Error(IntlModule.translate("errors.generationAllocationFailed"))
         const partnerId = `partner-${generationRow.generation}`
         executor.run(
           "INSERT INTO partners (partner_id, generation, current_node_id, gauge, is_terminal, pending_evolution_target_id, battle_opponent_node_id, created_at, retired_at) VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, NULL)",
@@ -166,7 +167,7 @@ export const createSqliteDigitalPetWriteStore = (
         const controlState = executor.get<ControlStateRow>(
           "SELECT frozen, cheat_node_id FROM vpet_control_state WHERE control_id = 1",
         )
-        if (controlState === null) throw new Error("Digital Pet control state row is missing")
+        if (controlState === null) throw new Error(IntlModule.translate("errors.missingControlState"))
         if (controlState.cheat_node_id !== null) {
           executor.run(
             "INSERT INTO vpet_control_receipts (receipt_key, mode, token_delta, cost, created_at) VALUES (?, 'cheat', ?, ?, ?)",

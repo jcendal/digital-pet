@@ -1,5 +1,16 @@
 // biome-ignore lint/correctness/noUnusedVariables: Called by the panel client after both sources are embedded together.
 function createPanelHelpers(entries) {
+  function translateReference(reference, fallback) {
+    if (!reference) return fallback
+    const [namespace, key] = reference.split(":")
+    return getIntlModule().translate(key, {}, namespace)
+  }
+  function translateStage(entry) {
+    return entry.stageKey && IntlModule.locale !== "en"
+      ? getIntlModule().translate(entry.stageKey, {}, "core")
+      : entry.stage
+  }
+
   const element = (tag, className, text) => {
     const node = document.createElement(tag)
     if (className) node.className = className
@@ -31,5 +42,5 @@ function createPanelHelpers(entries) {
     })
   })
 
-  return { element, sprite }
+  return { element, sprite, translateReference, translateStage }
 }

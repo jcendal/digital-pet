@@ -2,6 +2,7 @@ import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/doma
 import { FIELDS } from "../data/fields.ts"
 import { LOCATIONS, REGIONS } from "../data/regions.ts"
 import type { Field, Region, WorldLocation, WorldVisit } from "../domain/world.ts"
+import { IntlModule } from "../i18n.ts"
 
 export const DEFAULT_WORLD_VISIT: WorldVisit = Object.freeze({
   regionId: "digital-ocean",
@@ -10,17 +11,17 @@ export const DEFAULT_WORLD_VISIT: WorldVisit = Object.freeze({
 
 export const getRegion = (id: string): Region => {
   const region = REGIONS.find((region) => region.id === id)
-  if (!region) throw new Error(`Unknown region: ${id}`)
+  if (!region) throw new Error(IntlModule.translate("world.unknownRegion", { id: id }))
   return region
 }
 export const getLocation = (id: string): WorldLocation => {
   const location = LOCATIONS.find((location) => location.id === id)
-  if (!location) throw new Error(`Unknown location: ${id}`)
+  if (!location) throw new Error(IntlModule.translate("world.unknownLocation", { id: id }))
   return location
 }
 export const getField = (region: Region): Field => {
   const field = FIELDS.find((field) => field.id === region.fieldId)
-  if (!field) throw new Error(`Unknown field: ${region.fieldId}`)
+  if (!field) throw new Error(IntlModule.translate("world.unknownField", { fieldId: region.fieldId }))
   return field
 }
 export const getRegionLocations = (regionId: string): readonly WorldLocation[] =>
@@ -39,7 +40,7 @@ export const resolveWorldVisit = (value: unknown): WorldVisit =>
 export const getRegionResidents = (regionId: string, catalog: DigimonCatalog): readonly DigimonNode[] =>
   getRegion(regionId).residentIds.map((id) => {
     const node = catalog.byId.get(id)
-    if (!node) throw new Error(`Unknown resident ${id} in ${regionId}`)
+    if (!node) throw new Error(IntlModule.translate("world.unknownResidentIn", { id: id, regionId: regionId }))
     return node
   })
 export const getResidentRegions = (nodeId: string): readonly Region[] =>

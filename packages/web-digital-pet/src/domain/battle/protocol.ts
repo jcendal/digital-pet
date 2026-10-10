@@ -1,11 +1,12 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import type { BattlePlan } from "@jcendal/digital-pet-core/domain/combat.ts"
 import { planSeededCombat } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 
 export type Fighter = { readonly partnerId: string; readonly nodeId: string }
 export const battleNode = (nodeId: string) => {
   const node = DIGIMON_CATALOG.byId.get(nodeId)
-  if (!node || node.stage === 0) throw new Error("A battle needs a hatched Digimon from the catalogue")
+  if (!node || node.stage === 0) throw new Error(IntlModule.translate("protocol.aBattleNeedsAHatchedDigimonFromThe"))
   return node
 }
 export type BattleMessage =
@@ -28,20 +29,20 @@ export const parseFighter = (value: unknown): Fighter => {
     typeof value.nodeId !== "string" ||
     !DIGIMON_CATALOG.byId.get(value.nodeId)?.stage
   )
-    throw new Error("A battle needs a hatched Digimon from the catalogue")
+    throw new Error(IntlModule.translate("protocol.aBattleNeedsAHatchedDigimonFromThe"))
   return { partnerId: value.partnerId, nodeId: value.nodeId }
 }
 
 export const parseBattleMessage = (value: unknown): BattleMessage => {
   if (!record(value) || JSON.stringify(value).length > 2048 || value.version !== 1 || !id(value.battleId))
-    throw new Error("Unsupported battle message")
+    throw new Error(IntlModule.translate("protocol.unsupportedBattleMessage"))
   const common = { version: 1 as const, battleId: value.battleId }
   if ((value.type === "request" || value.type === "accept") && hex(value.commitment))
     return { ...common, type: value.type, fighter: parseFighter(value.fighter), commitment: value.commitment }
   if (value.type === "reveal" && hex(value.secret)) return { ...common, type: value.type, secret: value.secret }
   if (value.type === "ready" && hex(value.digest)) return { ...common, type: value.type, digest: value.digest }
   if (value.type === "cancel") return { ...common, type: value.type }
-  throw new Error("Invalid battle message")
+  throw new Error(IntlModule.translate("protocol.invalidBattleMessage"))
 }
 
 type Dependencies = {
@@ -73,7 +74,7 @@ export class BattleNegotiation {
     private readonly secret: string,
     private readonly dependencies: Dependencies,
   ) {
-    if (!hex(secret)) throw new Error("Invalid battle randomness")
+    if (!hex(secret)) throw new Error(IntlModule.translate("protocol.invalidBattleRandomness"))
   }
 
   private commitment(fighter: Fighter, secret: string, challenger: boolean): Promise<string> {
@@ -81,7 +82,8 @@ export class BattleNegotiation {
   }
 
   async start(battleId: string, fighter: Fighter): Promise<void> {
-    if (!this.challenger || this.phase !== "idle" || !id(battleId)) throw new Error("Battle already started")
+    if (!this.challenger || this.phase !== "idle" || !id(battleId))
+      throw new Error(IntlModule.translate("protocol.battleAlreadyStarted"))
     this.battleId = battleId
     this.own = parseFighter(fighter)
     const commitment = await this.commitment(this.own, this.secret, true)
@@ -90,7 +92,8 @@ export class BattleNegotiation {
   }
 
   async accept(fighter: Fighter): Promise<void> {
-    if (this.challenger || this.phase !== "requested") throw new Error("No battle to accept")
+    if (this.challenger || this.phase !== "requested")
+      throw new Error(IntlModule.translate("protocol.noBattleToAccept"))
     this.own = parseFighter(fighter)
     const commitment = await this.commitment(this.own, this.secret, false)
     this.phase = "committed"
@@ -114,8 +117,8 @@ export class BattleNegotiation {
       this.dependencies.requested(message.fighter)
       return
     }
-    if (message.battleId !== this.battleId) throw new Error("Wrong battle session")
-    if (message.type === "cancel") throw new Error("The battle request was cancelled")
+    if (message.battleId !== this.battleId) throw new Error(IntlModule.translate("protocol.wrongBattleSession"))
+    if (message.type === "cancel") throw new Error(IntlModule.translate("protocol.theBattleRequestWasCancelled"))
     if (message.type === "accept" && this.challenger && this.phase === "waiting") {
       this.remote = message.fighter
       this.remoteCommitment = message.commitment
@@ -125,7 +128,7 @@ export class BattleNegotiation {
     }
     if (message.type === "reveal" && this.phase === "committed" && this.own && this.remote) {
       if ((await this.commitment(this.remote, message.secret, !this.challenger)) !== this.remoteCommitment)
-        throw new Error("The other player changed their battle randomness")
+        throw new Error(IntlModule.translate("protocol.theOtherPlayerChangedTheirBattleRandomness"))
       const challenger = this.challenger ? this.own : this.remote
       const receiver = this.challenger ? this.remote : this.own
       const seed = await this.dependencies.hash(
@@ -152,7 +155,8 @@ export class BattleNegotiation {
       return
     }
     if (message.type === "ready" && this.phase === "planned" && this.own && this.remote && this.plan) {
-      if (message.digest !== this.digest) throw new Error("Battle results do not match. Update both apps and retry.")
+      if (message.digest !== this.digest)
+        throw new Error(IntlModule.translate("protocol.battleResultsDoNotMatchUpdateBothApps"))
       this.phase = "agreed"
       await this.dependencies.agreed(
         this.battleId,
@@ -163,6 +167,6 @@ export class BattleNegotiation {
       )
       return
     }
-    throw new Error("Unexpected battle message")
+    throw new Error(IntlModule.translate("protocol.unexpectedBattleMessage"))
   }
 }

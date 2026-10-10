@@ -13,7 +13,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["src", "../../types/web-assets.d.ts"]
 }

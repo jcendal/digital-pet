@@ -20,6 +20,7 @@ import {
   type HygieneState,
 } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 
 export const EXPERIENCE_INTERVAL_MS = 2 * 60 * 60 * 1000
 export const BROWSER_FEEDING_POLICY = Object.freeze({ intervalMs: 60 * 60 * 1000, experienceFraction: 0.1 })
@@ -75,7 +76,8 @@ export const advanceLocalPet = (
   selector: EvolutionSelector = Math.random,
 ): LocalPetState => {
   const current = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
-  if (!current) throw new Error(`Unknown browser partner: ${initial.currentNodeId}`)
+  if (!current)
+    throw new Error(IntlModule.translate("progress.unknownBrowserPartner", { currentNodeId: initial.currentNodeId }))
   const hygiene = advanceHygiene(initial.hygiene, current.stage === 0, now)
   if (hygiene !== initial.hygiene) {
     const { hygiene: _old, ...rest } = initial
@@ -137,8 +139,10 @@ export const completeLocalEvolution = (
   const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
   const pending = state.pendingEvolution
   const target = DIGIMON_CATALOG.byId.get(pending.targetNodeId)
-  if (!current || !target || !current.nextEvolutions.includes(target.id)) throw new Error("Invalid pending evolution")
-  if ((current.stage === 0) !== (pending.opponentNodeId === null)) throw new Error("Invalid pending evolution battle")
+  if (!current || !target || !current.nextEvolutions.includes(target.id))
+    throw new Error(IntlModule.translate("progress.invalidPendingEvolution"))
+  if ((current.stage === 0) !== (pending.opponentNodeId === null))
+    throw new Error(IntlModule.translate("progress.invalidPendingEvolutionBattle"))
   const resolved =
     pending.opponentNodeId === null
       ? { current: target, isTerminal: target.nextEvolutions.length === 0 }

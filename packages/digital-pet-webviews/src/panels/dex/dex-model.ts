@@ -2,9 +2,10 @@ import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/applicat
 import type { ResolvedDigitalPetSettings } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { getStageLabel } from "@jcendal/digital-pet-core/data/stages.ts"
+import { getStageLabel, getStageTranslationKey } from "@jcendal/digital-pet-core/data/stages.ts"
 import { DIGIMON_STAGES } from "@jcendal/digital-pet-core/domain/stage.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
+import { IntlModule } from "../../i18n.ts"
 
 import { artworkToPixelPath } from "../../shared/pixel-artwork.ts"
 
@@ -13,6 +14,7 @@ export type DexEntry = {
   readonly name: string
   readonly alternateName: string
   readonly stage: string
+  readonly stageKey?: string
   readonly stageNumber: number
   readonly discovered: boolean
   readonly artwork: string
@@ -26,10 +28,11 @@ export type DexEntry = {
 
 export type DexPanelModel = {
   readonly entries: readonly DexEntry[]
-  readonly stages: readonly { readonly value: number; readonly label: string }[]
+  readonly stages: readonly { readonly value: number; readonly label: string; readonly translationKey?: string }[]
   readonly discovered: number
   readonly status: "available" | "empty" | "unavailable"
   readonly message: string
+  readonly messageKey?: string
 }
 
 export const buildDexPanelModel = (
@@ -65,27 +68,39 @@ export const buildDexPanelModel = (
   }
   return {
     status: archive.kind,
+    messageKey:
+      archive.kind === "unavailable"
+        ? "webviews:dexClient.archiveUnavailable"
+        : archive.kind === "empty"
+          ? "webviews:dexModel.yourArchiveIsEmptyHatchAPartnerAnd"
+          : "webviews:dexModel.discoveriesAreSharedWithYourOpencodePartnerArchive",
     message:
       archive.kind === "unavailable"
         ? archive.message
         : archive.kind === "empty"
-          ? "Your archive is empty. Hatch a partner and evolve to register Digimon."
-          : "Discoveries are shared with your OpenCode partner archive.",
+          ? IntlModule.translate("dexModel.yourArchiveIsEmptyHatchAPartnerAnd")
+          : IntlModule.translate("dexModel.discoveriesAreSharedWithYourOpencodePartnerArchive"),
     discovered: view.rows.filter((row) => row.discovered).length,
     stages: DIGIMON_STAGES.map((value) => ({
       value,
+      ...(getStageTranslationKey(value, settings.stageLabels[settings.language])
+        ? { translationKey: getStageTranslationKey(value, settings.stageLabels[settings.language])! }
+        : {}),
       label: getStageLabel(value, settings.stageLabels[settings.language]),
     })),
     entries: view.rows.map((row) => {
       const node = catalog.byId.get(row.id)
-      if (node === undefined) throw new Error(`Missing Dex catalog entry: ${row.id}`)
+      if (node === undefined) throw new Error(IntlModule.translate("dexModel.missingDexCatalogEntry", { id: row.id }))
       const seen = sightings.get(node.id)
       const frame = row.discovered ? MONSTER_FRAME_CATALOG.get(node.sprite, "walk_1") : undefined
       return {
         id: node.id,
-        name: row.discovered ? row.name : "Unknown Digimon",
+        name: row.discovered ? row.name : IntlModule.translate("dexModel.unknownDigimon"),
         alternateName: row.discovered ? (settings.language === "en" ? node.nameJp : node.nameEn) : "",
         stage: row.stage,
+        ...(getStageTranslationKey(node.stage, settings.stageLabels[settings.language])
+          ? { stageKey: getStageTranslationKey(node.stage, settings.stageLabels[settings.language])! }
+          : {}),
         stageNumber: node.stage,
         discovered: row.discovered,
         artwork: frame === undefined ? "" : artworkToPixelPath(frame.content),

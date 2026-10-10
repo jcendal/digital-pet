@@ -12,10 +12,11 @@ const require = createRequire(import.meta.url)
 const tscPath = require.resolve("typescript/bin/tsc")
 
 const stageSources = async (packageName) => {
-  const source = resolve(packageRoot, `../${packageName}/src`)
-  const target = resolve(packageRoot, `build/${packageName}-src`)
+  const source = resolve(packageRoot, `../${packageName}`)
+  const target = resolve(packageRoot, `build/${packageName}`)
   await rm(target, { recursive: true, force: true })
-  await cp(source, target, { recursive: true })
+  await cp(resolve(source, "src"), resolve(target, "src"), { recursive: true })
+  await cp(resolve(source, "assets"), resolve(target, "assets"), { recursive: true })
 }
 
 const runTsc = (config) => {
@@ -44,9 +45,9 @@ const rewriteDeclarations = async () => {
   for (const file of await declarationFiles(distRoot)) {
     const source = await readFile(file, "utf8")
     let rewritten = source.replace(
-      /(["'])(@jcendal\/digital-pet-(core|animation)\/([^"']+))(["'])/g,
+      /(["'])(@jcendal\/digital-pet-(core|animation|intl)(?:\/([^"']+))?)(["'])/g,
       (_match, opening, _specifier, packageName, subpath, closing) => {
-        const target = join(distRoot, `digital-pet-${packageName}`, toJs(subpath))
+        const target = join(distRoot, `digital-pet-${packageName}`, toJs(subpath ?? "index.ts"))
         const path = relative(dirname(file), target).replaceAll("\\", "/")
         return `${opening}${path.startsWith(".") ? path : `./${path}`}${closing}`
       },
@@ -59,6 +60,7 @@ const rewriteDeclarations = async () => {
   }
 }
 
+await stageSources("digital-pet-intl")
 await stageSources("digital-pet-core")
 await stageSources("digital-pet-animation")
 await rm(distRoot, { recursive: true, force: true })
@@ -102,6 +104,7 @@ await build({
 })
 
 runTsc("tsconfig.build.json")
+runTsc("tsconfig.digital-pet-intl-declarations.json")
 runTsc("tsconfig.digital-pet-core-declarations.json")
 runTsc("tsconfig.digital-pet-animation-declarations.json")
 await rewriteDeclarations()

@@ -1,0 +1,12 @@
+{
+  "evolutionBattleArtwork.hit": "ACERTO!",
+  "evolutionBattleArtwork.miss": "FALLO",
+  "evolutionBattleArtwork.draw": "EMPATE!",
+  "evolutionBattleArtwork.win": "VITORIA!",
+  "evolutionBattleArtwork.lose": "DERROTA!",
+  "evolutionBattleArtwork.invalidBattlePlaybackCheckpoint": "O punto de continuación do combate non é válido",
+  "evolutionPresentation.unknownEvolutionParticipant": "Participante da evolución descoñecido",
+  "evolutionPresentation.invalidEvolutionOpponent": "O rival da evolución non é válido",
+  "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "Só un ovo pode evolucionar sen combater",
+  "battle.intro": "COMBATE"
+}

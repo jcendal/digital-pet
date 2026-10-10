@@ -1,3 +1,6 @@
+import { escapeHtml } from "@jcendal/digital-pet-webviews/shared/escape-html.ts"
+import { IntlModule } from "../../shared/i18n.ts"
+
 const icon = (content: string): string =>
   `<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" shape-rendering="crispEdges">${content}</svg>`
 
@@ -18,17 +21,19 @@ const icons = {
     '<path fill="currentColor" d="M9 2h6v3h3v3h4v8h-4v3h-3v3H9v-3H6v-3H2V8h4V5h3z"/><path fill="var(--case)" d="M9 9h6v6H9z"/>',
   ),
 }
-const label = (text: string): string => `<span class="nav-label" aria-hidden="true">${text}</span>`
-const battleButton = `<button id="battle-button" class="nav-battle" type="button" aria-label="BATTLE" title="Player battle" aria-haspopup="dialog" aria-controls="battle-dialog" aria-expanded="false" disabled>${icons.battle}${label("BATTLE")}</button>`
+const label = (key: string): string =>
+  `<span class="nav-label" data-i18n="web:${key}" aria-hidden="true">${escapeHtml(IntlModule.translate(key))}</span>`
+const battleButton = `<button id="battle-button" class="nav-battle" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.battle"))}" data-i18n-aria-label="web:navigationMarkup.battle" title="${escapeHtml(IntlModule.translate("controller.playerBattle"))}" data-i18n-title="web:controller.playerBattle" aria-haspopup="dialog" aria-controls="battle-dialog" aria-expanded="false" disabled>${icons.battle}${label("navigationMarkup.battle")}</button>`
 
 export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string => {
   const links = (["sidebar", "dex", "history"] as const)
     .map((view) => {
-      const name = view === "sidebar" ? "PARTNER" : view.toUpperCase()
+      const key = view === "sidebar" ? "navigationMarkup.partner" : `navigation.${view}`
+      const name = escapeHtml(IntlModule.translate(key))
       const symbol = view === "sidebar" ? icons.partner : icons[view]
-      const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}"${view === page ? ' aria-current="page"' : ""}>${symbol}${label(name)}</a>`
+      const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${view === page ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
       return view === "dex" ? link + battleButton : link
     })
     .join("")
-  return `<nav class="web-nav" aria-label="Digital Pet">${links}<button id="options-button" type="button" aria-label="OPTIONS" title="Options" aria-haspopup="dialog" aria-controls="options-dialog" aria-expanded="false">${icons.options}${label("OPTIONS")}</button></nav>`
+  return `<nav class="web-nav" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}" data-i18n-aria-label="web:navigationMarkup.digitalPet">${links}<button id="options-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.options"))}" data-i18n-aria-label="web:navigationMarkup.options" title="${escapeHtml(IntlModule.translate("navigationMarkup.options2"))}" data-i18n-title="web:navigationMarkup.options2" aria-haspopup="dialog" aria-controls="options-dialog" aria-expanded="false">${icons.options}${label("navigationMarkup.options")}</button></nav>`
 }

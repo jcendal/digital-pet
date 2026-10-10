@@ -1,3 +1,4 @@
+import { IntlModule } from "../../../shared/i18n.ts"
 export type ForegroundEvolutionDependencies = {
   readonly active: () => boolean
   readonly valid: () => boolean
@@ -27,6 +28,6 @@ export const runForegroundEvolution = async (dependencies: ForegroundEvolutionDe
 export class PresentationCancelled extends Error {
   override name = "AbortError"
   constructor() {
-    super("Presentation cancelled")
+    super(IntlModule.translate("foregroundEvolution.presentationCancelled"))
   }
 }

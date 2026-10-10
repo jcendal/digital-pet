@@ -28,10 +28,10 @@ const remember = () =>
     discovery: discovery.value,
     scroll: entries.scrollTop,
   })
-const { element, sprite } = createPanelHelpers(entries)
+const { element, sprite, translateReference, translateStage } = createPanelHelpers(entries)
 const date = (value) => {
   if (!value || !Number.isFinite(Date.parse(value))) return "--"
-  return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+  return new Date(value).toLocaleDateString(IntlModule.locale, { year: "numeric", month: "short", day: "numeric" })
 }
 const fact = (label, value) => {
   const node = element("div", "fact")
@@ -70,7 +70,8 @@ const routeGroup = (label, ids) => {
     })
     items.append(button)
   }
-  if (!items.childElementCount) items.append(element("p", "hint", "No routes in this V-Pet catalog."))
+  if (!items.childElementCount)
+    items.append(element("p", "hint", IntlModule.translate("dexClient.noRoutesInThisVPetCatalog")))
   section.append(items)
   return section
 }
@@ -83,11 +84,16 @@ const renderSelection = () => {
   detail.replaceChildren()
   const entry = model.entries.find((e) => e.id === selectedId)
   if (!entry) {
-    detail.append(element("p", "no-results", "No matching records. Change your filters to continue browsing."))
+    detail.append(
+      element("p", "no-results", IntlModule.translate("dexClient.noMatchingRecordsChangeYourFiltersToContinue")),
+    )
     return
   }
   const heading = element("div", "detail-heading")
-  heading.append(element("span", "micro", "DIGIMON RECORD"), element("span", "detail-id", entry.id))
+  heading.append(
+    element("span", "micro", IntlModule.translate("dexClient.digimonRecord")),
+    element("span", "detail-id", entry.id),
+  )
   const body = element("div", "detail-body")
   const frame = element("div", "lcd-frame")
   const lcd = element("div", "lcd")
@@ -96,20 +102,34 @@ const renderSelection = () => {
     element(
       "span",
       "lcd-label",
-      entry.discovered ? (entry.artwork ? "DATA REGISTERED" : "SPRITE UNAVAILABLE") : "NO DATA",
+      entry.discovered
+        ? entry.artwork
+          ? IntlModule.translate("dexClient.dataRegistered")
+          : IntlModule.translate("dexClient.spriteUnavailable")
+        : IntlModule.translate("dexClient.noData"),
     ),
-    element("span", "lcd-number", "LV." + entry.stageNumber),
+    element("span", "lcd-number", IntlModule.translate("dexClient.lv") + entry.stageNumber),
   )
   frame.append(lcd)
   const name = element("div", "detail-name")
-  name.append(element("div", "badge", entry.discovered ? "REGISTERED" : "UNDISCOVERED"), element("h2", "", entry.name))
+  name.append(
+    element(
+      "div",
+      "badge",
+      entry.discovered ? IntlModule.translate("dexClient.registered2") : IntlModule.translate("dexClient.undiscovered"),
+    ),
+    element("h2", "", entry.name),
+  )
   if (entry.alternateName && entry.alternateName !== entry.name) name.append(element("p", "micro", entry.alternateName))
   const facts = element("div", "facts")
-  facts.append(fact("STAGE", entry.stage), fact("CATALOG ID", entry.id))
+  facts.append(
+    fact(IntlModule.translate("dexClient.stage"), translateStage(entry)),
+    fact(IntlModule.translate("dexClient.catalogId"), entry.id),
+  )
   if (entry.combatStats)
     facts.append(
-      fact("STRENGTH", entry.combatStats.strength + " / 100"),
-      fact("EVASION", entry.combatStats.evasion + " / 100"),
+      fact(IntlModule.translate("battleStats.strength"), entry.combatStats.strength + " / 100"),
+      fact(IntlModule.translate("battleStats.evasion"), entry.combatStats.evasion + " / 100"),
     )
   body.append(frame, name, facts)
   if (entry.discovered) {
@@ -119,15 +139,20 @@ const renderSelection = () => {
       expanded = extra.open
       remember()
     })
-    extra.append(element("summary", "", "EVOLUTION & ARCHIVE"))
+    extra.append(element("summary", "", IntlModule.translate("dexClient.evolutionArchive")))
     const history = element("div", "facts")
-    history.append(fact("FIRST REGISTERED", date(entry.firstSeen)), fact("GENERATIONS", String(entry.generations)))
-    extra.append(history, routeGroup("EVOLVES FROM", entry.previousIds), routeGroup("EVOLVES TO", entry.nextIds))
-    extra.append(
-      element("p", "hint", "Routes follow this V-Pet catalog. Other Digimon games may use different evolution paths."),
+    history.append(
+      fact(IntlModule.translate("dexClient.firstRegistered"), date(entry.firstSeen)),
+      fact(IntlModule.translate("dexClient.generations"), String(entry.generations)),
     )
+    extra.append(
+      history,
+      routeGroup(IntlModule.translate("dexClient.evolvesFrom"), entry.previousIds),
+      routeGroup(IntlModule.translate("dexClient.evolvesTo"), entry.nextIds),
+    )
+    extra.append(element("p", "hint", IntlModule.translate("dexClient.routesFollowThisVPetCatalogOtherDigimon")))
     if (entry.url) {
-      const reference = element("button", "utility reference", "OPEN DIGIMON REFERENCE >")
+      const reference = element("button", "utility reference", IntlModule.translate("dexClient.openDigimonReference"))
       reference.type = "button"
       reference.addEventListener("click", () =>
         vscode.postMessage({ type: "dex-reference", id: entry.id, url: entry.url }),
@@ -141,17 +166,17 @@ const renderSelection = () => {
         "p",
         "hint locked-message",
         model.status === "unavailable"
-          ? "The partner archive could not be read. Refresh to restore your discovery records."
-          : "Raise and evolve a partner to register this Digimon. Its name, sprite and evolution routes will appear here. Set Digimon overrides do not register discoveries.",
+          ? IntlModule.translate("dexClient.thePartnerArchiveCouldNotBeReadRefresh")
+          : IntlModule.translate("dexClient.raiseAndEvolveAPartnerToRegisterThis"),
       ),
     )
   }
   const nav = element("nav", "detail-nav")
-  nav.setAttribute("aria-label", "Record navigation")
+  nav.setAttribute("aria-label", IntlModule.translate("dexClient.recordNavigation"))
   const index = filtered.findIndex((e) => e.id === selectedId)
   for (const [offset, label] of [
-    [-1, "< PREVIOUS"],
-    [1, "NEXT >"],
+    [-1, IntlModule.translate("dexClient.previous")],
+    [1, IntlModule.translate("dexClient.next")],
   ]) {
     const button = element("button", "", label)
     button.type = "button"
@@ -182,11 +207,25 @@ const render = () => {
     button.dataset.id = entry.id
     button.setAttribute(
       "aria-label",
-      entry.id + ", " + entry.name + ", " + entry.stage + ", " + (entry.discovered ? "registered" : "undiscovered"),
+      entry.id +
+        ", " +
+        entry.name +
+        ", " +
+        translateStage(entry) +
+        ", " +
+        (entry.discovered
+          ? IntlModule.translate("dexClient.registered")
+          : IntlModule.translate("dexClient.undiscovered2")),
     )
     const status = element("span", "entry-status")
     status.setAttribute("aria-hidden", "true")
-    status.append(element("span", "status-text", entry.discovered ? "FOUND" : "LOCKED"))
+    status.append(
+      element(
+        "span",
+        "status-text",
+        entry.discovered ? IntlModule.translate("dexClient.found") : IntlModule.translate("dexClient.locked"),
+      ),
+    )
     const mark = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     mark.setAttribute("viewBox", "0 0 8 8")
     mark.setAttribute("class", "status-mark")
@@ -199,7 +238,7 @@ const render = () => {
       element("span", "entry-id", entry.id),
       sprite(entry, "entry-sprite"),
       element("span", "entry-name", entry.discovered ? entry.name : "???"),
-      element("span", "entry-stage", entry.stage),
+      element("span", "entry-stage", translateStage(entry)),
       status,
     )
     button.addEventListener("click", () => selectEntry(entry.id))
@@ -218,15 +257,17 @@ const render = () => {
   meter.setAttribute(
     "aria-valuetext",
     model.status === "unavailable"
-      ? "Archive unavailable"
-      : model.discovered + " of " + model.entries.length + " discovered",
+      ? IntlModule.translate("dexClient.archiveUnavailable")
+      : IntlModule.translate("dex.discoveredCount", { count: model.discovered, total: model.entries.length }),
   )
   document.getElementById("meter-fill").style.width = progress + "%"
   const notice = document.getElementById("notice")
   notice.hidden = model.status === "available"
-  notice.textContent = model.message
+  notice.textContent = translateReference(model.messageKey, model.message)
   document.getElementById("archive-status").textContent =
-    model.status === "unavailable" ? "ARCHIVE OFFLINE" : "LOCAL ARCHIVE"
+    model.status === "unavailable"
+      ? IntlModule.translate("dexClient.archiveOffline")
+      : IntlModule.translate("dexClient.localArchive")
   for (const value of ["grid", "list"])
     document.getElementById(value + "-mode").setAttribute("aria-pressed", String(mode === value))
   renderSelection()

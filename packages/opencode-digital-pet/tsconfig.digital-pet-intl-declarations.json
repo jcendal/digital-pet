@@ -1,0 +1,17 @@
+{
+  "extends": "../digital-pet-intl/tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "dist/digital-pet-intl",
+    "rootDir": "build/digital-pet-intl/src"
+  },
+  "include": ["build/digital-pet-intl/src", "../../types/web-assets.d.ts"],
+  "exclude": [
+    "build/digital-pet-intl/src/browser-script.ts",
+    "build/digital-pet-intl/src/document.browser.js",
+    "build/digital-pet-intl/src/browser-globals.d.ts"
+  ]
+}

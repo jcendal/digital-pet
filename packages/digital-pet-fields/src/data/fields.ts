@@ -1,60 +1,106 @@
 import type { Field } from "../domain/world.ts"
+import { IntlModule } from "../i18n.ts"
 
 export const FIELDS: readonly Field[] = Object.freeze([
   {
     id: "nature-spirits",
-    name: "Nature Spirits",
+    get name() {
+      return IntlModule.translate("fields.natureSpirits")
+    },
     code: "NSp",
-    description: "Wild beasts, insects, minerals, and primitive creatures.",
+    get description() {
+      return IntlModule.translate("fields.wildBeastsInsectsMineralsAndPrimitiveCreatures")
+    },
   },
   {
     id: "deep-savers",
-    name: "Deep Savers",
+    get name() {
+      return IntlModule.translate("fields.deepSavers")
+    },
     code: "DS",
-    description: "Aquatic creatures of the oceans, depths, and ice.",
+    get description() {
+      return IntlModule.translate("fields.aquaticCreaturesOfTheOceansDepthsAndIce")
+    },
   },
   {
     id: "nightmare-soldiers",
-    name: "Nightmare Soldiers",
+    get name() {
+      return IntlModule.translate("fields.nightmareSoldiers")
+    },
     code: "NSo",
-    description: "Ghosts, demons, undead creatures, and dark magic.",
+    get description() {
+      return IntlModule.translate("fields.ghostsDemonsUndeadCreaturesAndDarkMagic")
+    },
   },
   {
     id: "wind-guardians",
-    name: "Wind Guardians",
+    get name() {
+      return IntlModule.translate("fields.windGuardians")
+    },
     code: "WG",
-    description: "Birds and forest creatures of the woodland and sky.",
+    get description() {
+      return IntlModule.translate("fields.birdsAndForestCreaturesOfTheWoodlandAnd")
+    },
   },
   {
     id: "metal-empire",
-    name: "Metal Empire",
+    get name() {
+      return IntlModule.translate("fields.metalEmpire")
+    },
     code: "ME",
-    description: "Machines, cyborgs, factories, and industrial cities.",
+    get description() {
+      return IntlModule.translate("fields.machinesCyborgsFactoriesAndIndustrialCities")
+    },
   },
   {
     id: "virus-busters",
-    name: "Virus Busters",
+    get name() {
+      return IntlModule.translate("fields.virusBusters")
+    },
     code: "VB",
-    description: "Sacred guardians and heroes who fight evil.",
+    get description() {
+      return IntlModule.translate("fields.sacredGuardiansAndHeroesWhoFightEvil")
+    },
   },
   {
     id: "dragons-roar",
-    name: "Dragon's Roar",
+    get name() {
+      return IntlModule.translate("fields.dragonSRoar")
+    },
     code: "DR",
-    description: "Dragons, dinosaurs, and reptiles of the ancient world.",
+    get description() {
+      return IntlModule.translate("fields.dragonsDinosaursAndReptilesOfTheAncientWorld")
+    },
   },
   {
     id: "jungle-troopers",
-    name: "Jungle Troopers",
+    get name() {
+      return IntlModule.translate("fields.jungleTroopers")
+    },
     code: "JT",
-    description: "Plants, insects, and protectors of the jungle.",
+    get description() {
+      return IntlModule.translate("fields.plantsInsectsAndProtectorsOfTheJungle")
+    },
   },
-  { id: "dark-area", name: "Dark Area", code: "DA", description: "Demonic creatures dwelling in the darkest places." },
+  {
+    id: "dark-area",
+    get name() {
+      return IntlModule.translate("fields.darkArea")
+    },
+    code: "DA",
+    get description() {
+      return IntlModule.translate("fields.demonicCreaturesDwellingInTheDarkestPlaces")
+    },
+  },
   {
     id: "unknown",
-    name: "Unknown",
+    get name() {
+      return IntlModule.translate("fields.unknown")
+    },
     code: "UK",
-    description: "Mutants, anomalies, and creatures that defy classification.",
+    get description() {
+      return IntlModule.translate("fields.mutantsAnomaliesAndCreaturesThatDefyClassification")
+    },
   },
 ])
 

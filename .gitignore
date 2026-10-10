@@ -50,3 +50,6 @@ release-artifacts/
 *.vsix
 npm-pack.json
 .package.json.publish.bak
+
+# Cursor NLS manifests are generated from assets/i18n by the extension build.
+packages/cursor-digital-pet/package.nls*.json

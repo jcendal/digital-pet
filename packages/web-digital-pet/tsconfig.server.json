@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": ["node"],
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    "resolveJsonModule": true
   },
   "include": ["src/server", "tooling", "vite.config.ts", "../../types/web-assets.d.ts"],
   "exclude": []

@@ -1,80 +1,130 @@
 import type { Region, WorldLocation } from "../domain/world.ts"
+import { IntlModule } from "../i18n.ts"
 import { HABITATS } from "./habitats.ts"
 
 export const REGIONS: readonly Region[] = Object.freeze(
   [
     {
       id: "gear-savannah",
-      name: "Gear Savannah",
+      get name() {
+        return IntlModule.translate("regions.gearSavannah")
+      },
       fieldId: "nature-spirits",
       defaultLocationId: "gear-savannah",
-      description: "Open grasslands, rocky paths, and the distant turning of ancient gears.",
+      get description() {
+        return IntlModule.translate("regions.openGrasslandsRockyPathsAndTheDistantTurning")
+      },
     },
     {
       id: "digital-ocean",
-      name: "Digital Ocean",
+      get name() {
+        return IntlModule.translate("regions.digitalOcean")
+      },
       fieldId: "deep-savers",
       defaultLocationId: "digital-ocean",
-      description: "Blue waters stretch beyond the shore, hiding a world beneath the waves.",
+      get description() {
+        return IntlModule.translate("regions.blueWatersStretchBeyondTheShoreHidingA")
+      },
     },
     {
       id: "wasteland",
-      name: "Wasteland",
+      get name() {
+        return IntlModule.translate("regions.wasteland")
+      },
       fieldId: "nightmare-soldiers",
       defaultLocationId: "wasteland",
-      description: "A silent wasteland of Spiral Mountain, where shadows gather among the ruins.",
+      get description() {
+        return IntlModule.translate("regions.aSilentWastelandOfSpiralMountainWhereShadows")
+      },
     },
     {
       id: "digital-forest",
-      name: "Digital Forest",
+      get name() {
+        return IntlModule.translate("regions.digitalForest")
+      },
       fieldId: "wind-guardians",
       defaultLocationId: "digital-forest",
-      description: "The canopy of Spiral Mountain opens into a wide, windswept sky.",
+      get description() {
+        return IntlModule.translate("regions.theCanopyOfSpiralMountainOpensIntoA")
+      },
     },
     {
       id: "digital-city",
-      name: "Digital City",
+      get name() {
+        return IntlModule.translate("regions.digitalCity")
+      },
       fieldId: "metal-empire",
       defaultLocationId: "digital-city",
-      description: "Metal towers, restless machines, and the hum of Spiral Mountain's factories.",
+      get description() {
+        return IntlModule.translate("regions.metalTowersRestlessMachinesAndTheHumOf")
+      },
     },
     {
       id: "village-of-beginnings",
-      name: "Village of Beginnings",
+      get name() {
+        return IntlModule.translate("regions.villageOfBeginnings")
+      },
       fieldId: "virus-busters",
       defaultLocationId: "village-of-beginnings",
-      description: "A peaceful home for fresh eggs, watched over by gentle guardians.",
+      get description() {
+        return IntlModule.translate("regions.aPeacefulHomeForFreshEggsWatchedOver")
+      },
     },
     {
       id: "ancient-dino-region",
-      name: "Ancient Dino Region",
+      get name() {
+        return IntlModule.translate("regions.ancientDinoRegion")
+      },
       fieldId: "dragons-roar",
       defaultLocationId: "ancient-dino-region",
-      description: "Ancient cliffs and volcanic ridges echo with the footsteps of dinosaurs.",
+      get description() {
+        return IntlModule.translate("regions.ancientCliffsAndVolcanicRidgesEchoWithThe")
+      },
     },
     {
       id: "tropical-jungle",
-      name: "Tropical Jungle",
+      get name() {
+        return IntlModule.translate("regions.tropicalJungle")
+      },
       fieldId: "jungle-troopers",
       defaultLocationId: "tropical-jungle",
-      description: "A dense jungle of giant leaves, twisting roots, and hidden trails.",
+      get description() {
+        return IntlModule.translate("regions.aDenseJungleOfGiantLeavesTwistingRoots")
+      },
     },
     {
       id: "vamdemon-castle",
-      name: "Vamdemon Castle",
+      get name() {
+        return IntlModule.translate("regions.vamdemonCastle")
+      },
       fieldId: "dark-area",
       defaultLocationId: "vamdemon-castle",
-      description: "Gothic towers rise above a dark courtyard, their windows lit after dusk.",
+      get description() {
+        return IntlModule.translate("regions.gothicTowersRiseAboveADarkCourtyardTheir")
+      },
     },
     {
       id: "upside-down-pyramid",
-      name: "Upside-Down Pyramid",
+      get name() {
+        return IntlModule.translate("regions.upsideDownPyramid")
+      },
       fieldId: "unknown",
       defaultLocationId: "upside-down-pyramid",
-      description: "An inverted pyramid where the landscape follows its own strange rules.",
+      get description() {
+        return IntlModule.translate("regions.anInvertedPyramidWhereTheLandscapeFollowsIts")
+      },
     },
   ].map((region) =>
-    Object.freeze({ ...region, residentIds: Object.freeze([...HABITATS[region.fieldId as keyof typeof HABITATS]]) }),
+    Object.freeze({
+      ...region,
+      get name() {
+        return region.name
+      },
+      get description() {
+        return region.description
+      },
+      residentIds: Object.freeze([...HABITATS[region.fieldId as keyof typeof HABITATS]]),
+    }),
   ) as Region[],
 )
 
@@ -82,7 +132,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
   [
     {
       id: "gear-savannah",
-      name: "Gear Savannah",
+      get name() {
+        return IntlModule.translate("regions.gearSavannah")
+      },
       regionId: "gear-savannah",
       scene: "savannah",
       backgroundFile: "gear-savannah.png",
@@ -90,7 +142,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "digital-ocean",
-      name: "Digital Ocean",
+      get name() {
+        return IntlModule.translate("regions.digitalOcean")
+      },
       regionId: "digital-ocean",
       scene: "ocean",
       backgroundFile: "digital-ocean.png",
@@ -98,7 +152,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "dragon-eye-lake",
-      name: "Dragon Eye Lake",
+      get name() {
+        return IntlModule.translate("regions.dragonEyeLake")
+      },
       regionId: "digital-ocean",
       scene: "lake",
       backgroundFile: "dragon-eye-lake.png",
@@ -106,7 +162,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "wasteland",
-      name: "Wasteland",
+      get name() {
+        return IntlModule.translate("regions.wasteland")
+      },
       regionId: "wasteland",
       scene: "wasteland",
       backgroundFile: "wasteland.png",
@@ -114,7 +172,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "digital-forest",
-      name: "Digital Forest",
+      get name() {
+        return IntlModule.translate("regions.digitalForest")
+      },
       regionId: "digital-forest",
       scene: "forest",
       backgroundFile: "digital-forest.png",
@@ -122,7 +182,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "digital-city",
-      name: "Digital City",
+      get name() {
+        return IntlModule.translate("regions.digitalCity")
+      },
       regionId: "digital-city",
       scene: "city",
       backgroundFile: "digital-city.png",
@@ -130,7 +192,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "village-of-beginnings",
-      name: "Village of Beginnings",
+      get name() {
+        return IntlModule.translate("regions.villageOfBeginnings")
+      },
       regionId: "village-of-beginnings",
       scene: "village",
       backgroundFile: "village-of-beginnings.png",
@@ -138,7 +202,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "ancient-dino-region",
-      name: "Ancient Dino Region",
+      get name() {
+        return IntlModule.translate("regions.ancientDinoRegion")
+      },
       regionId: "ancient-dino-region",
       scene: "dino",
       backgroundFile: "ancient-dino-region.png",
@@ -146,7 +212,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "tropical-jungle",
-      name: "Tropical Jungle",
+      get name() {
+        return IntlModule.translate("regions.tropicalJungle")
+      },
       regionId: "tropical-jungle",
       scene: "jungle",
       backgroundFile: "tropical-jungle.png",
@@ -154,7 +222,9 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "vamdemon-castle",
-      name: "Vamdemon Castle",
+      get name() {
+        return IntlModule.translate("regions.vamdemonCastle")
+      },
       regionId: "vamdemon-castle",
       scene: "castle",
       backgroundFile: "vamdemon-castle.png",
@@ -162,13 +232,21 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     },
     {
       id: "upside-down-pyramid",
-      name: "Upside-Down Pyramid",
+      get name() {
+        return IntlModule.translate("regions.upsideDownPyramid")
+      },
       regionId: "upside-down-pyramid",
       scene: "pyramid",
       backgroundFile: "upside-down-pyramid.png",
       atmosphere: ["#413457", "#ae8761"],
     },
   ].map((location) =>
-    Object.freeze({ ...location, atmosphere: Object.freeze(location.atmosphere) }),
+    Object.freeze({
+      ...location,
+      get name() {
+        return location.name
+      },
+      atmosphere: Object.freeze(location.atmosphere),
+    }),
   ) as WorldLocation[],
 )

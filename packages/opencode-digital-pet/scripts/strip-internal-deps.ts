@@ -6,7 +6,11 @@ type JsonObject = { readonly [key: string]: unknown }
 const isJsonObject = (value: unknown): value is JsonObject =>
   typeof value === "object" && value !== null && !Array.isArray(value)
 
-const INTERNAL_PACKAGES = new Set(["@jcendal/digital-pet-core", "@jcendal/digital-pet-animation"])
+const INTERNAL_PACKAGES = new Set([
+  "@jcendal/digital-pet-core",
+  "@jcendal/digital-pet-animation",
+  "@jcendal/digital-pet-intl",
+])
 
 const withoutInternalDependencies = (dependencies: unknown): JsonObject | undefined => {
   if (!isJsonObject(dependencies)) return undefined

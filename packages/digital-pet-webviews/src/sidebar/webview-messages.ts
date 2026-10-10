@@ -2,15 +2,22 @@ import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/ev
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 export type SidebarWebviewPayload =
-  | { readonly type: "sidebar-model"; readonly kind: "no_partner"; readonly messageLine: string }
+  | {
+      readonly type: "sidebar-model"
+      readonly kind: "no_partner"
+      readonly messageLine: string
+      readonly messageKey?: string
+    }
   | {
       readonly type: "sidebar-model"
       readonly kind: "partner"
       readonly progress: number
       readonly terminal: boolean
       readonly name: string
+      readonly overrideName?: string
       readonly opponentName?: string
       readonly stage: string
+      readonly stageKey?: string
       readonly nextCheck: string
       readonly gauge: string
       readonly url: string

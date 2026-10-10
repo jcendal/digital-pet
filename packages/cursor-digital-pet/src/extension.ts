@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs"
 import * as vscode from "vscode"
-
 import { resolveStateVscdbPath } from "./adapters/cursor/paths.ts"
 import { createUsagePipeline } from "./application/usage-pipeline.ts"
 import { createDigitalPetContainer } from "./bootstrap/container.ts"
@@ -8,12 +7,14 @@ import { ensureHooksInstalled } from "./bootstrap/ensure-hooks.ts"
 import { registerCommands } from "./bootstrap/register-commands.ts"
 import { registerSidebar } from "./bootstrap/register-sidebar.ts"
 import { isDevToolsEnabled, syncDevToolsContext } from "./config/extension-settings.ts"
+import { IntlModule } from "./i18n.ts"
 
 const isCursorRuntime = (): boolean => existsSync(resolveStateVscdbPath())
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
+  IntlModule.setLocale(vscode.env.language)
   if (!isCursorRuntime()) {
-    vscode.window.showWarningMessage("Cursor Digital Pet: token tracking requires Cursor (state.vscdb not found).")
+    vscode.window.showWarningMessage(IntlModule.translate("extension.cursorDigitalPetTokenTrackingRequiresCursorState"))
   }
 
   const container = await createDigitalPetContainer(context)

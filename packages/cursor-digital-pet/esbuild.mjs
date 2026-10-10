@@ -1,4 +1,4 @@
-import { copyFile, mkdir, rm } from "node:fs/promises"
+import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { createRequire } from "node:module"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -20,6 +20,15 @@ await mkdir(iconsDirectory, { recursive: true })
 for (const name of ["Silkscreen-Regular.ttf", "OFL.txt"])
   await copyFile(require.resolve(`@jcendal/digital-pet-webviews/assets/fonts/${name}`), resolve(fontsDirectory, name))
 await copyFile(resolve(packageRoot, "../../assets/branding/logo.png"), resolve(iconsDirectory, "logo.png"))
+
+for (const locale of ["en", "ko", "es", "gl"]) {
+  const dictionary = JSON.parse(await readFile(resolve(packageRoot, `assets/i18n/${locale}.json`), "utf8"))
+  const metadata = Object.fromEntries(Object.entries(dictionary).filter(([key]) => key.startsWith("contributions.")))
+  await writeFile(
+    resolve(packageRoot, locale === "en" ? "package.nls.json" : `package.nls.${locale}.json`),
+    JSON.stringify(metadata, null, 2) + "\n",
+  )
+}
 
 const options = {
   entryPoints: [resolve(packageRoot, "src/extension.ts")],

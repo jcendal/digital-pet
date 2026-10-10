@@ -1,3 +1,5 @@
+import { IntlModule } from "../i18n.ts"
+
 const HOUR = 60 * 60 * 1000
 export const HYGIENE_INTERVALS_MS = [2 * HOUR, 8 * HOUR, 16 * HOUR] as const
 export const CLEANING_EXPERIENCE_FRACTION = 0.05
@@ -58,11 +60,11 @@ export const cleaningExperience = (gauge: number, threshold: number): number =>
   Math.min(threshold, gauge + Math.ceil(threshold * CLEANING_EXPERIENCE_FRACTION))
 
 export const parseHygiene = (value: unknown): HygieneState => {
-  if (typeof value !== "object" || value === null) throw new Error("Invalid hygiene state")
+  if (typeof value !== "object" || value === null) throw new Error(IntlModule.translate("errors.invalidHygieneState"))
   const state = value as { poops?: unknown; nextAt?: unknown; happyUntil?: unknown }
   const time = (input: unknown): input is number =>
     typeof input === "number" && Number.isSafeInteger(input) && input >= 0
-  if (!Array.isArray(state.poops)) throw new Error("Invalid hygiene state")
+  if (!Array.isArray(state.poops)) throw new Error(IntlModule.translate("errors.invalidHygieneState"))
   const poops: unknown[] = state.poops
   if (
     !poops.every(time) ||
@@ -72,6 +74,6 @@ export const parseHygiene = (value: unknown): HygieneState => {
     (state.poops.length === 3 ? state.nextAt !== null : !time(state.nextAt)) ||
     poops.some((id, index) => index > 0 && Number(id) <= Number(poops[index - 1]))
   )
-    throw new Error("Invalid hygiene state")
+    throw new Error(IntlModule.translate("errors.invalidHygieneState"))
   return { poops: [...state.poops], nextAt: state.nextAt as number | null, happyUntil: state.happyUntil }
 }

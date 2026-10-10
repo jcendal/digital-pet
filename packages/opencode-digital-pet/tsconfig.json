@@ -22,7 +22,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "tests"]

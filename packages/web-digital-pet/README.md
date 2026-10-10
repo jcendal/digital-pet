@@ -68,6 +68,7 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 - 🎮 **650 Digimon** — Same catalog, evolution art, and panels as the desktop integrations
 - 📊 **Partner · Dex · History** — Shared webview UI from `digital-pet-webviews`
 - ⚙️ **Options panel** — Choose your save, set evolution experience, and start a new egg
+- 🌐 **Four interface languages** — English, Korean, Spanish and Galician. The first visit uses a supported browser language; **Options → Language** saves an explicit choice on this device. Language changes work offline and preserve your companion.
 - 🌍 **Explore regions** — Ten destinations, a habitat guide, and eleven LCD landscapes
 - 🔄 **Manual device sync** — Pair once, then bring the other browser's save with **SYNC**
 - 🔒 **Privacy-first** — No accounts, no cloud backup; saves stay on your device or local disk

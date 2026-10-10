@@ -2,6 +2,7 @@ import { DEFAULT_WORLD_VISIT, getLocation, getRegion } from "@jcendal/digital-pe
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import type { WorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { COMPUTER_WORLD_KEY, worldStoreFor } from "../../persistence/world-store.ts"
 import { webAsset } from "../../platform/assets.ts"
 import { checkComputerSave } from "../../platform/computer-save.ts"
@@ -43,9 +44,10 @@ export const initBrowserWorld = async (): Promise<void> => {
   const loadModel = async (regionId: string, selectedSource: SaveSource): Promise<WorldPanelModel> => {
     if (selectedSource === "browser") return (await import("../../presentation/browser-session.ts")).world(regionId)
     const response = await fetch(`/api/world?region=${encodeURIComponent(regionId)}`, { cache: "no-store" })
-    if (!response.ok) throw new Error("Could not load your world. Please try again.")
+    if (!response.ok) throw new Error(IntlModule.translate("controller.couldNotLoadYourWorldPleaseTryAgain"))
     const data = await response.json()
-    if (data.mode === "browser") throw new Error("Computer save is unavailable. Choose THIS BROWSER in Options.")
+    if (data.mode === "browser")
+      throw new Error(IntlModule.translate("controller.computerSaveIsUnavailableChooseThisBrowserIn"))
     return data
   }
   const render = () => {
@@ -65,7 +67,7 @@ export const initBrowserWorld = async (): Promise<void> => {
     visit = next
     applyVisit()
     if (dialog.open) {
-      status.textContent = "Loading habitat guide…"
+      status.textContent = IntlModule.translate("controller.loadingHabitatGuide")
       const nextModel = await loadModel(selectedRegion ?? visit.regionId, source)
       if (token !== revision) return
       model = nextModel
@@ -74,12 +76,12 @@ export const initBrowserWorld = async (): Promise<void> => {
     }
   }
   const report = (error: unknown) => {
-    status.textContent = error instanceof Error ? error.message : "Could not load regions."
+    status.textContent = error instanceof Error ? error.message : IntlModule.translate("controller.couldNotLoadRegions")
   }
   const open = () => {
     selectedRegion = null
     content.innerHTML = ""
-    status.textContent = "Loading regions…"
+    status.textContent = IntlModule.translate("controller.loadingRegions")
     if (!dialog.open) dialog.showModal()
     void refresh().catch(report)
   }
@@ -104,7 +106,7 @@ export const initBrowserWorld = async (): Promise<void> => {
     if (button.dataset.region) {
       const regionId = button.dataset.region
       selectedRegion = regionId
-      status.textContent = "Loading habitat guide…"
+      status.textContent = IntlModule.translate("controller.loadingHabitatGuide")
       const token = ++revision
       void loadModel(regionId, source)
         .then((nextModel) => {
@@ -150,10 +152,13 @@ export const initBrowserWorld = async (): Promise<void> => {
         item.setAttribute("aria-pressed", String(item === button))
       const preview = content.querySelector<HTMLImageElement>("#world-preview-image")!
       preview.src = webAsset(`/regions/${place.id}/scene.svg`)
-      preview.alt = `${place.name} pixel landscape`
+      preview.alt = IntlModule.translate("controller.pixelLandscape", { name: place.name })
       const travel = content.querySelector<HTMLButtonElement>("#world-travel")!
       travel.dataset.location = place.id
-      travel.querySelector("span")!.textContent = visit.locationId === place.id ? "YOU ARE HERE" : "TRAVEL HERE"
+      travel.querySelector("span")!.textContent =
+        visit.locationId === place.id
+          ? IntlModule.translate("controller.youAreHere")
+          : IntlModule.translate("controller.travelHere")
     }
   })
   await refresh()

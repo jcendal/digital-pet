@@ -14,7 +14,7 @@ import type {
 import type { DigitalPetArchiveReader } from "@jcendal/digital-pet-core/application/ports/digital-pet-archive.ts"
 import type { SqliteExecutor } from "@jcendal/digital-pet-core/ports/sqlite-executor.ts"
 
-import { UNAVAILABLE_ARCHIVE_MESSAGE } from "../../shared/constants/sqlite.ts"
+import { unavailableArchiveMessage } from "../../shared/constants/sqlite.ts"
 import { isRecoverableSqliteReadError } from "./errors.ts"
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { openReadonlySqliteDatabase } from "./sqlite-driver.ts"
@@ -88,7 +88,7 @@ const readArchiveAtPath = (databasePath: string): DigitalPetArchiveResult => {
       database.close()
     }
   } catch (error) {
-    if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: UNAVAILABLE_ARCHIVE_MESSAGE }
+    if (isRecoverableSqliteReadError(error)) return { kind: "unavailable", message: unavailableArchiveMessage() }
     throw error
   }
 }

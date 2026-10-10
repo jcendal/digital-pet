@@ -5,6 +5,7 @@ import type { TuiTheme } from "@opencode-ai/plugin/tui"
 import { createTextAttributes, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { createMemo, For } from "solid-js"
+import { IntlModule } from "../i18n.ts"
 
 export type DigitalPetDexDialogTheme = {
   readonly current: Pick<TuiTheme["current"], "primary" | "success" | "textMuted">
@@ -39,10 +40,10 @@ export function DigitalPetDexDialog(props: DigitalPetDexDialogProps) {
   return (
     <box flexDirection="column" width="100%" height={height} paddingX={1}>
       <text attributes={BOLD} fg={props.theme.current.primary} flexShrink={0}>
-        Digital Pet Dex
+        {IntlModule.translate("digitalPetCommandLayer.digitalPetDex")}
       </text>
       <box flexDirection="column" width="100%" height={height - 2} flexShrink={0} overflow="hidden">
-        {props.model.kind === "empty" && <text>No data available</text>}
+        {props.model.kind === "empty" && <text>{IntlModule.translate("digitalPetDexDialog.noDataAvailable")}</text>}
         {props.model.kind === "unavailable" && <text>{props.model.message}</text>}
         {props.model.kind === "available" && (
           <scrollbox
@@ -66,7 +67,7 @@ export function DigitalPetDexDialog(props: DigitalPetDexDialogProps) {
         )}
       </box>
       <text flexShrink={0} onMouseDown={props.onClose}>
-        ↑↓: 1 item · ←→: 10 items · Esc: Close
+        {IntlModule.translate("digitalPetDexDialog.1Item10ItemsEscClose")}
       </text>
     </box>
   )

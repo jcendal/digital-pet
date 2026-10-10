@@ -1,4 +1,5 @@
 import type { Message, SessionMessagesResponse } from "@opencode-ai/sdk"
+import { IntlModule } from "../../i18n.ts"
 
 export type SessionMessagesFetcher = (sessionID: string) => Promise<readonly Message[]>
 
@@ -13,7 +14,10 @@ export type SessionMessagesClient = {
 export const createSessionMessagesFetcher = (client: SessionMessagesClient): SessionMessagesFetcher => {
   return async (sessionID) => {
     const result = await client.session.messages({ path: { id: sessionID } })
-    if (result.data === undefined) throw new Error(`Unable to list messages for idle session ${sessionID}`)
+    if (result.data === undefined)
+      throw new Error(
+        IntlModule.translate("sessionMessages.unableToListMessagesForIdleSession", { sessionID: sessionID }),
+      )
     return result.data.map(({ info }) => info)
   }
 }

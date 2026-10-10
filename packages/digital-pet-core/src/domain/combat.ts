@@ -1,3 +1,4 @@
+import { IntlModule } from "../i18n.ts"
 /** Game balance, shared by every host. Strength controls accuracy, not damage. */
 export type CombatStats = { readonly strength: number; readonly evasion: number }
 export type BattleSide = "player" | "opponent"
@@ -11,7 +12,7 @@ export const NEUTRAL_COMBAT_STATS: CombatStats = Object.freeze({ strength: 50, e
 export const validateCombatStats = (stats: CombatStats): CombatStats => {
   for (const value of [stats.strength, stats.evasion]) {
     if (!Number.isInteger(value) || value < 0 || value > 100)
-      throw new Error("Combat stats must be integers in [0, 100]")
+      throw new Error(IntlModule.translate("errors.invalidCombatStats"))
   }
   return Object.freeze({ ...stats })
 }
@@ -26,7 +27,8 @@ export const hitProbability = (attacker: CombatStats, defender: CombatStats): nu
 
 const roll = (random: () => number): number => {
   const value = random()
-  if (!Number.isFinite(value) || value < 0 || value >= 1) throw new Error("Combat random must be in [0, 1)")
+  if (!Number.isFinite(value) || value < 0 || value >= 1)
+    throw new Error(IntlModule.translate("errors.invalidCombatRandom"))
   return value
 }
 

@@ -14,21 +14,15 @@ const renderBattleHud = () => {
   byId("battle-caption").hidden = !visible || !battleHud.caption
   byId("battle-caption").textContent = battleHud?.caption || ""
   if (!visible) return
-  document
-    .querySelector(".arena")
-    .setAttribute(
-      "aria-label",
-      "Battle: partner " +
-        battleHud.playerHits +
-        " / " +
-        battleHud.hitsToWin +
-        " hits; opponent " +
-        battleHud.opponentHits +
-        " / " +
-        battleHud.hitsToWin +
-        " hits" +
-        (battleHud.caption ? "; " + battleHud.caption : ""),
-    )
+  document.querySelector(".arena").setAttribute(
+    "aria-label",
+    IntlModule.translate("sidebar.battleDescription", {
+      playerHits: battleHud.playerHits,
+      opponentHits: battleHud.opponentHits,
+      hitsToWin: battleHud.hitsToWin,
+      caption: battleHud.caption ? "; " + battleHud.caption : "",
+    }),
+  )
   for (const [id, hits] of [
     ["player-score", battleHud.playerHits],
     ["opponent-score", battleHud.opponentHits],
@@ -37,7 +31,11 @@ const renderBattleHud = () => {
     score.replaceChildren()
     score.setAttribute(
       "aria-label",
-      (id === "player-score" ? "Partner" : "Opponent") + ": " + hits + " / " + battleHud.hitsToWin + " hits",
+      IntlModule.translate("sidebar.score", {
+        side: IntlModule.translate(id === "player-score" ? "sidebar.partner" : "sidebar.opponent"),
+        hits,
+        total: battleHud.hitsToWin,
+      }),
     )
     for (let index = 0; index < battleHud.hitsToWin; index++) {
       const pip = document.createElement("span")
@@ -124,8 +122,8 @@ const renderPoops = () => {
     }
     button.style.left = index * 48 + "px"
     button.disabled = !hygiene.canClean || state.phase !== "idle"
-    button.title = "Clean poop · +5% experience"
-    button.setAttribute("aria-label", "Clean poop " + (index + 1) + " · +5% experience")
+    button.title = IntlModule.translate("sidebarClient.cleanPoop5Experience")
+    button.setAttribute("aria-label", IntlModule.translate("sidebar.cleanPoop", { number: index + 1 }))
   }
 }
 const render = () => {
@@ -135,34 +133,47 @@ const render = () => {
   root.classList.toggle("animating", state.phase !== "idle")
   root.classList.toggle("battling", state.phase === "battle")
   byId("empty").hidden = active
-  byId("empty").textContent = model?.messageLine || "Spawn a partner to begin."
+  const [messageNamespace, messageKey] = (model?.messageKey || "").split(":")
+  byId("empty").textContent =
+    messageNamespace && messageKey
+      ? getIntlModule().translate(messageKey, {}, messageNamespace)
+      : model?.messageLine || IntlModule.translate("sidebarClient.spawnAPartnerToBegin")
   byId("phase").textContent = !active
-    ? "NO PARTNER"
+    ? IntlModule.translate("sidebarClient.noPartner")
     : state.phase === "idle"
       ? model.frozen
-        ? "FROZEN"
+        ? IntlModule.translate("sidebarClient.frozen")
         : model.hygiene?.mood === "sad"
-          ? "SAD"
+          ? IntlModule.translate("sidebarClient.sad")
           : model.hygiene?.mood === "happy"
-            ? "HAPPY"
-            : "ACTIVE"
-      : state.phase.toUpperCase()
+            ? IntlModule.translate("sidebarClient.happy")
+            : IntlModule.translate("sidebarClient.active")
+      : IntlModule.translate("phase." + state.phase)
   if (!active) return
-  byId("name").textContent = model.name
-  byId("name").title = model.name
+  const name = model.overrideName ? IntlModule.translate("sidebarRender.set", { name: model.overrideName }) : model.name
+  byId("name").textContent = name
+  byId("name").title = name
+  const stageLabel =
+    model.stageKey && IntlModule.locale !== "en" ? getIntlModule().translate(model.stageKey, {}, "core") : model.stage
+  const stageText =
+    model.stageKey && model.frozen && IntlModule.locale !== "en"
+      ? IntlModule.translate("sidebarRender.frozen", { stage: stageLabel })
+      : stageLabel
   byId("stage").textContent =
     state.phase === "battle"
       ? model.opponentName || ""
       : state.phase === "evolving"
-        ? "TRANSFORMING..."
+        ? IntlModule.translate("sidebarClient.transforming")
         : state.phase === "draw"
-          ? "DRAW · " + model.stage
+          ? IntlModule.translate("sidebar.drawStage", { stage: stageText })
           : state.phase === "defeated"
-            ? "DEFEAT · " + model.stage
-            : model.stage
+            ? IntlModule.translate("sidebar.defeatStage", { stage: stageText })
+            : stageText
   byId("stage").title = byId("stage").textContent
   const percent = Math.round(model.progress * 100)
-  byId("progress-label").textContent = model.terminal ? "FINAL STAGE" : "NEXT CHECK"
+  byId("progress-label").textContent = model.terminal
+    ? IntlModule.translate("sidebarClient.finalStage")
+    : IntlModule.translate("sidebarClient.nextCheck")
   byId("percent").textContent = model.terminal ? "" : percent + "%"
   byId("meter").hidden = model.terminal
   byId("meter").setAttribute("aria-valuenow", String(percent))
@@ -172,15 +183,22 @@ const render = () => {
     .map((value) => {
       const count = Number(value.replaceAll(",", ""))
       return Number.isFinite(count)
-        ? new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(count)
+        ? new Intl.NumberFormat(IntlModule.locale, { notation: "compact", maximumFractionDigits: 1 }).format(count)
         : value
     })
     .join(" / ")
-  byId("gauge").textContent = model.terminal ? "No further evolution check." : abbreviated
+  byId("gauge").textContent = model.terminal
+    ? IntlModule.translate("sidebarClient.noFurtherEvolutionCheck")
+    : abbreviated
   byId("gauge").title = model.gauge
-  document
-    .querySelector(".arena")
-    .setAttribute("aria-label", (state.phase === "idle" ? "Partner" : state.phase) + " animation: " + model.name)
+  document.querySelector(".arena").setAttribute(
+    "aria-label",
+    IntlModule.translate("sidebar.animation", {
+      phase:
+        state.phase === "idle" ? IntlModule.translate("sidebar.partner") : IntlModule.translate("phase." + state.phase),
+      name: model.name,
+    }),
+  )
 }
 const reportWidth = () => {
   const arena = document.querySelector(".arena")

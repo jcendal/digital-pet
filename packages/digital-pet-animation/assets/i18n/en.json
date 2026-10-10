@@ -1,0 +1,12 @@
+{
+  "evolutionBattleArtwork.hit": "HIT!",
+  "evolutionBattleArtwork.miss": "MISS",
+  "evolutionBattleArtwork.draw": "DRAW!",
+  "evolutionBattleArtwork.win": "WIN!",
+  "evolutionBattleArtwork.lose": "LOSE!",
+  "evolutionBattleArtwork.invalidBattlePlaybackCheckpoint": "Invalid battle playback checkpoint",
+  "evolutionPresentation.unknownEvolutionParticipant": "Unknown evolution participant",
+  "evolutionPresentation.invalidEvolutionOpponent": "Invalid evolution opponent",
+  "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "Only an egg can evolve without a battle",
+  "battle.intro": "██████╗  █████╗ ████████╗████████╗██╗     ███████╗\n██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝\n██████╔╝███████║   ██║      ██║   ██║     █████╗  \n██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  \n██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗\n╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝"
+}

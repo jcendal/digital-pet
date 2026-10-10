@@ -1,5 +1,6 @@
 import type { DigitalPetLanguage } from "@jcendal/digital-pet-core/config/types.ts"
 import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { IntlModule } from "../../i18n.ts"
 
 export type DigitalPetToastPayload = Readonly<{
   readonly title: string
@@ -52,23 +53,36 @@ export const formatDigitalPetToast = (
       return name === undefined
         ? undefined
         : {
-            title: "Digital Pet",
-            message: `Spawned ${name} (Generation ${event.generation}).`,
+            title: IntlModule.translate("digitalPetToast.digitalPet"),
+            message: IntlModule.translate("digitalPetToast.spawnedGeneration", {
+              name: name,
+              generation: event.generation,
+            }),
             variant: "success",
             duration: 5_000,
           }
     }
     case "freeze":
-      return { title: "Digital Pet", message: "Digimon progression frozen.", variant: "info", duration: 3_000 }
+      return {
+        title: IntlModule.translate("digitalPetToast.digitalPet"),
+        message: IntlModule.translate("digitalPetToast.digimonProgressionFrozen"),
+        variant: "info",
+        duration: 3_000,
+      }
     case "unfreeze":
-      return { title: "Digital Pet", message: "Digimon progression resumed.", variant: "info", duration: 3_000 }
+      return {
+        title: IntlModule.translate("digitalPetToast.digitalPet"),
+        message: IntlModule.translate("digitalPetToast.digimonProgressionResumed"),
+        variant: "info",
+        duration: 3_000,
+      }
     case "set": {
       const name = namedPayload(event.nodeId, language, catalog)
       return name === undefined
         ? undefined
         : {
-            title: "Digital Pet",
-            message: `Digital Pet set to ${name} (${event.nodeId}).`,
+            title: IntlModule.translate("digitalPetToast.digitalPet"),
+            message: IntlModule.translate("digitalPetToast.digitalPetSetTo", { name: name, nodeId: event.nodeId }),
             variant: "info",
             duration: 3_000,
           }
@@ -80,7 +94,7 @@ export const formatDigitalPetToast = (
         ? undefined
         : {
             title: "Digi-evolution",
-            message: `${fromName} evolved into ${toName}!`,
+            message: IntlModule.translate("digitalPetToast.evolvedInto", { fromName: fromName, toName: toName }),
             variant: "success",
             duration: 5_000,
           }
@@ -90,8 +104,8 @@ export const formatDigitalPetToast = (
       return opponentName === undefined
         ? undefined
         : {
-            title: "Evolution battle",
-            message: `Battle against ${opponentName}! Win to evolve.`,
+            title: IntlModule.translate("digitalPetToast.evolutionBattle"),
+            message: IntlModule.translate("digitalPetToast.battleAgainstWinToEvolve", { opponentName: opponentName }),
             variant: "info",
             duration: 5_000,
           }
@@ -99,7 +113,7 @@ export const formatDigitalPetToast = (
     case "defeat":
       return {
         title: "Defeat",
-        message: "Defeat! You lost all tokens for this stage.",
+        message: IntlModule.translate("digitalPetToast.defeatYouLostAllTokensForThisStage"),
         variant: "info",
         duration: 5_000,
       }

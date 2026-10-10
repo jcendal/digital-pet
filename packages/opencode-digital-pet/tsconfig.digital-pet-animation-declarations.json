@@ -6,7 +6,8 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "dist/digital-pet-animation",
-    "rootDir": "build/digital-pet-animation-src"
+    "rootDir": "build/digital-pet-animation/src",
+    "resolveJsonModule": true
   },
-  "include": ["build/digital-pet-animation-src"]
+  "include": ["build/digital-pet-animation/src"]
 }

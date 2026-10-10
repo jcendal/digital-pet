@@ -1,5 +1,7 @@
 /** @jsxImportSource @opentui/solid */
+
 import type { TuiKeymap } from "@opencode-ai/plugin/tui"
+import { IntlModule } from "../i18n.ts"
 import type { DevToolsRuntime } from "./attach-dev-tools.ts"
 import { OPENCODE_DEV_ACTIONS, type OpencodeDevActionId } from "./catalog.ts"
 
@@ -29,7 +31,7 @@ export const registerDevCommandLayer = ({
       name: action.id,
       title: action.title,
       description: action.title,
-      category: "Digital Pet Dev",
+      category: IntlModule.translate("registerDevCommandLayer.digitalPetDev"),
       namespace: "palette",
       slashName: action.slashName,
       run: () => {

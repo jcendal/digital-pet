@@ -6,6 +6,7 @@ import { createDatabaseChangeWatcher } from "../../../adapters/sqlite/database-c
 import { resolveDatabasePath } from "../../../adapters/sqlite/options.ts"
 import type { CreateSqliteDigitalPetArchiveReaderOptions } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { readArchive } from "../../../adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
+import { IntlModule } from "../../../i18n.ts"
 import { createAsyncRefreshQueue } from "../../../shared/async-refresh-queue.ts"
 import { buildDexPanelModel } from "./dex-model.ts"
 import { buildDexWebviewHtml } from "./dex-render.ts"
@@ -36,10 +37,15 @@ export const openDexPanel = async (
   }
   let model = buildDexPanelModel(archive, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
   const assetsRoot = vscode.Uri.joinPath(context.extensionUri, "dist", "assets")
-  const panel = vscode.window.createWebviewPanel("cursorDigitalPetDex", "Digital Pet Digidex", vscode.ViewColumn.One, {
-    enableScripts: true,
-    localResourceRoots: [assetsRoot],
-  })
+  const panel = vscode.window.createWebviewPanel(
+    "cursorDigitalPetDex",
+    IntlModule.translate("dexPanel.digitalPetDigidex"),
+    vscode.ViewColumn.One,
+    {
+      enableScripts: true,
+      localResourceRoots: [assetsRoot],
+    },
+  )
   let disposed = false
   let pendingSelection = selectedId
   const queue = createAsyncRefreshQueue()
@@ -55,7 +61,10 @@ export const openDexPanel = async (
     })
   const requestRefresh = (): void => {
     void refresh().catch((error: unknown) => {
-      if (!disposed) void vscode.window.showWarningMessage(`Digital Pet Dex could not refresh: ${String(error)}`)
+      if (!disposed)
+        void vscode.window.showWarningMessage(
+          IntlModule.translate("dexPanel.digitalPetDexCouldNotRefresh", { value0: String(error) }),
+        )
     })
   }
   const watcher = createDatabaseChangeWatcher({ ...options, databasePath, onChange: requestRefresh })

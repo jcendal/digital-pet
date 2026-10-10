@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
+import { IntlModule } from "../../i18n.ts"
 
 import { DIGITAL_PET_HOOK_MARKER } from "../../shared/constants/cursor.ts"
 import { resolveHooksJsonPath } from "./paths.ts"
@@ -12,7 +13,7 @@ export type HooksJson = {
 const parseHooksJson = (raw: string): HooksJson => {
   const parsed = JSON.parse(raw) as HooksJson
   if (typeof parsed.version !== "number" || typeof parsed.hooks !== "object") {
-    throw new Error("Invalid hooks.json shape")
+    throw new Error(IntlModule.translate("installHooks.invalidShape"))
   }
   return parsed
 }

@@ -73,7 +73,7 @@
     {
       "includes": ["**/*.browser.js"],
       "javascript": {
-        "globals": ["acquireVsCodeApi", "createPanelHelpers"]
+        "globals": ["acquireVsCodeApi", "createPanelHelpers", "IntlModule", "getIntlModule", "resolveLocale"]
       },
       "linter": {
         "rules": {

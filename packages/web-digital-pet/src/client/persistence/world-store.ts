@@ -1,5 +1,6 @@
 import { isWorldVisit, resolveWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit, WorldVisitStore } from "@jcendal/digital-pet-fields/domain/world.ts"
+import { IntlModule } from "../../shared/i18n.ts"
 
 import type { SaveSource } from "../platform/save-source.ts"
 import { readLocalState, setWorldVisit } from "./pet-store.ts"
@@ -17,7 +18,7 @@ export const worldStoreFor = (source: SaveSource): WorldVisitStore => ({
     }
   },
   async save(visit: WorldVisit) {
-    if (!isWorldVisit(visit)) throw new Error("Unknown destination")
+    if (!isWorldVisit(visit)) throw new Error(IntlModule.translate("petStore.unknownDestination"))
     if (source === "browser") await setWorldVisit(visit)
     else localStorage.setItem(COMPUTER_WORLD_KEY, JSON.stringify(resolveWorldVisit(visit)))
   },

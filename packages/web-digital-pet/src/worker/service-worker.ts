@@ -3,6 +3,7 @@ import { cacheNames, setCacheNameDetails } from "workbox-core"
 import { matchPrecache, precache } from "workbox-precaching"
 import { registerRoute } from "workbox-routing"
 import { CacheFirst, NetworkFirst } from "workbox-strategies"
+import { IntlModule } from "../shared/i18n.ts"
 
 declare const self: ServiceWorkerGlobalScope & { __WB_MANIFEST: Array<{ url: string; revision: string | null }> }
 
@@ -35,7 +36,7 @@ const shellCache = new NetworkFirst({
       cacheKeyWillBeUsed: async () => new URL("/", self.location.origin).href,
       // Treat server errors as offline; preserve real 404 responses.
       fetchDidSucceed: async ({ response }) => {
-        if (response.status >= 500) throw new Error("Shell temporarily unavailable")
+        if (response.status >= 500) throw new Error(IntlModule.translate("serviceWorker.shellTemporarilyUnavailable"))
         return response
       },
     },

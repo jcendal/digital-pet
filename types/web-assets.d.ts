@@ -8,3 +8,8 @@ declare module "*.browser.js" {
   const source: string
   export default source
 }
+
+declare module "*.browser.js?raw" {
+  const source: string
+  export default source
+}

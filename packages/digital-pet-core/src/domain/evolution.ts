@@ -1,3 +1,4 @@
+import { IntlModule } from "../i18n.ts"
 import type { DigimonNode } from "./digimon-node.ts"
 import { assertEvolutionBranch, pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
 import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
@@ -50,7 +51,7 @@ export const applyTokenProgress = (
   thresholds: unknown,
 ): PartnerEvolutionState => {
   if (!isStageThresholds(thresholds)) {
-    throw new Error("Evolution thresholds must be a complete frozen policy of positive finite numbers")
+    throw new Error(IntlModule.translate("errors.invalidEvolutionThresholds"))
   }
   if (state.isTerminal) return state
   if (hasPendingBattle(state)) return state
@@ -100,14 +101,15 @@ export const resolveEvolutionBattle = (
   const targetId = state.pendingEvolutionTargetId
   const opponentId = state.battleOpponentNodeId
   if (targetId === null || opponentId === null) {
-    throw new Error("Cannot resolve evolution battle without a pending battle")
+    throw new Error(IntlModule.translate("errors.noPendingBattle"))
   }
 
   assertEvolutionBranch(state.current, targetId)
   const current = digimonById.get(targetId)
   if (current === undefined) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
   const opponent = digimonById.get(opponentId)
-  if (!opponent || opponent.stage !== state.current.stage) throw new Error("Invalid evolution battle opponent")
+  if (!opponent || opponent.stage !== state.current.stage)
+    throw new Error(IntlModule.translate("errors.invalidEvolutionOpponent"))
 
   if (!won) {
     return {

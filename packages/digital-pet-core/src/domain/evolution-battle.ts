@@ -1,3 +1,4 @@
+import { IntlModule } from "../i18n.ts"
 import type { DigimonNode } from "./digimon-node.ts"
 import type { EvolutionSelector } from "./evolution.ts"
 
@@ -11,7 +12,7 @@ export const assertEvolutionBranch = (current: DigimonNode, targetId: string): v
 
 export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSelector): string => {
   if (current.nextEvolutions.length === 0) {
-    throw new Error("Evolution target selection failed: partner has no evolution options")
+    throw new Error(IntlModule.translate("errors.noEvolutionOptions"))
   }
 
   const selection = selector()
@@ -20,7 +21,7 @@ export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSel
   }
 
   const targetId = current.nextEvolutions[Math.floor(selection * current.nextEvolutions.length)]
-  if (targetId === undefined) throw new Error("Evolution target selection failed")
+  if (targetId === undefined) throw new Error(IntlModule.translate("errors.evolutionSelectionFailed"))
   return targetId
 }
 
@@ -40,6 +41,6 @@ export const pickRandomSameStageOpponent = (
   }
 
   const opponent = candidates[Math.floor(selection * candidates.length)]
-  if (opponent === undefined) throw new Error("Same-stage opponent selection failed")
+  if (opponent === undefined) throw new Error(IntlModule.translate("errors.opponentSelectionFailed"))
   return opponent.id
 }

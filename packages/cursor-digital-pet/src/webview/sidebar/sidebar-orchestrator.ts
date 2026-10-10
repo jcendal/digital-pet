@@ -7,9 +7,9 @@ import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/applic
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
-
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../adapters/vscode/notification-port.ts"
+import { IntlModule } from "../../i18n.ts"
 import { createAsyncRefreshQueue } from "../../shared/async-refresh-queue.ts"
 import type { SidebarAnimationHost } from "./sidebar-animation-host.ts"
 import { buildSidebarPresentation } from "./sidebar-presenter.ts"
@@ -106,9 +106,9 @@ export const createSidebarOrchestrator = ({
         onResolved: async (result) => {
           if (result.kind === "won") {
             pendingEvolutionReveal = undefined
-            notification.showInformation("Victory! Your partner evolved!")
+            notification.showInformation(IntlModule.translate("sidebarOrchestrator.victoryYourPartnerEvolved"))
           } else if (result.kind === "lost") {
-            notification.showInformation("Defeat! You lost all tokens for this stage.")
+            notification.showInformation(IntlModule.translate("sidebarOrchestrator.defeatYouLostAllTokensForThisStage"))
           }
         },
       })
@@ -140,7 +140,7 @@ export const createSidebarOrchestrator = ({
         },
       })
       if (revealed) {
-        notification.showInformation("Your partner evolved!")
+        notification.showInformation(IntlModule.translate("sidebarOrchestrator.yourPartnerEvolved"))
       }
     } finally {
       presentationInProgress = false

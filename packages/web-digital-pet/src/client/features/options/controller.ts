@@ -1,3 +1,4 @@
+import { LANGUAGE_PREFERENCE_KEY } from "@jcendal/digital-pet-intl"
 import type { ExperienceLevel } from "../../../domain/pet/progress.ts"
 import {
   MAX_BACKUP_BYTES,
@@ -5,6 +6,7 @@ import {
   parsePetTransfer,
   TRANSFER_VERSION,
 } from "../../../domain/transfer/protocol.ts"
+import { IntlModule } from "../../../shared/i18n.ts"
 import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "../../../shared/scene-motion.ts"
 import {
   hasPreviousSave,
@@ -26,19 +28,29 @@ import type { BrowserPairingControls } from "../pairing/controller.ts"
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
 const descriptions: Record<ExperienceLevel, string> = {
-  low: "A faster journey. One tenth of the original experience.",
-  normal: "A steady journey. Half the original experience.",
-  high: "The original pace. Take your time to evolve.",
+  low: IntlModule.translate("controller.aFasterJourneyOneTenthOfTheOriginal"),
+  normal: IntlModule.translate("controller.aSteadyJourneyHalfTheOriginalExperience"),
+  high: IntlModule.translate("controller.theOriginalPaceTakeYourTimeToEvolve"),
 }
 
 export const initBrowserOptions = async (): Promise<void> => {
+  const language = document.querySelector<HTMLSelectElement>("#language-select")!
+  language.value = IntlModule.locale
+  language.addEventListener("change", () => {
+    localStorage.setItem(LANGUAGE_PREFERENCE_KEY, language.value)
+    // Reload all views together so models, notifications and controls use one locale.
+    location.reload()
+  })
+
   const dialog = byId<HTMLDialogElement>("options-dialog")
   const landscape = byId<HTMLButtonElement>("landscape-motion")
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
   const describeLandscape = () => {
     const on = landscapeMotionEnabled(localStorage.getItem(LANDSCAPE_MOTION_KEY), reducedMotion.matches)
     landscape.setAttribute("aria-pressed", String(on))
-    byId("landscape-motion-state").textContent = on ? "ON" : "OFF"
+    byId("landscape-motion-state").textContent = on
+      ? IntlModule.translate("controller.on")
+      : IntlModule.translate("controller.off")
   }
   landscape.addEventListener("click", () => {
     const on = landscape.getAttribute("aria-pressed") !== "true"
@@ -80,22 +92,33 @@ export const initBrowserOptions = async (): Promise<void> => {
   const describeAvailability = () => {
     computer.disabled = available !== true
     byId("computer-availability").textContent =
-      available === true ? "AVAILABLE" : available === false ? "UNAVAILABLE" : "OFFLINE"
+      available === true
+        ? IntlModule.translate("controller.available")
+        : available === false
+          ? IntlModule.translate("controller.unavailable")
+          : IntlModule.translate("controller.offline")
     byId("computer-connection-hint").textContent =
       available === true
-        ? "Your computer companion is ready."
+        ? IntlModule.translate("controller.yourComputerCompanionIsReady")
         : browserOnly
-          ? "Use the local app on your computer to open its companion."
+          ? IntlModule.translate("controller.useTheLocalAppOnYourComputerTo")
           : available === false
-            ? "No computer companion found. Start one in Cursor or OpenCode."
-            : "Open Digital Pet on this computer, then try connecting again."
+            ? IntlModule.translate("controller.noComputerCompanionFoundStartOneInCursor")
+            : IntlModule.translate("controller.openDigitalPetOnThisComputerThenTry")
     byId("computer-retry").hidden = browserOnly || available === true
   }
   describeAvailability()
 
   const describe = (level: ExperienceLevel): void => {
     description.textContent = descriptions[level]
-    slider.setAttribute("aria-valuetext", level === "low" ? "Low" : level === "normal" ? "Normal" : "High")
+    slider.setAttribute(
+      "aria-valuetext",
+      level === "low"
+        ? IntlModule.translate("controller.low")
+        : level === "normal"
+          ? IntlModule.translate("controller.normal")
+          : IntlModule.translate("controller.high"),
+    )
     const index = levels.indexOf(level)
     byId("experience-amount").textContent = level === "low" ? "10%" : level === "normal" ? "50%" : "100%"
     byId("experience-control").style.setProperty("--range-fill", `${index * 50}%`)
@@ -191,7 +214,7 @@ export const initBrowserOptions = async (): Promise<void> => {
       link.download = `digital-pet-backup-${new Date().toISOString().slice(0, 10)}.json`
       link.click()
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
-      status.textContent = "Backup downloaded. Keep the file somewhere safe."
+      status.textContent = IntlModule.translate("controller.backupDownloadedKeepTheFileSomewhereSafe")
     } catch (error) {
       status.textContent = String(error)
     }
@@ -204,17 +227,19 @@ export const initBrowserOptions = async (): Promise<void> => {
     pendingBackup = null
     if (!file || source !== "browser") return
     if (file.size > MAX_BACKUP_BYTES) {
-      status.textContent = "This backup file is too large."
+      status.textContent = IntlModule.translate("controller.thisBackupFileIsTooLarge")
       return
     }
     try {
       pendingBackup = parsePetTransfer(JSON.parse(await file.text()) as unknown, MAX_BACKUP_BYTES)
-      byId("backup-preview").textContent =
-        `Backup from ${new Date(pendingBackup.state.createdAt).toLocaleDateString()}.`
+      byId("backup-preview").textContent = IntlModule.translate("controller.backupFrom", {
+        value0: new Date(pendingBackup.state.createdAt).toLocaleDateString(IntlModule.locale),
+      })
       backupConfirm.hidden = false
       byId("backup-cancel").focus()
     } catch (error) {
-      status.textContent = error instanceof Error ? error.message : "This backup could not be read."
+      status.textContent =
+        error instanceof Error ? error.message : IntlModule.translate("controller.thisBackupCouldNotBeRead")
     }
   })
   byId("backup-cancel").addEventListener("click", () => {
@@ -225,7 +250,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   byId("backup-accept").addEventListener("click", async () => {
     if (source !== "browser" || !pendingBackup) return
     if (pairing?.busy || battles?.busy) {
-      status.textContent = "Finish the current transfer or battle first."
+      status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
     try {
@@ -233,7 +258,7 @@ export const initBrowserOptions = async (): Promise<void> => {
       backupConfirm.hidden = true
       pendingBackup = null
       refreshBrowserViews()
-      status.textContent = "Backup imported. Your previous save can be restored here."
+      status.textContent = IntlModule.translate("controller.backupImportedYourPreviousSaveCanBeRestored")
     } catch (error) {
       status.textContent = String(error)
     }
@@ -241,16 +266,16 @@ export const initBrowserOptions = async (): Promise<void> => {
   backupRestore.addEventListener("click", async () => {
     if (source !== "browser") return
     if (pairing?.busy || battles?.busy) {
-      status.textContent = "Finish the current transfer or battle first."
+      status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
     try {
       if (await restorePreviousSave()) {
         refreshBrowserViews()
-        status.textContent = "Previous save restored."
+        status.textContent = IntlModule.translate("controller.previousSaveRestored")
       } else {
         backupRestore.hidden = true
-        status.textContent = "There is no previous save to restore."
+        status.textContent = IntlModule.translate("controller.thereIsNoPreviousSaveToRestore")
       }
     } catch (error) {
       status.textContent = String(error)
@@ -265,14 +290,14 @@ export const initBrowserOptions = async (): Promise<void> => {
   slider.addEventListener("change", async () => {
     if (source !== "browser") return
     if (pairing?.busy || battles?.busy) {
-      status.textContent = "Finish the current transfer or battle first."
+      status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       await refreshSettings()
       return
     }
     try {
       await setExperienceLevel(levels[Number(slider.value)] ?? "high")
       refreshBrowserViews()
-      status.textContent = "Experience requirement saved."
+      status.textContent = IntlModule.translate("controller.experienceRequirementSaved")
     } catch (error) {
       status.textContent = String(error)
     }
@@ -288,14 +313,14 @@ export const initBrowserOptions = async (): Promise<void> => {
   byId("new-partner-accept").addEventListener("click", async () => {
     if (source !== "browser") return
     if (pairing?.busy || battles?.busy) {
-      status.textContent = "Finish the current transfer or battle first."
+      status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
     try {
       await startNewPartner()
       confirmation.hidden = true
       refreshBrowserViews()
-      status.textContent = "A new egg is ready. Your previous companion is in History."
+      status.textContent = IntlModule.translate("controller.aNewEggIsReadyYourPreviousCompanion")
     } catch (error) {
       status.textContent = String(error)
     }
@@ -308,15 +333,19 @@ export const initBrowserOptions = async (): Promise<void> => {
     pairing = await module.initBrowserPairing(() => Boolean(battles?.busy))
     pairing.setBrowserEnabled(source === "browser")
   } catch (error) {
-    byId("pair-summary").textContent = `Device pairing unavailable: ${String(error)}`
+    byId("pair-summary").textContent = IntlModule.translate("controller.devicePairingUnavailable", {
+      value0: String(error),
+    })
   }
   try {
     const module = await import("../battle/controller.ts")
     battles = await module.initBrowserBattles(() => Boolean(pairing?.busy))
     battles.setBrowserEnabled(source === "browser")
   } catch (error) {
-    byId("battle-status").textContent = `Player battles unavailable: ${String(error)}`
+    byId("battle-status").textContent = IntlModule.translate("controller.playerBattlesUnavailable", {
+      value0: String(error),
+    })
     byId<HTMLButtonElement>("battle-button").disabled = true
-    byId("battle-button").title = "Player battles unavailable. Reload to try again."
+    byId("battle-button").title = IntlModule.translate("controller.playerBattlesUnavailableReloadToTryAgain")
   }
 }
