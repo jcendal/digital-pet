@@ -91,6 +91,7 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **Options** | Fourth navigation button opens the save selector, growth settings, new egg, and device pairing |
 | **Evolution experience** | Low = 10% of the original requirement, Normal = 50%, High = 100% |
 | **New egg** | Start a fresh browser companion while keeping the previous generation in History |
+| **Pet egg** | Click or tap the egg for 1% of its hatching requirement and pixel stars. Rewards persist offline and stop when hatching begins; keyboard activation is supported |
 | **Food** | One pixel apple appears after one hour. Click to eat and gain 10% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
 | **Hygiene** | Piles appear 2 hours after hatching, then 8 and 16 hours later (maximum three). Click each pile for 5% of the selected stage requirement. Two or more piles make the companion sad; cleaning makes it happy for three seconds |
 | **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. The winner earns 20% of their selected level requirement |

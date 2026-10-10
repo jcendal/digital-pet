@@ -156,5 +156,8 @@
   "phase.draw": "EMPATE",
   "phase.feeding": "COMIENDO",
   "history.created": "CREADO · {date}",
-  "history.retired": "RETIRADO · {date}"
+  "history.retired": "RETIRADO · {date}",
+  "egg.pet": "Acaricia el huevo · +1 % de experiencia",
+  "egg.hint": "ACARICIA EL HUEVO · +1%",
+  "egg.reward": "+1% EXP"
 }

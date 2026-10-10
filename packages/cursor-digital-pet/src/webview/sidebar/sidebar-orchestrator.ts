@@ -13,7 +13,7 @@ import { IntlModule } from "../../i18n.ts"
 import { createAsyncRefreshQueue } from "../../shared/async-refresh-queue.ts"
 import type { SidebarAnimationHost } from "./sidebar-animation-host.ts"
 import { buildSidebarPresentation } from "./sidebar-presenter.ts"
-import type { SidebarWebviewPayload } from "./webview-messages.ts"
+import type { EggPettingView, SidebarWebviewPayload } from "./webview-messages.ts"
 
 export type SidebarOrchestrator = {
   refresh(): Promise<void>
@@ -31,6 +31,7 @@ export type CreateSidebarOrchestratorOptions = {
   readonly random?: () => number
   readonly onPresentationEnd?: () => void
   readonly readHygiene?: () => HygieneView | undefined
+  readonly readEgg?: () => EggPettingView | undefined
 }
 
 export const createSidebarOrchestrator = ({
@@ -41,6 +42,7 @@ export const createSidebarOrchestrator = ({
   random = Math.random,
   onPresentationEnd,
   readHygiene,
+  readEgg,
 }: CreateSidebarOrchestratorOptions): SidebarOrchestrator => {
   const refreshQueue = createAsyncRefreshQueue()
   let sink: AnimationSink | undefined
@@ -71,9 +73,10 @@ export const createSidebarOrchestrator = ({
     if (sink === undefined) return
     const presentation = buildSidebarPresentation(snapshotReader.getSidebarSnapshot())
     const hygiene = readHygiene?.()
+    const egg = readEgg?.()
     cachedPayload =
       presentation.payload.kind === "partner"
-        ? { ...presentation.payload, ...(hygiene ? { hygiene } : {}) }
+        ? { ...presentation.payload, ...(hygiene ? { hygiene } : {}), ...(egg ? { egg } : {}) }
         : presentation.payload
     await sink.postModel(cachedPayload)
     if (presentationInProgress) return

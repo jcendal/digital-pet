@@ -9,7 +9,12 @@ import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/
 import { archiveFor, settingsFor } from "../../domain/pet/models.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 import { isPresentingEvolution } from "../features/partner/presentation.ts"
-import { cleanPoop as persistCleanPoop, readLocalState, readPendingBattle } from "../persistence/pet-store.ts"
+import {
+  cleanPoop as persistCleanPoop,
+  petEgg as persistPetEgg,
+  readLocalState,
+  readPendingBattle,
+} from "../persistence/pet-store.ts"
 
 export { presentPendingEvolution } from "../features/partner/evolution.ts"
 export { updateFoodButton } from "../features/partner/food.ts"
@@ -56,6 +61,9 @@ export const sidebar = async (requestedWidth: number) => {
     },
     model: {
       ...presentation.payload,
+      ...(DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage === 0
+        ? { egg: { partnerId: state.partnerId, canPet: !state.pendingEvolution && !battle } }
+        : {}),
       hygiene: {
         partnerId: state.partnerId,
         poops: state.hygiene?.poops ?? [],
@@ -81,6 +89,9 @@ export const cleanPoop = async (partnerId: string, poopId: number, active: () =>
     )
   return clean()
 }
+
+export const petEgg = (partnerId: string, interactionId: string, active: () => boolean): Promise<boolean> =>
+  isPresentingEvolution() ? Promise.resolve(false) : persistPetEgg(partnerId, interactionId, active)
 
 export const dex = async () => {
   const state = await readLocalState()

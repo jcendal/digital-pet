@@ -45,6 +45,7 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
 
   const partner = toPartner(partnerRow)
   return {
+    partnerId: partner.partnerId,
     currentNodeId: partner.currentNodeId,
     gauge: partner.gauge,
     isTerminal: partner.isTerminal,

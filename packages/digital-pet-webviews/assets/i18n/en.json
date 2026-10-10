@@ -156,5 +156,8 @@
   "phase.draw": "DRAW",
   "phase.feeding": "FEEDING",
   "history.created": "CREATED · {date}",
-  "history.retired": "RETIRED · {date}"
+  "history.retired": "RETIRED · {date}",
+  "egg.pet": "Pet the egg · +1% experience",
+  "egg.hint": "PET EGG · +1%",
+  "egg.reward": "+1% XP"
 }

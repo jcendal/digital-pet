@@ -1,6 +1,7 @@
 import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
+export type EggPettingView = { readonly partnerId: string; readonly canPet: boolean }
 export type SidebarWebviewPayload =
   | {
       readonly type: "sidebar-model"
@@ -24,6 +25,7 @@ export type SidebarWebviewPayload =
       readonly urlLabel: string
       readonly frozen: boolean
       readonly hygiene?: HygieneView
+      readonly egg?: EggPettingView
     }
 
 export type AnimationFramePayload = {
@@ -36,8 +38,10 @@ export type ExtensionToWebviewMessage =
   | SidebarWebviewPayload
   | AnimationFramePayload
   | { readonly type: "presentation-state"; readonly state: PresentationState }
+  | { readonly type: "egg-petted"; readonly interactionId: string; readonly accepted: boolean }
 
 export type WebviewToExtensionMessage =
+  | { readonly type: "pet-egg"; readonly partnerId: string; readonly interactionId: string }
   | { readonly type: "clean-poop"; readonly partnerId: string; readonly poopId: number }
   | { readonly type: "sidebar-ready" }
   | { readonly type: "open-panel"; readonly panel: "dex" | "history" }
@@ -53,8 +57,19 @@ export const parseWebviewInboundMessage = (raw: unknown): WebviewToExtensionMess
     readonly width?: unknown
     readonly partnerId?: unknown
     readonly poopId?: unknown
+    readonly interactionId?: unknown
   }
   if (message.type === "sidebar-ready") return { type: "sidebar-ready" }
+  if (
+    message.type === "pet-egg" &&
+    typeof message.partnerId === "string" &&
+    message.partnerId.length > 0 &&
+    message.partnerId.length <= 100 &&
+    typeof message.interactionId === "string" &&
+    message.interactionId.length > 0 &&
+    message.interactionId.length <= 100
+  )
+    return { type: "pet-egg", partnerId: message.partnerId, interactionId: message.interactionId }
   if (
     message.type === "clean-poop" &&
     typeof message.partnerId === "string" &&

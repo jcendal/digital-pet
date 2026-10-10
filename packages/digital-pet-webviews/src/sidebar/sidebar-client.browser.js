@@ -4,8 +4,69 @@ let state = { phase: "idle" }
 let artwork = ""
 let artworkColumns = 32
 let battleHud = null
+let eggInteraction = null
 const byId = (id) => document.getElementById(id)
 const root = document.querySelector(".pet-module")
+const positionEggControl = () => {
+  const svg = byId("artwork")
+  const bounds = svg.getBBox?.()
+  const matrix = svg.getScreenCTM?.()
+  if (!bounds?.width || !matrix) return
+  const arena = document.querySelector(".arena").getBoundingClientRect()
+  const x = (bounds.x + bounds.width / 2) * matrix.a + matrix.e - arena.left
+  const y = (bounds.y + bounds.height / 2) * matrix.d + matrix.f - arena.top
+  for (const id of ["pet-egg", "egg-pet-feedback"]) {
+    const node = byId(id)
+    if (!node) continue
+    node.style.left = x + "px"
+    node.style.top = y + "px"
+    node.style.width = Math.max(44, bounds.width * matrix.a + 16) + "px"
+    node.style.height = Math.max(44, bounds.height * matrix.d + 16) + "px"
+  }
+}
+const renderEgg = () => {
+  const button = byId("pet-egg")
+  const hint = byId("egg-pet-hint")
+  if (!button || !hint) return
+  const egg = model?.kind === "partner" ? model.egg : null
+  button.hidden = !egg || state.phase !== "idle"
+  hint.hidden = button.hidden
+  button.disabled = !egg?.canPet || eggInteraction !== null || state.phase !== "idle"
+  button.title = IntlModule.translate("egg.pet")
+  button.setAttribute("aria-label", IntlModule.translate("egg.pet"))
+  hint.textContent = IntlModule.translate("egg.hint")
+  positionEggControl()
+}
+const showEggSparkles = () => {
+  const feedback = byId("egg-pet-feedback")
+  if (!feedback) return
+  const burst = document.createElement("span")
+  burst.className = "egg-pet-burst"
+  const reward = document.createElement("span")
+  reward.className = "egg-pet-reward"
+  reward.textContent = IntlModule.translate("egg.reward")
+  burst.append(reward)
+  for (const [x, y] of [
+    [-34, -28],
+    [28, -34],
+    [-24, 18],
+    [34, 8],
+    [2, -42],
+  ]) {
+    const star = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    star.setAttribute("viewBox", "0 0 16 16")
+    star.setAttribute("class", "egg-pet-star")
+    star.style.setProperty("--star-x", x + "px")
+    star.style.setProperty("--star-y", y + "px")
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    path.setAttribute("fill", "currentColor")
+    path.setAttribute("d", "M7 0h2v5h2v2h5v2h-5v2H9v5H7v-5H5V9H0V7h5V5h2z")
+    star.append(path)
+    burst.append(star)
+  }
+  feedback.append(burst)
+  setTimeout(() => burst.remove(), matchMedia("(prefers-reduced-motion: reduce)").matches ? 200 : 800)
+}
 const renderBattleHud = () => {
   const visible = battleHud !== null
   root.classList.toggle("battle-intro", state.phase === "battle" && !visible)
@@ -91,6 +152,7 @@ const renderArtwork = () => {
         text.textContent = cell
       }
     }
+  positionEggControl()
 }
 const renderPoops = () => {
   const group = byId("pet-poops")
@@ -127,6 +189,7 @@ const renderPoops = () => {
   }
 }
 const render = () => {
+  renderEgg()
   renderPoops()
   const active = model?.kind === "partner"
   root.classList.toggle("no-partner", !active)
@@ -215,8 +278,19 @@ const reportWidth = () => {
 }
 for (const button of document.querySelectorAll("[data-panel]"))
   button.addEventListener("click", () => vscode.postMessage({ type: "open-panel", panel: button.dataset.panel }))
+byId("pet-egg")?.addEventListener("click", () => {
+  if (!model?.egg?.canPet || state.phase !== "idle" || eggInteraction !== null) return
+  eggInteraction = crypto.randomUUID()
+  byId("pet-egg").disabled = true
+  vscode.postMessage({ type: "pet-egg", partnerId: model.egg.partnerId, interactionId: eggInteraction })
+})
 window.addEventListener("message", (event) => {
   const message = event.data
+  if (message?.type === "egg-petted" && message.interactionId === eggInteraction && eggInteraction !== null) {
+    eggInteraction = null
+    if (message.accepted === true) showEggSparkles()
+    renderEgg()
+  }
   if (message?.type === "sidebar-model") {
     model = message
     render()
