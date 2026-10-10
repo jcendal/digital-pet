@@ -3,7 +3,7 @@ import { expect, type Page, test } from "@playwright/test"
 
 test("two isolated browser saves decline, accept, agree on a winner and persist only one reward", async ({
   browser,
-}) => {
+}, testInfo) => {
   test.setTimeout(90_000)
   const contexts = await Promise.all([browser.newContext(), browser.newContext()])
   const pages = await Promise.all(contexts.map((context) => context.newPage()))
@@ -21,6 +21,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     }, event)
   try {
     for (const page of pages) {
+      await page.setViewportSize({ width: 320, height: 760 })
       page.on("pageerror", (error) => errors.push(error.message))
       await page.route("**/node_modules/.vite/deps/peerjs.js*", (route) =>
         route.fulfill({
@@ -82,6 +83,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
         },
         { nodeId, partnerId },
       )
+      if (page === alice) await page.locator('a[data-page="dex"]').click()
       await page.locator("#battle-button").click()
     }
     const code = await bob.locator("#battle-own-code").textContent()
@@ -91,13 +93,29 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     await expect(bob.locator("#battle-incoming")).toBeVisible()
     await bob.locator("#battle-decline").click()
     await expect(alice.locator("#battle-status")).toContainText(/cancelled|disconnected/)
+    await bob.locator("#battle-dialog .dialog-close").click()
+    await bob.locator("#options-button").click()
+    await expect(bob.locator("#options-dialog")).toBeVisible()
     await alice.locator("#battle-request").click()
     await expect(bob.locator("#battle-incoming")).toBeVisible()
     await bob.locator("#battle-accept").click()
     await expect(alice.locator("#battle-status")).toContainText(/Battle started|wins|Draw/)
     await expect(bob.locator("#battle-status")).toContainText(/Battle started|wins|Draw/)
-    await expect(alice.locator("#battle-artwork")).not.toBeEmpty()
-    await expect(bob.locator("#battle-artwork")).not.toBeEmpty()
+    for (const page of pages) {
+      await expect(page.locator("#battle-dialog")).not.toBeVisible()
+      await expect(page.locator("dialog[open]")).toHaveCount(0)
+      await expect(page.locator('iframe[data-page="sidebar"]')).toHaveClass(/active/)
+      const pet = page.frameLocator('iframe[data-page="sidebar"]')
+      await expect(pet.locator("#phase")).toHaveText("BATTLE")
+      await expect(pet.locator("#artwork rect").first()).toBeVisible()
+      await expect(pet.locator("#battle-scores")).toBeVisible()
+      await expect(pet.locator("#name")).toHaveText(page === alice ? "Agumon" : "Agnimon")
+      await expect(pet.locator("#stage")).toHaveText(page === alice ? "Agunimon" : "Agumon")
+      await expect(page.locator("#battle-artwork")).toHaveCount(0)
+      await page.screenshot({
+        path: testInfo.outputPath(page === alice ? "alice-battle-320.png" : "bob-battle-320.png"),
+      })
+    }
     const readSave = (page: Page) =>
       page.evaluate(
         () =>
@@ -154,12 +172,17 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       await expect
         .poll(async () => (await pendingFor(page))?.completedShots ?? 0, { timeout: 20_000 })
         .toBeGreaterThan(0)
-    await Promise.all(pages.map((page) => page.locator("#battle-dialog .dialog-close").click()))
+    // Navigating away pauses the pet's playback without reopening or cancelling the panel.
+    await Promise.all(pages.map((page) => page.locator('a[data-page="history"]').click()))
     const paused = await Promise.all(pages.map(pendingFor))
     expect(paused[0]?.seed).toBe(paused[1]?.seed)
     expect(paused[0]?.plan).toEqual(paused[1]?.plan)
     await Promise.all(pages.map((page) => page.reload()))
-    for (const page of pages) await expect(page.locator("#battle-dialog")).toBeVisible()
+    for (const page of pages) {
+      await expect(page.locator("#battle-dialog")).not.toBeVisible()
+      await expect(page.locator('iframe[data-page="sidebar"]')).toHaveClass(/active/)
+      await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#phase")).toHaveText("BATTLE")
+    }
     for (const [index, page] of pages.entries()) {
       const recovered = await pendingFor(page)
       expect(recovered?.seed).toBe(paused[index]?.seed)
@@ -171,6 +194,11 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     for (const page of pages)
       await expect(page.locator("#battle-status")).toContainText(/wins|Draw/, { timeout: 60_000 })
     for (const page of pages) expect(await pendingFor(page)).toBeUndefined()
+    for (const page of pages) {
+      await expect(page.locator("#battle-dialog")).not.toBeVisible()
+      await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#phase")).toHaveText("ACTIVE")
+      await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#battle-scores")).toBeHidden()
+    }
     expect(await Promise.all(pages.map(readSave))).toEqual(first)
     expect(errors).toEqual([])
   } finally {

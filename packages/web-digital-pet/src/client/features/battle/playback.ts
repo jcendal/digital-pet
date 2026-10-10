@@ -1,4 +1,7 @@
-import { runEvolutionBattleAnimation } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
+import {
+  type BattleFrameListener,
+  runEvolutionBattleAnimation,
+} from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { battlePlanForOpponent } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
 import { battleNode } from "../../../domain/battle/protocol.ts"
@@ -8,8 +11,8 @@ import { checkpointBattle, finishPendingBattle } from "../../persistence/pet-sto
 
 type PlaybackActions = {
   readonly checkpoint: () => Promise<void>
-  readonly artwork: (text: string) => void
-  readonly score: (text: string) => void
+  readonly width: number
+  readonly frame: BattleFrameListener
 }
 
 /** Playback consumes the saved attacks only. It never negotiates or awards experience. */
@@ -22,12 +25,11 @@ export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackAc
     MONSTER_FRAME_CATALOG,
     local.sprite,
     remote.sprite,
-    40,
+    actions.width,
     plan,
     async (artwork, hud) => {
       await actions.checkpoint()
-      actions.artwork(artwork)
-      if (hud) actions.score(`${local.nameEn} ${hud.playerHits} — ${hud.opponentHits} ${remote.nameEn}`)
+      await actions.frame(artwork, hud)
     },
     {
       completedShots: battle.completedShots,

@@ -94,7 +94,7 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **Pet egg** | Click or tap the egg for 1% of its hatching requirement and pixel stars. Rewards persist offline and stop when hatching begins; keyboard activation is supported |
 | **Food** | One pixel apple appears after one hour. Click to eat and gain 10% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
 | **Hygiene** | Piles appear 2 hours after hatching, then 8 and 16 hours later (maximum three). Click each pile for 5% of the selected stage requirement. Two or more piles make the companion sad; cleaning makes it happy for three seconds |
-| **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. The winner earns 20% of their selected level requirement |
+| **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. Acceptance closes the panel and shows both fighters, score and outcome in the pet viewer. The winner earns 20% of their selected level requirement |
 | **Shared combat rules** | Strength and evasion from 0–100 determine each hit. Three hits win; a timeout draws. Only a victory evolves along the current Digimon's catalogue branches |
 | **Device pairing and Sync** | Approve the first exchange, remember the device, then request later transfers with one button and a rollback backup |
 
@@ -226,6 +226,10 @@ with an evolution pending cannot enter a player battle. Codes belong to the live
 page and change on reload; collisions are retried by registering a different code.
 They are separate from the persistent 16-character codes used for save transfers.
 
+Accepting closes the request panel. Both players are taken to the companion viewer,
+where the shared pixel animation shows their Digimon, the opponent, hit scores and
+the final outcome. The panel is only used for codes and invitations.
+
 Both clients use the actual selected Digimon's catalogue combat stats, commit and
 reveal independently generated randomness, calculate the same battle plan and
 compare its SHA-256 digest before playback. The challenger is the canonical first
@@ -236,8 +240,10 @@ a local battle receipt, seed, fighters and complete plan are saved atomically be
 awards on the same browser even after reloading or restoring a backup.
 
 Both apps must remain connected through agreement. A declined, expired or
-interrupted negotiation gives no reward. Once a result is agreed, closing playback
-pauses its locally saved playback. Reopening BATTLE or returning to the app resumes from the last completed attack, even offline, and does not award XP again. A connection failure during final agreement
+interrupted negotiation gives no reward. Once a result is agreed, leaving the
+companion viewer or opening another panel pauses playback. Returning to the viewer
+continues it; reloading resumes from the last completed attack in the viewer, even
+offline, without another XP award. A connection failure during final agreement
 can leave only one client with a confirmed result; there is no durable shared
 recovery service. See [the protocol and AWS assessment](docs/player-battles.md)
 for the trust boundary and the proposed authoritative upgrade.
