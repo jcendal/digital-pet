@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-10
+
+### Changed
+
+- fix(web): show player battles in the pet viewer
+
+
 ## [0.5.0] - 2026-10-10
 
 ### Changed
