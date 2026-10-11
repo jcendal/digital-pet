@@ -6,6 +6,33 @@ import { createSidebarAnimationHost } from "../../src/webview/sidebar/sidebar-an
 import { createCaptureSink, createManualScheduler, sequenceRandom } from "./test-fixtures.ts"
 
 describe("sidebar animation host", () => {
+  test("petting reacts immediately and is ignored during a presentation or while hidden", async () => {
+    const { sink, artworks } = createCaptureSink()
+    let visible = true
+    let now = 0
+    const scheduler = createManualScheduler()
+    const host = createSidebarAnimationHost({
+      frameCatalog: MONSTER_FRAME_CATALOG,
+      sink,
+      scheduler,
+      nowMs: () => now,
+      isVisible: () => visible,
+    })
+    host.syncPartner({ sprite: "agumon", isDigitama: false })
+    expect(host.petPartner()).toBe("happy")
+    await Promise.resolve()
+    expect(artworks).toHaveLength(1)
+    host.start()
+    now = 300_000
+    scheduler.tick()
+    expect(host.petPartner()).toBe("angry")
+    host.setPresentationBlocked(true)
+    expect(host.petPartner()).toBeUndefined()
+    host.setPresentationBlocked(false)
+    visible = false
+    expect(host.petPartner()).toBeUndefined()
+    host.stop()
+  })
   test("start and tick posts artwork when visible", async () => {
     const { sink, artworks } = createCaptureSink()
     const scheduler = createManualScheduler()

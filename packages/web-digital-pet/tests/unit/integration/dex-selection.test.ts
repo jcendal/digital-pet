@@ -122,3 +122,22 @@ it("honors the latest requested record and does not override a later manual sele
   dex.refresh()
   expect(dex.selected()).toBe("1-001")
 })
+
+it("the owned filter excludes unknown entries and composes with search and stage filters", () => {
+  const dex = preview()
+  dex.node("discovery").value = "registered"
+  dex.node("discovery").listeners.change?.()
+  expect(dex.node("entries").children.map((item) => item.dataset.id)).toEqual(["1-001"])
+  dex.node("stage").value = "2"
+  dex.node("stage").listeners.change?.()
+  expect(dex.node("entries").children).toHaveLength(0)
+  dex.node("stage").value = "all"
+  dex.node("search").value = "1-001"
+  dex.node("search").listeners.input?.()
+  expect(dex.node("entries").children.map((item) => item.dataset.id)).toEqual(["1-001"])
+  dex.node("search").value = "2-001"
+  dex.node("search").listeners.input?.()
+  expect(dex.node("entries").children).toHaveLength(0)
+  dex.refresh()
+  expect(dex.node("entries").children.map((item) => item.dataset.id)).toEqual(["2-001"])
+})

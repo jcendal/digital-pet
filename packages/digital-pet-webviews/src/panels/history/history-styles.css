@@ -18,7 +18,7 @@
 .history .generation {
   flex-shrink: 0;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
   padding: 16px 10px;
   text-align: left;
@@ -26,6 +26,15 @@
 }
 .generation-title {
   font-size: 24px;
+}
+.generation-title,
+.generation-meta,
+.step-name,
+.step-date {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .generation-meta {
   grid-column: 1 / -1;
@@ -94,7 +103,6 @@
   display: block;
   font-size: var(--type-name);
   text-transform: uppercase;
-  overflow-wrap: anywhere;
 }
 .step-date {
   display: block;

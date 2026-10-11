@@ -62,7 +62,7 @@ for (const [browserLocale, locale] of [
     const dex = page.frameLocator('iframe[data-page="dex"]')
     await expect(dex.locator("#entries")).not.toBeEmpty()
     await expect(dex.locator("html")).toHaveAttribute("lang", locale)
-    await expect(dex.locator("#search")).toHaveAttribute("placeholder", webviews[locale]["dexRender.nameOrCatalogId"])
+    await expect(dex.locator("#search")).toHaveAttribute("placeholder", webviews[locale]["dexRender.name"])
     await page.locator('a[data-page="history"]').click()
     const history = page.frameLocator('iframe[data-page="history"]')
     await expect(history.locator("#generation-count")).not.toHaveText("00")

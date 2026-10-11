@@ -38,6 +38,31 @@
 .web-dialog p {
   margin: 0;
   line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.dialog-head > div,
+.action-heading > div {
+  min-width: 0;
+}
+.dialog-head > form {
+  flex-shrink: 0;
+}
+.web-dialog h2,
+.web-dialog h3,
+.web-dialog button,
+.save-card strong,
+.wide-action > span:first-child,
+.wide-action > span:first-child > span,
+.primary-action > span:first-child,
+.range-labels button span {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wide-action > span:first-child > span {
+  display: block;
 }
 .web-dialog small,
 .web-dialog .section-description,

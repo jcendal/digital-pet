@@ -65,6 +65,7 @@ export const toSidebarWebviewPayload = (model: SidebarCardModel): SidebarWebview
     url: model.url,
     urlLabel: sidebarUrlLabel(),
     frozen: model.frozen,
+    canPet: model.stageNumber > 0 && !model.evolutionBattlePending,
   }
 }
 

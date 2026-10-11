@@ -1,11 +1,16 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { BATTLE_EXPERIENCE_FRACTION } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
+import { battleExperienceFraction } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
 import { advanceLocalPet, experienceThresholds, type LocalPetState } from "../pet/progress.ts"
 
 /** Never reward a replacement/evolved companion or a changed experience setting. */
 export type BattleRewardTarget = Pick<LocalPetState, "partnerId" | "currentNodeId" | "experienceLevel">
 
-export const rewardBattleWinner = (state: LocalPetState, expected: BattleRewardTarget, now: number): LocalPetState => {
+export const rewardBattleWinner = (
+  state: LocalPetState,
+  expected: BattleRewardTarget,
+  opponentNodeId: string,
+  now: number,
+): LocalPetState => {
   if (
     state.partnerId !== expected.partnerId ||
     state.currentNodeId !== expected.currentNodeId ||
@@ -15,12 +20,14 @@ export const rewardBattleWinner = (state: LocalPetState, expected: BattleRewardT
   )
     return state
   const node = DIGIMON_CATALOG.byId.get(state.currentNodeId)
-  if (!node || node.stage === 0) return state
+  const opponent = DIGIMON_CATALOG.byId.get(opponentNodeId)
+  if (!node || node.stage === 0 || !opponent || opponent.stage === 0) return state
   const threshold = experienceThresholds(state.experienceLevel)[node.stage]
+  const fraction = battleExperienceFraction(node.stage, opponent.stage)
   return advanceLocalPet(
     {
       ...state,
-      gauge: Math.min(threshold, state.gauge + Math.ceil(threshold * BATTLE_EXPERIENCE_FRACTION)),
+      gauge: Math.min(threshold, state.gauge + Math.ceil(threshold * fraction)),
     },
     now,
   )

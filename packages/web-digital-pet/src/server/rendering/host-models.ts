@@ -18,7 +18,7 @@ export const dexModel = () => ({
 })
 export const historyModel = () => buildHistoryPanelModel(readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
 
-export const sidebarData = (requestedWidth: number) => {
+export const sidebarData = (requestedWidth: number, pet = false) => {
   const presentation = buildSidebarPresentation(readSidebarSnapshot())
   const identity = presentation.partner
   const partnerKey = identity ? `${identity.sprite}:${identity.isDigitama}` : ""
@@ -28,9 +28,15 @@ export const sidebarData = (requestedWidth: number) => {
   }
   const width = Math.max(16, Math.min(120, Math.floor(requestedWidth) || 40))
   animation.dispatch({ kind: "viewport_resized", width })
-  const frame = animation.dispatch({ kind: "tick" })
+  const canPet = presentation.payload.kind === "partner" && presentation.payload.canPet
+  const frame = pet
+    ? canPet
+      ? animation.dispatch({ kind: "pet" })
+      : animation.output()
+    : animation.dispatch({ kind: "tick" })
   return {
     model: presentation.payload,
+    ...(pet && canPet && frame.reaction ? { reaction: frame.reaction } : {}),
     frame: {
       type: "animation-frame",
       artwork: renderPositionedArtwork(frame, width),

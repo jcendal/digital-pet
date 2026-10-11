@@ -58,6 +58,39 @@ const createStubWebviewView = (visible = true) => {
 }
 
 describe("sidebar provider", () => {
+  test("pet interactions acknowledge the reaction and ignore a hidden view", async () => {
+    const DigitalPetSidebarProvider = await loadProvider()
+    const stub = createStubWebviewView()
+    const provider = new DigitalPetSidebarProvider(
+      extensionUri as import("vscode").Uri,
+      {
+        getSidebarSnapshot: () => ({
+          currentNodeId: "3-001",
+          gauge: 0,
+          isTerminal: false,
+          frozen: false,
+          isSetOverride: false,
+          trainerTotalTokens: 0,
+          pendingEvolutionTargetId: null,
+          battleOpponentNodeId: null,
+        }),
+      },
+      { getActivePartner: () => null, resolveEvolutionBattle: () => ({ kind: "no_pending_battle" }) },
+      { scheduler: { start: () => () => undefined } },
+    )
+    provider.resolveWebviewView(stub.webviewView as unknown as import("vscode").WebviewView)
+    await provider.refresh()
+    stub.sendMessage({ type: "pet-partner", interactionId: "awake" })
+    await Promise.resolve()
+    expect(stub.posted).toContainEqual({ type: "partner-petted", interactionId: "awake", reaction: "happy" })
+    stub.webviewView.visible = false
+    stub.sendMessage({ type: "pet-partner", interactionId: "hidden" })
+    expect(stub.posted).toContainEqual({ type: "partner-petted", interactionId: "hidden" })
+    const count = stub.posted.length
+    stub.sendMessage({ type: "pet-partner", interactionId: "" })
+    expect(stub.posted).toHaveLength(count)
+    provider.dispose()
+  })
   test("egg interactions acknowledge saved rewards and reject a hidden sidebar", async () => {
     const DigitalPetSidebarProvider = await loadProvider()
     const stub = createStubWebviewView()

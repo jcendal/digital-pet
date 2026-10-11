@@ -1,8 +1,22 @@
 import { expect, test } from "bun:test"
-import { battlePlanForOpponent, planSeededCombat } from "../src/domain/peer-combat.ts"
+import { battleExperienceFraction, battlePlanForOpponent, planSeededCombat } from "../src/domain/peer-combat.ts"
 
 const player = { strength: 73, evasion: 41 }
 const opponent = { strength: 52, evasion: 68 }
+
+test("peer prizes halve for each weaker stage and double for each stronger stage", () => {
+  for (const [stage, fraction] of [
+    [1, 0.05],
+    [2, 0.1],
+    [3, 0.2],
+    [4, 0.4],
+    [5, 0.8],
+    [6, 1.6],
+  ] as const)
+    expect(battleExperienceFraction(3, stage)).toBe(fraction)
+  expect(battleExperienceFraction(0, 3)).toBe(0)
+  expect(battleExperienceFraction(3, 0)).toBe(0)
+})
 
 test("identical agreed seeds reproduce every shot, and perspective preserves the same winner", () => {
   const seed = "0123456789abcdef".repeat(4)

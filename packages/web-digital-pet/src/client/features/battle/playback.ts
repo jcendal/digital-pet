@@ -3,7 +3,11 @@ import {
   runEvolutionBattleAnimation,
 } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
-import { battlePlanForOpponent } from "@jcendal/digital-pet-core/domain/peer-combat.ts"
+import {
+  BATTLE_EXPERIENCE_FRACTION,
+  battleExperienceFraction,
+  battlePlanForOpponent,
+} from "@jcendal/digital-pet-core/domain/peer-combat.ts"
 import { battleNode } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
@@ -45,8 +49,12 @@ export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackAc
   if (!finished) throw new Error(IntlModule.translate("playback.theSavedBattleIsNoLongerPending"))
   if (plan.outcome === "draw") return IntlModule.translate("playback.drawNoExperienceAwarded")
   const winner = plan.outcome === "player" ? local : remote
+  // Old saved battles already awarded the original flat prize before playback.
+  const fraction = battle.rewarded ? BATTLE_EXPERIENCE_FRACTION : battleExperienceFraction(local.stage, remote.stage)
   const reward = finished.rewarded
-    ? IntlModule.translate("battle.reward")
+    ? IntlModule.translate("battle.reward", {
+        percent: new Intl.NumberFormat(IntlModule.locale, { maximumFractionDigits: 3 }).format(fraction * 100),
+      })
     : plan.outcome === "player"
       ? IntlModule.translate("playback.noExperienceAddedThisCompanionIsAtA")
       : ""

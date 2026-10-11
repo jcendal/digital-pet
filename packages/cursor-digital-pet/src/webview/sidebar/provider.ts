@@ -157,6 +157,15 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((message: unknown) => {
       const inbound = parseWebviewInboundMessage(message)
       if (inbound === null) return
+      if (inbound.type === "pet-partner") {
+        const reaction = this.isPresentationInProgress() ? undefined : this.animationHost.petPartner()
+        void messenger.post({
+          type: "partner-petted",
+          interactionId: inbound.interactionId,
+          ...(reaction ? { reaction } : {}),
+        })
+        return
+      }
       if (inbound.type === "pet-egg") {
         let accepted = false
         try {

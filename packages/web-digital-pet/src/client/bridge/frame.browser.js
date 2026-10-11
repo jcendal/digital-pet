@@ -190,6 +190,34 @@ function initWebBridge(page, locationIds) {
     },
     setState: (state) => sessionStorage.setItem(key, JSON.stringify(state)),
     postMessage: (message) => {
+      if (message.type === "pet-partner" && page === "sidebar") {
+        const active = () =>
+          pageVisible() && playerBattle === null && !window.top.document.querySelector("dialog[open]")
+        const reply = (reaction) => deliver({ type: "partner-petted", interactionId: message.interactionId, reaction })
+        if (!active()) {
+          reply()
+          return
+        }
+        const browser = browserSave()
+        void (async () => {
+          const result = browser
+            ? await (await import("../presentation/browser-session.ts")).petPartner(
+                width,
+                () => active() && browserSave(),
+              )
+            : await fetch("/api/pet?width=" + width, { method: "POST" }).then((response) => {
+                if (!response.ok) throw new Error("Pet interaction unavailable")
+                return response.json()
+              })
+          if (!active() || browser !== browserSave()) return reply()
+          if (result?.reaction) {
+            deliver(result.frame)
+            scenery?.update(result.frame.motion)
+          }
+          reply(result?.reaction)
+        })().catch(() => reply())
+        return
+      }
       if (message.type === "pet-egg" && page === "sidebar") {
         const reply = (accepted) => deliver({ type: "egg-petted", interactionId: message.interactionId, accepted })
         if (!browserSave()) {

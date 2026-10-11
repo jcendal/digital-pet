@@ -47,14 +47,14 @@
   "dexRender.dexCompletion": "Dex completion",
   "dexRender.registeredDigimon": "REGISTERED DIGIMON",
   "dexRender.searchDigimonRecords": "Search Digimon records",
-  "dexRender.nameOrCatalogId": "Name or catalog ID...",
+  "dexRender.name": "Name",
   "dexRender.catalogLayout": "Catalog layout",
   "dexRender.refreshDiscoveryArchive": "Refresh discovery archive",
   "dexRender.searchRecords": "SEARCH RECORDS",
   "dexRender.allStages": "All stages",
   "dexRender.discovery": "DISCOVERY",
   "dexRender.allRecords": "All records",
-  "dexRender.registered": "Registered",
+  "dexRender.owned": "Only companions raised",
   "dexRender.undiscovered": "Undiscovered",
   "dexRender.grid": "GRID",
   "dexRender.list": "LIST",
@@ -159,5 +159,6 @@
   "history.retired": "RETIRED · {date}",
   "egg.pet": "Pet the egg · +1% experience",
   "egg.hint": "PET EGG · +1%",
-  "egg.reward": "+1% XP"
+  "egg.reward": "+1% XP",
+  "pet.pet": "Pet your companion"
 }

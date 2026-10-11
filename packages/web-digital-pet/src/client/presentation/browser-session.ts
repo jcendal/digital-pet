@@ -70,6 +70,8 @@ export const sidebar = async (requestedWidth: number) => {
         mood,
         canClean: !state.pendingEvolution && !battle,
       },
+      canPet:
+        presentation.payload.kind === "partner" && presentation.payload.canPet && !state.pendingEvolution && !battle,
     },
     frame: {
       type: "animation-frame",
@@ -92,6 +94,36 @@ export const cleanPoop = async (partnerId: string, poopId: number, active: () =>
 
 export const petEgg = (partnerId: string, interactionId: string, active: () => boolean): Promise<boolean> =>
   isPresentingEvolution() ? Promise.resolve(false) : persistPetEgg(partnerId, interactionId, active)
+
+export const petPartner = async (width: number, active: () => boolean) => {
+  if (!active() || isPresentingEvolution() || (await readPendingBattle())) return undefined
+  const state = await readLocalState()
+  if (!active() || state.pendingEvolution) return undefined
+  const presentation = buildSidebarPresentation(
+    {
+      currentNodeId: state.currentNodeId,
+      gauge: state.gauge,
+      isTerminal: state.isTerminal,
+      frozen: false,
+      isSetOverride: false,
+      trainerTotalTokens: 0,
+      pendingEvolutionTargetId: null,
+      battleOpponentNodeId: null,
+    },
+    settingsFor(state),
+  )
+  animation.dispatch({ kind: "partner_changed", partner: presentation.partner })
+  const frame = animation.dispatch({ kind: "pet" })
+  if (!frame.reaction) return undefined
+  return {
+    reaction: frame.reaction,
+    frame: {
+      type: "animation-frame",
+      artwork: renderPositionedArtwork(frame, width),
+      motion: sceneMotionFor(frame, currentPartner, width),
+    },
+  }
+}
 
 export const dex = async () => {
   const state = await readLocalState()

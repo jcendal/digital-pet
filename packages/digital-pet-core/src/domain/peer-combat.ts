@@ -1,7 +1,12 @@
 import { IntlModule } from "../i18n.ts"
 import { type BattlePlan, type CombatStats, planCombat } from "./combat.ts"
+import type { DigimonStage } from "./stage.ts"
 
 export const BATTLE_EXPERIENCE_FRACTION = 0.2
+
+/** Each rival stage above/below the winner doubles/halves the base experience prize. */
+export const battleExperienceFraction = (winnerStage: DigimonStage, opponentStage: DigimonStage): number =>
+  winnerStage === 0 || opponentStage === 0 ? 0 : BATTLE_EXPERIENCE_FRACTION * 2 ** (opponentStage - winnerStage)
 
 /** Protocol v1: canonical player is always the challenger, on both machines. */
 export const planSeededCombat = (player: CombatStats, opponent: CombatStats, seed: string): BattlePlan => {

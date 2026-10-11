@@ -13,6 +13,30 @@ button:disabled {
   cursor: default;
   opacity: 0.4;
 }
+.masthead > *,
+.completion > div:first-child > p,
+.catalog-header > *,
+.detail-heading > *,
+.detail-name > *,
+.field > .micro,
+.fact > *,
+.footer > span:not(.case-dots),
+.utility,
+.detail-nav button,
+select {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.masthead,
+.completion > div:first-child {
+  min-width: 0;
+}
+.case-dots {
+  flex-shrink: 0;
+}
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: -4px;
@@ -283,6 +307,8 @@ select option {
   height: 128px;
 }
 .detail-name {
+  min-width: 0;
+  overflow: hidden;
   padding: 14px 0;
   border-bottom: 2px dotted var(--line);
 }
@@ -294,7 +320,7 @@ select option {
 }
 .facts {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
   padding: 12px 0;
   border-bottom: 2px dotted var(--line);

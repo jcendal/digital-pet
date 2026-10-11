@@ -128,9 +128,10 @@ export const finishPendingBattle = async (battleId: string): Promise<{ readonly 
     )
     const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
     const won = pending.plan.outcome === pending.localSide
+    const opponent = pending.localSide === "player" ? pending.receiver : pending.challenger
     const next =
       state && won && !pending.rewarded && pending.rewardTarget && receipt?.completedAt === undefined
-        ? rewardBattleWinner(state, pending.rewardTarget, Date.now())
+        ? rewardBattleWinner(state, pending.rewardTarget, opponent.nodeId, Date.now())
         : state
     const rewarded = pending.rewarded || Boolean(state && next !== state)
     if (next !== state) store.put(next, STATE_KEY)
