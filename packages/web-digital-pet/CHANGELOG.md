@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-11
+
+### Changed
+
+- feat: add adventure bosses and refine pet care UI
+
+
 ## [0.7.0] - 2026-10-11
 
 ### Changed
