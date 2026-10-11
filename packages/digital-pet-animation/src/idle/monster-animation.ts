@@ -7,8 +7,10 @@ import { MONSTER_SLEEP_AFTER_MS } from "../constants/presentation-timing.ts"
 import { assertNever } from "../utils/assert-never.ts"
 import {
   type CosmeticActionClip,
+  type PetReaction,
   resolveCosmeticActions,
   resolveEatClip,
+  resolvePetClip,
   resolveSleepClip,
   type SleepClip,
   selectCosmeticAction,
@@ -39,6 +41,7 @@ export type MonsterAnimationEvent =
   | { readonly kind: "tick" }
   | { readonly kind: "activity" }
   | { readonly kind: "feed" }
+  | { readonly kind: "pet" }
   | { readonly kind: "viewport_resized"; readonly width: number }
 
 export type MonsterAnimationResult =
@@ -51,6 +54,7 @@ export type MonsterFacing = WalkingFacing
 type PositionedOutput = {
   readonly offset: number
   readonly facing: MonsterFacing
+  readonly reaction?: PetReaction
 }
 
 export type MonsterAnimationOutput =
@@ -90,6 +94,7 @@ type ActionState = {
   readonly boundary: ActionBoundaryState
   readonly clip: CosmeticActionClip
   readonly phase: 0 | 1
+  readonly reaction?: PetReaction
 }
 type SleepingState = {
   readonly kind: "sleeping"
@@ -147,6 +152,9 @@ export class MonsterAnimationController {
       case "feed":
         this.#state = this.#feed()
         break
+      case "pet":
+        this.#state = this.#pet()
+        break
       case "viewport_resized":
         this.#latestViewportWidth = event.width
         this.#state = this.#resize(event.width)
@@ -179,6 +187,7 @@ export class MonsterAnimationController {
           result: this.#frameResult(state.identity.sprite, state.clip[state.phase]),
           offset: state.boundary.offset,
           facing: state.boundary.facing,
+          ...(state.reaction ? { reaction: state.reaction } : {}),
         }
       case "sleeping":
         return {
@@ -335,6 +344,16 @@ export class MonsterAnimationController {
     return { kind: "action", identity, boundary, clip, phase: 0 }
   }
 
+  #pet(): MonsterAnimationState {
+    const state = this.#state
+    if (state.kind === "blank" || state.kind === "unavailable" || state.kind === "digitama") return state
+    const reaction: PetReaction = state.kind === "sleeping" ? "angry" : "happy"
+    this.#lastActivityMs = this.#nowMs()
+    const boundary = state.kind === "walking" ? state.policy : state.boundary
+    const clip = resolvePetClip(state.identity.sprite, reaction, boundary.frameName, this.#catalog)
+    return { kind: "action", identity: state.identity, boundary, clip, phase: 0, reaction }
+  }
+
   #currentIdentity(): MonsterAnimationIdentity | undefined {
     const state = this.#state
     switch (state.kind) {
@@ -370,7 +389,7 @@ export class MonsterAnimationController {
         : this.#mood === "sad"
           ? [this.#moodPhase ? "injured_1" : "injured_2", "injured_1", "injured_2", "refuse"]
           : []
-    if (this.#state.kind !== "digitama") {
+    if (this.#state.kind !== "digitama" && !(this.#state.kind === "action" && this.#state.reaction)) {
       for (const name of moodFrames) {
         const moodFrame = this.#catalog.get(sprite, name)
         if (moodFrame) return { kind: "frame", frame: moodFrame }

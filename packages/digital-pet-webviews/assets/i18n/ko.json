@@ -47,14 +47,14 @@
   "dexRender.dexCompletion": "도감 완성도",
   "dexRender.registeredDigimon": "등록한 디지몬",
   "dexRender.searchDigimonRecords": "디지몬 기록 검색",
-  "dexRender.nameOrCatalogId": "이름 또는 도감 ID...",
+  "dexRender.name": "이름",
   "dexRender.catalogLayout": "도감 표시 방식",
   "dexRender.refreshDiscoveryArchive": "발견 기록 새로고침",
   "dexRender.searchRecords": "기록 검색",
   "dexRender.allStages": "모든 단계",
   "dexRender.discovery": "발견",
   "dexRender.allRecords": "모든 기록",
-  "dexRender.registered": "등록됨",
+  "dexRender.owned": "키웠던 디지몬만",
   "dexRender.undiscovered": "미발견",
   "dexRender.grid": "격자",
   "dexRender.list": "목록",
@@ -159,5 +159,6 @@
   "history.retired": "은퇴 · {date}",
   "egg.pet": "알 쓰다듬기 · 경험치 +1%",
   "egg.hint": "알 쓰다듬기 · +1%",
-  "egg.reward": "경험치 +1%"
+  "egg.reward": "경험치 +1%",
+  "pet.pet": "파트너 쓰다듬기"
 }

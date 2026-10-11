@@ -25,12 +25,19 @@ export const createWebServer = (resources: WebResources, clientRoot?: string) =>
 export const createWebHandler = (resources: WebResources, clientRoot?: string) => {
   return async (request: import("node:http").IncomingMessage, response: ServerResponse) => {
     try {
-      if (request.method !== "GET" || !request.url)
+      if (!request.url)
         return send(response, 405, "text/plain; charset=utf-8", IntlModule.translate("app.methodNotAllowed"))
       const host = request.headers.host ?? ""
       if (!/^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host))
         return send(response, 403, "text/plain; charset=utf-8", "Forbidden")
       const url = new URL(request.url, `http://${host}`)
+      if (request.method === "POST" && url.pathname === "/api/pet") {
+        if (request.headers.origin !== url.origin) return send(response, 403, "text/plain; charset=utf-8", "Forbidden")
+        const data = hasHostDatabase() ? sidebarData(Number(url.searchParams.get("width") ?? 40), true) : {}
+        return send(response, 200, "application/json; charset=utf-8", JSON.stringify(data))
+      }
+      if (request.method !== "GET")
+        return send(response, 405, "text/plain; charset=utf-8", IntlModule.translate("app.methodNotAllowed"))
       if (clientRoot && (await serveAsset(request, response, url.pathname, clientRoot))) return
       if (url.pathname === "/api/mode") {
         return send(

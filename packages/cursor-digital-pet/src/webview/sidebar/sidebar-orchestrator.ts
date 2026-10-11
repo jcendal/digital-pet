@@ -78,10 +78,12 @@ export const createSidebarOrchestrator = ({
       presentation.payload.kind === "partner"
         ? { ...presentation.payload, ...(hygiene ? { hygiene } : {}), ...(egg ? { egg } : {}) }
         : presentation.payload
+    if (!presentationInProgress) {
+      animationHost.syncPartner(presentation.partner)
+      animationHost.setMood(hygiene?.mood ?? "neutral")
+    }
     await sink.postModel(cachedPayload)
     if (presentationInProgress) return
-    animationHost.syncPartner(presentation.partner)
-    animationHost.setMood(hygiene?.mood ?? "neutral")
     await animationHost.postCurrentFrame()
   }
 

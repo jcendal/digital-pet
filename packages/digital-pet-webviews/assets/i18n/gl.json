@@ -47,14 +47,14 @@
   "dexRender.dexCompletion": "Digidex completada",
   "dexRender.registeredDigimon": "DIGIMON REXISTRADOS",
   "dexRender.searchDigimonRecords": "Buscar fichas de Digimon",
-  "dexRender.nameOrCatalogId": "Nome ou ID do catálogo...",
+  "dexRender.name": "Nome",
   "dexRender.catalogLayout": "Deseño do catálogo",
   "dexRender.refreshDiscoveryArchive": "Actualizar arquivo de descubrimentos",
   "dexRender.searchRecords": "BUSCAR FICHAS",
   "dexRender.allStages": "Todas as etapas",
   "dexRender.discovery": "DESCUBRIMENTOS",
   "dexRender.allRecords": "Todas as fichas",
-  "dexRender.registered": "Rexistrados",
+  "dexRender.owned": "Só os que tiveches",
   "dexRender.undiscovered": "Sen descubrir",
   "dexRender.grid": "GRADE",
   "dexRender.list": "LISTA",
@@ -159,5 +159,6 @@
   "history.retired": "RETIRADO · {date}",
   "egg.pet": "Acaricia o ovo · +1 % de experiencia",
   "egg.hint": "ACARICIA O OVO · +1%",
-  "egg.reward": "+1% EXP"
+  "egg.reward": "+1% EXP",
+  "pet.pet": "Acariciar o teu compañeiro"
 }

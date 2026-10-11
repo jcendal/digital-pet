@@ -5,9 +5,10 @@ let artwork = ""
 let artworkColumns = 32
 let battleHud = null
 let eggInteraction = null
+let petInteraction = null
 const byId = (id) => document.getElementById(id)
 const root = document.querySelector(".pet-module")
-const positionEggControl = () => {
+const positionPetControls = () => {
   const svg = byId("artwork")
   const bounds = svg.getBBox?.()
   const matrix = svg.getScreenCTM?.()
@@ -15,7 +16,7 @@ const positionEggControl = () => {
   const arena = document.querySelector(".arena").getBoundingClientRect()
   const x = (bounds.x + bounds.width / 2) * matrix.a + matrix.e - arena.left
   const y = (bounds.y + bounds.height / 2) * matrix.d + matrix.f - arena.top
-  for (const id of ["pet-egg", "egg-pet-feedback"]) {
+  for (const id of ["pet-egg", "pet-partner", "egg-pet-feedback"]) {
     const node = byId(id)
     if (!node) continue
     node.style.left = x + "px"
@@ -35,17 +36,28 @@ const renderEgg = () => {
   button.title = IntlModule.translate("egg.pet")
   button.setAttribute("aria-label", IntlModule.translate("egg.pet"))
   hint.textContent = IntlModule.translate("egg.hint")
-  positionEggControl()
+  positionPetControls()
 }
-const showEggSparkles = () => {
+const renderPet = () => {
+  const button = byId("pet-partner")
+  if (!button) return
+  button.hidden = !model?.canPet || state.phase !== "idle"
+  button.disabled = button.hidden || petInteraction !== null
+  button.title = IntlModule.translate("pet.pet")
+  button.setAttribute("aria-label", IntlModule.translate("pet.pet"))
+  positionPetControls()
+}
+const showPetParticles = (reaction) => {
   const feedback = byId("egg-pet-feedback")
   if (!feedback) return
   const burst = document.createElement("span")
   burst.className = "egg-pet-burst"
-  const reward = document.createElement("span")
-  reward.className = "egg-pet-reward"
-  reward.textContent = IntlModule.translate("egg.reward")
-  burst.append(reward)
+  if (reaction === "egg") {
+    const reward = document.createElement("span")
+    reward.className = "egg-pet-reward"
+    reward.textContent = IntlModule.translate("egg.reward")
+    burst.append(reward)
+  }
   for (const [x, y] of [
     [-34, -28],
     [28, -34],
@@ -55,12 +67,20 @@ const showEggSparkles = () => {
   ]) {
     const star = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     star.setAttribute("viewBox", "0 0 16 16")
-    star.setAttribute("class", "egg-pet-star")
-    star.style.setProperty("--star-x", x + "px")
-    star.style.setProperty("--star-y", y + "px")
+    star.setAttribute("class", reaction === "egg" ? "egg-pet-star" : "pet-reaction-icon pet-" + reaction)
+    star.setAttribute("shape-rendering", "crispEdges")
+    star.style.setProperty("--star-x", x * (reaction === "egg" ? 1 : Math.max(1, feedback.offsetWidth / 60)) + "px")
+    star.style.setProperty("--star-y", y * (reaction === "egg" ? 1 : Math.max(1, feedback.offsetHeight / 60)) + "px")
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
     path.setAttribute("fill", "currentColor")
-    path.setAttribute("d", "M7 0h2v5h2v2h5v2h-5v2H9v5H7v-5H5V9H0V7h5V5h2z")
+    path.setAttribute(
+      "d",
+      reaction === "happy"
+        ? "M2 2h4v2h4V2h4v2h2v6h-2v2h-2v2H6v-2H4v-2H2v-2H0V4h2z"
+        : reaction === "angry"
+          ? "M8 0h5v2h-2v2H9v2h5v2h-2v2h-2v2H8v2H6v2H4v-2h2v-2h2V8H2V6h2V4h2V2h2z"
+          : "M7 0h2v5h2v2h5v2h-5v2H9v5H7v-5H5V9H0V7h5V5h2z",
+    )
     star.append(path)
     burst.append(star)
   }
@@ -152,7 +172,7 @@ const renderArtwork = () => {
         text.textContent = cell
       }
     }
-  positionEggControl()
+  positionPetControls()
 }
 const renderPoops = () => {
   const group = byId("pet-poops")
@@ -190,6 +210,7 @@ const renderPoops = () => {
 }
 const render = () => {
   renderEgg()
+  renderPet()
   renderPoops()
   const active = model?.kind === "partner"
   root.classList.toggle("no-partner", !active)
@@ -287,12 +308,24 @@ byId("pet-egg")?.addEventListener("click", () => {
   byId("pet-egg").disabled = true
   vscode.postMessage({ type: "pet-egg", partnerId: model.egg.partnerId, interactionId: eggInteraction })
 })
+byId("pet-partner")?.addEventListener("click", () => {
+  if (!model?.canPet || state.phase !== "idle" || petInteraction !== null) return
+  petInteraction = crypto.randomUUID()
+  renderPet()
+  vscode.postMessage({ type: "pet-partner", interactionId: petInteraction })
+})
 window.addEventListener("message", (event) => {
   const message = event.data
   if (message?.type === "egg-petted" && message.interactionId === eggInteraction && eggInteraction !== null) {
     eggInteraction = null
-    if (message.accepted === true) showEggSparkles()
+    if (message.accepted === true) showPetParticles("egg")
     renderEgg()
+  }
+  if (message?.type === "partner-petted" && message.interactionId === petInteraction && petInteraction !== null) {
+    petInteraction = null
+    if (model?.canPet && state.phase === "idle" && ["happy", "angry"].includes(message.reaction))
+      showPetParticles(message.reaction)
+    renderPet()
   }
   if (message?.type === "sidebar-model") {
     model = message

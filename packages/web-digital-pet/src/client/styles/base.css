@@ -72,6 +72,10 @@ body {
 }
 .nav-label {
   line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .nav-battle .nav-icon {
   width: 28px;
@@ -249,6 +253,10 @@ body {
   z-index: 3;
 }
 #world-location {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   flex: none;
   padding: 8px 6px;
   margin: 0 0 8px;

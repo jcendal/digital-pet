@@ -1,3 +1,4 @@
+import type { PetReaction } from "@jcendal/digital-pet-animation/idle/monster-action-policy.ts"
 import {
   MonsterAnimationController,
   type MonsterAnimationIdentity,
@@ -20,6 +21,7 @@ export type SidebarAnimationHost = {
   clearArtwork(): void
   postCurrentFrame(animation?: MonsterAnimationOutput): Promise<void>
   playFeedAnimation(): void
+  petPartner(): PetReaction | undefined
   setMood(mood: PetMood): void
   isPresentationBlocked(): boolean
   setPresentationBlocked(blocked: boolean): void
@@ -82,6 +84,12 @@ export const createSidebarAnimationHost = ({
       cachedArtwork = ""
     },
     postCurrentFrame,
+    petPartner(): PetReaction | undefined {
+      if (presentationBlocked || !isVisible()) return undefined
+      const frame = animation.dispatch({ kind: "pet" })
+      if (frame.reaction) void postCurrentFrame(frame)
+      return frame.reaction
+    },
     playFeedAnimation(): void {
       if (presentationBlocked) return
       const nextAnimation = animation.dispatch({ kind: "feed" })

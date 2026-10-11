@@ -1,3 +1,4 @@
+import type { PetReaction } from "@jcendal/digital-pet-animation/idle/monster-action-policy.ts"
 import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
@@ -24,6 +25,7 @@ export type SidebarWebviewPayload =
       readonly url: string
       readonly urlLabel: string
       readonly frozen: boolean
+      readonly canPet?: boolean
       readonly hygiene?: HygieneView
       readonly egg?: EggPettingView
     }
@@ -39,9 +41,11 @@ export type ExtensionToWebviewMessage =
   | AnimationFramePayload
   | { readonly type: "presentation-state"; readonly state: PresentationState }
   | { readonly type: "egg-petted"; readonly interactionId: string; readonly accepted: boolean }
+  | { readonly type: "partner-petted"; readonly interactionId: string; readonly reaction?: PetReaction }
 
 export type WebviewToExtensionMessage =
   | { readonly type: "pet-egg"; readonly partnerId: string; readonly interactionId: string }
+  | { readonly type: "pet-partner"; readonly interactionId: string }
   | { readonly type: "clean-poop"; readonly partnerId: string; readonly poopId: number }
   | { readonly type: "sidebar-ready" }
   | { readonly type: "open-panel"; readonly panel: "dex" | "history" }
@@ -60,6 +64,13 @@ export const parseWebviewInboundMessage = (raw: unknown): WebviewToExtensionMess
     readonly interactionId?: unknown
   }
   if (message.type === "sidebar-ready") return { type: "sidebar-ready" }
+  if (
+    message.type === "pet-partner" &&
+    typeof message.interactionId === "string" &&
+    message.interactionId.length > 0 &&
+    message.interactionId.length <= 100
+  )
+    return { type: "pet-partner", interactionId: message.interactionId }
   if (
     message.type === "pet-egg" &&
     typeof message.partnerId === "string" &&

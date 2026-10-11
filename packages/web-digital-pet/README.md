@@ -94,7 +94,8 @@ When a shared `pet.db` is present on the host machine, the web app **reads** the
 | **Pet egg** | Click or tap the egg for 1% of its hatching requirement and pixel stars. Rewards persist offline and stop when hatching begins; keyboard activation is supported |
 | **Food** | One pixel apple appears after one hour. Click to eat and gain 10% of the current evolution requirement. Eggs have no food; eating and evolution restart the timer |
 | **Hygiene** | Piles appear 2 hours after hatching, then 8 and 16 hours later (maximum three). Click each pile for 5% of the selected stage requirement. Two or more piles make the companion sad; cleaning makes it happy for three seconds |
-| **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. Acceptance closes the panel and shows both fighters, score and outcome in the pet viewer. The winner earns 20% of their selected level requirement |
+| **Petting** | Click a hatched companion to show pixel hearts and a happy reaction. Petting a sleeping companion wakes it with bolts and an angry or sad reaction. This does not add experience |
+| **Player battles** | BATTLE in the bottom navigation. Share a live six-digit code, challenge and accept. Acceptance closes the panel and shows both fighters, score and outcome in the pet viewer. The base prize is 20% of the winner's selected requirement; each lower rival stage halves it and each higher one doubles it |
 | **Shared combat rules** | Strength and evasion from 0–100 determine each hit. Three hits win; a timeout draws. Only a victory evolves along the current Digimon's catalogue branches |
 | **Device pairing and Sync** | Approve the first exchange, remember the device, then request later transfers with one button and a rollback backup |
 
@@ -240,8 +241,10 @@ Both clients use the actual selected Digimon's catalogue combat stats, commit an
 reveal independently generated randomness, calculate the same battle plan and
 compare its SHA-256 digest before playback. The challenger is the canonical first
 participant, so the same winner is shown from each player's perspective. The
-winner receives 20% of their own selected level requirement, capped at the evolution
-threshold. There is no loss penalty and a draw awards no experience. The seed,
+winner receives 20% of their own selected level requirement against the same stage.
+Each lower rival stage halves this prize (10%, 5%, …), and each higher rival stage
+doubles it (40%, 80%, …), capped at the evolution threshold. There is no loss penalty
+and a draw awards no experience. The seed,
 fighters, complete plan, accepted companion and selected level are saved before
 animation. XP stays unchanged until the complete outcome has been shown. The prize,
 completion receipt and removal of pending playback are then committed atomically,
@@ -273,7 +276,7 @@ for the trust boundary and the proposed authoritative upgrade.
 | **NORMAL** | 50% of HIGH | Half the original requirement |
 | **HIGH** | 100% | Original progression (default) |
 
-Each two-hour tick earns 2% of the selected requirement. Food gives 10% and a player battle win gives 20% of that requirement. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting, location, and paired device.
+Each two-hour tick earns 2% of the selected requirement. Food gives 10% and a player battle win gives a base 20% of that requirement, scaled by the rival's stage. Changes apply to future evolution checks and travel with transferred saves. **START A NEW EGG** asks for confirmation, moves the current companion to History, and keeps the experience setting, location, and paired device.
 
 ### Server settings
 

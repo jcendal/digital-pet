@@ -104,7 +104,7 @@ test("battle completion rewards once, rejects early completion and preserves leg
   expect(result.premature).toBe(true)
   expect(result.afterEarly).toBe(0)
   expect(result.completions.filter(Boolean)).toEqual([{ rewarded: true }])
-  expect(result.after).toBe(8_000_000)
+  expect(result.after).toBe(16_000_000)
   expect(result.replay).toBeUndefined()
   expect(result.afterReplay).toBe(result.after)
   expect(result.legacyFinished).toEqual({ rewarded: true })

@@ -36,11 +36,19 @@
   border: 2px solid var(--muted);
 }
 .switch button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
   min-height: 48px;
   padding: 7px 10px;
   background: transparent;
   border: 0;
   font-size: var(--type-label);
+}
+.switch svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 .switch button + button {
   border-left: 2px solid var(--muted);
@@ -55,9 +63,18 @@
 }
 .entry-name {
   font-size: var(--type-body);
-  overflow-wrap: anywhere;
   width: 100%;
   text-transform: uppercase;
+}
+.entry-name,
+.entry-status,
+.entry-stage,
+.route {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .entry-status {
   font-size: var(--type-small);

@@ -4,6 +4,19 @@ import { normalizedRandom } from "../utils/random.ts"
 
 export type CosmeticActionClip = readonly [MonsterFrameName, MonsterFrameName]
 export type SleepClip = readonly [MonsterFrameName, MonsterFrameName]
+export type PetReaction = "happy" | "angry"
+
+export const resolvePetClip = (
+  sprite: string,
+  reaction: PetReaction,
+  fallback: MonsterFrameName,
+  catalog: MonsterFrameCatalog,
+): CosmeticActionClip => {
+  const names: readonly MonsterFrameName[] =
+    reaction === "happy" ? ["happy"] : ["angry", "injured_1", "injured_2", "refuse"]
+  const frame = names.find((name) => catalog.get(sprite, name) !== undefined) ?? fallback
+  return [frame, frame]
+}
 
 const SINGLE_FRAME_ACTIONS = ["angry", "attack", "happy"] as const
 

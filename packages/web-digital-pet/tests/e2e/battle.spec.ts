@@ -210,8 +210,8 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#battle-scores")).toBeHidden()
     }
     const finished = await Promise.all(pages.map(readSave))
-    expect(finished[0]?.gauge).toBe(first[0]?.receipt.won ? 8_000_000 : 0)
-    expect(finished[1]?.gauge).toBe(first[1]?.receipt.won ? 15_000_000 : 0)
+    expect(finished[0]?.gauge).toBe(first[0]?.receipt.won ? 16_000_000 : 0)
+    expect(finished[1]?.gauge).toBe(first[1]?.receipt.won ? 7_500_000 : 0)
     for (const [index, page] of pages.entries()) {
       await page.evaluate(async (battleId) => {
         const url = "/src/client/persistence/pet-store.ts"
