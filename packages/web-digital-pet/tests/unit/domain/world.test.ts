@@ -3,7 +3,7 @@ import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/d
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { getRegion } from "@jcendal/digital-pet-fields/application/world.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
-import { renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
+import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
 import { artworkToCenteredPixelArt } from "@jcendal/digital-pet-webviews/shared/pixel-artwork.ts"
 import { advanceLocalPet, beginNewPartner } from "../../../src/domain/pet/progress.ts"
 import { parsePetTransfer } from "../../../src/domain/transfer/protocol.ts"
@@ -33,7 +33,7 @@ describe("web world integration", () => {
     const model = buildWorldPanelModel(region.id, { kind: "empty" }, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)
     const html = renderWorldRegion(region, model, { regionId: region.id, locationId: "dragon-eye-lake" })
     const [preview, remainder] = html.split('<details class="resident-more">')
-    expect(preview!.match(/class="resident-row"/g)).toHaveLength(5)
+    expect(preview!.match(/class="resident-row"/g)).toHaveLength(7)
     expect(remainder!.match(/class="resident-row"/g)).toHaveLength(model.residents.length - 5)
     expect(remainder).toContain(`<summary><span class="residents-expand">SHOW ${model.residents.length - 5} MORE`)
     expect(html).not.toContain('<details class="resident-more" open')
@@ -44,7 +44,7 @@ describe("web world integration", () => {
       { regionId: region.id, locationId: "dragon-eye-lake" },
     )
     expect(short).not.toContain("<details")
-    expect(short.match(/class="resident-row"/g)).toHaveLength(5)
+    expect(short.match(/class="resident-row"/g)).toHaveLength(7)
   })
   it("keeps species without supplied sprites visible using a labelled placeholder", () => {
     const region = getRegion("village-of-beginnings")
@@ -94,4 +94,32 @@ describe("web world integration", () => {
     ])
     expect(archive.partners[0]!.events).toEqual(events)
   })
+})
+
+it("keeps boss stars through replacement and transfer without inventing Dex ownership", () => {
+  const victory = { regionId: "digital-ocean", nodeId: "6-095", defeatedAt: createdAt }
+  const won = { ...state, bossVictories: [victory] }
+  expect(beginNewPartner(won, "egg", Date.now()).bossVictories).toEqual([victory])
+  expect(parsePetTransfer({ version: 1, state: won }).state.bossVictories).toEqual([victory])
+  const model = buildWorldPanelModel(
+    "digital-ocean",
+    { kind: "empty" },
+    DIGIMON_CATALOG,
+    DEFAULT_DIGITAL_PET_SETTINGS,
+    [victory],
+  )
+  expect(model.registeredIds).toEqual([])
+  expect(model.bosses?.find((boss) => boss.id === victory.nodeId)).toMatchObject({ defeated: true, registered: false })
+  const html = renderWorldOverview(
+    new Set(),
+    { regionId: "digital-ocean", locationId: "dragon-eye-lake" },
+    undefined,
+    model.bossVictories,
+  )
+  expect(html.match(/class="world-boss-star"/g)).toHaveLength(1)
+  expect(renderWorldOverview(new Set(), { regionId: "digital-ocean", locationId: "dragon-eye-lake" })).not.toContain(
+    "world-boss-star",
+  )
+  for (const invalid of [[{ ...victory, nodeId: "3-001" }], [victory, victory], [{ ...victory, regionId: "missing" }]])
+    expect(() => parsePetTransfer({ version: 1, state: { ...won, bossVictories: invalid } })).toThrow("boss victories")
 })

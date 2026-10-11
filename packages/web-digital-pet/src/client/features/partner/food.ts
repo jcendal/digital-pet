@@ -132,7 +132,7 @@ export const updateFoodButton = (
   button.hidden = !view?.available || isPresentingEvolution()
   button.disabled = !view?.canEat || isPresentingEvolution()
   const label = view?.givesExperience
-    ? IntlModule.translate("food.feedYourCompanion10Experience")
+    ? IntlModule.translate("food.feedYourCompanion5Experience")
     : IntlModule.translate("food.feedYourCompanion")
   button.setAttribute("aria-label", label)
   button.title = label

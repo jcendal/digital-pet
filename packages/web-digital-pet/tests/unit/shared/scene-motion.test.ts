@@ -46,3 +46,9 @@ describe("walking landscape", () => {
     expect(advanceLandscape(0, 1, 60_000, 50)).toBeCloseTo(0.3)
   })
 })
+
+it("scrolls the landscape opposite the pet during adventures, including stationary walking poses", () => {
+  expect(landscapeDirection(undefined, { ...left, adventuring: true, facing: "right" })).toBe(-1)
+  expect(landscapeDirection(left, { ...left, adventuring: true, facing: "left" })).toBe(1)
+  expect(advanceLandscape(0, -1, 100, 320, 60)).toBe(-6)
+})

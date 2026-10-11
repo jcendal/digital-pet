@@ -1,6 +1,7 @@
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import type { AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
+import { runAdventureBossIntro } from "../sequences/adventure-boss-intro.ts"
 import { type BattleFrameListener, runEvolutionBattleAnimation } from "../sequences/evolution-battle-artwork.ts"
 import type { PresentationStateListener } from "./presentation-state.ts"
 
@@ -30,6 +31,14 @@ export const runAdventureBattleSession = async (
   }
   try {
     checkActive()
+    if (event.rank === "boss" && event.completedShots === 0) {
+      await ports.onState({ phase: "battle", fromNodeId: player.id, opponentNodeId: opponent.id, bossIntro: true })
+      await runAdventureBossIntro(ports.frames, opponent.sprite, width, async (artwork) => {
+        checkActive()
+        await ports.onFrame(artwork)
+      })
+      checkActive()
+    }
     await ports.onState({ phase: "battle", fromNodeId: player.id, opponentNodeId: opponent.id })
     await runEvolutionBattleAnimation(
       ports.frames,

@@ -1,4 +1,5 @@
 import type { AdventureState } from "../../domain/adventure.ts"
+import type { BossVictory } from "../../domain/boss-victory.ts"
 import type { StageThresholds } from "../../domain/evolution.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import type { SpawnPartnerInput } from "../models/spawn-partner.ts"
@@ -13,6 +14,7 @@ export type AdventureSnapshot = {
 }
 export type AdventureMutation = {
   readonly adventure: AdventureState
+  readonly bossVictory?: BossVictory
   readonly readyAt?: number
   readonly replacement?: SpawnPartnerInput
   readonly progression?: PartnerProgression

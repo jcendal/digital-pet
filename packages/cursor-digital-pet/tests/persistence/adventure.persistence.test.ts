@@ -1,12 +1,14 @@
 import { expect, test } from "bun:test"
+import { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import { createAdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import { buildDexViewModel } from "@jcendal/digital-pet-core/view-models/dex-view-model.ts"
-import { getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
+import { getRegionBosses, getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
 import { readArchive } from "../../src/adapters/sqlite/sqlite-digital-pet-archive-reader.ts"
 import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
+import { openReadonlySqliteDatabase, openWritableSqliteDatabase } from "../../src/adapters/sqlite/sqlite-driver.ts"
 import { createTempTestRoot, removeTempTestRoot } from "./persistence-fixtures.ts"
 
 test("Cursor stores the route across restarts and rewards a find once in the existing progression", async () => {
@@ -28,6 +30,7 @@ test("Cursor stores the route across restarts and rewards a find once in the exi
       createdAt: new Date(0).toISOString(),
     })
     await service().act({ kind: "start", id: "route" }, 0)
+    expect(await service().nextReadyAt()).toBe(2 * 3600_000)
     for (let now = 1000; now <= 63_000; now += 1000) await service().act({ kind: "tick" }, now)
     const saved = await service().act({ kind: "read" }, 63_000)
     expect(saved?.event?.kind).toBe("loot")
@@ -64,7 +67,12 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
   const root = await createTempTestRoot()
   const options = { appDataRoot: root.appDataRoot }
   let repository = await createSqliteDigitalPetRepository(options)
-  const service = (random = () => 0) =>
+  const service = (
+    random = (() => {
+      const values = [0, 0.9]
+      return () => values.shift() ?? 0
+    })(),
+  ) =>
     createAdventureService(
       repository,
       DIGIMON_CATALOG,
@@ -99,9 +107,9 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
       52_000,
     )
     await service().act({ kind: "finish-battle", eventId: 1, adventureId: saved.id }, 55_000)
-    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3] * 0.1)
+    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3] * 0.15)
     await service().act({ kind: "finish-battle", eventId: 1, adventureId: saved.id }, 55_000)
-    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3] * 0.1)
+    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3] * 0.15)
     const offer = await service().act({ kind: "read" }, 55_000)
     if (offer?.event?.kind !== "offer") throw new Error("Missing companion offer")
     const defeatedNodeId = offer.event.opponentNodeId
@@ -192,6 +200,110 @@ test("a victory that reaches evolution ends the trip before a recruitment offer 
     await service.act({ kind: "accept-companion", eventId: trip.event.id, adventureId: trip.id }, 56_000)
     expect(repository.getActivePartner()?.partnerId).toBe(partner.partnerId)
     expect(await service.nextReadyAt()).toBeGreaterThan(56_000)
+  } finally {
+    await repository.close()
+    await removeTempTestRoot(root)
+  }
+})
+
+test("boss achievements commit with XP once and survive evolution, replacement and reopening", async () => {
+  const root = await createTempTestRoot()
+  const options = { appDataRoot: root.appDataRoot }
+  let repository = await createSqliteDigitalPetRepository(options)
+  let draws = 0
+  const random = () => (++draws === 3 ? 0.97 : 0)
+  const service = () =>
+    createAdventureService(
+      repository,
+      DIGIMON_CATALOG,
+      (id) => getRegionResidents(id, DIGIMON_CATALOG),
+      random,
+      (id) => getRegionBosses(id, DIGIMON_CATALOG),
+    )
+  const victories = () => {
+    const database = openReadonlySqliteDatabase(resolveHostDatabasePath(options))
+    try {
+      return database.executor.all("SELECT region_id, node_id FROM boss_victories")
+    } finally {
+      database.close()
+    }
+  }
+  try {
+    repository.spawnPartner({
+      currentNodeId: "3-001",
+      gauge: STAGE_GAUGE_THRESHOLDS[3] * 0.6,
+      isTerminal: false,
+      createdAt: new Date(0).toISOString(),
+    })
+    await service().act({ kind: "start", id: "boss-trip" }, 0)
+    for (let now = 1000; now <= 45000; now += 1000) await service().act({ kind: "tick" }, now)
+    const trip = await service().act({ kind: "read" }, 45000)
+    if (trip?.event?.kind !== "battle") throw new Error("Missing boss")
+    expect(trip.event.rank).toBe("boss")
+    expect(victories()).toEqual([])
+    await service().act({ kind: "finish-battle", eventId: 1 }, 46000)
+    expect(victories()).toEqual([])
+    await service().act({ kind: "checkpoint", eventId: 1, completedShots: trip.event.plan.shots.length }, 47000)
+    await repository.close()
+    repository = await createSqliteDigitalPetRepository(options)
+    const ended = await service().act({ kind: "finish-battle", eventId: 1 }, 48000)
+    expect(ended?.status).toBe("evolved")
+    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3])
+    expect(victories()).toEqual([{ region_id: trip.regionId, node_id: trip.event.opponentNodeId }])
+    await service().act({ kind: "finish-battle", eventId: 1 }, 49000)
+    expect(victories()).toHaveLength(1)
+    repository.spawnPartner({
+      currentNodeId: "0-001",
+      gauge: 0,
+      isTerminal: false,
+      createdAt: new Date(50000).toISOString(),
+    })
+    await repository.close()
+    repository = await createSqliteDigitalPetRepository(options)
+    expect(victories()).toHaveLength(1)
+  } finally {
+    await repository.close()
+    await removeTempTestRoot(root)
+  }
+})
+
+test("old cooldowns are shortened and persisted without resetting on reload or companion replacement", async () => {
+  const root = await createTempTestRoot()
+  const options = { appDataRoot: root.appDataRoot }
+  let repository = await createSqliteDigitalPetRepository(options)
+  const service = () =>
+    createAdventureService(repository, DIGIMON_CATALOG, (id) => getRegionResidents(id, DIGIMON_CATALOG))
+  try {
+    const now = Date.now()
+    repository.spawnPartner({
+      currentNodeId: "3-001",
+      gauge: 0,
+      isTerminal: false,
+      createdAt: new Date(now).toISOString(),
+    })
+    const database = openWritableSqliteDatabase(resolveHostDatabasePath(options))
+    try {
+      database.executor.run("INSERT INTO adventure_schedule (schedule_id, ready_at) VALUES (1, ?)", [
+        now + 6 * 3600_000,
+      ])
+    } finally {
+      database.close()
+    }
+    const shortened = await service().nextReadyAt()
+    expect(shortened).toBeGreaterThanOrEqual(now + 2 * 3600_000)
+    expect(shortened).toBeLessThanOrEqual(Date.now() + 2 * 3600_000)
+    await repository.close()
+    repository = await createSqliteDigitalPetRepository(options)
+    expect(await service().nextReadyAt()).toBe(shortened)
+    repository.spawnPartner({
+      currentNodeId: "3-007",
+      gauge: 0,
+      isTerminal: false,
+      createdAt: new Date(Date.now()).toISOString(),
+    })
+    expect(await service().nextReadyAt()).toBe(shortened)
+    expect(await service().act({ kind: "start", id: "early" }, shortened - 1)).toBeUndefined()
+    expect((await service().act({ kind: "start", id: "ready" }, shortened))?.status).toBe("travel")
   } finally {
     await repository.close()
     await removeTempTestRoot(root)

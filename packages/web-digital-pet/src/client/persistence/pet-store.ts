@@ -1,5 +1,6 @@
 import type { AdventureStore } from "@jcendal/digital-pet-core/application/ports/adventure-store.ts"
 import { adventureBusy, parseAdventure } from "@jcendal/digital-pet-core/domain/adventure.ts"
+import { limitAdventureReadyAt } from "@jcendal/digital-pet-core/domain/adventure-pacing.ts"
 import { DEFAULT_WORLD_VISIT, isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { rewardBattleWinner } from "../../domain/battle/reward.ts"
@@ -47,11 +48,14 @@ export const browserAdventureStore: AdventureStore = {
   async nextReadyAt() {
     const database = await openDatabase()
     try {
-      return (
-        (await resultOf<number | undefined>(
-          database.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).get(ADVENTURE_READY_KEY),
-        )) ?? 0
-      )
+      const transaction = database.transaction(STORE_NAME, "readwrite")
+      const done = completed(transaction)
+      const store = transaction.objectStore(STORE_NAME)
+      const saved = (await resultOf<number | undefined>(store.get(ADVENTURE_READY_KEY))) ?? 0
+      const readyAt = limitAdventureReadyAt(saved, Date.now())
+      if (readyAt !== saved) store.put(readyAt, ADVENTURE_READY_KEY)
+      await done
+      return readyAt
     } finally {
       database.close()
     }
@@ -64,7 +68,9 @@ export const browserAdventureStore: AdventureStore = {
       const store = transaction.objectStore(STORE_NAME)
       const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
       const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
-      const readyAt = (await resultOf<number | undefined>(store.get(ADVENTURE_READY_KEY))) ?? 0
+      const savedReadyAt = (await resultOf<number | undefined>(store.get(ADVENTURE_READY_KEY))) ?? 0
+      const readyAt = limitAdventureReadyAt(savedReadyAt, Date.now())
+      if (readyAt !== savedReadyAt) store.put(readyAt, ADVENTURE_READY_KEY)
       const battle = await resultOf(store.get(PENDING_BATTLE_KEY))
       if (!state) {
         await done
@@ -86,6 +92,13 @@ export const browserAdventureStore: AdventureStore = {
         regionId: state.worldVisit?.regionId ?? DEFAULT_WORLD_VISIT.regionId,
       })
       if (next) {
+        const victory = next.bossVictory
+        const rewardedState =
+          victory &&
+          !state.bossVictories?.some((saved) => saved.regionId === victory.regionId && saved.nodeId === victory.nodeId)
+            ? { ...state, bossVictories: [...(state.bossVictories ?? []), victory] }
+            : state
+        if (rewardedState !== state) store.put(rewardedState, STATE_KEY)
         if (next.adventure !== adventure)
           store.put({ partnerId: state.partnerId, state: next.adventure }, ADVENTURE_KEY)
         if (next.readyAt !== undefined) store.put(next.readyAt, ADVENTURE_READY_KEY)
@@ -93,7 +106,7 @@ export const browserAdventureStore: AdventureStore = {
           const input = next.replacement
           store.put(
             replaceLocalPartner(
-              state,
+              rewardedState,
               crypto.randomUUID(),
               Date.parse(input.createdAt),
               input.currentNodeId,
@@ -107,7 +120,7 @@ export const browserAdventureStore: AdventureStore = {
           const now = Date.now()
           store.put(
             {
-              ...state,
+              ...rewardedState,
               gauge: progress.gauge,
               isTerminal: progress.isTerminal,
               ...(progress.pendingEvolutionTargetId

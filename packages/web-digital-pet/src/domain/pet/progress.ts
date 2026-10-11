@@ -1,4 +1,5 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { eggPettingExperience } from "@jcendal/digital-pet-core/domain/egg-petting.ts"
 import {
   applyTokenProgress,
@@ -24,7 +25,7 @@ import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 
 export const EXPERIENCE_INTERVAL_MS = 2 * 60 * 60 * 1000
-export const BROWSER_FEEDING_POLICY = Object.freeze({ intervalMs: 60 * 60 * 1000, experienceFraction: 0.1 })
+export const BROWSER_FEEDING_POLICY = Object.freeze({ intervalMs: 60 * 60 * 1000, experienceFraction: 0.05 })
 const TIMED_EXPERIENCE_FRACTION = 0.02
 
 export type ExperienceLevel = "low" | "normal" | "high"
@@ -59,6 +60,7 @@ export type LocalPetState = {
   readonly isTerminal: boolean
   readonly lastTickAt: number
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
+  readonly bossVictories?: readonly BossVictory[]
   readonly worldVisit?: WorldVisit
   readonly experienceLevel?: ExperienceLevel
   readonly retiredPartners?: readonly LocalArchivedPartner[]
@@ -251,6 +253,7 @@ export const replaceLocalPartner = (
     isTerminal,
     lastTickAt: now,
     experienceLevel: settled.experienceLevel ?? "high",
+    ...(settled.bossVictories ? { bossVictories: settled.bossVictories } : {}),
     ...(settled.worldVisit ? { worldVisit: settled.worldVisit } : {}),
     events: [{ currentNodeId: nodeId, createdAt }],
     retiredPartners: [

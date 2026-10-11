@@ -116,7 +116,6 @@
   "food.yum": "ÑAM!",
   "food.couldNotFeedYourCompanionTryAgain": "Non se puido dar de comer ao teu compañeiro. Téntao de novo.",
   "food.couldNotFeedTryAgain": "Non se puido dar de comer. Téntao de novo.",
-  "food.feedYourCompanion10Experience": "Dar de comer · +10% de experiencia",
   "food.feedYourCompanion": "Dar de comer ao teu compañeiro",
   "foregroundEvolution.presentationCancelled": "Animación cancelada",
   "controller.couldNotLoadYourWorldPleaseTryAgain": "Non se puido cargar o teu mundo. Téntao de novo.",
@@ -266,5 +265,7 @@
   "installation.dismiss": "Pechar a suxestión de instalación",
   "installation.failed": "Non se puido abrir a instalación. Téntao de novo.",
   "connection.battleTimedOut": "Non se puido conectar co outro xogador. Mantén ambas aplicacións abertas e téntao de novo, ou proba outra rede.",
-  "adventure.finishFirst": "Remata o encontro da aventura antes de combater con outro xogador."
+  "adventure.finishFirst": "Remata o encontro da aventura antes de combater con outro xogador.",
+  "protocol.invalidBossVictories": "A partida recibida contén vitorias de bosses non válidas",
+  "food.feedYourCompanion5Experience": "Dar de comer · +5% de experiencia"
 }

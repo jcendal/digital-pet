@@ -43,11 +43,11 @@ test("old saves schedule one apple without retroactive feeding; eggs never have 
   expect(advanceLocalPet(egg, now).food).toBeUndefined()
 })
 
-test("an apple awards exactly 10% of the chosen stage requirement and resets its clock", () => {
+test("an apple awards exactly 5% of the chosen stage requirement and resets its clock", () => {
   for (const experienceLevel of ["low", "normal", "high"] as const) {
     const hungry = { ...partner, experienceLevel, food: { kind: "available" as const } }
     const fed = consumeLocalFood(hungry, partner.partnerId, now)
-    expect(fed.gauge).toBe(experienceThresholds(experienceLevel)[3] / 10)
+    expect(fed.gauge).toBe(experienceThresholds(experienceLevel)[3] / 20)
     expect(fed.food).toEqual({ kind: "scheduled", availableAt: now + BROWSER_FEEDING_POLICY.intervalMs })
     expect(consumeLocalFood(fed, partner.partnerId, now)).toBe(fed)
     expect(consumeLocalFood(hungry, "replaced-pet", now)).toBe(hungry)
@@ -55,7 +55,7 @@ test("an apple awards exactly 10% of the chosen stage requirement and resets its
 })
 
 test("feeding caps experience and queues a visible evolution without registering it", () => {
-  const hungry = { ...partner, gauge: experienceThresholds()[3] * 0.9, food: { kind: "available" as const } }
+  const hungry = { ...partner, gauge: experienceThresholds()[3] * 0.97, food: { kind: "available" as const } }
   const ready = consumeLocalFood(hungry, partner.partnerId, now)
   expect(ready.currentNodeId).toBe(partner.currentNodeId)
   expect(ready.gauge).toBe(experienceThresholds()[3])

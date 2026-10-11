@@ -1,4 +1,5 @@
 import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
+import { REGION_BOSS_IDS } from "../data/bosses.ts"
 import { FIELDS } from "../data/fields.ts"
 import { LOCATIONS, REGIONS } from "../data/regions.ts"
 import type { Field, Region, WorldLocation, WorldVisit } from "../domain/world.ts"
@@ -63,4 +64,13 @@ export const auditHabitatCoverage = (catalog: DigimonCatalog) => {
     unassignedIds: catalog.nodes.filter((node) => !assigned.has(node.id)).map((node) => node.id),
     invalidIds: [...assigned].filter((id) => !catalog.byId.has(id)),
   }
+}
+
+export const getRegionBosses = (regionId: string, catalog: DigimonCatalog): readonly DigimonNode[] => {
+  getRegion(regionId)
+  return (REGION_BOSS_IDS[regionId] ?? []).map((id) => {
+    const node = catalog.byId.get(id)
+    if (!node) throw new Error(IntlModule.translate("world.unknownResidentIn", { id, regionId }))
+    return node
+  })
 }

@@ -77,10 +77,6 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.nav-battle .nav-icon {
-  width: 28px;
-  height: 28px;
-}
 .web-nav a:hover,
 .web-nav button:hover:not(:disabled) {
   color: var(--lcd);

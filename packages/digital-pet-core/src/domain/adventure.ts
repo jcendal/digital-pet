@@ -1,15 +1,18 @@
+import {
+  ADVENTURE_BATTLE_REWARDS,
+  type AdventureBattleRank,
+  chooseAdventureEncounter,
+  relativeBattleRank,
+} from "./adventure-encounter.ts"
 import { type AdventureEncounterKind, adventureQuietTime, drawAdventureEncounter } from "./adventure-pacing.ts"
 import { type BattlePlan, COMBAT_POLICY, planCombat } from "./combat.ts"
 import type { DigimonNode } from "./digimon-node.ts"
-import { battleExperienceFraction } from "./peer-combat.ts"
 
 export const ADVENTURE_POLICY = Object.freeze({
   lootLifetimeMs: 8_000,
   recruitmentChance: 0.15,
-  difficultChance: 0.08,
-  foodExperienceFraction: 0.05,
+  foodExperienceFraction: 0.02,
   fragmentExperienceFraction: 0.02,
-  battleExperienceMultiplier: 0.25,
   difficultStatBonus: 15,
 })
 
@@ -21,6 +24,7 @@ export type AdventureEvent =
       readonly kind: "battle"
       readonly id: number
       readonly opponentNodeId: string
+      readonly rank?: AdventureBattleRank
       readonly difficult: boolean
       readonly plan: BattlePlan
       readonly completedShots: number
@@ -53,6 +57,7 @@ export type AdventureChange = {
   readonly adventure: AdventureState
   readonly experienceFraction?: number
   readonly recruitedNodeId?: string
+  readonly defeatedBossNodeId?: string
 }
 
 export const adventureBusy = (state: AdventureState | undefined): boolean =>
@@ -70,19 +75,6 @@ const withoutEvent = (state: AdventureState): AdventureState => {
   return rest
 }
 
-/** Only residents of the chosen region can be encountered; an absent higher tier falls back to the current tier. */
-export const adventureOpponent = (
-  current: DigimonNode,
-  residents: readonly DigimonNode[],
-  random: () => number,
-): DigimonNode | undefined => {
-  const difficult = random() < ADVENTURE_POLICY.difficultChance
-  const same = residents.filter((node) => node.stage === current.stage)
-  const higher = difficult ? residents.filter((node) => node.stage === current.stage + 1) : []
-  const pool = higher.length ? higher : same
-  return pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))]
-}
-
 export const changeAdventure = (
   state: AdventureState | undefined,
   command: AdventureCommand,
@@ -91,6 +83,7 @@ export const changeAdventure = (
   residents: readonly DigimonNode[],
   now: number,
   random: () => number = Math.random,
+  bosses: readonly DigimonNode[] = [],
 ): AdventureChange | undefined => {
   if (current.stage === 0 || !Number.isFinite(now)) return undefined
   if (command.adventureId !== undefined && command.adventureId !== state?.id) return undefined
@@ -124,7 +117,7 @@ export const changeAdventure = (
   const event = state.event
   if (command.kind === "accept-companion" || command.kind === "decline-companion") {
     if (event?.kind !== "offer" || event.id !== command.eventId || command.adventureId !== state.id) return undefined
-    const opponent = residents.find((node) => node.id === event.opponentNodeId)
+    const opponent = [...residents, ...bosses].find((node) => node.id === event.opponentNodeId)
     if (!opponent || opponent.stage === 0) return undefined
     const accepted = command.kind === "accept-companion"
     return {
@@ -152,7 +145,8 @@ export const changeAdventure = (
   if (command.kind === "finish-battle") {
     if (event?.kind !== "battle" || event.id !== command.eventId || event.completedShots !== event.plan.shots.length)
       return undefined
-    const opponent = residents.find((node) => node.id === event.opponentNodeId)
+    const opponent = [...residents, ...bosses].find((node) => node.id === event.opponentNodeId)
+    if (event.rank === "boss" && !bosses.some((node) => node.id === event.opponentNodeId)) return undefined
     const won = event.plan.outcome === "player"
     const lost = event.plan.outcome === "opponent"
     const offer = won && opponent && random() < ADVENTURE_POLICY.recruitmentChance
@@ -168,8 +162,8 @@ export const changeAdventure = (
       },
       ...(won && opponent
         ? {
-            experienceFraction:
-              battleExperienceFraction(current.stage, opponent.stage) * ADVENTURE_POLICY.battleExperienceMultiplier,
+            experienceFraction: ADVENTURE_BATTLE_REWARDS[event.rank ?? relativeBattleRank(current, opponent)],
+            ...(event.rank === "boss" ? { defeatedBossNodeId: opponent.id } : {}),
           }
         : {}),
     }
@@ -196,14 +190,17 @@ export const changeAdventure = (
   if (!next.event && elapsedMs >= next.nextEventAt) {
     const id = next.sequence + 1
     const draw = drawAdventureEncounter(next.encounters ?? [], random)
-    const opponent = draw.kind === "battle" ? adventureOpponent(current, residents, random) : undefined
+    const encounterChoice =
+      draw.kind === "battle" ? chooseAdventureEncounter(current, residents, bosses, random) : undefined
+    const opponent = encounterChoice?.opponent
     const difficulty = opponent && opponent.stage > current.stage ? ADVENTURE_POLICY.difficultStatBonus : 0
     const encounter: AdventureEvent = opponent
       ? {
           kind: "battle",
           id,
           opponentNodeId: opponent.id,
-          difficult: Boolean(difficulty),
+          rank: encounterChoice?.rank ?? "same",
+          difficult: encounterChoice?.rank === "boss" || Boolean(difficulty),
           completedShots: 0,
           plan: planCombat(
             current.combatStats,
@@ -259,6 +256,7 @@ export const parseAdventure = (raw: unknown): AdventureState | undefined => {
       if (
         typeof event.opponentNodeId !== "string" ||
         typeof event.difficult !== "boolean" ||
+        (event.rank !== undefined && !["lower", "same", "higher", "boss"].includes(event.rank)) ||
         !event.plan ||
         !["player", "opponent", "draw"].includes(event.plan.outcome) ||
         !Array.isArray(event.plan.shots) ||

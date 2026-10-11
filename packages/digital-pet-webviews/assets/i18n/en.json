@@ -170,7 +170,7 @@
   "adventure.walking": "Exploring the area…",
   "adventure.paused": "Adventure paused. Continue when you are ready.",
   "adventure.collect": "A discovery! Tap it before it passes.",
-  "adventure.food": "Pick up food · +5% experience",
+  "adventure.food": "Pick up food · +2% experience",
   "adventure.fragment": "Pick up data · +2% experience",
   "adventure.encounter": "Encounter: {name}",
   "adventure.difficult": "Danger! A stronger {name} approaches.",
@@ -182,5 +182,9 @@
   "adventure.offerDescription": "Your current companion will stay in your history and Dex. Your new companion starts with no experience. This ends the adventure.",
   "adventure.accept": "Welcome!",
   "adventure.decline": "Keep exploring",
-  "adventure.offered": "A new friend is waiting for your answer."
+  "adventure.offered": "A new friend is waiting for your answer.",
+  "adventure.bossIntro": "A powerful rival approaches",
+  "adventure.bossEncounter": "Boss: {name}",
+  "world.bosses": "Bosses",
+  "world.bossDefeated": "Boss defeated"
 }

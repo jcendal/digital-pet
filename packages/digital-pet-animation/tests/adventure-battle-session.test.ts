@@ -81,3 +81,36 @@ test("hiding the viewer interrupts playback without awarding or advancing an uns
   expect(checkpoints).toBe(0)
   expect(rewarded).toBe(false)
 })
+
+test("bosses have a separate reveal before battle and never award experience during their intro", async () => {
+  if (saved.event?.kind !== "battle") throw new Error("Missing battle")
+  const boss: AdventureState = {
+    ...saved,
+    event: { ...saved.event, opponentNodeId: "6-095", rank: "boss", completedShots: 0 },
+  }
+  const order: string[] = []
+  let intro = false
+  await runAdventureBattleSession(boss, 50, {
+    frames: MONSTER_FRAME_CATALOG,
+    catalog: DIGIMON_CATALOG,
+    active: () => true,
+    onState: async (state) => {
+      intro = state.phase === "battle" && state.bossIntro === true
+      order.push(intro ? "boss-intro" : "battle")
+    },
+    onFrame: async (_artwork, hud) => {
+      if (intro) expect(hud).toBeUndefined()
+      order.push(intro ? "reveal" : (hud?.caption ?? "frame"))
+    },
+    checkpoint: async () => {
+      expect(intro).toBe(false)
+      return true
+    },
+    finish: async () => {
+      expect(order.at(-1)).toBe("WIN!")
+      order.push("reward")
+    },
+  })
+  expect(order.slice(0, 5)).toEqual(["boss-intro", "reveal", "reveal", "reveal", "battle"])
+  expect(order.at(-1)).toBe("reward")
+})

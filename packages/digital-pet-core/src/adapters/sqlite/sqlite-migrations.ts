@@ -131,6 +131,12 @@ const MIGRATIONS = [
       "CREATE TABLE IF NOT EXISTS adventure_schedule (schedule_id INTEGER PRIMARY KEY CHECK (schedule_id = 1), ready_at INTEGER NOT NULL)",
     ],
   },
+  {
+    version: 8,
+    sql: [
+      "CREATE TABLE IF NOT EXISTS boss_victories (region_id TEXT NOT NULL, node_id TEXT NOT NULL, defeated_at TEXT NOT NULL, PRIMARY KEY (region_id, node_id))",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

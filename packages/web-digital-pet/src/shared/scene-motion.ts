@@ -22,7 +22,7 @@ export const sceneMotionFor = (frame: MonsterAnimationOutput, partnerKey: string
 })
 
 export const landscapeDirection = (previous: SceneMotion | undefined, next: SceneMotion): -1 | 0 | 1 => {
-  if (next.adventuring && next.walking) return 1
+  if (next.adventuring && next.walking) return next.facing === "right" ? -1 : 1
   if (
     !previous?.walking ||
     !next.walking ||

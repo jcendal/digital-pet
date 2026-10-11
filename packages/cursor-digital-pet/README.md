@@ -322,14 +322,19 @@ Edit the canonical resources rather than generated copies.
 ## Adventures
 
 The partner viewer shows a compass button when a hatched companion can explore.
-Trips have a persisted 4–6 hour cooldown shared across companion generations.
+Trips have a persisted 2-hour cooldown shared across companion generations.
 The trip continues until defeat, returning home, accepting a companion, or
 reaching evolution. Compact pause and home icons are available in the viewer.
 
 Shared core rules combine 45–65 second quiet periods with a balanced encounter
 bag (two data fragments, one meal, two battles). Finds pass after eight seconds.
-Data grants 2%, food 5%, and same-stage victories 5% of the current threshold;
-rare next-stage victories grant 10%. XP is applied after the outcome animation.
+Both data and adventure food grant 2% of the current threshold. Rival selection
+requests a lower stage 50%, the same stage 35%, a higher stage 10% and a regional
+boss 5%; absent tiers fall back to the nearest available non-egg tier. Victories
+grant 2%, 5%, 15% and 50% respectively, after the outcome animation. Bosses have
+a special reveal and are excluded from ordinary encounter pools. Their victories
+are stored as trainer achievements, survive new generations and appear as stars
+in the shared database's web map. They do not register Dex ownership.
 
 Adventure plans, checkpoints, the remaining bag and pending 15% recruitment
 offers are stored in SQLite. Accepting an offer uses the existing partner

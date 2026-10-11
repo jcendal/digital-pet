@@ -161,6 +161,19 @@ test("a saved adventure fight plays in the pet viewer and XP waits for the last 
   page.on("pageerror", (error) => errors.push(error.message))
   await page.addInitScript(() => {
     Math.random = () => 0.9
+    const transitions: { phase: string; caption: string }[] = []
+    Object.defineProperty(window, "battleTransitions", { value: transitions })
+    window.addEventListener("message", (event) => {
+      if (event.data?.type !== "presentation-state" || event.data.state.phase === "battle") return
+      queueMicrotask(() => {
+        const artwork = document.getElementById("artwork")
+        if (artwork)
+          transitions.push({
+            phase: event.data.state.phase,
+            caption: artwork.textContent ?? "",
+          })
+      })
+    })
   })
   await page.clock.install()
   await page.goto("/")
@@ -190,13 +203,23 @@ test("a saved adventure fight plays in the pet viewer and XP waits for the last 
   }
   await expect.poll(async () => (await saved(page)).gauge).toBe(2_000_000)
   expect((await saved(page)).adventure.victories).toBe(1)
+  const transitions = await pet.locator("html").evaluate(() => Reflect.get(window, "battleTransitions"))
+  await testInfo.attach("battle-end-transitions", {
+    body: JSON.stringify(transitions, null, 2),
+    contentType: "application/json",
+  })
+  expect(transitions.length).toBeGreaterThan(0)
+  expect(transitions.filter((frame: { caption: string }) => frame.caption.trim())).toEqual([])
+  await page.screenshot({ path: testInfo.outputPath("adventure-battle-finished.png") })
   await page.reload()
   await expect(pet.locator("#percent")).toHaveText("5%")
   expect((await saved(page)).gauge).toBe(2_000_000)
   expect(errors).toEqual([])
 })
 
-test("a cooldown persists on reload and the viewer shows Adventure again when it expires", async ({ page }) => {
+test("a disabled Adventure countdown persists on reload and becomes available after two hours", async ({
+  page,
+}, testInfo) => {
   await page.addInitScript(() => {
     Math.random = () => 0.5
   })
@@ -209,13 +232,22 @@ test("a cooldown persists on reload and the viewer shows Adventure again when it
   await pet.locator("#adventure-toggle").click()
   await expect(pet.locator(".pet-module")).toHaveClass(/adventuring/)
   await pet.locator("#adventure-stop").click()
-  await expect(pet.locator("#adventure-toggle")).toBeHidden()
+  await expect(pet.locator("#adventure-toggle")).toBeVisible()
+  await expect(pet.locator("#adventure-toggle")).toBeDisabled()
+  await expect(pet.locator("#adventure-toggle")).toHaveText("2:00")
   await page.reload()
-  await expect(pet.locator("#adventure-time")).toContainText("Next trip in")
-  await expect(pet.locator("#adventure-toggle")).toBeHidden()
-  await page.clock.fastForward(6 * 3600_000)
+  await expect(pet.locator("#adventure-controls")).toHaveCount(0)
+  await expect(pet.locator("#adventure-toggle")).toBeDisabled()
+  await expect(pet.locator("#adventure-toggle")).toHaveText("2:00")
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.screenshot({ path: testInfo.outputPath("adventure-countdown.png") })
+  await page.clock.fastForward(2 * 3600_000 - 60_000)
+  await expect(pet.locator("#adventure-toggle")).toBeDisabled()
+  await expect(pet.locator("#adventure-toggle")).toHaveText("0:01")
+  await page.clock.fastForward(60_000)
   await expect(pet.locator("#adventure-toggle")).toBeVisible()
   await expect(pet.locator("#adventure-toggle")).toBeEnabled()
+  await expect(pet.locator("#adventure-toggle")).toHaveText("Adventure")
   await pet.locator("#adventure-toggle").click()
   await expect(pet.locator(".pet-module")).toHaveClass(/adventuring/)
 })
@@ -251,7 +283,8 @@ test("recruitment survives reload and adopts a new generation without losing his
   await pet.locator("#adventure-accept").click()
   await expect(pet.locator("#name")).toHaveText("Betamon")
   await expect(pet.locator("#adventure-offer")).toBeHidden()
-  await expect(pet.locator("#adventure-toggle")).toBeHidden()
+  await expect(pet.locator("#adventure-toggle")).toBeVisible()
+  await expect(pet.locator("#adventure-toggle")).toBeDisabled()
   const result = await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
       const request = indexedDB.open("web-digital-pet", 1)
@@ -287,5 +320,69 @@ test("recruitment survives reload and adopts a new generation without losing his
   await page.reload()
   await expect(pet.locator("#name")).toHaveText("Betamon")
   await expect(pet.locator("#adventure-offer")).toBeHidden()
+  expect(errors).toEqual([])
+})
+
+test("a boss reveals itself in the viewer, awards 50% after combat and leaves a persistent map star", async ({
+  page,
+}, testInfo) => {
+  const errors: string[] = []
+  page.on("pageerror", (error) => errors.push(error.message))
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.addInitScript(() => {
+    Math.random = () => 0.9
+  })
+  await page.clock.install()
+  await page.goto("/")
+  const pet = page.frameLocator('iframe[data-page="sidebar"]')
+  await expect(pet.locator("#name")).not.toHaveText("")
+  await save(page, true)
+  await page.evaluate(async () => {
+    const database = await new Promise<IDBDatabase>((resolve) => {
+      const request = indexedDB.open("web-digital-pet", 1)
+      request.onsuccess = () => resolve(request.result)
+    })
+    await new Promise<void>((resolve) => {
+      const transaction = database.transaction("pet", "readwrite")
+      const store = transaction.objectStore("pet")
+      const request = store.get("adventure")
+      request.onsuccess = () => {
+        const saved = request.result
+        saved.state.event.opponentNodeId = "6-095"
+        saved.state.event.rank = "boss"
+        saved.state.event.difficult = true
+        store.put(saved, "adventure")
+      }
+      transaction.oncomplete = () => resolve()
+    })
+    database.close()
+  })
+  await page.reload()
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
+  await expect(pet.locator("#adventure-toggle")).toHaveAttribute("aria-label", "Continue")
+  await pet.locator("#adventure-toggle").click()
+  await expect(pet.locator("#boss-intro")).toBeVisible()
+  await expect(pet.locator("#boss-intro-name")).toHaveText("MetalSeadramon")
+  expect((await saved(page)).gauge).toBe(0)
+  await page.screenshot({ path: testInfo.outputPath("adventure-boss-intro.png") })
+  for (let index = 0; index < 28; index++) {
+    await page.clock.runFor(1000)
+    await page.waitForTimeout(20)
+  }
+  await expect.poll(async () => (await saved(page)).gauge).toBe(20_000_000)
+  await expect(pet.locator("#boss-intro")).toBeHidden()
+  await expect(pet.locator("#percent")).toHaveText("50%")
+  await pet.locator("#adventure-stop").click()
+  await pet.locator("#world-location").click()
+  const star = page.locator('[data-region="digital-ocean"] .world-boss-star')
+  await expect(star).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath("adventure-boss-map.png") })
+  await page.locator('[data-region="digital-ocean"]').click()
+  await expect(page.locator(".world-bosses .world-boss-star")).toHaveCount(1)
+  await page.reload()
+  await expect(pet.locator("#percent")).toHaveText("50%")
+  await pet.locator("#world-location").click()
+  await expect(star).toBeVisible()
+  expect((await saved(page)).gauge).toBe(20_000_000)
   expect(errors).toEqual([])
 })

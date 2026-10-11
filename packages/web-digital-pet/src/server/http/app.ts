@@ -4,7 +4,7 @@ import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { REGIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import { hasHostDatabase, readArchive } from "../persistence/sqlite.ts"
+import { hasHostDatabase, readArchive, readBossVictories } from "../persistence/sqlite.ts"
 import type { WebResources } from "../rendering/build-resources.ts"
 import { dexModel, historyModel, sidebarData } from "../rendering/host-models.ts"
 import { renderPage, renderShell } from "../rendering/pages.ts"
@@ -56,7 +56,15 @@ export const createWebHandler = (resources: WebResources, clientRoot?: string) =
           response,
           200,
           "application/json; charset=utf-8",
-          JSON.stringify(buildWorldPanelModel(regionId, readArchive(), DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS)),
+          JSON.stringify(
+            buildWorldPanelModel(
+              regionId,
+              readArchive(),
+              DIGIMON_CATALOG,
+              DEFAULT_DIGITAL_PET_SETTINGS,
+              readBossVictories(),
+            ),
+          ),
         )
       }
       if (url.pathname === "/api/sidebar") {
