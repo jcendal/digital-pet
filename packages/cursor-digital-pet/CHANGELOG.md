@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-11
+
+### Changed
+
+- feat: add pet affection, scale battle rewards and refine Dex UI
+
+
 ## [0.10.1] - 2026-10-10
 
 ### Changed
