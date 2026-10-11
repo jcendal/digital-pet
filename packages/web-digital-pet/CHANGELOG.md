@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-11
+
+### Changed
+
+- feat: add persistent adventures and companion recruitment
+
+
 ## [0.6.0] - 2026-10-11
 
 ### Changed
