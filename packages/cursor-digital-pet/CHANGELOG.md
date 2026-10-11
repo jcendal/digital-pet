@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-11
+
+### Changed
+
+- feat: add persistent adventures and companion recruitment
+
+
 ## [0.11.0] - 2026-10-11
 
 ### Changed
