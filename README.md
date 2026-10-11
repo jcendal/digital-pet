@@ -1,76 +1,50 @@
 <div align="center">
   <img src="assets/branding/logo.png" alt="Digital Pet logo" width="160" style="image-rendering: pixelated">
   <h1>Digital Pet</h1>
-  <p>A Digimon virtual pet that evolves with AI token usage in Cursor and OpenCode, with a local web companion.</p>
+  <p>Raise a Digimon while you work, or take your companion with you in the browser.</p>
 </div>
 
-Digital Pet has a Cursor extension, an OpenCode plugin, and a local web companion. They read the same SQLite database, so your partner, Dex discoveries, and generation history carry across the three views. Cursor and OpenCode record token usage; the web companion displays the shared progress.
+Hatch an egg, watch your partner evolve, and discover 650 Digimon. Keep your past
+companions in History and build your collection in the Digidex.
 
 ## Choose your app
 
-| App | What it does | Get started |
+| App | Your companion | Get started |
 | --- | --- | --- |
-| [Cursor Digital Pet](packages/cursor-digital-pet/README.md) | Shows your partner in the Explorer sidebar and tracks Cursor Agent usage through hooks, with an API fallback. | [Install from Open VSX](https://open-vsx.org/extension/jcendal/cursor-digital-pet) or use a VSIX from [GitHub Releases](https://github.com/jcendal/digital-pet/releases). Follow the [Cursor setup guide](packages/cursor-digital-pet/README.md#-usage) to install hooks and hatch a partner. |
-| [OpenCode Digital Pet](packages/opencode-digital-pet/README.md) | Adds a TUI sidebar and `/digital-pet-*` commands; completed assistant messages provide experience. | Run `npx @jcendal/opencode-digital-pet init`, restart OpenCode, then run `/digital-pet-spawn`. See the [OpenCode guide](packages/opencode-digital-pet/README.md#quick-start). |
-| [Web Digital Pet](packages/web-digital-pet/README.md) | Shows the animated partner, Digidex, and generation history in a phone-width browser layout. | Run `npm run web`, then open `http://localhost:4173`. [AWS deployment guide](docs/web-deployment.md). |
+| [Cursor Digital Pet](packages/cursor-digital-pet/README.md) | Lives in the sidebar and grows as you use Cursor Agent. | [Install from Open VSX](https://open-vsx.org/extension/jcendal/cursor-digital-pet) or download a VSIX from [Releases](https://github.com/jcendal/digital-pet/releases). |
+| [OpenCode Digital Pet](packages/opencode-digital-pet/README.md) | Grows with your OpenCode sessions. | Run `npx @jcendal/opencode-digital-pet init`, restart OpenCode, then use `/digital-pet-spawn`. |
+| [Web Digital Pet](packages/web-digital-pet/README.md) | Explore the Digital World, care for your partner, and challenge other players. | Run `npm run web` from this repository and open `http://localhost:4173`. See the [setup guide](packages/web-digital-pet/README.md#quick-start). |
 
-The [illustrative OpenCode preview](assets/screenshots/digital-pet-overview.png) shows the partner, Dex, and history views. Each app's README describes its own commands, requirements, settings, and storage behavior.
+Cursor and OpenCode share your companion, discoveries, and history on the same
+computer. The local web app can display that companion or let you raise a separate
+one in your browser.
 
-## Shared progress and migration
+![Illustrative OpenCode partner, Dex and history views](assets/screenshots/digital-pet-overview.png)
 
-All three apps resolve the same `pet.db` location by default:
+## Play your way
 
-| Platform | Database |
-| --- | --- |
-| macOS | `~/Library/Application Support/opencode-digital-pet/pet.db` |
-| Linux / WSL | `~/.local/share/opencode-digital-pet/pet.db` |
-| Windows | `%APPDATA%\opencode-digital-pet\pet.db` |
+- **Raise a partner:** hatch eggs and discover branching evolutions.
+- **Care and explore:** pet your companion, clean up after it, and set off on adventures in Cursor or the web app.
+- **Collect:** browse the Digidex and revisit your previous generations in History.
+- **Battle and travel:** use the web app to challenge friends and explore different regions.
+- **Take it with you:** install the web app and transfer browser saves between your devices.
+- **Choose your language:** English, Korean, Spanish, or Galician.
 
-If the new database does not exist but an older `opencode-vpet/pet.db` does, both apps continue using that older database. OpenCode also continues reading an older `opencode-vpet.json` settings file until a new `opencode-digital-pet.json` is created.
+Each app's guide explains its controls and available features. Your saves stay on
+your device; the web app does not require an account.
 
-If you previously installed `@sbugallo/opencode-vpet` or unscoped `opencode-vpet`, remove its OpenCode registration to avoid loading both plugins. The [OpenCode guide](packages/opencode-digital-pet/README.md#update) has the update command; the [Cursor guide](packages/cursor-digital-pet/README.md#-storage) covers its database override.
+## Help and contributions
 
-## Repository layout
-
-For workspace setup, Cursor extensions, code conventions, and validation commands,
-see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-| Workspace | Role |
-| --- | --- |
-| [`packages/cursor-digital-pet`](packages/cursor-digital-pet) | Cursor extension, packaged as a VSIX |
-| [`packages/opencode-digital-pet`](packages/opencode-digital-pet) | `@jcendal/opencode-digital-pet`, npm plugin and CLI |
-| [`packages/digital-pet-fields`](packages/digital-pet-fields) | Fields, regions, habitat rosters, and scenery assets; private workspace |
-| [`packages/digital-pet-core`](packages/digital-pet-core) | Shared catalog, evolution rules, use cases, and SQLite schema; private workspace |
-| [`packages/digital-pet-animation`](packages/digital-pet-animation) | Shared animation logic; private workspace |
-| [`packages/digital-pet-webviews`](packages/digital-pet-webviews) | Shared browser interface for Cursor and the web companion; private workspace |
-| [`packages/web-digital-pet`](packages/web-digital-pet) | Local browser server and read-only SQLite adapter |
-
-The root workspace is private. The shared packages are bundled into the products and are not published separately. Cursor and OpenCode have [separate changelogs](CHANGELOG.md) and release versions. See [monorepo documentation](docs/monorepo.md) for development tools and release details.
-
-## Development
-
-Use Node `24.11.0`, npm `11.6.1`, and Bun `1.3.5` (the versions declared by the workspace). npm installs dependencies and runs workspace scripts; Bun runs the tests and the OpenCode plugin at runtime. Builds use Node and esbuild.
-
-```sh
-npm ci
-npm run check
-npm run test
-npm run test:persistence
-npm run build
-```
-
-To create local distributables:
-
-```sh
-npm run pack:opencode
-npm run package --workspace cursor-digital-pet
-```
-
-Contributions and issues belong in the [repository](https://github.com/jcendal/digital-pet). The two product READMEs provide their user guides; [docs/monorepo.md](docs/monorepo.md) lists package-specific development commands.
+Report problems or suggest features in [GitHub Issues](https://github.com/jcendal/digital-pet/issues).
+For development setup and contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+Release notes are listed in the [changelog](CHANGELOG.md).
 
 ## Maintainer and credits
 
 - [Jorge Cendal](https://github.com/jcendal), maintainer
 - [Sergio Bugallo](https://github.com/sbugallo), original author and contributor
 
-The project is licensed under [Apache 2.0](LICENSE). The bundled sprites were derived from [sundeth/omnipet](https://github.com/sundeth/omnipet/tree/main) and [Tortoiseshel's Full Color Digimon Dot Sprites post](https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/), then edited and processed for this project.
+The project is licensed under [Apache 2.0](LICENSE). Digimon sprites were derived
+from [sundeth/omnipet](https://github.com/sundeth/omnipet/tree/main) and
+[Tortoiseshel's Full Color Digimon Dot Sprites post](https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/),
+then edited for this project. Music credits appear in the [web soundtrack](packages/web-digital-pet/assets/music/README.md).
