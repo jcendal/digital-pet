@@ -10,7 +10,13 @@ export type AdventureView = {
   readonly state?: Omit<AdventureState, "event"> & {
     readonly event?:
       | { readonly kind: "loot"; readonly id: number; readonly item: "food" | "fragment"; readonly appearedAt: number }
-      | { readonly kind: "battle"; readonly id: number; readonly difficult: boolean; readonly opponentName: string }
+      | {
+          readonly kind: "battle"
+          readonly id: number
+          readonly difficult: boolean
+          readonly boss?: boolean
+          readonly opponentName: string
+        }
       | { readonly kind: "offer"; readonly id: number; readonly opponentName: string }
   }
 }

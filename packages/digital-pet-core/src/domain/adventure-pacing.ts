@@ -3,8 +3,7 @@ export type AdventureEncounterKind = "fragment" | "food" | "battle"
 export const ADVENTURE_PACING = Object.freeze({
   quietMinMs: 45_000,
   quietMaxMs: 65_000,
-  cooldownMinMs: 4 * 60 * 60 * 1000,
-  cooldownMaxMs: 6 * 60 * 60 * 1000,
+  cooldownMs: 2 * 60 * 60 * 1000,
 })
 
 const between = (min: number, max: number, random: () => number): number =>
@@ -12,8 +11,9 @@ const between = (min: number, max: number, random: () => number): number =>
 
 export const adventureQuietTime = (random: () => number): number =>
   between(ADVENTURE_PACING.quietMinMs, ADVENTURE_PACING.quietMaxMs, random)
-export const adventureCooldown = (random: () => number): number =>
-  between(ADVENTURE_PACING.cooldownMinMs, ADVENTURE_PACING.cooldownMaxMs, random)
+/** Shorten an existing longer cooldown once; saving the result preserves elapsed time across reloads. */
+export const limitAdventureReadyAt = (readyAt: number, now: number): number =>
+  Math.min(readyAt, now + ADVENTURE_PACING.cooldownMs)
 
 /** Draw without replacement: every five encounters contain two fragments, one meal and two battles. */
 export const drawAdventureEncounter = (remaining: readonly AdventureEncounterKind[], random: () => number) => {

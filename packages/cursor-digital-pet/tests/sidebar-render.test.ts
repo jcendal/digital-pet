@@ -215,8 +215,12 @@ describe("sidebar render", () => {
     send({ type: "presentation-state", state: { phase: "evolving", fromNodeId: "3-001", toNodeId: "4-017" } })
     expect(element("battle-scores").hidden).toBe(true)
     expect(element("battle-caption").hidden).toBe(true)
+    expect(element("artwork").children.map((node) => node.attributes.x)).toEqual(["0", "0"])
     send({ type: "presentation-state", state: { phase: "idle" } })
+    expect(element("artwork").children.map((node) => node.attributes.x)).toEqual(["0", "0"])
     expect(element("stage").textContent).toBe("Rookie")
+    send({ type: "animation-frame", artwork: "                █" })
+    expect(element("artwork").children.map((node) => node.attributes.x)).toEqual(["16", "16"])
   })
 
   test("converts pixel width to monospace artwork columns", () => {

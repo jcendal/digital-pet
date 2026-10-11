@@ -53,7 +53,12 @@ export const initBrowserWorld = async (): Promise<void> => {
   const render = () => {
     content.innerHTML = selectedRegion
       ? renderWorldRegion(getRegion(selectedRegion), model, visit, (id) => webAsset(`/regions/${id}/scene.svg`))
-      : renderWorldOverview(new Set(model.registeredIds), visit, (id) => webAsset(`/regions/${id}/scene.svg`))
+      : renderWorldOverview(
+          new Set(model.registeredIds),
+          visit,
+          (id) => webAsset(`/regions/${id}/scene.svg`),
+          model.bossVictories,
+        )
     dialog.querySelector<HTMLElement>(".dialog-body")!.scrollTop = 0
   }
   const refresh = async () => {

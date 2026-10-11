@@ -2,6 +2,11 @@ import { existsSync } from "node:fs"
 import { DatabaseSync } from "node:sqlite"
 import { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import {
+  BOSS_VICTORIES_SELECT,
+  type BossVictoryRow,
+  toBossVictory,
+} from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-boss-victories.ts"
+import {
   ACTIVE_PARTNER_SELECT,
   ARCHIVE_PARTNER_EVENTS_SELECT,
   ARCHIVE_PARTNERS_SELECT,
@@ -12,6 +17,7 @@ import {
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
 import type { DigitalPetArchiveResult } from "@jcendal/digital-pet-core/application/models/digital-pet-archive.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
+import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 
 export const databasePath = process.env.DIGITAL_PET_DATABASE_PATH || resolveHostDatabasePath()
@@ -93,3 +99,6 @@ export const readArchive = (): DigitalPetArchiveResult =>
       message: IntlModule.translate("sqlite.digitalPetArchiveIsUnavailable"),
     },
   )
+
+export const readBossVictories = (): readonly BossVictory[] =>
+  readDatabase((database) => (database.prepare(BOSS_VICTORIES_SELECT).all() as BossVictoryRow[]).map(toBossVictory), [])

@@ -12,7 +12,7 @@ const icons = {
     '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 5v15M3 4h5l4 2 4-2h5v14h-5l-4 2-4-2H3zM6 8h3M6 12h3m6-4h3m-3 4h3"/>',
   ),
   battle: icon(
-    '<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3h4l11 13-3 3L3 8V4h1zm16 0h-4l-4 5m-4 4-3 4 3 3 4-5M3 15l6 6m6-18 6 6M3 21l3-3m12 0 3 3"/>',
+    '<g stroke="currentColor" stroke-width="2" stroke-linejoin="miter"><path fill="var(--case)" d="M21 3h-4L4 16l4 4L21 7z"/><path fill="var(--case)" d="M3 3h4l13 13-4 4L3 7z"/><path fill="none" d="m3 14 7 7m4 0 7-7M5 19l-3 3m17-3 3 3"/></g>',
   ),
   history: icon(
     '<path fill="none" stroke="currentColor" stroke-width="2" d="M4 8V3M4 8h5m-5 0 4-4h8l4 4v8l-4 4H8l-4-4m8-9v6h5"/>',

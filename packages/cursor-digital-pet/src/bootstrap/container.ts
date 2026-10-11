@@ -4,7 +4,7 @@ import { createAdventureService } from "@jcendal/digital-pet-core/application/us
 import { createEggPettingService } from "@jcendal/digital-pet-core/application/use-cases/pet-egg.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
-import { getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
+import { getRegionBosses, getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
 import type * as vscode from "vscode"
 
 import { createDatabaseChangeWatcher } from "../adapters/sqlite/database-change-watcher.ts"
@@ -38,8 +38,12 @@ export const createDigitalPetContainer = async (context: vscode.ExtensionContext
   context.subscriptions.push({ dispose: () => repository.close() })
 
   const sidebarProvider = new DigitalPetSidebarProvider(context.extensionUri, repository, repository, {
-    adventureService: createAdventureService(repository, DIGIMON_CATALOG, (regionId) =>
-      getRegionResidents(regionId, DIGIMON_CATALOG),
+    adventureService: createAdventureService(
+      repository,
+      DIGIMON_CATALOG,
+      (regionId) => getRegionResidents(regionId, DIGIMON_CATALOG),
+      Math.random,
+      (regionId) => getRegionBosses(regionId, DIGIMON_CATALOG),
     ),
     hygieneService: createPartnerHygieneService(repository, DIGIMON_CATALOG, STAGE_GAUGE_THRESHOLDS),
     eggPettingService: createEggPettingService(repository, DIGIMON_CATALOG, STAGE_GAUGE_THRESHOLDS),

@@ -202,66 +202,53 @@ body {
   display: none;
 }
 
-#adventure-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-top: 1px dotted var(--muted);
-  padding: 8px 0;
-  font-size: 11px;
-}
-#adventure-status {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#adventure-time {
-  flex-shrink: 0;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-}
 #adventure-actions {
   position: absolute;
   top: 8px;
   right: 8px;
   z-index: 9;
   display: flex;
-  gap: 6px;
+  gap: 2px;
+  background: var(--lcd);
+  border: 2px solid var(--ink);
 }
 #adventure-actions button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 44px;
   min-height: 44px;
   padding: 8px;
-  border: 1px solid var(--ink);
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 var(--muted);
-  background: var(--lcd);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 11px;
+  font-size: 10px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-#adventure-actions button:hover {
-  background: var(--muted);
+#adventure-actions #adventure-stop {
+  border-left: 2px solid var(--ink);
 }
-#adventure-actions button:active {
-  transform: translate(1px, 1px);
-  box-shadow: none;
+#adventure-actions button:enabled:hover,
+#adventure-actions button:enabled:active {
+  background: var(--ink);
+  color: var(--lcd);
+}
+#adventure-actions button:focus-visible {
+  outline: 2px dashed var(--ink);
+  outline-offset: 4px;
 }
 #adventure-actions button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 #adventure-actions svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -270,6 +257,39 @@ body {
 }
 #adventure-toggle span:empty {
   display: none;
+}
+#adventure-toggle[data-cooldown="true"] svg {
+  display: none;
+}
+#adventure-toggle span {
+  font-variant-numeric: tabular-nums;
+}
+#boss-intro {
+  position: absolute;
+  top: 12%;
+  left: 8px;
+  right: 8px;
+  z-index: 10;
+  display: grid;
+  gap: 10px;
+  padding: 12px 8px;
+  border-block: 3px double var(--ink);
+  text-align: center;
+  background: var(--lcd);
+  color: var(--ink);
+}
+#boss-intro span {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+#boss-intro strong {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pet-module.boss-intro .arena {
+  box-shadow: inset 0 0 0 3px var(--ink);
 }
 #adventure-offer {
   margin: 8px 0;

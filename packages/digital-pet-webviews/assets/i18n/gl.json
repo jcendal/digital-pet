@@ -170,7 +170,7 @@
   "adventure.walking": "Explorando a zona…",
   "adventure.paused": "Aventura pausada. Continúa cando queiras.",
   "adventure.collect": "Un achado! Recólleo antes de que pase.",
-  "adventure.food": "Recoller comida · +5% de experiencia",
+  "adventure.food": "Recoller comida · +2% de experiencia",
   "adventure.fragment": "Recoller datos · +2% de experiencia",
   "adventure.encounter": "Encontro: {name}",
   "adventure.difficult": "Coidado! Achégase {name}, de nivel superior.",
@@ -182,5 +182,9 @@
   "adventure.offerDescription": "O teu compañeiro actual quedará no historial e na Dex. O novo comezará sen experiencia. Isto remata a aventura.",
   "adventure.accept": "Benvido!",
   "adventure.decline": "Seguir explorando",
-  "adventure.offered": "Un novo amigo agarda a túa resposta."
+  "adventure.offered": "Un novo amigo agarda a túa resposta.",
+  "adventure.bossIntro": "Achégase un rival poderoso",
+  "adventure.bossEncounter": "Boss: {name}",
+  "world.bosses": "Bosses",
+  "world.bossDefeated": "Boss derrotado"
 }

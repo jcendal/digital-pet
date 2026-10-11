@@ -1,5 +1,5 @@
 import { type AdventureCommand, type AdventureState, changeAdventure, endAdventure } from "../../domain/adventure.ts"
-import { adventureCooldown } from "../../domain/adventure-pacing.ts"
+import { ADVENTURE_PACING } from "../../domain/adventure-pacing.ts"
 import type { DigimonCatalog, DigimonNode } from "../../domain/digimon-node.ts"
 import { applyTokenProgress } from "../../domain/evolution.ts"
 import type { AdventureStore } from "../ports/adventure-store.ts"
@@ -13,6 +13,7 @@ export const createAdventureService = (
   catalog: DigimonCatalog,
   residentsFor: (regionId: string) => readonly DigimonNode[],
   random: () => number = Math.random,
+  bossesFor: (regionId: string) => readonly DigimonNode[] = () => [],
 ): AdventureService => ({
   async nextReadyAt() {
     return store.nextReadyAt()
@@ -35,6 +36,7 @@ export const createAdventureService = (
         residentsFor(adventure?.regionId ?? regionId),
         now,
         random,
+        bossesFor(adventure?.regionId ?? regionId),
       )
       if (!change) return undefined
       if (change.recruitedNodeId) {
@@ -50,10 +52,19 @@ export const createAdventureService = (
           },
         }
       }
-      const cooldown = command.kind === "start" ? { readyAt: now + adventureCooldown(random) } : {}
+      const achievement = change.defeatedBossNodeId
+        ? {
+            bossVictory: {
+              regionId: change.adventure.regionId,
+              nodeId: change.defeatedBossNodeId,
+              defeatedAt: new Date(now).toISOString(),
+            },
+          }
+        : {}
+      const cooldown = command.kind === "start" ? { readyAt: now + ADVENTURE_PACING.cooldownMs } : {}
       const fraction = change.experienceFraction
       if (!fraction || partner.isTerminal || partner.pendingEvolutionTargetId || blocked)
-        return { adventure: change.adventure, ...cooldown }
+        return { adventure: change.adventure, ...cooldown, ...achievement }
       const progress = applyTokenProgress(
         {
           current,
@@ -73,6 +84,7 @@ export const createAdventureService = (
           progress.pendingEvolutionTargetId || progress.current.id !== current.id
             ? endAdventure(change.adventure, now)
             : change.adventure,
+        ...achievement,
         progression: {
           currentNodeId: progress.current.id,
           gauge: progress.gauge,

@@ -59,3 +59,16 @@ From the repository root:
 npm run typecheck --workspace @jcendal/digital-pet-fields
 npm run test --workspace @jcendal/digital-pet-fields
 ```
+
+## Adventure bosses
+
+`data/bosses.ts` assigns two existing catalog species to each region. These are
+thematic game assignments, not official habitats. The selection draws on
+[Adventure's villains](https://lineup.toei-anim.co.jp/ja/tv/dejimon/episode/),
+[Frontier's Royal Knights](https://lineup.toei-anim.co.jp/ja/tv/digimon_4th/episode/44/),
+[Frontier's film](https://lineup.toei-anim.co.jp/ja/movie/digimon_kodai/staff/),
+[The Revenge of Diaboromon](https://lineup.toei-anim.co.jp/ja/movie/digimon_diavolo/story/)
+and Last Evolution Kizuna. Every boss has existing walking and attack sprites;
+no generated species data is changed. `getRegionBosses` resolves the roster;
+encounter odds and rewards remain in core, introductions in animation, and map
+stars in webviews. Tests check every zone and sprite.

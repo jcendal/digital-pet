@@ -10,6 +10,6 @@ test("food appears after four hours; available food has no date and cannot accum
   expect(advanceFood(available, false, 1000 + 100 * FEEDING_POLICY.intervalMs)).toBe(available)
   expect(advanceFood(available, true, 1000)).toBeUndefined()
   expect(advanceFood(undefined, true, 1000)).toBeUndefined()
-  expect(feedingExperience(20, 100)).toBe(45)
-  expect(feedingExperience(90, 100)).toBe(100)
+  expect(feedingExperience(20, 100)).toBe(25)
+  expect(feedingExperience(98, 100)).toBe(100)
 })

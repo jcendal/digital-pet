@@ -27,6 +27,7 @@ export const adventureView = (
                       kind: "battle",
                       id: event.id,
                       difficult: event.difficult,
+                      boss: event.rank === "boss",
                       opponentName: catalog.byId.get(event.opponentNodeId)?.nameEn ?? "",
                     },
           }

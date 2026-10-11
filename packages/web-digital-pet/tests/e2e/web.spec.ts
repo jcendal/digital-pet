@@ -36,6 +36,10 @@ const controlled = async (page: import("@playwright/test").Page) => {
 test("static pages initialize shared clients, scenery, options and all panels without errors", async ({
   page,
 }, testInfo) => {
+  // This UI smoke test does not exercise networking; keep public signaling rate limits out of CI.
+  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => {
+    socket.send(JSON.stringify({ type: "OPEN" }))
+  })
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   page.on("console", (message) => {
@@ -68,6 +72,12 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "false")
   await page.getByRole("button", { name: "OPTIONS", exact: true }).click()
   await expect(page.locator("#options-dialog")).toBeVisible()
+  const sections = page.locator("#options-dialog .dialog-body section")
+  await expect(sections.nth(0)).toHaveClass(/language-section/)
+  await expect(sections.nth(1)).toHaveClass(/world-section/)
+  await expect(sections.nth(2)).toHaveClass(/new-partner-section/)
+  await expect(page.locator("#new-partner")).toBeEnabled()
+  await page.screenshot({ path: testInfo.outputPath("options-order.png") })
   await page.locator("#world-button").click()
   await expect(page.locator(".region-card")).toHaveCount(10)
   await page.locator('[data-region="digital-ocean"]').click()

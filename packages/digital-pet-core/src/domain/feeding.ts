@@ -1,5 +1,5 @@
 export type FeedingPolicy = { readonly intervalMs: number; readonly experienceFraction: number }
-export const FEEDING_POLICY: FeedingPolicy = Object.freeze({ intervalMs: 4 * 60 * 60 * 1000, experienceFraction: 0.25 })
+export const FEEDING_POLICY: FeedingPolicy = Object.freeze({ intervalMs: 4 * 60 * 60 * 1000, experienceFraction: 0.05 })
 export type FoodState = { readonly kind: "scheduled"; readonly availableAt: number } | { readonly kind: "available" }
 
 export const scheduleFood = (now: number, policy = FEEDING_POLICY): FoodState => ({

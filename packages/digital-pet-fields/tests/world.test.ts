@@ -1,10 +1,12 @@
 import { describe, expect, it } from "bun:test"
 import { existsSync } from "node:fs"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import {
   auditHabitatCoverage,
   DEFAULT_WORLD_VISIT,
   getRegion,
+  getRegionBosses,
   getRegionLocations,
   getRegionProgress,
   getRegionResidents,
@@ -90,4 +92,19 @@ describe("Digital World catalog", () => {
       expect(existsSync(new URL(`../assets/scenes/${location.scene}.svg`, import.meta.url))).toBe(true)
     expect(existsSync(new URL("../assets/backgrounds/dragon-eye-lake.png", import.meta.url))).toBe(true)
   })
+})
+
+it("provides two distinct, animated bosses for every available region", () => {
+  const ids = new Set<string>()
+  for (const region of REGIONS) {
+    const bosses = getRegionBosses(region.id, DIGIMON_CATALOG)
+    expect(bosses).toHaveLength(2)
+    for (const boss of bosses) {
+      expect(ids.has(boss.id)).toBe(false)
+      ids.add(boss.id)
+      expect(boss.stage).toBeGreaterThan(0)
+      expect(MONSTER_FRAME_CATALOG.get(boss.sprite, "walk_1")?.content).toBeTruthy()
+      expect(MONSTER_FRAME_CATALOG.get(boss.sprite, "attack")?.content).toBeTruthy()
+    }
+  }
 })

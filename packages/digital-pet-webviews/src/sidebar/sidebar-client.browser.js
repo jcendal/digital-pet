@@ -89,7 +89,7 @@ const showPetParticles = (reaction) => {
   setTimeout(() => burst.remove(), matchMedia("(prefers-reduced-motion: reduce)").matches ? 200 : 800)
 }
 const renderBattleHud = () => {
-  const visible = battleHud !== null
+  const visible = state.phase === "battle" && battleHud !== null
   root.classList.toggle("battle-intro", state.phase === "battle" && !visible)
   document.querySelector(".arena").classList.toggle("with-battle-hud", visible)
   byId("battle-scores").hidden = !visible
@@ -217,6 +217,11 @@ const render = () => {
   root.classList.toggle("no-partner", !active)
   root.classList.toggle("animating", state.phase !== "idle" && state.phase !== "feeding")
   root.classList.toggle("battling", state.phase === "battle")
+  const bossIntro = state.phase === "battle" && state.bossIntro === true
+  root.classList.toggle("boss-intro", bossIntro)
+  byId("boss-intro").hidden = !bossIntro
+  byId("boss-intro-title").textContent = IntlModule.translate("adventure.bossIntro")
+  byId("boss-intro-name").textContent = bossIntro ? (model?.opponentName ?? "") : ""
   byId("empty").hidden = active
   const [messageNamespace, messageKey] = (model?.messageKey || "").split(":")
   byId("empty").textContent =
@@ -337,7 +342,7 @@ window.addEventListener("message", (event) => {
   }
   if (message?.type === "presentation-state") {
     state = message.state
-    if (state.phase !== "battle") battleHud = null
+    // Keep the frame's ASCII HUD mask until animation-frame replaces its artwork.
     renderBattleHud()
     render()
     renderArtwork()

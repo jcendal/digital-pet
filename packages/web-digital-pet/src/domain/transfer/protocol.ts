@@ -1,7 +1,9 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { parseHygiene } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import { REGION_BOSS_IDS } from "@jcendal/digital-pet-fields/data/bosses.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "../pet/progress.ts"
 
@@ -74,6 +76,26 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidExperienceSetting"))
   if (state.worldVisit !== undefined && !isWorldVisit(state.worldVisit))
     throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidDestination"))
+  let bossVictories: BossVictory[] | undefined
+  if (state.bossVictories !== undefined) {
+    if (!Array.isArray(state.bossVictories) || state.bossVictories.length > 64)
+      throw new Error(IntlModule.translate("protocol.invalidBossVictories"))
+    const seen = new Set<string>()
+    bossVictories = state.bossVictories.map((victory) => {
+      if (
+        !isRecord(victory) ||
+        typeof victory.regionId !== "string" ||
+        !validNodeId(victory.nodeId) ||
+        !REGION_BOSS_IDS[victory.regionId]?.includes(victory.nodeId) ||
+        !validDate(victory.defeatedAt)
+      )
+        throw new Error(IntlModule.translate("protocol.invalidBossVictories"))
+      const key = `${victory.regionId}:${victory.nodeId}`
+      if (seen.has(key)) throw new Error(IntlModule.translate("protocol.invalidBossVictories"))
+      seen.add(key)
+      return { regionId: victory.regionId, nodeId: victory.nodeId, defeatedAt: victory.defeatedAt }
+    })
+  }
   let pendingEvolution: LocalPetState["pendingEvolution"]
   if (state.pendingEvolution !== undefined) {
     const pending = state.pendingEvolution
@@ -149,6 +171,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
       events,
+      ...(bossVictories ? { bossVictories } : {}),
       ...(pendingEvolution ? { pendingEvolution } : {}),
       ...(food ? { food } : {}),
       ...(state.hygiene !== undefined ? { hygiene: parseHygiene(state.hygiene) } : {}),

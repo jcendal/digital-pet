@@ -1,3 +1,4 @@
+import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { IntlModule as CoreIntlModule } from "@jcendal/digital-pet-core/i18n"
 import { getField, getRegionLocations, getRegionProgress } from "@jcendal/digital-pet-fields/application/world.ts"
 import { REGIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
@@ -16,17 +17,21 @@ export const worldMarkup = (photos: readonly string[]) => /* html */ `
 
 const defaultSceneUrl = (locationId: string): string => `/regions/${locationId}/scene.svg`
 
+const bossStar = (): string =>
+  `<span class="world-boss-star" role="img" aria-label="${escapeHtml(IntlModule.translate("world.bossDefeated"))}"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M7 1h2v3h1v1h5v2h-2v1h-1v1h-1v2h1v3h-2v-1H9v-1H7v1H6v1H4v-3h1V9H4V8H3V7H1V5h5V4h1z"/></svg></span>`
+
 export const renderWorldOverview = (
   registered: ReadonlySet<string>,
   visit: WorldVisit,
   sceneUrl = defaultSceneUrl,
+  bossVictories: readonly BossVictory[] = [],
 ): string => `
 <p class="world-intro" data-i18n="webviews:worldRender.chooseAPlaceToExploreWithYourCompanion">${escapeHtml(IntlModule.translate("worldRender.chooseAPlaceToExploreWithYourCompanion"))}</p>
 <div class="world-grid">${REGIONS.map((region) => {
   const field = getField(region)
   const progress = getRegionProgress(region.id, registered)
   return `<button class="region-card" type="button" data-region="${region.id}" aria-label="${escapeHtml(IntlModule.translate("world.explore", { name: region.name }))}">
-    <img src="${escapeHtml(sceneUrl(region.defaultLocationId))}" alt="" width="160" height="160">
+    <span class="region-card-thumbnail"><img src="${escapeHtml(sceneUrl(region.defaultLocationId))}" alt="" width="160" height="160">${bossVictories.some((victory) => victory.regionId === region.id) ? bossStar() : ""}</span>
     <span class="region-card-meta">${field.code}${visit.regionId === region.id ? `<span class="world-here" data-i18n="webviews:worldRender.here">${escapeHtml(IntlModule.translate("worldRender.here"))}</span>` : ""}</span>
     <strong>${escapeHtml(region.name)}</strong><small>${escapeHtml(IntlModule.translate("world.registeredCount", { count: progress.registered, total: progress.total }))}</small></button>`
 }).join("")}</div>`
@@ -56,6 +61,7 @@ export const renderWorldRegion = (
     <p class="setting-caption">${escapeHtml(field.description)}</p>
     <div class="world-locations" role="group" aria-label="${escapeHtml(IntlModule.translate("worldRender.locations"))}" data-i18n-aria-label="webviews:worldRender.locations">${locations.map((location) => `<button type="button" data-location="${location.id}" aria-pressed="${location.id === selected.id}">${escapeHtml(location.name)}</button>`).join("")}</div>
     <button id="world-travel" class="primary-action" type="button" data-location="${selected.id}"><span>${escapeHtml(IntlModule.translate(visit.locationId === selected.id ? "world.youAreHere" : "world.travelHere"))}</span><span aria-hidden="true">→</span></button>
+    <section class="world-bosses"><h3 data-i18n="webviews:world.bosses">${escapeHtml(IntlModule.translate("world.bosses"))}</h3><div class="resident-list">${(model.bosses ?? []).map((boss) => `<div class="resident-row"><svg viewBox="${escapeHtml(boss.artworkViewBox)}" aria-hidden="true"><path d="${escapeHtml(boss.artwork)}"/></svg><div><strong>${escapeHtml(boss.name)}</strong><small>${escapeHtml(residentStage(boss))}</small></div>${boss.defeated ? bossStar() : ""}</div>`).join("")}</div></section>
     <section class="world-inhabitants"><div class="section-heading"><h3 data-i18n="webviews:worldRender.habitatGuide">${escapeHtml(IntlModule.translate("worldRender.habitatGuide"))}</h3><span class="value-badge">${model.residents.length}</span></div>
       <p class="section-description" data-i18n="webviews:worldRender.speciesThatLiveHereVisitingKeepsYourDex">${escapeHtml(IntlModule.translate("worldRender.speciesThatLiveHereVisitingKeepsYourDex"))}</p>
       <div class="resident-list">${renderResidents(model.residents.slice(0, 5))}</div>

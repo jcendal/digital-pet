@@ -65,6 +65,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   const computer = byId<HTMLInputElement>("source-computer")
   const browser = byId<HTMLInputElement>("source-browser")
   const fieldset = byId<HTMLFieldSetElement>("browser-options")
+  const newPartnerOptions = byId<HTMLFieldSetElement>("new-partner-options")
   const slider = byId<HTMLInputElement>("experience-level")
   const description = byId<HTMLElement>("experience-description")
   const status = byId<HTMLElement>("options-status")
@@ -137,6 +138,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     computer.checked = source === "sqlite"
     browser.checked = source === "browser"
     fieldset.disabled = source !== "browser"
+    newPartnerOptions.disabled = source !== "browser"
     byId("browser-options-hint").hidden = source === "browser"
     confirmation.hidden = true
     backupConfirm.hidden = true

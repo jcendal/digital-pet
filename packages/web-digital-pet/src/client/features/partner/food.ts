@@ -1,4 +1,5 @@
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { BROWSER_FEEDING_POLICY } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { consumeFood, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { animation } from "./animation.ts"
@@ -53,7 +54,9 @@ const eat = async (): Promise<void> => {
     if (button) button.hidden = true
     if (feedback) {
       feedback.hidden = false
-      feedback.textContent = view.givesExperience ? "+10% EXPERIENCE" : IntlModule.translate("food.yum")
+      feedback.textContent = view.givesExperience
+        ? IntlModule.translate("food.experience", { percent: BROWSER_FEEDING_POLICY.experienceFraction * 100 })
+        : IntlModule.translate("food.yum")
     }
     await runForegroundEvolution({
       active: actions.active,
@@ -132,7 +135,7 @@ export const updateFoodButton = (
   button.hidden = !view?.available || isPresentingEvolution()
   button.disabled = !view?.canEat || isPresentingEvolution()
   const label = view?.givesExperience
-    ? IntlModule.translate("food.feedYourCompanion10Experience")
+    ? IntlModule.translate("food.feedYourCompanion5Experience")
     : IntlModule.translate("food.feedYourCompanion")
   button.setAttribute("aria-label", label)
   button.title = label

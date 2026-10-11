@@ -149,7 +149,7 @@
   margin-top: 22px;
   padding-top: 20px;
 }
-.web-dialog .save-section {
+.web-dialog .language-section {
   border: 0;
   margin: 0;
   padding: 0;
@@ -169,9 +169,6 @@
 }
 .web-dialog fieldset:disabled .connection-status {
   display: none;
-}
-#landscape-motion {
-  margin-top: 12px;
 }
 #landscape-motion[aria-pressed="true"] {
   border-color: var(--ink);

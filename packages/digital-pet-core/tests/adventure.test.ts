@@ -1,17 +1,12 @@
 import { expect, test } from "bun:test"
 import { DIGIMON_CATALOG } from "../src/data/catalog.ts"
+import { type AdventureState, changeAdventure, parseAdventure } from "../src/domain/adventure.ts"
 import {
-  ADVENTURE_POLICY,
-  type AdventureState,
-  adventureOpponent,
-  changeAdventure,
-  parseAdventure,
-} from "../src/domain/adventure.ts"
-import {
+  ADVENTURE_PACING,
   type AdventureEncounterKind,
-  adventureCooldown,
   adventureQuietTime,
   drawAdventureEncounter,
+  limitAdventureReadyAt,
 } from "../src/domain/adventure-pacing.ts"
 
 const current = DIGIMON_CATALOG.byId.get("3-001")!
@@ -55,15 +50,6 @@ test("loot grants its fraction once and ignores old event IDs and other companio
   ).toBeUndefined()
 })
 
-test("local opponents match the stage, with rare next-stage encounters and a safe local fallback", () => {
-  const sequence = (values: number[]) => () => values.shift() ?? 0
-  expect(adventureOpponent(current, [same, higher], sequence([0.5, 0]))).toBe(same)
-  expect(adventureOpponent(current, [same, higher], sequence([0.01, 0]))).toBe(higher)
-  expect(adventureOpponent(current, [same], sequence([0.01, 0]))).toBe(same)
-  expect(adventureOpponent(current, [higher], sequence([0.5, 0]))).toBeUndefined()
-  expect(ADVENTURE_POLICY.difficultChance).toBeLessThan(0.1)
-})
-
 test("the saved battle plan survives reload and rewards only its completed outcome once", () => {
   const state: AdventureState = {
     ...begin(),
@@ -95,7 +81,7 @@ test("the saved battle plan survives reload and rewards only its completed outco
     10_000,
   )!.adventure
   const resolved = changeAdventure(saved, { kind: "finish-battle", eventId: 1 }, current, "region", [higher], 12_000)!
-  expect(resolved.experienceFraction).toBe(0.1)
+  expect(resolved.experienceFraction).toBe(0.15)
   expect(resolved.adventure.victories).toBe(1)
   expect(
     changeAdventure(resolved.adventure, { kind: "finish-battle", eventId: 1 }, current, "region", [higher], 12_000),
@@ -130,8 +116,10 @@ test("a defeat returns home without a prize or a gauge penalty; the route contin
 test("the spawn director spaces encounters and balances each bag without prescribing battle outcomes", () => {
   expect(adventureQuietTime(() => 0)).toBe(45_000)
   expect(adventureQuietTime(() => 1)).toBe(65_000)
-  expect(adventureCooldown(() => 0)).toBe(4 * 3600_000)
-  expect(adventureCooldown(() => 1)).toBe(6 * 3600_000)
+  expect(ADVENTURE_PACING.cooldownMs).toBe(2 * 3600_000)
+  expect(limitAdventureReadyAt(6 * 3600_000, 0)).toBe(2 * 3600_000)
+  expect(limitAdventureReadyAt(2 * 3600_000, 3600_000)).toBe(2 * 3600_000)
+  expect(limitAdventureReadyAt(3600_000, 2 * 3600_000)).toBe(3600_000)
   let remaining: readonly AdventureEncounterKind[] = []
   const kinds: AdventureEncounterKind[] = []
   for (let index = 0; index < 5; index++) {

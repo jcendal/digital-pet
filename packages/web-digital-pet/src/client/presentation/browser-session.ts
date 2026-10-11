@@ -156,5 +156,5 @@ export const history = async () => {
 
 export const world = async (regionId: string) => {
   const state = await readLocalState()
-  return buildWorldPanelModel(regionId, archiveFor(state), DIGIMON_CATALOG, settingsFor(state))
+  return buildWorldPanelModel(regionId, archiveFor(state), DIGIMON_CATALOG, settingsFor(state), state.bossVictories)
 }

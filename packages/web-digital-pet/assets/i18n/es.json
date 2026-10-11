@@ -113,10 +113,10 @@
   "controller.chooseThisBrowserToUseDevicePairing": "Elige ESTE NAVEGADOR para vincular dispositivos.",
   "transport.thePairingServiceIsNotConnectedYet": "El servicio de vinculación aún no está conectado",
   "evolution.invalidPendingBattle": "El combate pendiente no es válido",
+  "food.experience": "+{percent}% EXPERIENCIA",
   "food.yum": "¡ÑAM!",
   "food.couldNotFeedYourCompanionTryAgain": "No se pudo dar de comer a tu compañero. Inténtalo de nuevo.",
   "food.couldNotFeedTryAgain": "No se pudo dar de comer. Inténtalo de nuevo.",
-  "food.feedYourCompanion10Experience": "Dar de comer · +10% de experiencia",
   "food.feedYourCompanion": "Dar de comer a tu compañero",
   "foregroundEvolution.presentationCancelled": "Animación cancelada",
   "controller.couldNotLoadYourWorldPleaseTryAgain": "No se pudo cargar tu mundo. Inténtalo de nuevo.",
@@ -266,5 +266,7 @@
   "installation.dismiss": "Cerrar sugerencia de instalación",
   "installation.failed": "No se pudo abrir la instalación. Inténtalo de nuevo.",
   "connection.battleTimedOut": "No se pudo conectar con el otro jugador. Mantén ambas aplicaciones abiertas y vuelve a intentarlo, o prueba otra red.",
-  "adventure.finishFirst": "Termina el encuentro de la aventura antes de combatir con otro jugador."
+  "adventure.finishFirst": "Termina el encuentro de la aventura antes de combatir con otro jugador.",
+  "protocol.invalidBossVictories": "La partida recibida contiene victorias de bosses no válidas",
+  "food.feedYourCompanion5Experience": "Dar de comer · +5% de experiencia"
 }
