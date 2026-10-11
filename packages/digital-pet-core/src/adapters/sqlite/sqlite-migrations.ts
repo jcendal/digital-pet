@@ -119,6 +119,18 @@ const MIGRATIONS = [
       "CREATE TABLE IF NOT EXISTS partner_hygiene (partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id), state TEXT NOT NULL)",
     ],
   },
+  {
+    version: 6,
+    sql: [
+      "CREATE TABLE IF NOT EXISTS partner_adventures (partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id), state TEXT NOT NULL)",
+    ],
+  },
+  {
+    version: 7,
+    sql: [
+      "CREATE TABLE IF NOT EXISTS adventure_schedule (schedule_id INTEGER PRIMARY KEY CHECK (schedule_id = 1), ready_at INTEGER NOT NULL)",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

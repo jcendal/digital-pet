@@ -343,3 +343,36 @@ Part of the [Digital Pet](https://github.com/jcendal/digital-pet) monorepo. Digi
 <p align="center"><strong>Built with ❤️ for the developer community</strong></p>
 
 <p align="center"><a href="#web-digital-pet">⬆ Back to Top</a></p>
+
+## Adventures
+
+A hatched companion can start an adventure with the compass button in its viewer.
+Starting a trip stores a random 4–6 hour cooldown; real time, including closed
+app time, counts toward it. Changing companions does not reset that schedule.
+Pause and return-home controls use compact icons inside the viewer.
+
+The route continues until a lost battle, returning home, accepting a new
+companion, or reaching an evolution. Walking uses active time only. Hidden views
+and reloads pause the saved route; uncollected loot passes after eight seconds.
+
+The spawn director combines 45–65 second quiet periods with a bag drawn without
+replacement: two data fragments, one meal and two battles per five encounters.
+Five average intervals plus two short battles take about five minutes. Battle
+outcomes are calculated, not assigned to satisfy that example. Same-stage local
+residents are normal encounters; 8% of opponent selections try the next stage.
+This approach uses the pacing principles described in
+[Valve’s AI Director presentation](https://steamcdn-a.akamaihd.net/apps/valve/2009/ai_systems_of_l4d_mike_booth.pdf)
+and the [shuffle bag algorithm](https://github.com/chrisyarbrough/SharpShuffleBag).
+
+Collected data grants 2% and food 5% of the current threshold. A battle victory
+grants 5% at the same stage, doubled for the next stage, after the outcome
+animation. Battle plans, shot checkpoints, loot and the remaining encounter bag
+are stored locally; rewards and their consumed events commit atomically.
+
+A victorious rival has a 15% chance of offering to become your companion. The
+saved offer waits for an explicit answer and survives reloads without rerolling.
+Accepting retires the current companion into history, records the adopted species
+as owned in the Dex, starts a new generation with zero gauge and fresh care timers,
+and ends the trip. Declining resumes the existing route. An evolution triggered
+by the victory takes precedence over the offer. Player battles and care actions
+are blocked during an active encounter or a pending companion decision.

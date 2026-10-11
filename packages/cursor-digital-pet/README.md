@@ -318,3 +318,23 @@ Documentation captures live in `assets/screenshots`. The build copies the shared
 project logo and the webviews package's font/license into `dist/assets`; the VSIX
 includes those files and webviews restrict resource access to that directory.
 Edit the canonical resources rather than generated copies.
+
+## Adventures
+
+The partner viewer shows a compass button when a hatched companion can explore.
+Trips have a persisted 4–6 hour cooldown shared across companion generations.
+The trip continues until defeat, returning home, accepting a companion, or
+reaching evolution. Compact pause and home icons are available in the viewer.
+
+Shared core rules combine 45–65 second quiet periods with a balanced encounter
+bag (two data fragments, one meal, two battles). Finds pass after eight seconds.
+Data grants 2%, food 5%, and same-stage victories 5% of the current threshold;
+rare next-stage victories grant 10%. XP is applied after the outcome animation.
+
+Adventure plans, checkpoints, the remaining bag and pending 15% recruitment
+offers are stored in SQLite. Accepting an offer uses the existing partner
+lifecycle to archive the previous generation and register the new one in history
+and the Dex. The adopted partner starts at zero gauge with fresh care timers;
+trainer usage and the adventure cooldown are preserved. Evolution takes
+precedence over recruitment. Hidden or closed views pause active travel, while
+real elapsed time still counts toward the next available adventure.

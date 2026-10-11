@@ -1,4 +1,6 @@
-import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import type { AdventureStore } from "@jcendal/digital-pet-core/application/ports/adventure-store.ts"
+import { adventureBusy, parseAdventure } from "@jcendal/digital-pet-core/domain/adventure.ts"
+import { DEFAULT_WORLD_VISIT, isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { rewardBattleWinner } from "../../domain/battle/reward.ts"
 import { type AgreedBattle, type PendingBattle, parsePendingBattle } from "../../domain/battle/saved-battle.ts"
@@ -9,8 +11,10 @@ import {
   completeLocalEvolution,
   consumeLocalFood,
   type ExperienceLevel,
+  experienceThresholds,
   type LocalPetState,
   petLocalEgg,
+  replaceLocalPartner,
 } from "../../domain/pet/progress.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 
@@ -21,7 +25,112 @@ const DEVICE_KEY = "device-code"
 const BACKUP_KEY = "previous-save"
 const PAIRED_KEY = "paired-device"
 const PENDING_BATTLE_KEY = "pending-battle"
+const ADVENTURE_KEY = "adventure"
+const ADVENTURE_READY_KEY = "adventure-ready-at"
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+export const readAdventureState = async () => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readonly")
+    const store = transaction.objectStore(STORE_NAME)
+    const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
+    const pet = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
+    const adventure = saved?.partnerId === pet?.partnerId ? parseAdventure(saved?.state) : undefined
+    return adventure?.nodeId === pet?.currentNodeId ? adventure : undefined
+  } finally {
+    database.close()
+  }
+}
+
+export const browserAdventureStore: AdventureStore = {
+  async nextReadyAt() {
+    const database = await openDatabase()
+    try {
+      return (
+        (await resultOf<number | undefined>(
+          database.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).get(ADVENTURE_READY_KEY),
+        )) ?? 0
+      )
+    } finally {
+      database.close()
+    }
+  },
+  async updateAdventure(change) {
+    const database = await openDatabase()
+    try {
+      const transaction = database.transaction(STORE_NAME, "readwrite")
+      const done = completed(transaction)
+      const store = transaction.objectStore(STORE_NAME)
+      const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
+      const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
+      const readyAt = (await resultOf<number | undefined>(store.get(ADVENTURE_READY_KEY))) ?? 0
+      const battle = await resultOf(store.get(PENDING_BATTLE_KEY))
+      if (!state) {
+        await done
+        return undefined
+      }
+      const adventure = saved?.partnerId === state.partnerId ? parseAdventure(saved.state) : undefined
+      const next = change({
+        partner: {
+          ...state,
+          generation: 0,
+          retiredAt: null,
+          pendingEvolutionTargetId: state.pendingEvolution?.targetNodeId ?? null,
+          battleOpponentNodeId: state.pendingEvolution?.opponentNodeId ?? null,
+        },
+        adventure,
+        readyAt,
+        blocked: Boolean(battle || state.pendingEvolution),
+        thresholds: experienceThresholds(state.experienceLevel),
+        regionId: state.worldVisit?.regionId ?? DEFAULT_WORLD_VISIT.regionId,
+      })
+      if (next) {
+        if (next.adventure !== adventure)
+          store.put({ partnerId: state.partnerId, state: next.adventure }, ADVENTURE_KEY)
+        if (next.readyAt !== undefined) store.put(next.readyAt, ADVENTURE_READY_KEY)
+        if (next.replacement) {
+          const input = next.replacement
+          store.put(
+            replaceLocalPartner(
+              state,
+              crypto.randomUUID(),
+              Date.parse(input.createdAt),
+              input.currentNodeId,
+              input.isTerminal,
+            ),
+            STATE_KEY,
+          )
+        }
+        const progress = next.progression
+        if (progress) {
+          const now = Date.now()
+          store.put(
+            {
+              ...state,
+              gauge: progress.gauge,
+              isTerminal: progress.isTerminal,
+              ...(progress.pendingEvolutionTargetId
+                ? {
+                    pendingEvolution: {
+                      targetNodeId: progress.pendingEvolutionTargetId,
+                      opponentNodeId: progress.battleOpponentNodeId,
+                      readyAt: now,
+                    },
+                  }
+                : {}),
+            },
+            STATE_KEY,
+          )
+        }
+      }
+      await done
+      return next?.adventure
+    } finally {
+      database.close()
+    }
+  },
+}
 
 /** Save agreement and recoverable playback before the first frame; XP waits for the outcome. */
 export const settleBattle = async (
@@ -48,6 +157,9 @@ export const settleBattle = async (
     const receipt = await resultOf(store.get(key))
     const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
     const pending = storedPending === undefined ? undefined : parsePendingBattle(storedPending)
+    const adventure = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
+    const trip = adventure?.partnerId === expected.partnerId ? parseAdventure(adventure?.state) : undefined
+    if (adventureBusy(trip)) throw new Error(IntlModule.translate("adventure.finishFirst"))
     if (pending && pending.battleId !== battle.battleId)
       throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
     const won = battle.plan.outcome === battle.localSide
@@ -249,6 +361,7 @@ export const replaceLocalState = async (incoming: LocalPetState): Promise<void> 
     const previous = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
     if (previous) store.put(previous, BACKUP_KEY)
     store.put(incoming, STATE_KEY)
+    store.delete(ADVENTURE_KEY)
     await done
   } finally {
     database.close()
@@ -268,6 +381,7 @@ export const restorePreviousSave = async (): Promise<boolean> => {
     }
     const current = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
     store.put(previous, STATE_KEY)
+    store.delete(ADVENTURE_KEY)
     if (current) store.put(current, BACKUP_KEY)
     await done
     return true
@@ -276,7 +390,11 @@ export const restorePreviousSave = async (): Promise<boolean> => {
   }
 }
 
-const changeLocalState = async (change: (state: LocalPetState) => LocalPetState, backup = false): Promise<void> => {
+const changeLocalState = async (
+  change: (state: LocalPetState) => LocalPetState,
+  backup = false,
+  care = false,
+): Promise<void> => {
   const database = await openDatabase()
   try {
     const transaction = database.transaction(STORE_NAME, "readwrite")
@@ -284,6 +402,14 @@ const changeLocalState = async (change: (state: LocalPetState) => LocalPetState,
     const store = transaction.objectStore(STORE_NAME)
     const stored = (await resultOf(store.get(STATE_KEY))) as LocalPetState | undefined
     const state = advanceLocalPet(stored ?? initialState(Date.now()), Date.now())
+    if (care) {
+      const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
+      const trip = saved?.partnerId === state.partnerId ? parseAdventure(saved.state) : undefined
+      if (trip?.nodeId === state.currentNodeId && trip.status === "travel" && adventureBusy(trip)) {
+        await done
+        return
+      }
+    }
     if (backup) store.put(state, BACKUP_KEY)
     store.put(change(state), STATE_KEY)
     await done
@@ -326,21 +452,29 @@ export const petEgg = async (partnerId: string, interactionId: string, active: (
 
 export const cleanPoop = async (partnerId: string, poopId: number, active: () => boolean): Promise<boolean> => {
   let cleaned = false
-  await changeLocalState((state) => {
-    const next = active() ? cleanLocalPoop(state, partnerId, poopId, Date.now()) : state
-    cleaned = next !== state
-    return next
-  })
+  await changeLocalState(
+    (state) => {
+      const next = active() ? cleanLocalPoop(state, partnerId, poopId, Date.now()) : state
+      cleaned = next !== state
+      return next
+    },
+    false,
+    true,
+  )
   return cleaned
 }
 
 export const consumeFood = async (partnerId: string, active: () => boolean): Promise<boolean> => {
   let consumed = false
-  await changeLocalState((state) => {
-    const next = active() ? consumeLocalFood(state, partnerId, Date.now()) : state
-    consumed = next !== state
-    return next
-  })
+  await changeLocalState(
+    (state) => {
+      const next = active() ? consumeLocalFood(state, partnerId, Date.now()) : state
+      consumed = next !== state
+      return next
+    },
+    false,
+    true,
+  )
   return consumed
 }
 

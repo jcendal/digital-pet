@@ -201,6 +201,164 @@ body {
 .no-partner #content {
   display: none;
 }
+
+#adventure-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px dotted var(--muted);
+  padding: 8px 0;
+  font-size: 11px;
+}
+#adventure-status {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#adventure-time {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+#adventure-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 9;
+  display: flex;
+  gap: 6px;
+}
+#adventure-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 var(--muted);
+  background: var(--lcd);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+#adventure-actions button:hover {
+  background: var(--muted);
+}
+#adventure-actions button:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+#adventure-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+#adventure-actions svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+#adventure-toggle span:empty {
+  display: none;
+}
+#adventure-offer {
+  margin: 8px 0;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--lcd);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--muted);
+  font-size: 11px;
+}
+#adventure-offer p {
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+}
+#adventure-offer-title {
+  font-weight: bold;
+}
+#adventure-offer-description {
+  opacity: 0.8;
+  line-height: 1.5;
+}
+#adventure-offer > div {
+  display: flex;
+  gap: 8px;
+}
+#adventure-offer button {
+  flex: 1;
+  min-height: 44px;
+  padding: 6px;
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--lcd);
+}
+#adventure-offer #adventure-accept {
+  background: var(--ink);
+  color: var(--lcd);
+}
+.adventure-scenery {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.adventuring .adventure-scenery {
+  display: block;
+  animation: adventure-landscape 6s linear infinite;
+}
+#adventure-loot {
+  position: absolute;
+  bottom: 6%;
+  z-index: 4;
+  width: 48px;
+  height: 48px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateX(-50%);
+  transition: left 250ms linear;
+}
+#adventure-loot svg {
+  width: 100%;
+  height: 100%;
+  shape-rendering: crispEdges;
+}
+@keyframes adventure-landscape {
+  to {
+    background-position-x: -300px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adventuring .adventure-scenery {
+    animation: none;
+  }
+  #adventure-loot {
+    transition: none;
+    left: 80% !important;
+  }
+}
 @media (max-width: 260px) {
   body {
     padding: 6px;

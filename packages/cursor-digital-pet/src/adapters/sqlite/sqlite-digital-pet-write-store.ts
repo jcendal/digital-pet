@@ -1,10 +1,13 @@
+import { createSqliteAdventureStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-adventure-store.ts"
 import type { SqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-types.ts"
 import { createSqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { createSqliteEggPetting } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-egg-petting.ts"
 import { createSqlitePartnerHygiene } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-partner-hygiene.ts"
+import type { AdventureStore } from "@jcendal/digital-pet-core/application/ports/adventure-store.ts"
 import type { EggPettingStore } from "@jcendal/digital-pet-core/application/ports/egg-petting.ts"
 import type { PartnerHygieneStore } from "@jcendal/digital-pet-core/application/ports/partner-hygiene.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
+import { DEFAULT_WORLD_VISIT } from "@jcendal/digital-pet-fields/application/world.ts"
 
 import { resolveDatabasePath, type SqliteDatabaseOptions } from "./options.ts"
 import { openWritableSqliteDatabase } from "./sqlite-driver.ts"
@@ -21,6 +24,7 @@ export type {
 export { resolveDatabasePath } from "./options.ts"
 
 export type CursorSqliteDigitalPetRepository = SqliteDigitalPetWriteStore &
+  AdventureStore &
   EggPettingStore &
   PartnerHygieneStore &
   SidebarSnapshotReader & {
@@ -43,6 +47,7 @@ export const createSqliteDigitalPetRepository = async (
 
   return {
     ...writeStore,
+    ...createSqliteAdventureStore(database.executor, DEFAULT_WORLD_VISIT.regionId),
     ...createSqliteEggPetting(database.executor),
     ...createSqlitePartnerHygiene(database.executor),
     getSidebarSnapshot: () => readSidebarSnapshotFromExecutor(database.executor),

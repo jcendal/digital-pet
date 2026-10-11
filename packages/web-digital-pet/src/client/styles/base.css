@@ -341,3 +341,7 @@ body {
     grid-template-rows: 30px minmax(0, 1fr) 65px;
   }
 }
+
+.partner-device .adventure-scenery {
+  display: none;
+}

@@ -265,5 +265,6 @@
   "installation.action": "Install app",
   "installation.dismiss": "Dismiss installation suggestion",
   "installation.failed": "Could not open installation. Try again.",
-  "connection.battleTimedOut": "Could not reach the other player. Keep both apps open and try again, or use another network."
+  "connection.battleTimedOut": "Could not reach the other player. Keep both apps open and try again, or use another network.",
+  "adventure.finishFirst": "Finish the adventure encounter before a player battle."
 }

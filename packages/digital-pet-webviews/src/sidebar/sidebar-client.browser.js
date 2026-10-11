@@ -1,4 +1,5 @@
 const vscode = window.digitalPetBridge || acquireVsCodeApi()
+const adventureClient = window.createAdventureClient(vscode, IntlModule)
 let model = null
 let state = { phase: "idle" }
 let artwork = ""
@@ -316,6 +317,8 @@ byId("pet-partner")?.addEventListener("click", () => {
 })
 window.addEventListener("message", (event) => {
   const message = event.data
+  if (message?.type === "adventure-state") adventureClient.update(message.view)
+  if (message?.type === "presentation-state") adventureClient.present(message.state.phase)
   if (message?.type === "egg-petted" && message.interactionId === eggInteraction && eggInteraction !== null) {
     eggInteraction = null
     if (message.accepted === true) showPetParticles("egg")

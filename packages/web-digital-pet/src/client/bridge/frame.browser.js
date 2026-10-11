@@ -14,6 +14,9 @@ function initWebBridge(page, locationIds) {
   let scenery
   let localPresenter
   let playerBattle = null
+  let adventurePresenter
+  const adventureActive = () =>
+    pageVisible() && browserSave() && playerBattle === null && !window.top.document.querySelector("dialog[open]")
   if (page === "sidebar")
     window.addEventListener(
       "DOMContentLoaded",
@@ -72,7 +75,7 @@ function initWebBridge(page, locationIds) {
     document.visibilityState !== "hidden" && (!window.frameElement || window.frameElement.classList.contains("active"))
   const browserSave = browserSaveSelected
   const refresh = async () => {
-    if (!pageVisible() || playerBattle !== null) return
+    if (!pageVisible() || playerBattle !== null || adventurePresenter?.isPresentingAdventure()) return
     if (busy) {
       refreshRequested = true
       return
@@ -80,7 +83,7 @@ function initWebBridge(page, locationIds) {
     busy = true
     const preferred = localStorage.getItem("digital-pet:preferred-source")
     const deliverCurrent = (data) => {
-      if (playerBattle !== null) return
+      if (playerBattle !== null || adventurePresenter?.isPresentingAdventure()) return
       if (preferred !== localStorage.getItem("digital-pet:preferred-source")) {
         refreshRequested = true
         return
@@ -116,8 +119,10 @@ function initWebBridge(page, locationIds) {
         const local = await import("../presentation/browser-session.ts")
         if (page === "sidebar") {
           localPresenter = local
+          adventurePresenter = await import("../features/partner/adventure.ts")
+          deliverCurrent(await adventurePresenter.refreshAdventure())
           const snapshot = await local.sidebar(width)
-          if (playerBattle !== null) return
+          if (playerBattle !== null || adventurePresenter?.isPresentingAdventure()) return
           if (!local.isPresentingEvolution()) {
             deliverCurrent(snapshot.model)
             deliverCurrent(snapshot.frame)
@@ -190,6 +195,32 @@ function initWebBridge(page, locationIds) {
     },
     setState: (state) => sessionStorage.setItem(key, JSON.stringify(state)),
     postMessage: (message) => {
+      if (message.type === "adventure" && page === "sidebar") {
+        if (!browserSave()) return
+        void import("../features/partner/adventure.ts")
+          .then(async (adventure) => {
+            adventurePresenter = adventure
+            await adventure.actAdventure(message.command, width, adventureActive, deliver, () => {
+              window.parent.postMessage({ type: "digital-pet:save-changed" }, location.origin)
+              refresh()
+            })
+            if (message.command.kind === "tick" && !adventure.isPresentingAdventure() && adventureActive()) {
+              const local = await import("../presentation/browser-session.ts")
+              const snapshot = await local.sidebar(width)
+              deliver(snapshot.model)
+              deliver(snapshot.frame)
+              scenery?.update(snapshot.frame.motion)
+            }
+          })
+          .catch((error) => {
+            const notice = document.getElementById("empty")
+            if (notice) {
+              notice.hidden = false
+              notice.textContent = String(error)
+            }
+          })
+        return
+      }
       if (message.type === "pet-partner" && page === "sidebar") {
         const active = () =>
           pageVisible() && playerBattle === null && !window.top.document.querySelector("dialog[open]")

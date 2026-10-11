@@ -14,6 +14,7 @@ import { SIDEBAR_VISUAL_INTERVAL_MS } from "../../shared/constants/presentation-
 import { DEFAULT_ARTWORK_WIDTH, MIN_ARTWORK_WIDTH } from "../../shared/constants/sidebar-ui.ts"
 
 export type SidebarAnimationHost = {
+  setAdventure(active: boolean): void
   setArtworkWidth(width: number): void
   syncPartner(partner: MonsterAnimationIdentity | undefined): void
   start(): void
@@ -46,6 +47,7 @@ export const createSidebarAnimationHost = ({
   isVisible = () => true,
 }: CreateSidebarAnimationHostOptions): SidebarAnimationHost => {
   const animation = new MonsterAnimationController(frameCatalog, random, nowMs)
+  let adventuring = false
   let artworkWidth = DEFAULT_ARTWORK_WIDTH
   let cachedArtwork = ""
   let presentationBlocked = false
@@ -60,7 +62,27 @@ export const createSidebarAnimationHost = ({
     await sink.postArtwork(artwork)
   }
 
+  const start = (): void => {
+    if (stopInterval !== undefined) return
+    stopInterval = scheduler.start(
+      () => {
+        if (!isVisible() || presentationBlocked) return
+        void postCurrentFrame(animation.dispatch({ kind: "tick" }))
+      },
+      adventuring ? 250 : SIDEBAR_VISUAL_INTERVAL_MS,
+    )
+  }
   return {
+    setAdventure(active) {
+      if (adventuring === active) return
+      adventuring = active
+      animation.dispatch({ kind: "adventure_changed", active })
+      if (stopInterval) {
+        stopInterval()
+        stopInterval = undefined
+        start()
+      }
+    },
     setArtworkWidth(width: number): void {
       artworkWidth = Math.max(MIN_ARTWORK_WIDTH, Math.floor(width))
       animation.dispatch({ kind: "viewport_resized", width: artworkWidth })
@@ -68,14 +90,7 @@ export const createSidebarAnimationHost = ({
     syncPartner(partner: MonsterAnimationIdentity | undefined): void {
       animation.dispatch({ kind: "partner_changed", partner })
     },
-    start(): void {
-      if (stopInterval !== undefined) return
-      stopInterval = scheduler.start(() => {
-        if (!isVisible() || presentationBlocked) return
-        const nextAnimation = animation.dispatch({ kind: "tick" })
-        void postCurrentFrame(nextAnimation)
-      }, SIDEBAR_VISUAL_INTERVAL_MS)
-    },
+    start,
     stop(): void {
       stopInterval?.()
       stopInterval = undefined

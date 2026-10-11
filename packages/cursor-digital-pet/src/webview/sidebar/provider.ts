@@ -1,10 +1,15 @@
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import type { PartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
+import type { AdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import type { EggPettingService } from "@jcendal/digital-pet-core/application/use-cases/pet-egg.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { AdventureCommand, AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
+import { adventureBusy } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import { CLEANING_HAPPY_MS, type HygieneView, hygieneMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
+import { DEFAULT_WORLD_VISIT } from "@jcendal/digital-pet-fields/application/world.ts"
+import { adventureView } from "@jcendal/digital-pet-webviews/sidebar/adventure-view.ts"
 import * as vscode from "vscode"
 
 import { type AnimationSink, createAnimationSink } from "../../adapters/vscode/animation-sink.ts"
@@ -17,6 +22,7 @@ import { buildSidebarWebviewHtml } from "./sidebar-render.ts"
 import { type EggPettingView, parseWebviewInboundMessage } from "./webview-messages.ts"
 
 export type DigitalPetSidebarProviderOptions = {
+  readonly adventureService?: AdventureService
   readonly notification?: NotificationPort
   readonly scheduler?: IntervalScheduler
   readonly random?: () => number
@@ -51,6 +57,9 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   private readonly animationHost: SidebarAnimationHost
   private readonly orchestrator: SidebarOrchestrator
   private readonly deferredSink: ReturnType<typeof createDeferredAnimationSink>
+  private adventure: AdventureState | undefined
+  private adventurePlaying = false
+  private adventureReady = false
   private happyTimer: ReturnType<typeof setTimeout> | undefined
   private hygieneView: HygieneView | undefined
   private eggView: EggPettingView | undefined
@@ -82,6 +91,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
       animationHost: this.animationHost,
       readHygiene: () => this.hygieneView,
       readEgg: () => this.eggView,
+      readAdventure: () => this.adventure,
       notification: this.notification,
       random,
       onPresentationEnd: () => {
@@ -100,11 +110,73 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
   }
 
   playFeedAnimation(): void {
-    if (this.orchestrator.isPresentationInProgress()) return
+    if (this.orchestrator.isPresentationInProgress() || this.adventureBusy()) return
     this.animationHost.playFeedAnimation()
   }
 
+  private adventureBusy(): boolean {
+    return adventureBusy(this.adventure)
+  }
+
+  private async actAdventure(command: AdventureCommand): Promise<void> {
+    const service = this.options.adventureService
+    if (!service || !this.view) return
+    if (command.kind !== "pause" && (!this.view.visible || this.isPresentationInProgress())) return
+    await service.act(command, Date.now())
+    this.adventure = await service.act({ kind: "read" }, Date.now())
+    this.animationHost.setAdventure(
+      Boolean(this.adventure?.running && this.adventure.status === "travel" && this.adventure.event?.kind !== "battle"),
+    )
+    await this.publishAdventure()
+    if (this.adventure?.running && this.adventure.event?.kind === "battle" && !this.adventurePlaying) {
+      const saved = this.adventure
+      this.adventurePlaying = true
+      try {
+        await this.orchestrator.playAdventureBattle(
+          saved,
+          service,
+          () => this.view?.visible === true && this.adventure?.running === true && this.adventure.id === saved.id,
+        )
+      } finally {
+        this.adventurePlaying = false
+        this.adventure = await service.act({ kind: "read" }, Date.now())
+        await this.refresh()
+      }
+    } else if (command.kind !== "tick") await this.refresh()
+  }
+
+  private async publishAdventure(): Promise<void> {
+    if (!this.options.adventureService || !this.view) return
+    const snapshot = this.snapshotReader.getSidebarSnapshot()
+    const node = snapshot && DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)
+    const available = Boolean(
+      node?.stage && !snapshot?.frozen && !snapshot?.isSetOverride && !snapshot?.pendingEvolutionTargetId,
+    )
+    await this.view.webview.postMessage({
+      type: "adventure-state",
+      view: adventureView(
+        available,
+        this.adventure,
+        DIGIMON_CATALOG,
+        await this.options.adventureService.nextReadyAt(),
+      ),
+    })
+  }
+
   async refresh(): Promise<void> {
+    if (this.options.adventureService && !this.adventurePlaying) {
+      if (!this.adventureReady) {
+        await this.options.adventureService.act({ kind: "pause" }, Date.now())
+        this.adventureReady = true
+      }
+      this.adventure = await this.options.adventureService.act({ kind: "read" }, Date.now())
+      this.animationHost.setAdventure(
+        Boolean(
+          this.adventure?.running && this.adventure.status === "travel" && this.adventure.event?.kind !== "battle",
+        ),
+      )
+      await this.publishAdventure()
+    }
     const saved = this.options.hygieneService?.refreshHygiene(Date.now())
     const snapshot =
       this.options.hygieneService || this.options.eggPettingService
@@ -129,13 +201,18 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
           partnerId: saved.partnerId,
           poops: saved.hygiene.poops,
           mood: hygieneMood(saved.hygiene, Date.now()),
-          canClean: !this.isPresentationInProgress() && !snapshot?.frozen && !snapshot?.pendingEvolutionTargetId,
+          canClean:
+            !this.isPresentationInProgress() &&
+            !this.adventureBusy() &&
+            !snapshot?.frozen &&
+            !snapshot?.pendingEvolutionTargetId,
         }
       : undefined
     await this.orchestrator.refresh()
   }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
+    this.adventureReady = false
     this.view = webviewView
     const messenger = createWebviewMessenger(webviewView.webview)
     const sink = createAnimationSink(messenger)
@@ -148,6 +225,18 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     }
 
     webviewView.webview.html = buildSidebarWebviewHtml(String(Date.now()), {
+      adventureSceneUri: webviewView.webview
+        .asWebviewUri(
+          vscode.Uri.joinPath(
+            this.extensionUri,
+            "dist",
+            "assets",
+            "regions",
+            DEFAULT_WORLD_VISIT.locationId,
+            "scene.svg",
+          ),
+        )
+        .toString(),
       fontUri: webviewView.webview
         .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "dist", "assets", "fonts", "Silkscreen-Regular.ttf"))
         .toString(),
@@ -157,8 +246,15 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((message: unknown) => {
       const inbound = parseWebviewInboundMessage(message)
       if (inbound === null) return
+      if (inbound.type === "adventure") {
+        void this.actAdventure(inbound.command).catch((error: unknown) =>
+          this.notification.showInformation(String(error)),
+        )
+        return
+      }
       if (inbound.type === "pet-partner") {
-        const reaction = this.isPresentationInProgress() ? undefined : this.animationHost.petPartner()
+        const reaction =
+          this.isPresentationInProgress() || this.adventureBusy() ? undefined : this.animationHost.petPartner()
         void messenger.post({
           type: "partner-petted",
           interactionId: inbound.interactionId,
@@ -181,7 +277,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
         return
       }
       if (inbound.type === "clean-poop") {
-        if (!this.isPresentationInProgress())
+        if (!this.isPresentationInProgress() && !this.adventureBusy())
           this.options.hygieneService?.cleanPoop(inbound.partnerId, inbound.poopId, Date.now())
         void this.refresh()
         clearTimeout(this.happyTimer)
@@ -217,6 +313,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
         this.animationHost.start()
         void this.refresh()
       } else {
+        void this.actAdventure({ kind: "pause" })
         this.animationHost.stop()
       }
     })
