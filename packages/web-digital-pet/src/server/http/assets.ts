@@ -12,6 +12,7 @@ const contentTypes: Record<string, string> = {
   ".png": "image/png",
   ".ico": "image/x-icon",
   ".ttf": "font/ttf",
+  ".mp3": "audio/mpeg",
   ".webmanifest": "application/manifest+json",
 }
 
@@ -36,14 +37,9 @@ export const serveAsset = async (
   }
   const compressible = /\.(js|css|html|svg)$/.test(path)
   const gzip = compressible && /\bgzip\b/.test(request.headers["accept-encoding"] ?? "")
-  sendCachedAsset(
-    request,
-    response,
-    type,
-    gzip ? gzipSync(body) : body,
-    gzip ? "gzip" : undefined,
-    compressible,
-    pathname.startsWith("/assets/"),
-  )
+  sendCachedAsset(request, response, type, gzip ? gzipSync(body) : body, gzip ? "gzip" : undefined, compressible, {
+    immutable: pathname.startsWith("/assets/"),
+    byteRanges: extname(path) === ".mp3",
+  })
   return true
 }

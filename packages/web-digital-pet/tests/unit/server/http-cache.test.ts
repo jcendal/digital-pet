@@ -4,7 +4,12 @@ import { gzipSync } from "node:zlib"
 
 import { sendCachedAsset } from "../../../src/server/http/cache.ts"
 
-const respond = (body: Buffer, tag?: string, gzip = false) => {
+const respond = (
+  body: Buffer,
+  tag?: string,
+  gzip = false,
+  media?: { range?: string; ifRange?: string; method?: string },
+) => {
   let status = 0
   let headers: Record<string, string> = {}
   let sent: Buffer | undefined
@@ -17,8 +22,13 @@ const respond = (body: Buffer, tag?: string, gzip = false) => {
       sent = value
     },
   } as unknown as ServerResponse
-  const request = { headers: { "if-none-match": tag } } as IncomingMessage
-  sendCachedAsset(request, response, "text/javascript", body, gzip ? "gzip" : undefined, true)
+  const request = {
+    method: media?.method,
+    headers: { "if-none-match": tag, range: media?.range, "if-range": media?.ifRange },
+  } as IncomingMessage
+  sendCachedAsset(request, response, media ? "audio/mpeg" : "text/javascript", body, gzip ? "gzip" : undefined, true, {
+    byteRanges: Boolean(media),
+  })
   return { status, headers, sent }
 }
 
@@ -47,4 +57,41 @@ test("compressed and uncompressed representations have distinct validators and d
   expect(gzip.headers.ETag).not.toBe(plain.headers.ETag)
   expect(gzip.headers["Content-Encoding"]).toBe("gzip")
   expect(gzip.headers.Vary).toBe("Accept-Encoding")
+})
+
+test("media serves bounded, open-ended and suffix ranges with correct lengths for Safari", () => {
+  const body = Buffer.from("0123456789")
+  for (const [header, bytes, contentRange] of [
+    ["bytes=0-1", "01", "bytes 0-1/10"],
+    ["bytes=7-", "789", "bytes 7-9/10"],
+    ["bytes=-3", "789", "bytes 7-9/10"],
+    ["bytes=8-100", "89", "bytes 8-9/10"],
+    ["bytes=-100", "0123456789", "bytes 0-9/10"],
+  ]) {
+    const response = respond(body, undefined, false, { range: header })
+    expect(response.status).toBe(206)
+    expect(response.sent?.toString()).toBe(bytes)
+    expect(response.headers["Content-Range"]).toBe(contentRange)
+    expect(response.headers["Content-Length"]).toBe(String(bytes!.length))
+    expect(response.headers["Accept-Ranges"]).toBe("bytes")
+  }
+  for (const range of ["bytes=10-", "bytes=5-2", "bytes=-0", "bytes=-", "bytes=9007199254740992-"]) {
+    const response = respond(body, undefined, false, { range })
+    expect(response.status).toBe(416)
+    expect(response.headers["Content-Range"]).toBe("bytes */10")
+    expect(response.sent).toHaveLength(0)
+  }
+})
+
+test("range requests respect validators and HEAD keeps metadata without sending audio", () => {
+  const body = Buffer.from("0123456789")
+  const first = respond(body, undefined, false, {})
+  expect(respond(body, undefined, false, { range: "bytes=0-1", ifRange: '"old"' }).status).toBe(200)
+  expect(respond(body, undefined, false, { range: "bytes=0-1", ifRange: first.headers.ETag }).status).toBe(206)
+  const unchanged = respond(body, first.headers.ETag, false, { range: "bytes=0-1" })
+  expect(unchanged.status).toBe(304)
+  expect(unchanged.sent).toBeUndefined()
+  const head = respond(body, undefined, false, { method: "HEAD" })
+  expect(head.headers["Content-Length"]).toBe("10")
+  expect(head.sent).toBeUndefined()
 })

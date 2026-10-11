@@ -59,7 +59,7 @@ export default defineConfig(
               injectRegister: false,
               integration: { closeBundleOrder: "post" },
               injectManifest: {
-                globPatterns: ["assets/**/*.{js,css,html,png,svg,ico,ttf}", "index.html", "manifest.webmanifest"],
+                globPatterns: ["assets/**/*.{js,css,html,png,svg,ico,ttf,mp3}", "index.html", "manifest.webmanifest"],
                 // The pixel catalog and lake artwork currently exceed Workbox's 2 MiB default.
                 maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
                 dontCacheBustURLsMatching: /^assets\//,

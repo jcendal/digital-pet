@@ -1,8 +1,10 @@
 import { initBrowserInstallation } from "../features/installation/controller.ts"
+import { initBrowserMusic } from "../features/music/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
 import "./styles.css"
 ;(() => {
   initBrowserInstallation()
+  initBrowserMusic()
   const frames = Array.from(document.querySelectorAll(".web-view"))
   const links = Array.from(document.querySelectorAll(".web-nav a"))
   const pageFromPath = (path) => (path === "/dex" ? "dex" : path === "/history" ? "history" : "sidebar")

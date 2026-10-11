@@ -268,5 +268,10 @@
   "connection.battleTimedOut": "Could not reach the other player. Keep both apps open and try again, or use another network.",
   "adventure.finishFirst": "Finish the adventure encounter before a player battle.",
   "protocol.invalidBossVictories": "The received save has invalid boss victories",
-  "food.feedYourCompanion5Experience": "Feed your companion · +5% experience"
+  "food.feedYourCompanion5Experience": "Feed your companion · +5% experience",
+  "music.label": "Music",
+  "music.description": "Butter-Fly in the world, Brave Heart in battle.",
+  "music.tapToPlay": "Tap to start the music.",
+  "music.unavailable": "Music could not play. Tap to try again.",
+  "music.credit": "8-bit arrangements by BgmManJX."
 }

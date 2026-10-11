@@ -14,6 +14,8 @@ export const resourceFiles = (root: string): Record<string, string> => {
   }
   for (const name of readdirSync(resolve(root, "assets/icons")).filter((name) => name.endsWith(".png")))
     files[`/icons/${name}`] = resolve(root, "assets/icons", name)
+  for (const name of ["butter-fly.mp3", "brave-heart.mp3"])
+    files[`/music/${name}`] = resolve(root, "assets/music", name)
   for (const place of LOCATIONS) {
     files[`/regions/${place.id}/scene.svg`] = resolve(fields, "scenes", `${place.scene}.svg`)
     const background = resolve(fields, "backgrounds", place.backgroundFile)
