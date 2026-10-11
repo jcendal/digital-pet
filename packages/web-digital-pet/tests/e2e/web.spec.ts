@@ -36,6 +36,10 @@ const controlled = async (page: import("@playwright/test").Page) => {
 test("static pages initialize shared clients, scenery, options and all panels without errors", async ({
   page,
 }, testInfo) => {
+  // This UI smoke test does not exercise networking; keep public signaling rate limits out of CI.
+  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => {
+    socket.send(JSON.stringify({ type: "OPEN" }))
+  })
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   page.on("console", (message) => {

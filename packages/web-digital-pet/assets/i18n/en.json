@@ -113,6 +113,7 @@
   "controller.chooseThisBrowserToUseDevicePairing": "Choose THIS BROWSER to use device pairing.",
   "transport.thePairingServiceIsNotConnectedYet": "The pairing service is not connected yet",
   "evolution.invalidPendingBattle": "Invalid pending battle",
+  "food.experience": "+{percent}% EXPERIENCE",
   "food.yum": "YUM!",
   "food.couldNotFeedYourCompanionTryAgain": "Could not feed your companion. Try again.",
   "food.couldNotFeedTryAgain": "Could not feed. Try again.",

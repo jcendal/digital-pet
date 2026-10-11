@@ -113,6 +113,7 @@
   "controller.chooseThisBrowserToUseDevicePairing": "Elige ESTE NAVEGADOR para vincular dispositivos.",
   "transport.thePairingServiceIsNotConnectedYet": "El servicio de vinculación aún no está conectado",
   "evolution.invalidPendingBattle": "El combate pendiente no es válido",
+  "food.experience": "+{percent}% EXPERIENCIA",
   "food.yum": "¡ÑAM!",
   "food.couldNotFeedYourCompanionTryAgain": "No se pudo dar de comer a tu compañero. Inténtalo de nuevo.",
   "food.couldNotFeedTryAgain": "No se pudo dar de comer. Inténtalo de nuevo.",
