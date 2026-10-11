@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-11
+
+### Changed
+
+- feat: add adventure bosses and refine pet care UI
+
+
 ## [0.12.0] - 2026-10-11
 
 ### Changed
