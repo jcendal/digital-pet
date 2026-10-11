@@ -1,345 +1,158 @@
-<div align="center" style="text-align: center;">
-<center>
-  <p align="center" style="text-align: center;"><img src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/branding/logo.png" alt="Cursor Digital Pet logo" width="160" style="display: block; margin: 0 auto;" /></p>
-  <h1 align="center" style="text-align: center;">Cursor Digital Pet</h1>
-  <p align="center" style="text-align: center;"><strong>Digimon virtual pet for Cursor that evolves as you use Agent — shares progress with OpenCode Digital Pet</strong></p>
-  <p align="center" style="text-align: center;">
-    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/open-vsx/v/jcendal/cursor-digital-pet?style=flat-square&amp;label=Version" alt="Version" /></a>
-    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/open-vsx/dt/jcendal/cursor-digital-pet?style=flat-square&amp;label=Downloads" alt="Downloads" /></a>
-    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/open-vsx/rating/jcendal/cursor-digital-pet?style=flat-square&amp;label=Rating" alt="Rating" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-blue?style=flat-square" alt="Apache 2.0 license" /></a>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/jcendal/digital-pet/main/assets/branding/logo.png" alt="Cursor Digital Pet logo" width="160" style="image-rendering: pixelated">
+  <h1>Cursor Digital Pet</h1>
+  <p>A Digimon companion in your sidebar that evolves as you use Cursor Agent.</p>
+  <p>
+    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/open-vsx/v/jcendal/cursor-digital-pet?style=flat-square&amp;label=Version" alt="Version"></a>
+    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/open-vsx/dt/jcendal/cursor-digital-pet?style=flat-square&amp;label=Downloads" alt="Downloads"></a>
   </p>
-  <p align="center" style="text-align: center;">
-    <a href="#-features">Features</a> • <a href="#-installation">Installation</a> • <a href="#-usage">Usage</a> •
-    <a href="#-commands">Commands</a> • <a href="#%EF%B8%8F-settings">Settings</a> • <a href="#-storage">Storage</a> •
-    <a href="#-how-it-works">How It Works</a> • <a href="#-authors">Authors</a>
-  </p>
-  <p align="center" style="text-align: center;">
-    <a href="https://open-vsx.org/extension/jcendal/cursor-digital-pet"><img src="https://img.shields.io/badge/Open%20VSX-Install-764ABC?style=for-the-badge&amp;logo=eclipse&amp;logoColor=white" alt="Install from Open VSX" /></a>
-    &nbsp;&nbsp;
-    <a href="https://github.com/jcendal/digital-pet/releases"><img src="https://img.shields.io/badge/GitHub-Releases-24292f?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="Download VSIX from GitHub Releases" /></a>
-  </p>
-</center>
 </div>
 
----
+Raise your partner while you work. Discover **650 Digimon**, browse your collection
+in the Digidex, and keep previous generations in History. Cursor and OpenCode
+Digital Pet share your progress on the same computer.
 
-<div align="center" style="text-align: center; white-space: nowrap;">
-<center>
-<img src="assets/screenshots/sidebar-partner-lcd.jpg" alt="Cursor Digital Pet sidebar showing a partner and its evolution progress" width="31%" />
-<img src="assets/screenshots/sidebar-evolution-lcd.jpg" alt="Cursor Digital Pet partner animation in the sidebar" width="31%" />
-<img src="assets/screenshots/sidebar-battle-lcd.jpg" alt="Cursor Digital Pet battle scene in the sidebar" width="31%" />
-</center>
+<div align="center">
+  <img src="assets/screenshots/sidebar-partner-lcd.jpg" alt="Companion and evolution progress" width="31%">
+  <img src="assets/screenshots/sidebar-evolution-lcd.jpg" alt="Companion evolution" width="31%">
+  <img src="assets/screenshots/sidebar-battle-lcd.jpg" alt="Battle in the companion viewer" width="31%">
 </div>
 
----
+## Installation
 
-## 📖 About
+Search for **Cursor Digital Pet** in Cursor's Extensions sidebar, or install from
+[Open VSX](https://open-vsx.org/extension/jcendal/cursor-digital-pet).
 
-**Cursor Agent** turns every prompt into real work — but what if that effort also fed a partner
-that grows with you? **Cursor Digital Pet** adds a Digimon virtual pet to the Explorer sidebar. Your
-partner gains experience from Agent token usage and evolves through classic Digimon stages.
+You can also open Quick Open (`Cmd+P` / `Ctrl+P`) and run:
 
-It shares the same `pet.db` database as
-[@jcendal/opencode-digital-pet](https://www.npmjs.com/package/@jcendal/opencode-digital-pet), so progress
-carries over between Cursor and OpenCode.
-
-### 🎯 Key Highlights
-
-- 🐣 **Evolves with Agent usage** — Input, output, and cache tokens from Agent turns count
-- 🔄 **Shared with OpenCode** — Same `pet.db`, Dex, and generation history across tools
-- 🎮 **650 Digimon** — Evolution lines extracted from the original V-Pets
-- 📊 **Sidebar + panels** — Live partner view, Dex browser, and generation history
-- 🪝 **Reliable tracking** — Cursor hooks with API watermark fallback
-- 🔒 **Privacy-first** — Local SQLite storage, no telemetry
-- ⏸️ **Freeze anytime** — Pause progression without losing your partner
-
----
-
-## ✨ Features
-
-| Feature | Description |
-| --- | --- |
-| **Sidebar webview** | Compact pixel LCD partner view with evolution progress, shared combat/evolution animations, and Dex/History shortcuts |
-| **Digidex panel** | Pixel LCD collection browser with grid/list layouts, search, stage filters, and evolution records |
-| **History panel** | Browse current and retired generations, their recorded evolution journeys, and creation/retirement dates in a pixel LCD layout |
-| **Token tracking** | Cursor hooks (`beforeSubmitPrompt` + `stop`) with API watermark fallback |
-| **Shared database** | Compatible `pet.db` with the OpenCode Digital Pet plugin |
-| **Partner commands** | Spawn, freeze, unfreeze, and set Digimon by catalog ID |
-| **Hook management** | Install or uninstall hooks from the Command Palette |
-
----
-
-## 📦 Installation
-
-### Open VSX (Cursor)
-
-Open Quick Open (`Ctrl+P` / `Cmd+P`) and run:
-
-```
+```text
 ext install jcendal.cursor-digital-pet
 ```
 
-Or search for **Cursor Digital Pet** in the Extensions sidebar, or install from
-[Open VSX](https://open-vsx.org/extension/jcendal/cursor-digital-pet).
-
-### VSIX (manual)
-
-Download the `.vsix` from
-[GitHub Releases](https://github.com/jcendal/digital-pet/releases) and run
+For manual installation, download a VSIX from
+[GitHub Releases](https://github.com/jcendal/digital-pet/releases) and choose
 **Extensions → Install from VSIX…**.
 
----
+Use Cursor with Node.js 22.13 or newer available on your system. Agent progress tracking requires
+Cursor; it is not available in VS Code alone.
 
-## 🚀 Usage
+## Usage
 
-### First run — install hooks
+1. Accept the first-run prompt to install Digital Pet hooks so Agent usage counts
+   toward your companion's growth. You can also run **Cursor Digital Pet: Install Hooks**.
+2. Open **Digital Pet** in the Explorer sidebar.
+3. Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and run
+   **Cursor Digital Pet: Spawn Partner**.
 
-On first activation, the extension prompts you to register hooks in `~/.cursor/hooks.json`.
-Hooks are required for reliable Agent token tracking.
+Your partner begins as an egg and gains experience as you complete Agent turns.
+Use **Freeze** to pause growth and **Unfreeze** to resume it.
 
-You can also run **Cursor Digital Pet: Install Hooks** from the Command Palette at any time.
+### Care for your partner
 
-### Sidebar
+Click the egg to earn **1%** toward hatching and see pixel stars. After it hatches,
+pet your companion to show hearts and a happy reaction. Petting a sleeping
+companion wakes it with bolts and an angry or sad reaction; petting adds no experience.
 
-Open the **Digital Pet** view in the Explorer sidebar to see your active partner, evolution gauge,
-and animated artwork.
+Piles appear after 2 hours, then another 8 hours later, then 16 hours later.
+The timers continue while Cursor is closed. Click each pile to clean it and earn
+**5%** of the current evolution requirement. Two or more piles make your companion
+sad; cleaning gives it a happy reaction. Cleaning waits during combat or evolution
+and are unavailable while frozen.
 
-### Hatch a partner
+### Adventures
 
-1. Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-2. Run **Cursor Digital Pet: Spawn Partner**
+Use the compass button in the companion viewer to begin an adventure. A new trip
+is available every **2 hours**, including time while Cursor is closed.
 
-Your partner starts as an egg and evolves as you complete Agent turns.
+Collect passing data and food for experience, fight roaming Digimon, and face
+regional bosses. Use the pause icon to take a break or the home icon to end the trip.
+An adventure also ends after defeat, evolution, or accepting a new companion.
 
-Click the egg in the sidebar to pet it: each click adds 1% of its hatching requirement and shows pixel stars. The reward is saved locally, respects Freeze, and stops when hatching begins. Keyboard activation works too.
-
-After hatching, click the companion to show pixel hearts and a happy reaction. If it was sleeping, it wakes with bolts and an angry reaction, falling back to a sad frame when needed. These cosmetic interactions do not add experience or change the stored hygiene mood, and wait during combat or evolution.
-
-### Hygiene
-
-After hatching, a pile appears after 2 hours, another 8 hours later, and a third 16 hours later. Up to three piles are kept in the partner database, including while Cursor is closed. Click a pile in the sidebar to clean it and earn 5% of the current stage requirement. A double click cannot grant the same reward twice. Two or more piles make the partner sad; cleaning shows a happy reaction for three seconds before returning to its current mood.
-
-Cleaning restarts the timer at 2, 8 or 16 hours according to the number of remaining piles. Eggs have no piles, a new partner starts fresh, and final stages can be cleaned without gaining unused XP. Cleaning waits during evolution and is disabled while frozen or using a node override.
-
-### Evolution battles
-
-Evolution sequences can show your partner in a battle scene inside the sidebar.
-
-### Digidex
-
-Run **Cursor Digital Pet: Open Dex** to browse the full catalog alongside a selected record.
-Switch between grid and list layouts, search by name or catalog ID, and filter by stage or discovery.
-Registered Digimon show their pixel sprite, first registration, generation count and evolution routes.
-Undiscovered entries stay hidden until you raise them. Arrow keys, Home and End navigate the catalog.
-The panel refreshes when your shared database changes and remembers your filters and selection.
-
-![Digidex with brown V-Pet casing, green LCD, collection list and Komondomon record (sample archive)](assets/screenshots/digidex-browser.jpg)
-
-### Other access methods
-
-- **Command Palette** — all `Cursor Digital Pet:` commands
-- **Explorer sidebar** — **Digital Pet** webview panel
-
----
-
-## 🎮 Commands
-
-| Command | Description |
+| Find or victory | Experience |
 | --- | --- |
-| **Cursor Digital Pet: Spawn Partner** | Hatches a new egg |
-| **Cursor Digital Pet: Freeze** | Pauses partner progression |
-| **Cursor Digital Pet: Unfreeze** | Resumes partner progression |
-| **Cursor Digital Pet: Set Digimon** | Overrides the partner with a catalog ID (e.g. `3-001`) |
-| **Cursor Digital Pet: Open Dex** | Opens the partner Dex panel |
-| **Cursor Digital Pet: Open History** | Opens the independent generation browser with search, status filters, and recorded evolution timelines |
-| **Cursor Digital Pet: Install Hooks** | Registers hooks in `~/.cursor/hooks.json` |
-| **Cursor Digital Pet: Uninstall Hooks** | Removes Digital Pet hooks from `~/.cursor/hooks.json` |
+| Data or adventure food | 2% |
+| Lower-stage rival | 2% |
+| Same-stage rival | 5% |
+| Higher-stage rival | 15% |
+| Regional boss | 50% |
 
-> **Note:** Using **Set Digimon** does not count toward Dex completion.
+After a victory, the rival has a **15%** chance of offering to become your companion.
+Accepting moves your current partner to History and records the new one in your Dex.
+Your adventure pauses when the viewer is closed, and you can continue later.
 
----
+### Digidex and History
 
-## 📝 Examples
+Open the Dex to search by name or ID, switch between grid and list layouts, and
+filter by stage or companions you have raised. Registered entries show their
+artwork and evolution records.
 
-### Shared database with OpenCode
+History lets you revisit current and retired generations and their evolution journeys.
 
-By default, Cursor Digital Pet and OpenCode Digital Pet resolve the same `pet.db` path.
-If you override the path in Cursor, point it to the database used by OpenCode:
+![Digidex collection and selected companion](assets/screenshots/digidex-browser.jpg)
 
-```json
-{
-  "digital-pet.databasePath": "/path/to/opencode-digital-pet/pet.db"
-}
-```
+## Commands
 
-### Slower API watermark fallback
+Open the Command Palette and search for **Cursor Digital Pet**.
 
-If token deltas are not captured immediately after Agent turns, increase the settle delay:
+| Command | What it does |
+| --- | --- |
+| **Spawn Partner** | Starts a new egg. |
+| **Freeze** | Pauses progression. |
+| **Unfreeze** | Resumes progression. |
+| **Set Digimon** | Selects a companion by catalog ID, such as `3-001`. |
+| **Open Dex** | Opens your collection. |
+| **Open History** | Opens current and past generations. |
+| **Install Hooks** | Enables Agent usage tracking. |
+| **Uninstall Hooks** | Removes Digital Pet hooks. |
 
-```json
-{
-  "digital-pet.usage.settleDelayMs": 8000
-}
-```
+**Set Digimon** does not count toward Dex completion.
 
----
+## Settings
 
-## ⚙️ Settings
+Open Cursor Settings and search for `digital-pet`.
 
-Configure via **File → Preferences → Settings** and search for `digital-pet`.
-
-| Setting | Default | Description |
+| Setting | Default | Purpose |
 | --- | --- | --- |
-| `databasePath` | _(empty)_ | Override path to `pet.db` (default: shared opencode-digital-pet location) |
-| `usage.settleDelayMs` | `4000` | Initial delay before API watermark fallback (ms) |
+| `databasePath` | Shared save location | Choose a different companion save file. Reload Cursor after changing it. |
+| `usage.settleDelayMs` | `4000` | Wait before checking usage if Agent does not report it immediately. |
 
-> Changing `databasePath` requires reloading the Cursor window.
+The interface follows Cursor's language and supports English, Korean, Spanish,
+and Galician. Digimon use Japanese names by default. Cursor does not read
+OpenCode's naming or evolution settings.
 
-Stage labels and evolution thresholds use the built-in defaults from `@jcendal/digital-pet-core`
-(Japanese naming by default). The OpenCode plugin can override these via
-[`opencode-digital-pet.json`](https://github.com/jcendal/digital-pet/blob/main/packages/opencode-digital-pet/README.md#settings); Cursor Digital Pet does
-not read that file yet.
+## Storage
 
----
+Your companion, Dex, and History are saved in the same `pet.db` file as OpenCode
+Digital Pet. Back up this file to keep a copy of your progress.
 
-## 🔧 Requirements
-
-| Requirement | Details |
+| Platform | Save file |
 | --- | --- |
-| **Cursor** | Token tracking requires Cursor (`state.vscdb` must be present) |
-| **Extension host** | Node.js 22.13 or newer for native SQLite access to the shared `pet.db` |
-| **Node.js** | Required on the system path to run `hook-bridge.js` from Cursor hooks |
-| **Hooks** | `beforeSubmitPrompt` and `stop` entries in `~/.cursor/hooks.json` |
+| macOS | `~/Library/Application Support/opencode-digital-pet/pet.db` |
+| Linux / WSL | `~/.local/share/opencode-digital-pet/pet.db` |
+| Windows | `%APPDATA%\opencode-digital-pet\pet.db` |
 
-The extension shows a warning if it cannot detect the Cursor runtime. VS Code alone is not
-enough for token tracking, though the sidebar and panels still work with an existing `pet.db`.
+An existing `opencode-vpet/pet.db` remains in use if the new save does not exist.
+Use `digital-pet.databasePath` to choose a custom file.
 
----
+## Privacy and help
 
-## 💾 Storage
+Companion data stays on your computer. The extension has no analytics or telemetry.
+If Agent does not report usage directly, Digital Pet checks your Cursor usage
+through your signed-in account.
 
-Partner state, Dex discoveries, and generation history are stored in a SQLite database named
-`pet.db`. By default it uses the same location as OpenCode Digital Pet:
-
-| Platform | Default path |
+| Problem | Try this |
 | --- | --- |
-| **macOS** | `~/Library/Application Support/opencode-digital-pet/pet.db` |
-| **Linux / WSL** | `~/.local/share/opencode-digital-pet/pet.db` |
-| **Windows** | `%APPDATA%\opencode-digital-pet\pet.db` |
+| Agent turns do not give experience | Run **Install Hooks** and retry. |
+| Usage arrives late | Increase `digital-pet.usage.settleDelayMs`, for example to `8000`. |
+| A new save path is not applied | Reload the Cursor window. |
 
-Override with `digital-pet.databasePath` to use a custom file.
-If the new database does not exist but an older `opencode-vpet/pet.db` does, the
-extension continues using the older file, as does the OpenCode plugin.
+Report problems in [GitHub Issues](https://github.com/jcendal/digital-pet/issues).
+For development, see [CONTRIBUTING.md](https://github.com/jcendal/digital-pet/blob/main/CONTRIBUTING.md).
 
----
+## Credits and license
 
-## 🏗️ How It Works
+Maintained by [Jorge Cendal](https://github.com/jcendal), with
+[Sergio Bugallo](https://github.com/sbugallo) as original author and contributor.
 
-```text
-Cursor hooks → hook-bridge.js → digital-pet-hook-events.jsonl
-                                      ↓
-                         extension usage pipeline → pet.db
-                                                       ↓
-                                            Sidebar · Dex · History
-```
-
-1. Cursor hooks fire on `beforeSubmitPrompt` and `stop` for each Agent turn
-2. `hook-bridge.js` appends structured events to `~/.cursor/digital-pet-hook-events.jsonl`
-3. The extension watches the event log and maps stop payloads to completed usage
-4. If stop tokens are missing, it falls back to Cursor's usage API (watermark delta)
-5. Usage is applied through `@jcendal/digital-pet-core` evolution logic into `pet.db`
-6. The sidebar webview refreshes with updated partner state and artwork
-
----
-
-## 🔒 Privacy
-
-- ✅ No extension telemetry or analytics
-- ✅ Partner data stays in your local `pet.db`
-- ✅ Hook events are written only to `~/.cursor/digital-pet-hook-events.jsonl`
-- ⚠️ API watermark fallback reads your Cursor access token from local `state.vscdb` and
-  queries `cursor.com/api/dashboard/get-filtered-usage-events` to compute token deltas
-- ⚠️ When stop hooks include token counts, no network request is needed for that turn
-
----
-
-## 🐛 Known Issues
-
-| Issue | Workaround |
-| --- | --- |
-| Tokens not recorded after Agent turns | Run **Cursor Digital Pet: Install Hooks** and retry |
-| Missing token data in stop hook | Increase `digital-pet.usage.settleDelayMs` (e.g. `8000`) |
-| Running in VS Code instead of Cursor | Token tracking is unavailable; use Cursor for Agent usage |
-| Database path change not applied | Reload the Cursor window after changing settings |
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome in the monorepo!
-
-1. Fork the [repository](https://github.com/jcendal/digital-pet)
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Package path: [`packages/cursor-digital-pet`](https://github.com/jcendal/digital-pet/tree/main/packages/cursor-digital-pet)
-
----
-
-## 👤 Authors
-
-| Role | Name |
-| --- | --- |
-| **Maintainer** | [Jorge Cendal](https://github.com/jcendal) |
-| **Original author and contributor** | [Sergio Bugallo](https://github.com/sbugallo) |
-
----
-
-## 📜 License
-
-[Apache-2.0](LICENSE)
-
-Part of the [Digital Pet](https://github.com/jcendal/digital-pet) monorepo. Digimon
-sprites were derived from community sources — see the
-[root README credits](https://github.com/jcendal/digital-pet#maintainer-and-credits).
-
----
-
-<p align="center"><strong>Built with ❤️ for the developer community</strong></p>
-
-<p align="center"><a href="#cursor-digital-pet">⬆ Back to Top</a></p>
-
-## Static resources
-
-Documentation captures live in `assets/screenshots`. The build copies the shared
-project logo and the webviews package's font/license into `dist/assets`; the VSIX
-includes those files and webviews restrict resource access to that directory.
-Edit the canonical resources rather than generated copies.
-
-## Adventures
-
-The partner viewer shows a compass button when a hatched companion can explore.
-Trips have a persisted 2-hour cooldown shared across companion generations.
-The trip continues until defeat, returning home, accepting a companion, or
-reaching evolution. Compact pause and home icons are available in the viewer.
-
-Shared core rules combine 45–65 second quiet periods with a balanced encounter
-bag (two data fragments, one meal, two battles). Finds pass after eight seconds.
-Both data and adventure food grant 2% of the current threshold. Rival selection
-requests a lower stage 50%, the same stage 35%, a higher stage 10% and a regional
-boss 5%; absent tiers fall back to the nearest available non-egg tier. Victories
-grant 2%, 5%, 15% and 50% respectively, after the outcome animation. Bosses have
-a special reveal and are excluded from ordinary encounter pools. Their victories
-are stored as trainer achievements, survive new generations and appear as stars
-in the shared database's web map. They do not register Dex ownership.
-
-Adventure plans, checkpoints, the remaining bag and pending 15% recruitment
-offers are stored in SQLite. Accepting an offer uses the existing partner
-lifecycle to archive the previous generation and register the new one in history
-and the Dex. The adopted partner starts at zero gauge with fresh care timers;
-trainer usage and the adventure cooldown are preserved. Evolution takes
-precedence over recruitment. Hidden or closed views pause active travel, while
-real elapsed time still counts toward the next available adventure.
+Licensed under [Apache 2.0](LICENSE). Sprite credits are in the
+[root README](https://github.com/jcendal/digital-pet#maintainer-and-credits).

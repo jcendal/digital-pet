@@ -62,7 +62,7 @@ manually arrange code against the formatter.
   `es.json`, and `gl.json`. Use a package-scoped `IntlModule` from
   `digital-pet-intl`; keep matching keys and `{name}` placeholders across all
   languages. Keep markup in renderers, not translation files. See
-  [Digital Pet Intl](packages/digital-pet-intl/README.md) for the shared API and
+  [translation development](packages/digital-pet-intl/docs/translations.md) for the shared API and
   browser integration.
 - Reuse shared CSS custom properties for colors and typography. Keep styles next
   to their view and preserve accessibility, keyboard interactions, reduced
@@ -133,6 +133,17 @@ launch configuration, and `.cursor/rules/`. Cursor hooks, local MCP configuratio
 editor history, credentials, and personal state remain ignored. Shared agent
 guidance lives in `AGENTS.md`; the Cursor rule points to the same conventions so
 the two cannot develop different code standards.
+
+## Documentation
+
+Keep READMEs focused on the product, installation, and user controls. Place
+implementation and maintenance guidance in `docs/` or this contribution guide.
+
+- [Translation development](packages/digital-pet-intl/docs/translations.md)
+- [World catalog and scenery](packages/digital-pet-fields/docs/catalog.md)
+- [Web architecture](packages/web-digital-pet/docs/architecture.md)
+- [Web caching](docs/web-caching.md)
+- [Player battle protocol](packages/web-digital-pet/docs/player-battles.md)
 
 ## Tooling references
 
