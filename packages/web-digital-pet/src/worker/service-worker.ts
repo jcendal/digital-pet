@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { cacheNames, setCacheNameDetails } from "workbox-core"
 import { matchPrecache, precache } from "workbox-precaching"
+import { createPartialResponse } from "workbox-range-requests"
 import { registerRoute } from "workbox-routing"
 import { CacheFirst, NetworkFirst } from "workbox-strategies"
 import { IntlModule } from "../shared/i18n.ts"
@@ -9,6 +10,24 @@ declare const self: ServiceWorkerGlobalScope & { __WB_MANIFEST: Array<{ url: str
 
 setCacheNameDetails({ prefix: "web-digital-pet", suffix: "v2" })
 precache(self.__WB_MANIFEST)
+
+// Safari requests byte ranges for media, including music already downloaded for offline use.
+registerRoute(
+  ({ request, url }) =>
+    url.origin === self.location.origin &&
+    url.pathname.startsWith("/assets/") &&
+    url.pathname.endsWith(".mp3") &&
+    request.cache !== "no-store",
+  async ({ request }) => {
+    try {
+      const cached = await matchPrecache(request.url)
+      if (cached) return request.headers.has("range") ? createPartialResponse(request, cached) : cached
+    } catch {
+      /* A storage failure must not prevent online playback. */
+    }
+    return fetch(request)
+  },
+)
 
 const eligible = (request: Request, url: URL) =>
   url.origin === self.location.origin && request.cache !== "no-store" && !request.headers.has("range")

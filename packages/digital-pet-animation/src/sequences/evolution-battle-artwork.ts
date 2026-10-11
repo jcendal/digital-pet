@@ -22,7 +22,8 @@ import { sleep } from "../utils/sleep.ts"
 /** FIGlet-style BATTLE banner. */
 export const BATTLE_FIGLET_LINES = Object.freeze(catalogs.en["battle.intro"].split("\n"))
 
-export const buildBattleIntroTextLines = (): readonly string[] => IntlModule.translate("battle.intro").split("\n")
+// The BATTLE banner is sprite artwork and stays in English in every locale.
+export const buildBattleIntroTextLines = (): readonly string[] => BATTLE_FIGLET_LINES
 
 /** Block-style flame sprite matching Digimon ASCII art. */
 export const FIREBALL_LINES = Object.freeze([" ▄▀▄ ", "▄█▀▀█", " ▀▀▀ "])

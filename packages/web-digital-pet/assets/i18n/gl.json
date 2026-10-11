@@ -268,5 +268,10 @@
   "connection.battleTimedOut": "Non se puido conectar co outro xogador. Mantén ambas aplicacións abertas e téntao de novo, ou proba outra rede.",
   "adventure.finishFirst": "Remata o encontro da aventura antes de combater con outro xogador.",
   "protocol.invalidBossVictories": "A partida recibida contén vitorias de bosses non válidas",
-  "food.feedYourCompanion5Experience": "Dar de comer · +5% de experiencia"
+  "food.feedYourCompanion5Experience": "Dar de comer · +5% de experiencia",
+  "music.label": "Música",
+  "music.description": "Butter-Fly no mundo, Brave Heart no combate.",
+  "music.tapToPlay": "Toca para iniciar a música.",
+  "music.unavailable": "Non se puido reproducir a música. Toca para tentalo de novo.",
+  "music.credit": "Versións de 8 bits de BgmManJX."
 }

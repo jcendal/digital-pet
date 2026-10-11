@@ -25,7 +25,11 @@ function initWebBridge(page, locationIds) {
       },
       { once: true },
     )
-  const deliver = (data) => window.dispatchEvent(new MessageEvent("message", { data }))
+  const deliver = (data) => {
+    window.dispatchEvent(new MessageEvent("message", { data }))
+    if (page === "sidebar" && data.type === "presentation-state" && window.parent !== window)
+      window.parent.postMessage({ type: "digital-pet:presentation-state", phase: data.state.phase }, location.origin)
+  }
   const receiveBattle = (event) => {
     if (
       page !== "sidebar" ||

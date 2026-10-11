@@ -165,7 +165,7 @@ body {
 }
 .partner-device .arena {
   --artwork-pixel-size: 7.5;
-  background: url("/regions/dragon-eye-lake/scene.svg") center / 100% 100% no-repeat;
+  background: url("/regions/dragon-eye-lake/scene.svg") center / cover no-repeat;
 }
 .partner-device .pet-module:not(.animating) .arena #artwork {
   height: 85%;
@@ -197,6 +197,7 @@ body {
   height: 100%;
   flex: none;
   display: block;
+  object-fit: cover;
   image-rendering: pixelated;
 }
 .world-scenery-track img:nth-child(odd) {

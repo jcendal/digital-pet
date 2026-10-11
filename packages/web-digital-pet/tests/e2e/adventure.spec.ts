@@ -1,65 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
-
-const save = async (page: Page, battle = false) => {
-  await page.evaluate(async (battle) => {
-    const now = Date.now()
-    const createdAt = new Date(now).toISOString()
-    const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
-      request.onsuccess = () => resolve(request.result)
-    })
-    await new Promise<void>((resolve) => {
-      const transaction = database.transaction("pet", "readwrite")
-      const store = transaction.objectStore("pet")
-      store.put(
-        {
-          partnerId: "adventure-pet",
-          currentNodeId: "3-001",
-          createdAt,
-          lastTickAt: now,
-          gauge: 0,
-          isTerminal: false,
-          events: [{ currentNodeId: "3-001", createdAt }],
-        },
-        "current",
-      )
-      if (battle) store.put(now + 5 * 3600_000, "adventure-ready-at")
-      else store.delete("adventure-ready-at")
-      if (battle)
-        store.put(
-          {
-            partnerId: "adventure-pet",
-            state: {
-              id: "saved-trip",
-              nodeId: "3-001",
-              regionId: "digital-ocean",
-              running: false,
-              elapsedMs: 6000,
-              lastTickAt: now,
-              nextEventAt: 21000,
-              sequence: 1,
-              collected: 0,
-              victories: 0,
-              status: "travel",
-              event: {
-                kind: "battle",
-                id: 1,
-                opponentNodeId: "3-007",
-                difficult: false,
-                completedShots: 0,
-                plan: { outcome: "player", shots: [1, 2, 3].map(() => ({ shooter: "player", hit: true })) },
-              },
-            },
-          },
-          "adventure",
-        )
-      else store.delete("adventure")
-      transaction.oncomplete = () => resolve()
-    })
-    database.close()
-  }, battle)
-  await page.reload()
-}
+import { saveAdventure as save } from "./helpers/adventure.ts"
 
 const saved = (page: Page) =>
   page.evaluate(async () => {
@@ -157,10 +97,13 @@ test("adventure walks quickly, finds move past, collection earns once, and reloa
 test("a saved adventure fight plays in the pet viewer and XP waits for the last animation", async ({
   page,
 }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 })
   const errors: string[] = []
-  page.on("pageerror", (error) => errors.push(error.message))
+  page.on("pageerror", (error) => errors.push(error.stack ?? error.message))
   await page.addInitScript(() => {
     Math.random = () => 0.9
+    // WebKit can replay initialization on the same window when restoring an iframe.
+    if (Reflect.has(window, "battleTransitions")) return
     const transitions: { phase: string; caption: string }[] = []
     Object.defineProperty(window, "battleTransitions", { value: transitions })
     window.addEventListener("message", (event) => {
@@ -195,6 +138,9 @@ test("a saved adventure fight plays in the pet viewer and XP waits for the last 
     await page.waitForTimeout(20)
   }
   await page.screenshot({ path: testInfo.outputPath("adventure-battle.png") })
+  await page.setViewportSize({ width: 320, height: 844 })
+  await page.screenshot({ path: testInfo.outputPath("adventure-battle-320.png") })
+  await page.setViewportSize({ width: 390, height: 844 })
   await expect(pet.locator("#stage")).toHaveText("Betamon")
   expect((await saved(page)).gauge).toBe(0)
   for (let index = 0; index < 20; index++) {
@@ -229,18 +175,31 @@ test("a disabled Adventure countdown persists on reload and becomes available af
   await expect(pet.locator("#name")).not.toHaveText("")
   await save(page)
   await expect(pet.locator(".arena #adventure-toggle")).toHaveAttribute("aria-label", "Adventure")
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.screenshot({ path: testInfo.outputPath("adventure-ready.png") })
+  await pet.locator("#adventure-toggle").click()
+  await expect(pet.locator(".pet-module")).toHaveClass(/adventuring/)
+  await page.mouse.move(0, 0)
+  await page.screenshot({ path: testInfo.outputPath("adventure-running.png") })
+  await pet.locator("#adventure-toggle").click()
+  await expect(pet.locator("#adventure-toggle")).toHaveAttribute("aria-label", "Continue")
+  await page.mouse.move(0, 0)
+  await page.screenshot({ path: testInfo.outputPath("adventure-paused.png") })
   await pet.locator("#adventure-toggle").click()
   await expect(pet.locator(".pet-module")).toHaveClass(/adventuring/)
   await pet.locator("#adventure-stop").click()
   await expect(pet.locator("#adventure-toggle")).toBeVisible()
   await expect(pet.locator("#adventure-toggle")).toBeDisabled()
   await expect(pet.locator("#adventure-toggle")).toHaveText("2:00")
+  await expect(pet.locator("#adventure-toggle")).toHaveCSS("opacity", "1")
   await page.reload()
   await expect(pet.locator("#adventure-controls")).toHaveCount(0)
   await expect(pet.locator("#adventure-toggle")).toBeDisabled()
   await expect(pet.locator("#adventure-toggle")).toHaveText("2:00")
   await page.setViewportSize({ width: 390, height: 844 })
   await page.screenshot({ path: testInfo.outputPath("adventure-countdown.png") })
+  await page.setViewportSize({ width: 320, height: 760 })
+  await page.screenshot({ path: testInfo.outputPath("adventure-countdown-320.png") })
   await page.clock.fastForward(2 * 3600_000 - 60_000)
   await expect(pet.locator("#adventure-toggle")).toBeDisabled()
   await expect(pet.locator("#adventure-toggle")).toHaveText("0:01")
@@ -250,6 +209,28 @@ test("a disabled Adventure countdown persists on reload and becomes available af
   await expect(pet.locator("#adventure-toggle")).toHaveText("Adventure")
   await pet.locator("#adventure-toggle").click()
   await expect(pet.locator(".pet-module")).toHaveClass(/adventuring/)
+})
+
+test.describe("battle intro artwork", () => {
+  test.use({ locale: "es-ES" })
+
+  test("Spanish battles show the English pixel BATTLE banner at narrow and wide sizes", async ({ page }, testInfo) => {
+    await page.clock.install()
+    await page.goto("/")
+    const pet = page.frameLocator('iframe[data-page="sidebar"]')
+    await expect(pet.locator("#name")).not.toHaveText("")
+    await save(page, true)
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
+    await pet.locator("#adventure-toggle").click()
+    await expect(pet.locator(".pet-module")).toHaveClass(/battle-intro/)
+    await expect(pet.locator("#artwork")).toHaveAttribute("viewBox", / 12$/)
+    expect(await pet.locator("#artwork rect").count()).toBeGreaterThan(100)
+    await expect(pet.locator("#artwork")).not.toContainText("COMBATE")
+    for (const width of [320, 390, 1024]) {
+      await page.setViewportSize({ width, height: 844 })
+      await page.screenshot({ path: testInfo.outputPath(`battle-intro-${width}.png`) })
+    }
+  })
 })
 
 test("recruitment survives reload and adopts a new generation without losing history, Dex or cooldown", async ({

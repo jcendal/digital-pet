@@ -3,6 +3,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import { planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 
 import { EVOLUTION_BATTLE_HITS_TO_WIN } from "../src/constants/evolution-battle.ts"
+import { IntlModule } from "../src/i18n.ts"
 import {
   buildBattleIntroTextLines,
   buildBattleScorePips,
@@ -19,6 +20,20 @@ const countHits = (shots: readonly { readonly shooter: "player" | "opponent"; re
 })
 
 describe("evolution battle artwork", () => {
+  test("Given any locale When a fight begins Then the original English BATTLE artwork is preserved", () => {
+    const originalLocale = IntlModule.locale
+    const english = renderBattleIntroArtwork(80, 0, 0)
+    try {
+      for (const locale of ["es", "gl", "ko", "en"]) {
+        IntlModule.setLocale(locale)
+        expect(renderBattleIntroArtwork(80, 0, 0)).toBe(english)
+        expect(buildBattleIntroTextLines()).toHaveLength(6)
+      }
+    } finally {
+      IntlModule.setLocale(originalLocale)
+    }
+  })
+
   test("Given battle intro When ticking Then FIGlet BATTLE banner blinks", () => {
     const textLines = buildBattleIntroTextLines()
     const on = renderBattleIntroArtwork(80, 1, 0)

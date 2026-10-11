@@ -268,5 +268,10 @@
   "connection.battleTimedOut": "상대 플레이어에게 연결할 수 없습니다. 두 앱을 모두 열어 둔 채 다시 시도하거나 다른 네트워크를 사용해 주세요.",
   "adventure.finishFirst": "다른 플레이어와 전투하기 전에 모험 전투를 끝내 주세요.",
   "protocol.invalidBossVictories": "받은 저장 데이터의 보스 승리 기록이 올바르지 않습니다",
-  "food.feedYourCompanion5Experience": "먹이 주기 · 경험치 +5%"
+  "food.feedYourCompanion5Experience": "먹이 주기 · 경험치 +5%",
+  "music.label": "음악",
+  "music.description": "일상에서는 Butter-Fly, 전투에서는 Brave Heart.",
+  "music.tapToPlay": "화면을 터치하면 음악이 시작됩니다.",
+  "music.unavailable": "음악을 재생할 수 없습니다. 터치하여 다시 시도하세요.",
+  "music.credit": "8비트 편곡: BgmManJX."
 }
