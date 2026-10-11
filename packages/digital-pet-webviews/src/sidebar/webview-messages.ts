@@ -1,7 +1,19 @@
 import type { PetReaction } from "@jcendal/digital-pet-animation/idle/monster-action-policy.ts"
 import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
+import type { AdventureCommand, AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
+export type AdventureView = {
+  readonly available: boolean
+  readonly readyAt: number
+  readonly lootLifetimeMs: number
+  readonly state?: Omit<AdventureState, "event"> & {
+    readonly event?:
+      | { readonly kind: "loot"; readonly id: number; readonly item: "food" | "fragment"; readonly appearedAt: number }
+      | { readonly kind: "battle"; readonly id: number; readonly difficult: boolean; readonly opponentName: string }
+      | { readonly kind: "offer"; readonly id: number; readonly opponentName: string }
+  }
+}
 export type EggPettingView = { readonly partnerId: string; readonly canPet: boolean }
 export type SidebarWebviewPayload =
   | {
@@ -37,6 +49,7 @@ export type AnimationFramePayload = {
 }
 
 export type ExtensionToWebviewMessage =
+  | { readonly type: "adventure-state"; readonly view: AdventureView }
   | SidebarWebviewPayload
   | AnimationFramePayload
   | { readonly type: "presentation-state"; readonly state: PresentationState }
@@ -44,6 +57,7 @@ export type ExtensionToWebviewMessage =
   | { readonly type: "partner-petted"; readonly interactionId: string; readonly reaction?: PetReaction }
 
 export type WebviewToExtensionMessage =
+  | { readonly type: "adventure"; readonly command: AdventureCommand }
   | { readonly type: "pet-egg"; readonly partnerId: string; readonly interactionId: string }
   | { readonly type: "pet-partner"; readonly interactionId: string }
   | { readonly type: "clean-poop"; readonly partnerId: string; readonly poopId: number }
@@ -62,8 +76,34 @@ export const parseWebviewInboundMessage = (raw: unknown): WebviewToExtensionMess
     readonly partnerId?: unknown
     readonly poopId?: unknown
     readonly interactionId?: unknown
+    readonly command?: unknown
   }
   if (message.type === "sidebar-ready") return { type: "sidebar-ready" }
+  if (message.type === "adventure" && message.command && typeof message.command === "object") {
+    const command = message.command as {
+      readonly kind?: unknown
+      readonly id?: unknown
+      readonly eventId?: unknown
+      readonly adventureId?: unknown
+    }
+    if (
+      command.adventureId !== undefined &&
+      (typeof command.adventureId !== "string" || !command.adventureId || command.adventureId.length > 100)
+    )
+      return null
+    const identity = typeof command.adventureId === "string" ? { adventureId: command.adventureId } : {}
+    if (command.kind === "start" && typeof command.id === "string" && command.id.length > 0 && command.id.length <= 100)
+      return { type: "adventure", command: { kind: "start", id: command.id, ...identity } }
+    if (command.kind === "pause" || command.kind === "resume" || command.kind === "stop" || command.kind === "tick")
+      return { type: "adventure", command: { kind: command.kind, ...identity } }
+    if (
+      (command.kind === "collect" || command.kind === "accept-companion" || command.kind === "decline-companion") &&
+      typeof command.eventId === "number" &&
+      Number.isSafeInteger(command.eventId) &&
+      command.eventId > 0
+    )
+      return { type: "adventure", command: { kind: command.kind, eventId: command.eventId, ...identity } }
+  }
   if (
     message.type === "pet-partner" &&
     typeof message.interactionId === "string" &&

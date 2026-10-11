@@ -21,6 +21,7 @@ export { updateFoodButton } from "../features/partner/food.ts"
 export { cancelEvolutionPresentation, isPresentingEvolution } from "../features/partner/presentation.ts"
 
 import { sceneMotionFor } from "../../shared/scene-motion.ts"
+import { adventureEncounterPending, adventureTraveling, isPresentingAdventure } from "../features/partner/adventure.ts"
 import { animation } from "../features/partner/animation.ts"
 
 let currentPartner = ""
@@ -51,38 +52,43 @@ export const sidebar = async (requestedWidth: number) => {
   animation.dispatch({ kind: "viewport_resized", width })
   animation.dispatch({ kind: "mood_changed", mood })
   const frame = isPresentingEvolution() ? animation.output() : animation.dispatch({ kind: "tick" })
+  const adventuring = adventureTraveling() || adventureEncounterPending()
   return {
     pending: Boolean(state.pendingEvolution) && !battle,
     food: {
       partnerId: state.partnerId,
-      available: state.food?.kind === "available",
-      canEat: !state.pendingEvolution && !battle,
+      available: state.food?.kind === "available" && !adventuring,
+      canEat: !state.pendingEvolution && !battle && !adventuring,
       givesExperience: !state.isTerminal,
     },
     model: {
       ...presentation.payload,
       ...(DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage === 0
-        ? { egg: { partnerId: state.partnerId, canPet: !state.pendingEvolution && !battle } }
+        ? { egg: { partnerId: state.partnerId, canPet: !state.pendingEvolution && !battle && !adventureTraveling() } }
         : {}),
       hygiene: {
         partnerId: state.partnerId,
         poops: state.hygiene?.poops ?? [],
         mood,
-        canClean: !state.pendingEvolution && !battle,
+        canClean: !state.pendingEvolution && !battle && !adventuring,
       },
       canPet:
-        presentation.payload.kind === "partner" && presentation.payload.canPet && !state.pendingEvolution && !battle,
+        presentation.payload.kind === "partner" &&
+        presentation.payload.canPet &&
+        !state.pendingEvolution &&
+        !battle &&
+        !adventureTraveling(),
     },
     frame: {
       type: "animation-frame",
       artwork: renderPositionedArtwork(frame, width),
-      motion: sceneMotionFor(frame, partnerKey, width),
+      motion: { ...sceneMotionFor(frame, partnerKey, width), adventuring: adventureTraveling() },
     },
   }
 }
 
 export const cleanPoop = async (partnerId: string, poopId: number, active: () => boolean): Promise<boolean> => {
-  if (!active() || isPresentingEvolution()) return false
+  if (!active() || isPresentingAdventure() || adventureTraveling() || isPresentingEvolution()) return false
   const clean = async () =>
     !(await readPendingBattle()) && active() && (await persistCleanPoop(partnerId, poopId, active))
   if (navigator.locks)
@@ -96,7 +102,14 @@ export const petEgg = (partnerId: string, interactionId: string, active: () => b
   isPresentingEvolution() ? Promise.resolve(false) : persistPetEgg(partnerId, interactionId, active)
 
 export const petPartner = async (width: number, active: () => boolean) => {
-  if (!active() || isPresentingEvolution() || (await readPendingBattle())) return undefined
+  if (
+    !active() ||
+    isPresentingAdventure() ||
+    adventureTraveling() ||
+    isPresentingEvolution() ||
+    (await readPendingBattle())
+  )
+    return undefined
   const state = await readLocalState()
   if (!active() || state.pendingEvolution) return undefined
   const presentation = buildSidebarPresentation(

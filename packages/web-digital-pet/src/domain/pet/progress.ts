@@ -232,19 +232,27 @@ export const cleanLocalPoop = (state: LocalPetState, partnerId: string, poopId: 
   )
 }
 
-export const beginNewPartner = (previous: LocalPetState, partnerId: string, now: number): LocalPetState => {
-  const settled = advanceLocalPet(previous, now)
+export const beginNewPartner = (previous: LocalPetState, partnerId: string, now: number): LocalPetState =>
+  replaceLocalPartner(advanceLocalPet(previous, now), partnerId, now, "0-001", false)
+
+export const replaceLocalPartner = (
+  settled: LocalPetState,
+  partnerId: string,
+  now: number,
+  nodeId: string,
+  isTerminal: boolean,
+): LocalPetState => {
   const createdAt = new Date(now).toISOString()
   return {
     partnerId,
     createdAt,
-    currentNodeId: "0-001",
+    currentNodeId: nodeId,
     gauge: 0,
-    isTerminal: false,
+    isTerminal,
     lastTickAt: now,
     experienceLevel: settled.experienceLevel ?? "high",
     ...(settled.worldVisit ? { worldVisit: settled.worldVisit } : {}),
-    events: [{ currentNodeId: "0-001", createdAt }],
+    events: [{ currentNodeId: nodeId, createdAt }],
     retiredPartners: [
       ...(settled.retiredPartners ?? []),
       { partnerId: settled.partnerId, createdAt: settled.createdAt, retiredAt: createdAt, events: settled.events },

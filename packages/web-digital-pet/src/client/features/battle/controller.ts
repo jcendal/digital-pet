@@ -1,9 +1,10 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { adventureBusy } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import { BattleNegotiation, battleNode, type Fighter } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import type { LocalPetState } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
-import { readLocalState, readPendingBattle, settleBattle } from "../../persistence/pet-store.ts"
+import { readAdventureState, readLocalState, readPendingBattle, settleBattle } from "../../persistence/pet-store.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { playSavedBattle } from "./playback.ts"
@@ -171,6 +172,8 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     if (!enabled || !browserSaveSelected() || otherBusy())
       throw new Error(IntlModule.translate("controller.finishYourDeviceTransferFirst"))
     if (await readPendingBattle()) throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
+    const adventure = await readAdventureState()
+    if (adventureBusy(adventure)) throw new Error(IntlModule.translate("adventure.finishFirst"))
     await reservePresentation(current)
     const state = await readLocalState()
     if (session !== current || !enabled || !browserSaveSelected())

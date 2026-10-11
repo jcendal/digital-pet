@@ -21,6 +21,13 @@ for (const name of ["Silkscreen-Regular.ttf", "OFL.txt"])
   await copyFile(require.resolve(`@jcendal/digital-pet-webviews/assets/fonts/${name}`), resolve(fontsDirectory, name))
 await copyFile(resolve(packageRoot, "../../assets/branding/logo.png"), resolve(iconsDirectory, "logo.png"))
 
+const adventureDirectory = resolve(distDirectory, "assets/regions/dragon-eye-lake")
+await mkdir(adventureDirectory, { recursive: true })
+await copyFile(
+  require.resolve("@jcendal/digital-pet-fields/assets/scenes/lake.svg"),
+  resolve(adventureDirectory, "scene.svg"),
+)
+
 for (const locale of ["en", "ko", "es", "gl"]) {
   const dictionary = JSON.parse(await readFile(resolve(packageRoot, `assets/i18n/${locale}.json`), "utf8"))
   const metadata = Object.fromEntries(Object.entries(dictionary).filter(([key]) => key.startsWith("contributions.")))

@@ -58,7 +58,9 @@ const createV2Database = (database: Database): void => {
   database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
   database.run("ALTER TABLE partners DROP COLUMN battle_opponent_node_id")
   database.run("DROP TABLE partner_hygiene")
-  database.run("DELETE FROM schema_migrations WHERE version IN (3, 4, 5)")
+  database.run("DROP TABLE partner_adventures")
+  database.run("DROP TABLE adventure_schedule")
+  database.run("DELETE FROM schema_migrations WHERE version IN (3, 4, 5, 6, 7)")
 }
 
 const createV3Database = (database: Database): void => {
@@ -66,10 +68,12 @@ const createV3Database = (database: Database): void => {
   database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
   database.run("ALTER TABLE partners DROP COLUMN battle_opponent_node_id")
   database.run("DROP TABLE partner_hygiene")
-  database.run("DELETE FROM schema_migrations WHERE version IN (4, 5)")
+  database.run("DROP TABLE partner_adventures")
+  database.run("DROP TABLE adventure_schedule")
+  database.run("DELETE FROM schema_migrations WHERE version IN (4, 5, 6, 7)")
 }
 
-const ALL_MIGRATIONS = [1, 2, 3, 4, 5] as const
+const ALL_MIGRATIONS = [1, 2, 3, 4, 5, 6, 7] as const
 
 const partnerLegacyColumns = "partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at"
 

@@ -265,5 +265,6 @@
   "installation.action": "Instalar app",
   "installation.dismiss": "Pechar a suxestión de instalación",
   "installation.failed": "Non se puido abrir a instalación. Téntao de novo.",
-  "connection.battleTimedOut": "Non se puido conectar co outro xogador. Mantén ambas aplicacións abertas e téntao de novo, ou proba outra rede."
+  "connection.battleTimedOut": "Non se puido conectar co outro xogador. Mantén ambas aplicacións abertas e téntao de novo, ou proba outra rede.",
+  "adventure.finishFirst": "Remata o encontro da aventura antes de combater con outro xogador."
 }

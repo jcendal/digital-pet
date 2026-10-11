@@ -59,7 +59,16 @@ class PreviewElement {
   querySelectorAll() {
     return this.children
   }
+  private readonly adventureIcons = new Map<string, PreviewElement>()
   querySelector(selector: string) {
+    if (selector === "span" || selector === "path") {
+      let icon = this.adventureIcons.get(selector)
+      if (!icon) {
+        icon = new PreviewElement()
+        this.adventureIcons.set(selector, icon)
+      }
+      return icon
+    }
     const id = selector.match(/data-poop-id="(\d+)"/)?.[1]
     return this.children.find((node) => node.dataset.poopId === id) ?? null
   }
@@ -86,11 +95,13 @@ const sidebarPreview = (idleAlignment?: string) => {
   const messages: unknown[] = []
   let receive: (event: { data: unknown }) => void = () => {}
   new Script(SIDEBAR_SCRIPT).runInNewContext({
+    setInterval: () => 0,
     IntlModule,
     getIntlModule: () => runtime,
     acquireVsCodeApi: () => ({ postMessage: (message: unknown) => messages.push(message) }),
     getComputedStyle: () => ({ getPropertyValue: () => "6" }),
     document: {
+      addEventListener: () => {},
       getElementById: element,
       querySelector: element,
       querySelectorAll: () => [],

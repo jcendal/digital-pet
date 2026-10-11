@@ -5,6 +5,7 @@ export const landscapeMotionEnabled = (preference: string | null, reducedMotion:
   preference === "on" || (preference !== "off" && !reducedMotion)
 
 export type SceneMotion = {
+  readonly adventuring?: boolean
   readonly walking: boolean
   readonly offset: number
   readonly facing: "left" | "right"
@@ -21,6 +22,7 @@ export const sceneMotionFor = (frame: MonsterAnimationOutput, partnerKey: string
 })
 
 export const landscapeDirection = (previous: SceneMotion | undefined, next: SceneMotion): -1 | 0 | 1 => {
+  if (next.adventuring && next.walking) return 1
   if (
     !previous?.walking ||
     !next.walking ||
@@ -35,9 +37,15 @@ export const landscapeDirection = (previous: SceneMotion | undefined, next: Scen
 }
 
 /** The reflected landscape repeats every two tiles. Four tiles cover either direction. */
-export const advanceLandscape = (offset: number, direction: -1 | 0 | 1, elapsedMs: number, width: number): number => {
+export const advanceLandscape = (
+  offset: number,
+  direction: -1 | 0 | 1,
+  elapsedMs: number,
+  width: number,
+  speed = 3,
+): number => {
   if (width <= 0) return offset
   const period = width * 2
-  const moved = offset + (direction * 3 * Math.min(100, Math.max(0, elapsedMs))) / 1000
+  const moved = offset + (direction * speed * Math.min(100, Math.max(0, elapsedMs))) / 1000
   return ((((moved + width) % period) + period) % period) - width
 }

@@ -42,6 +42,7 @@ export type MonsterAnimationEvent =
   | { readonly kind: "activity" }
   | { readonly kind: "feed" }
   | { readonly kind: "pet" }
+  | { readonly kind: "adventure_changed"; readonly active: boolean }
   | { readonly kind: "viewport_resized"; readonly width: number }
 
 export type MonsterAnimationResult =
@@ -120,6 +121,8 @@ export class MonsterAnimationController {
   #state: MonsterAnimationState = { kind: "blank" }
   #mood: MonsterMood = "neutral"
   #moodPhase = false
+  #adventuring = false
+  #adventurePhase = false
 
   constructor(
     catalog: MonsterFrameCatalog,
@@ -155,6 +158,10 @@ export class MonsterAnimationController {
       case "pet":
         this.#state = this.#pet()
         break
+      case "adventure_changed":
+        this.#adventuring = event.active
+        if (event.active) this.#state = this.#activity()
+        break
       case "viewport_resized":
         this.#latestViewportWidth = event.width
         this.#state = this.#resize(event.width)
@@ -167,6 +174,14 @@ export class MonsterAnimationController {
 
   output(): MonsterAnimationOutput {
     const state = this.#state
+    if (this.#adventuring && state.kind !== "blank" && state.kind !== "unavailable" && state.kind !== "digitama") {
+      const frameName = this.#firstWalkFrame(state.identity.sprite)
+      if (frameName) {
+        const name = this.#adventurePhase ? this.#nextWalkFrame(state.identity.sprite, frameName) : frameName
+        const frame = this.#catalog.get(state.identity.sprite, name)
+        if (frame) return { kind: "walking", result: { kind: "frame", frame }, offset: 0, facing: "right" }
+      }
+    }
     switch (state.kind) {
       case "blank":
         return { kind: "blank", result: { kind: "blank" }, ...ORIGIN }
@@ -239,6 +254,11 @@ export class MonsterAnimationController {
 
   #tick(): MonsterAnimationState {
     const state = this.#state
+    if (this.#adventuring) {
+      this.#adventurePhase = !this.#adventurePhase
+      this.#lastActivityMs = this.#nowMs()
+      return state
+    }
     switch (state.kind) {
       case "blank":
       case "unavailable":

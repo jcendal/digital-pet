@@ -1,11 +1,15 @@
+import { runAdventureBattleSession } from "@jcendal/digital-pet-animation/sessions/adventure-battle-session.ts"
 import { runEvolutionBattleSession } from "@jcendal/digital-pet-animation/sessions/evolution-battle-session.ts"
 import { runEvolutionRevealSession } from "@jcendal/digital-pet-animation/sessions/evolution-reveal-session.ts"
 import type { PresentationState } from "@jcendal/digital-pet-animation/sessions/presentation-state.ts"
 import type { UsageEvolutionTransition } from "@jcendal/digital-pet-core/application/models/usage.ts"
 import type { SidebarSnapshotReader } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
+import type { AdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import type { EvolutionBattleRepository } from "@jcendal/digital-pet-core/application/use-cases/resolve-evolution-battle.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
+import type { AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
+import { adventureBusy } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { HygieneView } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import type { AnimationSink } from "../../adapters/vscode/animation-sink.ts"
 import type { NotificationPort } from "../../adapters/vscode/notification-port.ts"
@@ -16,6 +20,7 @@ import { buildSidebarPresentation } from "./sidebar-presenter.ts"
 import type { EggPettingView, SidebarWebviewPayload } from "./webview-messages.ts"
 
 export type SidebarOrchestrator = {
+  playAdventureBattle(adventure: AdventureState, service: AdventureService, active: () => boolean): Promise<void>
   refresh(): Promise<void>
   queueEvolutionReveal(evolution: UsageEvolutionTransition): void
   isPresentationInProgress(): boolean
@@ -32,6 +37,7 @@ export type CreateSidebarOrchestratorOptions = {
   readonly onPresentationEnd?: () => void
   readonly readHygiene?: () => HygieneView | undefined
   readonly readEgg?: () => EggPettingView | undefined
+  readonly readAdventure?: () => AdventureState | undefined
 }
 
 export const createSidebarOrchestrator = ({
@@ -43,6 +49,7 @@ export const createSidebarOrchestrator = ({
   onPresentationEnd,
   readHygiene,
   readEgg,
+  readAdventure,
 }: CreateSidebarOrchestratorOptions): SidebarOrchestrator => {
   const refreshQueue = createAsyncRefreshQueue()
   let sink: AnimationSink | undefined
@@ -74,9 +81,16 @@ export const createSidebarOrchestrator = ({
     const presentation = buildSidebarPresentation(snapshotReader.getSidebarSnapshot())
     const hygiene = readHygiene?.()
     const egg = readEgg?.()
+    const adventure = readAdventure?.()
+    const canCare = !adventureBusy(adventure)
     cachedPayload =
       presentation.payload.kind === "partner"
-        ? { ...presentation.payload, ...(hygiene ? { hygiene } : {}), ...(egg ? { egg } : {}) }
+        ? {
+            ...presentation.payload,
+            canPet: Boolean(presentation.payload.canPet && canCare),
+            ...(hygiene ? { hygiene } : {}),
+            ...(egg ? { egg } : {}),
+          }
         : presentation.payload
     if (!presentationInProgress) {
       animationHost.syncPartner(presentation.partner)
@@ -156,7 +170,43 @@ export const createSidebarOrchestrator = ({
   }
 
   return {
+    async playAdventureBattle(adventure, service, active) {
+      if (presentationInProgress) return
+      presentationInProgress = true
+      animationHost.setPresentationBlocked(true)
+      animationHost.stop()
+      animationHost.clearArtwork()
+      try {
+        await runAdventureBattleSession(adventure, animationHost.getArtworkWidth(), {
+          frames: MONSTER_FRAME_CATALOG,
+          catalog: DIGIMON_CATALOG,
+          active,
+          onState: publishState,
+          onFrame: async (artwork, hud) => {
+            await sink?.postArtwork(artwork, hud)
+          },
+          checkpoint: async (eventId, completedShots) => {
+            const next = await service.act(
+              { kind: "checkpoint", eventId, completedShots, adventureId: adventure.id },
+              Date.now(),
+            )
+            return (
+              next?.id === adventure.id && next.event?.kind === "battle" && next.event.completedShots === completedShots
+            )
+          },
+          finish: async (eventId) => {
+            await service.act({ kind: "finish-battle", eventId, adventureId: adventure.id }, Date.now())
+          },
+        })
+      } finally {
+        presentationInProgress = false
+        await publishState({ phase: "idle" })
+        animationHost.setPresentationBlocked(false)
+        onPresentationEnd?.()
+      }
+    },
     async refresh(): Promise<void> {
+      if (presentationInProgress) return
       await refreshQueue.run(async () => {
         await resolvePendingBattleIfNeeded()
         await playPendingEvolutionReveal()

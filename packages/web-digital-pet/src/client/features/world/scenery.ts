@@ -30,6 +30,7 @@ export const initPartnerScenery = () => {
     if (event.key === LANDSCAPE_MOTION_KEY || event.key === null)
       preference = localStorage.getItem(LANDSCAPE_MOTION_KEY)
   })
+  let adventureSpeed = false
   let previous: SceneMotion | undefined
   let direction: -1 | 0 | 1 = 0
   let offset = 0
@@ -53,7 +54,7 @@ export const initPartnerScenery = () => {
   const animate = (now: number) => {
     requested = undefined
     if (!enabled() || !visible() || !direction || now - lastMotionAt > 1300) return
-    offset = advanceLandscape(offset, direction, now - lastTime, width)
+    offset = advanceLandscape(offset, direction, now - lastTime, width, adventureSpeed ? 60 : 3)
     lastTime = now
     paint()
     requested = requestAnimationFrame(animate)
@@ -77,6 +78,7 @@ export const initPartnerScenery = () => {
         direction = 0
         return
       }
+      adventureSpeed = motion.adventuring === true
       direction = landscapeDirection(previous, motion)
       previous = motion
       lastMotionAt = performance.now()

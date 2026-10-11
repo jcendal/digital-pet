@@ -89,6 +89,7 @@ export const createSpyAnimationHost = (): SidebarAnimationHost & {
     async postCurrentFrame(): Promise<void> {},
     playFeedAnimation(): void {},
     petPartner: () => undefined,
+    setAdventure(): void {},
     setMood(): void {},
     isPresentationBlocked(): boolean {
       return state.blocked
