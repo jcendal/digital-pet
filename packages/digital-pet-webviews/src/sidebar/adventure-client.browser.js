@@ -51,7 +51,11 @@ window.createAdventureClient = (bridge, intl) => {
       .querySelector("path")
       .setAttribute(
         "d",
-        running ? "M8 5v14M16 5v14" : traveling ? "m8 5 12 7-12 7Z" : "m12 2 9 10-9 10L3 12Zm3 7-6 2-2 6 6-2Z",
+        running
+          ? "M3 2h3v12H3zM10 2h3v12h-3z"
+          : traveling
+            ? "M4 2h2v2h3v2h3v4H9v2H6v2H4z"
+            : "M6 0h4v2h2v2h2v2h2v4h-2v2h-2v2h-2v2H6v-2H4v-2H2v-2H0V6h2V4h2V2h2zM9 4H7v3H4v2h3v3h2V9h3V7H9z",
       )
     stop.hidden = !traveling
     stop.disabled = phase !== "idle"

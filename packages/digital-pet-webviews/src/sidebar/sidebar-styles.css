@@ -208,30 +208,28 @@ body {
   right: 8px;
   z-index: 9;
   display: flex;
-  gap: 2px;
-  background: var(--lcd);
-  border: 2px solid var(--ink);
+  gap: 4px;
+  max-width: calc(100% - 16px);
 }
 #adventure-actions button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 8px;
-  border: 0;
+  gap: 6px;
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 6px;
+  border: 2px solid var(--ink);
   border-radius: 0;
   box-shadow: none;
-  background: transparent;
+  background: var(--lcd);
   color: var(--ink);
   font: inherit;
   font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-}
-#adventure-actions #adventure-stop {
-  border-left: 2px solid var(--ink);
 }
 #adventure-actions button:enabled:hover,
 #adventure-actions button:enabled:active {
@@ -243,17 +241,16 @@ body {
   outline-offset: 4px;
 }
 #adventure-actions button:disabled {
-  opacity: 0.5;
+  border-color: var(--muted);
+  opacity: 1;
   cursor: default;
 }
 #adventure-actions svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
 }
 #adventure-toggle span:empty {
   display: none;
@@ -263,6 +260,13 @@ body {
 }
 #adventure-toggle span {
   font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#adventure-toggle[data-cooldown="true"] {
+  padding-inline: 8px;
+  font-size: 14px;
 }
 #boss-intro {
   position: absolute;
