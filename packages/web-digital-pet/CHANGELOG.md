@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-11
+
+### Changed
+
+- feat: add pet affection, scale battle rewards and refine Dex UI
+
+
 ## [0.5.3] - 2026-10-10
 
 ### Changed
