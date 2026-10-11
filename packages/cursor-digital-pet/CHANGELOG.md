@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-11
+
+### Changed
+
+- Feat/music loop sections
+
+
 ## [0.14.0] - 2026-10-11
 
 ### Changed
