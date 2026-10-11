@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-10-11
+
+### Changed
+
+- Feat/music loop sections
+
+
 ## [0.9.0] - 2026-10-11
 
 ### Changed
