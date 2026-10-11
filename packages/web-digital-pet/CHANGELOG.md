@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-11
+
+### Changed
+
+- Feat/adventure pixel controls
+
+
 ## [0.8.0] - 2026-10-11
 
 ### Changed
