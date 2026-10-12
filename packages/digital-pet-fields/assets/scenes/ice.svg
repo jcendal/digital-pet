@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Ice Sanctuary pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path fill="#c5cfaa" d="M0 62h16V46h10V32h10V20h6v20h12v22h16V50h20v12h14V42h10V24h8v20h12v18h26v98H0z"/>
+  <path fill="#a3b384" d="M40 120V56h12V42h12V28h32v14h12v14h12v64z"/>
+  <path fill="#afbe91" d="M46 58h68v62H46z"/>
+  <path fill="#c5cfaa" d="M56 48h48v8H56zM68 34h24v12H68zM50 60h8v58h-8zM102 60h8v58h-8zM44 116h72v6H44zM36 122h88v6H36z"/>
+  <path fill="#94a477" d="M70 116V82h4v-6h12v6h4v34zM62 64h4v10h-4zM94 64h4v10h-4z"/>
+  <!-- A winged ice relief above the doorway. -->
+  <path fill="#c5cfaa" d="M76 54h8v4h-8zM78 58h4v10h-4zM64 54h8v4h6v6h-6v-4h-8zM82 58h6v-4h8v6h-8v4h-6z"/>
+  <rect y="128" width="160" height="32" fill="#c5cfaa"/>
+  <path fill="#afbe91" d="M0 144h38v2H0zM116 150h44v2h-44zM24 132h2v6h-2zM22 134h6v2h-6zM134 132h2v6h-2zM132 134h6v2h-6z"/>
+  <path fill="#a3b384" d="M8 128v-16h4v-10h4v14h4v12zM140 128v-14h4v-8h4v12h4v10z"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Dark Terminal pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path fill="#a3b384" d="M0 40h16v-8h24v6h18V26h22v10h18v-8h24v10h16v-8h22v94H0z"/>
+  <path fill="#94a477" d="M0 54h160v8H0zM0 62h8v62H0zM152 62h8v62h-8zM36 62h4v42h-4zM120 62h4v42h-4z"/>
+  <!-- Platform clock and the silent rail carriage. -->
+  <path fill="#899a6b" d="M70 50h20v20H70z"/>
+  <path fill="#c5cfaa" d="M74 54h12v12H74z"/>
+  <path fill="#94a477" d="M79 56h2v6h4v2h-6z"/>
+  <path fill="#899a6b" d="M12 92V82h8v-8h114v8h12v28H12z"/>
+  <path fill="#afbe91" d="M26 82h18v12H26zM52 82h18v12H52zM78 82h18v12H78zM114 82h16v12h-16z"/>
+  <path fill="#94a477" d="M32 98h2v12h-2zM60 98h2v12h-2zM104 80h2v30h-2zM106 96h4v2h-4zM12 104h134v2H12z"/>
+  <path fill="#899a6b" d="M26 110h14v6H26zM120 110h14v6h-14z"/>
+  <rect y="120" width="160" height="40" fill="#a3b384"/>
+  <path fill="#94a477" d="M0 120h160v2H0zM0 128h160v2H0zM0 136h160v2H0zM0 152h160v2H0zM12 138h4v14h-4zM36 138h4v14h-4zM60 138h4v14h-4zM84 138h4v14h-4zM108 138h4v14h-4zM132 138h4v14h-4z"/>
+  <path fill="#c5cfaa" d="M16 64h4v10h-4zM138 64h4v10h-4z"/>
+</svg>

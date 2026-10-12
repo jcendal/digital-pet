@@ -38,7 +38,7 @@ export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string =>
       const symbol = view === "sidebar" ? icons.partner : icons[view]
       const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${view === page ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
       const mapButton = `<button id="map-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.map"))}" data-i18n-aria-label="web:navigationMarkup.map" aria-controls="world-map-view">${icons.map}${label("navigationMarkup.map")}</button>`
-      return view === "sidebar" ? link + mapButton : link + battleButton
+      return view === "sidebar" ? link : link + mapButton + battleButton
     })
     .join("")
   const historyName = escapeHtml(IntlModule.translate("navigation.history"))

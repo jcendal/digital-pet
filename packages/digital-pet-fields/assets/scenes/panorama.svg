@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Mount Panorama pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path fill="#c5cfaa" d="M8 26h12v-4h20v4h14v6H8zM104 18h10v-4h20v4h18v6h-48z"/>
+  <path fill="#a3b384" d="M0 84h12V68h12V54h12V42h12V30h16V18h16v12h16v12h14v14h14v14h16v14h20v40H0z"/>
+  <path fill="#94a477" d="M38 124V88h8V72h8V54h8V38h8V20h8v24h8v18h12v20h10v18h14v24z"/>
+  <path fill="#c5cfaa" d="M64 18h16v12h12v12H80v-6H68v8H56V30h8z"/>
+  <path fill="#b8c79a" d="M52 64h10v-8h6v-8h8v8h-4v10H62v10H52z"/>
+  <path fill="#afbe91" d="M0 110h26v-8h32v8h26v-8h36v8h40v50H0z"/>
+  <path fill="#c5cfaa" d="M62 160v-20h10v-14h16v-14h10v-12h10V88h6v16h-10v12H94v14H78v14H68v16z"/>
+  <path fill="#94a477" d="M20 126h8v-4h10v4h6v6H20zM118 136h10v-6h8v6h8v6h-26zM12 148h4v-4h2v4h4v2H12zM100 150h4v-6h2v6h4v2h-10z"/>
+</svg>

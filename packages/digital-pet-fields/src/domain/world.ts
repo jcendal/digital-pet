@@ -23,6 +23,15 @@ export type SceneId =
   | "castle"
   | "pyramid"
   | "lake"
+  | "swamp"
+  | "cemetery"
+  | "panorama"
+  | "factory"
+  | "ice"
+  | "canyon"
+  | "mangrove"
+  | "terminal"
+  | "toys"
 
 export type Field = {
   readonly id: FieldId

@@ -1,6 +1,7 @@
 /** Coordinates in the 160 × 176 LCD atlas; geography adapts File Island to our habitats. */
 export const WORLD_MAP_SIZE = { width: 160, height: 176 } as const
 
+/** Original zone markers; each opens the locations belonging to its habitat. */
 export const WORLD_MAP_PLACES = [
   { locationId: "digital-city", x: 32, y: 40 },
   { locationId: "wasteland", x: 74, y: 26 },

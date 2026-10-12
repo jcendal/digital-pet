@@ -189,5 +189,7 @@
   "world.bossDefeated": "Boss derrotado",
   "map.title": "MAPA",
   "map.destinations": "Destinos do mundo",
-  "map.hint": "Toca unha zona para viaxar."
+  "map.hint": "Toca unha zona e escolle unha localización.",
+  "map.chooseLocation": "Escolle unha localización",
+  "map.closeLocations": "Pechar localizacións"
 }
