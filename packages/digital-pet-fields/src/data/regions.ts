@@ -16,14 +16,15 @@ export const REGIONS: readonly Region[] = Object.freeze(
       },
     },
     {
+      // Keep the saved destination ID when replacing Digital Ocean with Coela Beach.
       id: "digital-ocean",
       get name() {
-        return IntlModule.translate("regions.digitalOcean")
+        return IntlModule.translate("regions.coelaBeach")
       },
       fieldId: "deep-savers",
       defaultLocationId: "digital-ocean",
       get description() {
-        return IntlModule.translate("regions.blueWatersStretchBeyondTheShoreHidingA")
+        return IntlModule.translate("regions.coelaBeachDescription")
       },
     },
     {
@@ -143,11 +144,11 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     {
       id: "digital-ocean",
       get name() {
-        return IntlModule.translate("regions.digitalOcean")
+        return IntlModule.translate("regions.coelaBeach")
       },
       regionId: "digital-ocean",
-      scene: "ocean",
-      backgroundFile: "digital-ocean.png",
+      scene: "beach",
+      backgroundFile: "coela-beach.png",
       atmosphere: ["#21445b", "#48a8ac"],
     },
     {

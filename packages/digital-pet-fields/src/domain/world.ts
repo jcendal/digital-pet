@@ -13,7 +13,7 @@ export const FIELD_IDS = [
 export type FieldId = (typeof FIELD_IDS)[number]
 export type SceneId =
   | "savannah"
-  | "ocean"
+  | "beach"
   | "wasteland"
   | "forest"
   | "city"

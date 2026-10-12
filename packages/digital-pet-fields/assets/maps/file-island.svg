@@ -43,8 +43,9 @@
   <path fill="#8fa276" d="M25 110h14v4h6v12h-6v5H25v-4h-5v-12h5z"/><path fill="#afbe93" d="M27 114h10v3h4v7h-5v3h-9v-4h-3v-6h3z"/>
   <path fill="#afbe93" d="M38 112v-10h2V88h2V78h2v-6h3v8h-3v10h-2v14h-2v8z"/>
   <g><use href="#tree" x="51" y="119"/><use href="#tree" x="64" y="127"/><use href="#tree" x="76" y="119"/><use href="#tree" x="87" y="128"/><use href="#tree" x="59" y="138"/><use href="#tree" x="89" y="141"/><use href="#tree" x="74" y="148"/></g>
-  <!-- Offshore shoals and a small ship. -->
-  <path fill="#c5cfa9" d="M110 141h6v3h5v4h-3v4h-7v-3h-5v-4h4zM139 133h6v3h4v6h-8v-3h-2z"/>
-  <path fill="#73875a" d="M127 134h1v7h5v2h-2v2h-7v-2h-2v-2h5z"/><path fill="#d0d8b7" d="M128 133h2v2h2v4h-4z"/>
+  <!-- Coela Beach's sandy cape, telephone booths and an offshore shoal. -->
+  <path fill="#c5cfa9" d="M100 136h10v3h16v3h8v6h-6v4h-16v-3h-12zM139 133h6v3h4v6h-8v-3h-2z"/>
+  <path fill="#73875a" d="M114 138h4v8h-4zM120 138h4v8h-4zM126 138h4v8h-4z"/>
+  <path fill="#d0d8b7" d="M115 140h2v4h-2zM121 140h2v4h-2zM127 140h2v4h-2z"/>
   <g><use href="#wave" x="117" y="155"/><use href="#wave" x="141" y="149"/><use href="#wave" x="3" y="47"/></g>
 </svg>

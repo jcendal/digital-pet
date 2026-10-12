@@ -25,8 +25,8 @@
   "fields.mutantsAnomaliesAndCreaturesThatDefyClassification": "Mutantes, anomalías y criaturas que desafían toda clasificación.",
   "regions.gearSavannah": "Sabana Orientación",
   "regions.openGrasslandsRockyPathsAndTheDistantTurning": "Praderas abiertas, caminos rocosos y antiguos engranajes que giran en la distancia.",
-  "regions.digitalOcean": "Océano digital",
-  "regions.blueWatersStretchBeyondTheShoreHidingA": "Aguas azules más allá de la costa ocultan un mundo bajo las olas.",
+  "regions.coelaBeach": "Playa Coela",
+  "regions.coelaBeachDescription": "Un cabo de arena se abre al mar, con cabinas telefónicas junto a la orilla.",
   "regions.wasteland": "Páramo",
   "regions.aSilentWastelandOfSpiralMountainWhereShadows": "Un páramo silencioso de la Montaña Espiral, con sombras entre las ruinas.",
   "regions.digitalForest": "Bosque digital",
@@ -43,5 +43,5 @@
   "regions.gothicTowersRiseAboveADarkCourtyardTheir": "Torres góticas sobre un patio oscuro, con ventanas iluminadas al anochecer.",
   "regions.upsideDownPyramid": "Pirámide invertida",
   "regions.anInvertedPyramidWhereTheLandscapeFollowsIts": "Una pirámide invertida cuyo paisaje sigue sus propias reglas extrañas.",
-  "regions.dragonEyeLake": "Lago del Ojo de Dragón"
+  "regions.dragonEyeLake": "Lago Ojo de Dragón"
 }

@@ -5,6 +5,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import {
   auditHabitatCoverage,
   DEFAULT_WORLD_VISIT,
+  getLocation,
   getRegion,
   getRegionBosses,
   getRegionLocations,
@@ -45,7 +46,7 @@ describe("Digital World catalog", () => {
   it("activates exactly the ten requested classic fields and destinations", () => {
     expect(REGIONS.map((region) => region.name)).toEqual([
       "Gear Savannah",
-      "Digital Ocean",
+      "Coela Beach",
       "Wasteland",
       "Digital Forest",
       "Digital City",
@@ -62,7 +63,11 @@ describe("Digital World catalog", () => {
   })
   it("keeps the lake as an additional location and preserves the initial setting", () => {
     expect(LOCATIONS).toHaveLength(11)
-    expect(getRegionLocations("digital-ocean").map((place) => place.name)).toEqual(["Digital Ocean", "Dragon Eye Lake"])
+    expect(getRegionLocations("digital-ocean").map((place) => place.name)).toEqual(["Coela Beach", "Dragon Eye Lake"])
+    const savedOceanVisit = { regionId: "digital-ocean", locationId: "digital-ocean" }
+    expect(resolveWorldVisit(savedOceanVisit)).toEqual(savedOceanVisit)
+    expect(getLocation(savedOceanVisit.locationId).name).toBe("Coela Beach")
+    expect(getLocation(savedOceanVisit.locationId).scene).toBe("beach")
     expect(isWorldVisit(DEFAULT_WORLD_VISIT)).toBe(true)
     for (const region of REGIONS)
       expect(isWorldVisit({ regionId: region.id, locationId: region.defaultLocationId })).toBe(true)

@@ -6,7 +6,7 @@ landscape, inhabitants, and regional bosses.
 | Field | Destination |
 | --- | --- |
 | Nature Spirits | Gear Savannah |
-| Deep Savers | Digital Ocean |
+| Deep Savers | Coela Beach and Dragon Eye Lake |
 | Nightmare Soldiers | Wasteland |
 | Wind Guardians | Digital Forest |
 | Metal Empire | Digital City |
@@ -16,7 +16,7 @@ landscape, inhabitants, and regional bosses.
 | Dark Area | Vamdemon Castle |
 | Unknown | Upside-Down Pyramid |
 
-Your journey begins at **Dragon Eye Lake**, part of Digital Ocean. In the web app,
+Your journey begins at **Dragon Eye Lake**. In the web app,
 select the place name above your companion or open **Options → Your World** to
 browse destinations and travel.
 

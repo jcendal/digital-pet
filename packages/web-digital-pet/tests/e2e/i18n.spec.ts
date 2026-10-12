@@ -59,11 +59,9 @@ for (const [browserLocale, locale] of [
     await page.screenshot({ path: testInfo.outputPath(`options-${locale}.png`) })
     await page.locator("#world-button").click()
     await expect(page.locator(".region-card")).toHaveCount(10)
-    await expect(page.locator('[data-region="digital-ocean"] strong')).toHaveText(
-      fields[locale]["regions.digitalOcean"],
-    )
+    await expect(page.locator('[data-region="digital-ocean"] strong')).toHaveText(fields[locale]["regions.coelaBeach"])
     await page.locator('[data-region="digital-ocean"]').click()
-    await expect(page.locator(".region-title")).toHaveText(fields[locale]["regions.digitalOcean"])
+    await expect(page.locator(".region-title")).toHaveText(fields[locale]["regions.coelaBeach"])
     await page.locator("#world-dialog .dialog-close").click()
     await page.locator("#options-dialog .dialog-close").click()
     await page.locator('a[data-page="dex"]').click()

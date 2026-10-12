@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Coela Beach pixel landscape</title>
+  <defs>
+    <g id="phone-booth">
+      <path fill="#8b9d70" d="M2 0h12v2h2v30H0V2h2z"/>
+      <path fill="#c5cfaa" d="M2 2h12v3H2zM2 7h5v21H2zM9 7h5v21H9z"/>
+      <path fill="#afbe91" d="M3 8h3v8H3zM10 8h3v8h-3zM3 20h3v7H3zM10 20h3v7h-3z"/>
+      <path fill="#8b9d70" d="M2 18h12v2H2zM4 10h2v6H4zM3 10h2v2H3zM3 14h2v2H3zM10 22h2v2h-2z"/>
+      <path fill="#94a477" d="M0 32h18v2H0z"/>
+    </g>
+  </defs>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path fill="#c5cfaa" d="M20 24h8v-4h20v4h10v6H20zM100 16h8v-4h22v4h12v6h-42z"/>
+  <path fill="#94a477" d="M112 64V58h10V50h12v6h10v6h16v6h-48z"/>
+  <rect y="66" width="160" height="52" fill="#a3b384"/>
+  <path fill="#c5cfaa" d="M0 68h160v2H0zM22 78h20v2H22zM66 74h18v2H66zM112 80h24v2h-24zM6 92h22v2H6zM46 90h26v2H46zM96 96h24v2H96zM136 90h24v2h-24z"/>
+  <!-- Forested headland and its stepped rock face. -->
+  <path fill="#94a477" d="M0 40h8v-8h16v8h10v10h8v12h8v30H34v10H0z"/>
+  <path fill="#8b9d70" d="M0 66h22v6h10v10h10v10H28v10H0z"/>
+  <path fill="#afbe91" d="M6 70h14v2H6zM18 82h16v2H18zM2 92h18v2H2z"/>
+  <!-- Pale sand and a thin, stepped surf line. -->
+  <path fill="#b8c79a" d="M0 104h34v-4h24v4h30v4h32v-4h40v56H0z"/>
+  <path fill="#c5cfaa" d="M0 102h34v-4h26v4h30v4h28v-4h42v2h-40v4H88v-4H58v-4H36v4H0z"/>
+  <path fill="#afbe91" d="M0 136h160v24H0z"/>
+  <!-- The three telephone booths from the Adventure shoreline. -->
+  <use href="#phone-booth" x="56" y="86"/>
+  <use href="#phone-booth" x="78" y="86"/>
+  <use href="#phone-booth" x="100" y="86"/>
+  <!-- Driftwood, coastal stones and scattered grains of sand. -->
+  <path fill="#94a477" d="M28 128h16v2h6v4H34v-2h-6zM124 126h8v-2h6v4h4v4h-18z"/>
+  <path fill="#c5cfaa" d="M126 126h8v2h-8zM30 128h12v2H30z"/>
+  <path fill="#94a477" d="M18 150h4v2h-4zM46 144h2v2h-2zM88 152h4v2h-4zM134 148h2v2h-2z"/>
+</svg>
