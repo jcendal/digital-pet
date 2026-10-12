@@ -7,10 +7,13 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   timeout: 45_000,
+  reporter: process.env.CI ? [["list"], ["github"]] : "list",
   use: {
     ...(safari ? devices["iPhone 13"] : {}),
     baseURL: "http://127.0.0.1:4175",
     browserName: safari ? "webkit" : "chromium",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
     launchOptions:
       !safari && process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE
         ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE }

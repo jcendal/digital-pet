@@ -273,5 +273,7 @@
   "music.description": "Butter-Fly no mundo, Brave Heart no combate.",
   "music.tapToPlay": "Toca para iniciar a música.",
   "music.unavailable": "Non se puido reproducir a música. Toca para tentalo de novo.",
-  "music.credit": "Versións de 8 bits de BgmManJX."
+  "music.credit": "Versións de 8 bits de BgmManJX.",
+  "navigationMarkup.map": "MAPA",
+  "navigationMarkup.more": "More"
 }

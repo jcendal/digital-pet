@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges"><title>Village pixel landscape</title><rect x="0" y="0" width="160" height="160" fill="#b8c79a"/><rect x="0" y="124" width="160" height="36" fill="#a3b384"/><path d="M12 30h8v-4h20v4h8v8H12z M98 16h8v-4h24v4h12v8H98z" fill="#c5cfaa"/><path d="M0 104h20v-8h28v8h32v-12h32v8h28v-4h20v28H0z" fill="#a4b589"/><path d="M10 104v-16h8v-8h24v8h8v16z M110 100V84h8v-8h24v8h8v16z" fill="#899a6b"/><rect x="16" y="104" width="28" height="20" fill="#afbe91"/><rect x="116" y="100" width="28" height="24" fill="#afbe91"/><rect x="26" y="110" width="8" height="14" fill="#899a6b"/><rect x="126" y="110" width="8" height="14" fill="#899a6b"/><path d="M8 150v-10h4v-8h8v8h4v10h-4v4H12v-4z M136 150v-10h4v-8h8v8h4v10h-4v4h-8v-4z" fill="#96a677"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Village pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path d="M12 28h8v-4h20v4h8v6H12z M100 16h8v-4h20v4h12v6h-40z" fill="#c5cfaa"/>
+  <path d="M0 108h18v-8h26v4h22v8h24v-10h30v-6h22v8h18v20H0z" fill="#a3b384"/>
+  <path d="M10 92V80h4v-6h4v-6h4v-6h4v6h4v6h4v6h4v12z" fill="#94a477"/>
+  <rect x="10" y="94" width="28" height="26" fill="#94a477"/>
+  <path d="M14 98h8v8h-8z M26 110h8v8h-8z M40 106h20v18H40z M44 110h12v2H44z" fill="#899a6b"/>
+  <path d="M118 88h26v30h-26z M126 68h10v4h6v12h-6v4h-10v-4h-6V72h6z" fill="#94a477"/>
+  <path d="M122 92h8v8h-8z M132 106h8v8h-8z M108 114h10v10h-10z" fill="#c5cfaa"/>
+  <path d="M76 56h4v-8h4v8h8v4h8v12h-8v4h-8v28h-4V76h-8v-4h-8V60h12z" fill="#a3b384"/>
+  <path d="M68 62h8v6h-8z M88 60h8v6h-8z M78 70h6v4h-6z" fill="#c5cfaa"/>
+  <rect y="124" width="160" height="36" fill="#a3b384"/>
+  <path d="M8 130h24v2h6v8h-6v2H8v-2H2v-8h6z M126 134h24v2h8v8h-8v2h-24v-2h-6v-8h6z" fill="#94a477"/>
+  <path d="M12 134v-10h2v-4h6v4h2v10z M24 134v-8h2v-4h4v4h2v8z M130 138v-10h2v-6h6v6h2v10z M144 138v-8h2v-4h4v4h2v8z" fill="#c5cfaa"/>
+  <path d="M14 126h4v2h-4z M26 130h2v2h-2z M132 132h4v2h-4z M148 130h2v4h-2z" fill="#94a477"/>
+  <path d="M32 150h8v2h-8z M112 152h8v2h-8z" fill="#94a477"/>
+</svg>

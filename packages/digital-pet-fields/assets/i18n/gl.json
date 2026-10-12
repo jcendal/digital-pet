@@ -25,8 +25,8 @@
   "fields.mutantsAnomaliesAndCreaturesThatDefyClassification": "Mutantes, anomalías e criaturas que desafían toda clasificación.",
   "regions.gearSavannah": "Sabana de engrenaxes",
   "regions.openGrasslandsRockyPathsAndTheDistantTurning": "Pradarías abertas, camiños rochosos e antigas engrenaxes que xiran na distancia.",
-  "regions.digitalOcean": "Océano dixital",
-  "regions.blueWatersStretchBeyondTheShoreHidingA": "Augas azuis máis alá da costa agochan un mundo baixo as ondas.",
+  "regions.coelaBeach": "Praia Coela",
+  "regions.coelaBeachDescription": "Un cabo de area ábrese ao mar, con cabinas telefónicas xunto á beira.",
   "regions.wasteland": "Ermo",
   "regions.aSilentWastelandOfSpiralMountainWhereShadows": "Un ermo silencioso da Montaña Espiral, con sombras entre as ruínas.",
   "regions.digitalForest": "Bosque dixital",
@@ -43,5 +43,14 @@
   "regions.gothicTowersRiseAboveADarkCourtyardTheir": "Torres góticas sobre un patio escuro, con fiestras iluminadas ao anoitecer.",
   "regions.upsideDownPyramid": "Pirámide invertida",
   "regions.anInvertedPyramidWhereTheLandscapeFollowsIts": "Unha pirámide invertida cuxa paisaxe segue as súas propias regras estrañas.",
-  "regions.dragonEyeLake": "Lago Ollo de Dragón"
+  "regions.dragonEyeLake": "Lago Ollo de Dragón",
+  "regions.gekoSwamp": "Pantano Geko",
+  "regions.overdellCemetery": "Cemiterio de Overdell",
+  "regions.mountPanorama": "Montaña Panorama",
+  "regions.factorialTown": "Cidade Factorial",
+  "regions.iceSanctuary": "Santuario de Xeo",
+  "regions.greatCanyon": "Gran Canón",
+  "regions.mangroveRegion": "Rexión de Manglares",
+  "regions.darkTerminal": "Terminal Escura",
+  "regions.toyMansion": "Mansión dos Xoguetes"
 }

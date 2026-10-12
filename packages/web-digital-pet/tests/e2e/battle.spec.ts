@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { expect, type Page, test } from "@playwright/test"
+import { openHistory, openOptions } from "./helpers/navigation.ts"
 
 test("two isolated browser saves decline, accept, agree on a winner and persist only one reward", async ({
   browser,
@@ -100,7 +101,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
     await bob.locator("#battle-decline").click()
     await expect(alice.locator("#battle-status")).toContainText(/cancelled|disconnected/)
     await bob.locator("#battle-dialog .dialog-close").click()
-    await bob.locator("#options-button").click()
+    await openOptions(bob)
     await expect(bob.locator("#options-dialog")).toBeVisible()
     await alice.locator("#battle-request").click()
     await expect(bob.locator("#battle-incoming")).toBeVisible()
@@ -185,7 +186,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
         .poll(async () => (await pendingFor(page))?.completedShots ?? 0, { timeout: 20_000 })
         .toBeGreaterThan(0)
     // Navigating away pauses the pet's playback without reopening or cancelling the panel.
-    await Promise.all(pages.map((page) => page.locator('a[data-page="history"]').click()))
+    await Promise.all(pages.map(openHistory))
     const paused = await Promise.all(pages.map(pendingFor))
     expect(await Promise.all(pages.map(readSave))).toEqual(first)
     expect(paused[0]?.seed).toBe(paused[1]?.seed)

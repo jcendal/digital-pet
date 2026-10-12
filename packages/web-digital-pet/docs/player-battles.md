@@ -60,26 +60,3 @@ connection. If a final digest is delivered in only one direction, one player may
 save agreement while the other times out. No inconsistent plan is accepted, but
 confirmation on both peers is not guaranteed across crashes or disconnects. Once a browser has saved agreement, its playback and reward survive reloads locally. An unconfirmed negotiation is not a resumable battle.
 Receipts are device-local and are deliberately separate from transferable saves.
-
-## When to add AWS
-
-For competitive rewards, rankings, shared recovery of unconfirmed results or reliable penalties for
-abandonment, use an authoritative service. A small design would be:
-
-- One Lambda with a Function URL or HTTP API; endpoints create a battle, accept
-  it and retrieve its saved result. PeerJS can still handle invitations/playback.
-- One DynamoDB table storing authenticated participants, immutable accepted
-  snapshots, state, random seed, result and per-player reward receipts.
-- Server uses the same core planner with server-generated randomness and writes
-  the result once. Conditional writes prevent double acceptance/rewards and
-  clients recover by querying the battle ID after reconnecting.
-- Server verifies participant identity and ownership, and becomes authoritative
-  for rewarded progression. Simply signing results while trusting editable
-  browser saves would not make the economy cheat-resistant.
-
-Lambda supports [Function URL authentication](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html)
-with IAM or a public endpoint with application-owned authentication. DynamoDB
-[conditional writes](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html)
-provide the create-once primitive. This is a proposed upgrade, not deployed
-infrastructure. No pricing claim or AWS credentials are required for the current
-PeerJS implementation.

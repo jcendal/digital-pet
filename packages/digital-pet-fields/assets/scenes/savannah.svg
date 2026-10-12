@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges"><title>Savannah pixel landscape</title><rect x="0" y="0" width="160" height="160" fill="#b8c79a"/><rect x="0" y="124" width="160" height="36" fill="#a3b384"/><path d="M12 30h8v-4h20v4h8v8H12z M98 16h8v-4h24v4h12v8H98z" fill="#c5cfaa"/><path d="M0 96h16v-8h20v8h24v8h36v-16h28v8h36v28H0z" fill="#9cad7d"/><rect x="14" y="110" width="20" height="12" fill="#899a6b"/><rect x="10" y="114" width="28" height="8" fill="#899a6b"/><path d="M118 74h8v-8h16v8h8v16h-8v8h-16v-8h-8z M126 74v16h16V74z" fill="#899a6b"/><rect x="4" y="144" width="4" height="4" fill="#899a6b"/><rect x="20" y="148" width="4" height="4" fill="#899a6b"/><rect x="42" y="140" width="4" height="4" fill="#899a6b"/><rect x="106" y="144" width="4" height="4" fill="#899a6b"/><rect x="134" y="148" width="4" height="4" fill="#899a6b"/><rect x="152" y="148" width="4" height="4" fill="#899a6b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Savannah pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path d="M12 28h8v-4h20v4h8v6H12z M100 16h8v-4h20v4h12v6h-40z" fill="#c5cfaa"/>
+  <path d="M0 90h14v-6h20v6h20v10h36V88h26v6h26v-8h18v38H0z" fill="#a3b384"/>
+  <path d="M14 84V66h4v18z M0 62h6v-6h20v6h10v4H0z M142 80V60h4v20z M128 56h8v-6h20v6h4v4h-32z" fill="#94a477"/>
+  <path d="M114 50h12v8h8v6h8v10h8v12h-8v10h-8v6h-8v8h-12v-8h-8v-6h-8V86h-8V74h8V64h8v-6h8z M110 72v16h6v6h14v-6h6V72h-6v-6h-14v6z" fill="#899a6b" fill-rule="evenodd"/>
+  <path d="M116 72h12v16h-12z M96 78h10v4H96z M132 78h12v4h-12z M120 60h4v10h-4z M120 90h4v10h-4z" fill="#a3b384"/>
+  <path d="M0 120h26v-4h14v8h120v36H0z" fill="#a3b384"/>
+  <path d="M12 110h16v4h8v10H6v-10h6z M14 114h12v2H14z" fill="#94a477"/>
+  <path d="M0 142h8v-6h4v6h4v-8h4v10h8v2H0z M128 142h8v-8h4v6h4v-10h4v12h12v4h-32z M42 150h8v2h-8z M100 132h4v4h-4z" fill="#899a6b"/>
+</svg>

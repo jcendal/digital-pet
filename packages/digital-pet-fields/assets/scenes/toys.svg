@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Toy Mansion pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <defs><g id="block"><path fill="#94a477" d="M0 4h4V0h6v4h6V0h6v4h4v22H0z"/><path fill="#c5cfaa" d="M4 8h18v2H4z"/><path fill="#afbe91" d="M6 14h6v6H6zM16 14h4v6h-4z"/></g></defs>
+  <path fill="#c5cfaa" d="M8 24h10v-4h20v4h10v6H8zM120 18h20v4h12v6h-32z"/>
+  <path fill="#a3b384" d="M0 92h18V76h22v18h22v-8h34v8h20V76h22v16h22v32H0z"/>
+  <path fill="#94a477" d="M44 124V66h-6V52h16V40h12V28h28v12h12v12h16v14h-6v58z"/>
+  <path fill="#afbe91" d="M50 66h60v58H50zM62 44h36v14H62zM72 32h16v8H72z"/>
+  <path fill="#c5cfaa" d="M54 74h14v18H54zM92 74h14v18H92zM70 48h20v4H70z"/>
+  <path fill="#94a477" d="M60 74h2v18h-2zM98 74h2v18h-2zM54 82h14v2H54zM92 82h14v2H92z"/>
+  <!-- Bear-shaped entrance, recalling the mansion's toy inhabitants. -->
+  <path fill="#899a6b" d="M66 124V98h-4V88h10v6h16v-6h10v10h-4v26z"/>
+  <path fill="#c5cfaa" d="M72 100h4v4h-4zM84 100h4v4h-4zM76 110h8v4h-8z"/>
+  <rect y="124" width="160" height="36" fill="#a3b384"/>
+  <use href="#block" x="4" y="110"/><use href="#block" x="130" y="106"/>
+  <path fill="#afbe91" d="M0 142h160v2H0zM38 144h2v16h-2zM118 144h2v16h-2zM0 154h160v2H0z"/>
+</svg>

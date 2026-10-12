@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test"
 import { saveAdventure } from "./helpers/adventure.ts"
+import { openOptions } from "./helpers/navigation.ts"
 
 const revealMusic = async (page: Page): Promise<void> => {
   await page.locator("#options-dialog .dialog-body").evaluate((body) => {
@@ -29,7 +30,7 @@ test("real MP3 playback waits for a gesture, loops, and remembers mute across re
   await expect(audio).toHaveAttribute("src", /butter-fly-.*\.mp3$/)
   await expect(audio).toHaveJSProperty("loop", true)
   await expect(audio).toHaveJSProperty("error", null)
-  await page.locator("#world-dialog .dialog-close").click()
+  await page.locator('a[data-page="sidebar"]').click()
   await audio.evaluate((element: HTMLAudioElement) => {
     element.currentTime = element.duration - 0.3
   })
@@ -53,7 +54,7 @@ test("real MP3 playback waits for a gesture, loops, and remembers mute across re
       )
   })
   await expect(audio).toHaveAttribute("src", /butter-fly-.*\.mp3$/)
-  await page.locator("#options-button").click()
+  await openOptions(page)
   await expect(page.locator("#music-toggle")).toHaveAttribute("aria-pressed", "true")
   await revealMusic(page)
   await page.screenshot({ path: testInfo.outputPath("music-options-390.png") })
@@ -64,7 +65,7 @@ test("real MP3 playback waits for a gesture, loops, and remembers mute across re
   await expect(audio).toHaveJSProperty("paused", true)
   await expect(page.locator("#music-state")).toHaveText("OFF")
   await page.reload()
-  await page.locator("#options-button").click()
+  await openOptions(page)
   await expect(page.locator("#music-toggle")).toHaveAttribute("aria-pressed", "false")
   await expect(audio).toHaveJSProperty("paused", true)
   await expect(audio).not.toHaveAttribute("src")
@@ -119,7 +120,7 @@ test("an actual adventure battle changes music offline, then returns to the worl
   await expect(audio).toHaveJSProperty("paused", false)
   await page.reload()
   await expect(pet.locator("#name")).not.toHaveText("")
-  await page.locator("#options-button").click()
+  await openOptions(page)
   await expect.poll(() => audio.evaluate((element: HTMLAudioElement) => element.currentTime)).toBeGreaterThan(0.2)
   await expect(page.locator("#music-toggle")).toHaveAttribute("aria-pressed", "true")
 })

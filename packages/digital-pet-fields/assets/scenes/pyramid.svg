@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges"><title>Pyramid pixel landscape</title><rect x="0" y="0" width="160" height="160" fill="#b8c79a"/><rect x="0" y="124" width="160" height="36" fill="#a3b384"/><path d="M12 30h8v-4h20v4h8v8H12z M98 16h8v-4h24v4h12v8H98z" fill="#c5cfaa"/><path d="M28 28h104v8h-8v8h-8v8h-8v8h-8v8h-8v8h-8v8h-8v-8h-8v-8h-8v-8h-8v-8h-8v-8h-8v-8h-8z" fill="#94a477"/><path d="M28 34h104v2H28z M44 50h72v2H44z M60 66h40v2H60z" fill="#b8c79a"/><rect x="74" y="92" width="12" height="2" fill="#899a6b"/><rect x="68" y="102" width="24" height="2" fill="#899a6b"/><rect x="60" y="116" width="40" height="2" fill="#899a6b"/><path d="M0 124h20v-8h12v8h96v-8h16v8h16v36H0z" fill="#a3b384"/><rect x="8" y="140" width="12" height="8" fill="#899a6b"/><rect x="136" y="144" width="16" height="8" fill="#899a6b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Pyramid pixel landscape</title>
+  <rect width="160" height="160" fill="#b8c79a"/>
+  <path d="M12 28h8v-4h20v4h8v6H12z M100 16h8v-4h20v4h12v6h-40z" fill="#c5cfaa"/>
+  <path d="M0 100h18v-4h20v4h16v8h52v-8h18v-6h20v6h16v24H0z" fill="#a3b384"/>
+  <path d="M30 28h100v8h-8v8h-8v8h-8v8h-8v8h-8v8h-6v8h-8v-8h-6v-8h-8v-8h-8v-8h-8v-8h-8v-8h-8z" fill="#94a477"/>
+  <path d="M80 28h50v8h-8v8h-8v8h-8v8h-8v8h-8v8h-6v8h-4z" fill="#899a6b"/>
+  <path d="M30 32h100v2H30z M38 40h84v2H38z M46 48h68v2H46z M54 56h52v2H54z M62 64h36v2H62z M70 72h20v2H70z" fill="#b8c79a"/>
+  <path d="M48 28h2v4h-2z M66 28h2v4h-2z M96 28h2v4h-2z M110 28h2v4h-2z M56 34h2v6h-2z M90 34h2v6h-2z M100 42h2v6h-2z M64 42h2v6h-2z M72 50h2v6h-2z M88 58h2v6h-2z" fill="#b8c79a"/>
+  <path d="M76 36h8v8h-8z M78 44h4v6h-4z" fill="#899a6b"/>
+  <path d="M76 84h8v8h8v8H68v-8h8z M62 100h36v6H62z M56 106h48v4H56z" fill="#94a477"/>
+  <path d="M14 94v-8h4v-6h4v6h4v8h4v30H10V94z M134 94v-8h4v-6h4v6h4v8h4v30h-20V94z" fill="#94a477"/>
+  <path d="M18 96h4v4h-4z M18 104h4v6h-4z M138 96h4v6h-4z M138 108h4v4h-4z" fill="#c5cfaa"/>
+  <rect y="124" width="160" height="36" fill="#a3b384"/>
+  <path d="M0 136h24v2H0z M120 140h40v2h-40z M28 150h16v2H28z M138 152h12v2h-12z" fill="#94a477"/>
+</svg>

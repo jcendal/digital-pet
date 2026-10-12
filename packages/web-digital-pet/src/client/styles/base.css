@@ -61,6 +61,7 @@ body {
   display: none;
 }
 .web-nav a[aria-current="page"],
+.web-nav button[aria-current="page"],
 .web-nav button[aria-expanded="true"] {
   color: var(--lcd);
   border-color: var(--lcd);

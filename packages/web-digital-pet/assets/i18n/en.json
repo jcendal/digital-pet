@@ -273,5 +273,7 @@
   "music.description": "Butter-Fly in the world, Brave Heart in battle.",
   "music.tapToPlay": "Tap to start the music.",
   "music.unavailable": "Music could not play. Tap to try again.",
-  "music.credit": "8-bit arrangements by BgmManJX."
+  "music.credit": "8-bit arrangements by BgmManJX.",
+  "navigationMarkup.map": "MAP",
+  "navigationMarkup.more": "More"
 }

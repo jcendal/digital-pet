@@ -5,6 +5,7 @@ import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-fr
 import {
   auditHabitatCoverage,
   DEFAULT_WORLD_VISIT,
+  getLocation,
   getRegion,
   getRegionBosses,
   getRegionLocations,
@@ -16,8 +17,23 @@ import {
 } from "../src/application/world.ts"
 import { FIELDS } from "../src/data/fields.ts"
 import { LOCATIONS, REGIONS } from "../src/data/regions.ts"
+import { WORLD_MAP_PLACES, WORLD_MAP_SIZE } from "../src/data/world-map.ts"
 
 describe("Digital World catalog", () => {
+  it("keeps the original atlas markers and covers every habitat", () => {
+    expect(WORLD_MAP_PLACES).toHaveLength(11)
+    expect(new Set(WORLD_MAP_PLACES.map((point) => point.locationId)).size).toBe(WORLD_MAP_PLACES.length)
+    expect([...new Set(WORLD_MAP_PLACES.map((point) => getLocation(point.locationId).regionId))].sort()).toEqual(
+      REGIONS.map((region) => region.id).sort(),
+    )
+    for (const point of WORLD_MAP_PLACES) {
+      expect(point.x).toBeGreaterThan(0)
+      expect(point.x).toBeLessThan(WORLD_MAP_SIZE.width)
+      expect(point.y).toBeGreaterThan(0)
+      expect(point.y).toBeLessThan(WORLD_MAP_SIZE.height)
+    }
+    expect(existsSync(new URL("../assets/maps/file-island.svg", import.meta.url))).toBe(true)
+  })
   it("assigns the entire shared catalog and detects new unclassified species", () => {
     expect(auditHabitatCoverage(DIGIMON_CATALOG)).toEqual({
       total: DIGIMON_CATALOG.nodes.length,
@@ -34,7 +50,7 @@ describe("Digital World catalog", () => {
   it("activates exactly the ten requested classic fields and destinations", () => {
     expect(REGIONS.map((region) => region.name)).toEqual([
       "Gear Savannah",
-      "Digital Ocean",
+      "Coela Beach",
       "Wasteland",
       "Digital Forest",
       "Digital City",
@@ -49,12 +65,24 @@ describe("Digital World catalog", () => {
     expect(new Set(REGIONS.map((region) => region.id)).size).toBe(10)
     for (const region of REGIONS) expect(FIELDS.some((field) => field.id === region.fieldId)).toBe(true)
   })
-  it("keeps the lake as an additional location and preserves the initial setting", () => {
-    expect(LOCATIONS).toHaveLength(11)
-    expect(getRegionLocations("digital-ocean").map((place) => place.name)).toEqual(["Digital Ocean", "Dragon Eye Lake"])
+  it("provides two destinations per habitat and preserves existing saved visits", () => {
+    expect(LOCATIONS).toHaveLength(20)
+    expect(getRegionLocations("digital-ocean").map((place) => place.name)).toEqual(["Coela Beach", "Dragon Eye Lake"])
+    const savedOceanVisit = { regionId: "digital-ocean", locationId: "digital-ocean" }
+    expect(resolveWorldVisit(savedOceanVisit)).toEqual(savedOceanVisit)
+    expect(getLocation(savedOceanVisit.locationId).name).toBe("Coela Beach")
+    expect(getLocation(savedOceanVisit.locationId).scene).toBe("beach")
     expect(isWorldVisit(DEFAULT_WORLD_VISIT)).toBe(true)
-    for (const region of REGIONS)
-      expect(isWorldVisit({ regionId: region.id, locationId: region.defaultLocationId })).toBe(true)
+    for (const region of REGIONS) {
+      const locations = getRegionLocations(region.id)
+      expect(locations).toHaveLength(2)
+      expect(locations.some((location) => location.id === region.defaultLocationId)).toBe(true)
+      for (const location of locations) {
+        const visit = { regionId: region.id, locationId: location.id }
+        expect(isWorldVisit(visit)).toBe(true)
+        expect(resolveWorldVisit(visit)).toEqual(visit)
+      }
+    }
   })
   it("rejects invalid or mismatched destinations, including persisted values", () => {
     for (const invalid of [

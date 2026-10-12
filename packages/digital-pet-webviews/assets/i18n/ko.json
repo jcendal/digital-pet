@@ -186,5 +186,10 @@
   "adventure.bossIntro": "강력한 상대가 다가옵니다",
   "adventure.bossEncounter": "보스: {name}",
   "world.bosses": "보스",
-  "world.bossDefeated": "보스 격파"
+  "world.bossDefeated": "보스 격파",
+  "map.title": "지도",
+  "map.destinations": "세계 여행지",
+  "map.hint": "지역을 누른 후 장소를 선택하세요.",
+  "map.chooseLocation": "장소 선택",
+  "map.closeLocations": "장소 선택 닫기"
 }

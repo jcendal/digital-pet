@@ -13,7 +13,7 @@ export const FIELD_IDS = [
 export type FieldId = (typeof FIELD_IDS)[number]
 export type SceneId =
   | "savannah"
-  | "ocean"
+  | "beach"
   | "wasteland"
   | "forest"
   | "city"
@@ -23,6 +23,15 @@ export type SceneId =
   | "castle"
   | "pyramid"
   | "lake"
+  | "swamp"
+  | "cemetery"
+  | "panorama"
+  | "factory"
+  | "ice"
+  | "canyon"
+  | "mangrove"
+  | "terminal"
+  | "toys"
 
 export type Field = {
   readonly id: FieldId

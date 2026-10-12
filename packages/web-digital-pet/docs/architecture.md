@@ -41,8 +41,7 @@ tests/
 `worker` can import its own area plus `domain` and `shared`. `domain` and `shared`
 must remain independent of DOM, browser storage, Node and the other runtimes.
 Shared game rules, animation and reusable HTML continue to belong to the existing
-workspace packages. Web save policy has not yet been extracted into a new shared
-package; that remains a separate step in the workspace architecture plan.
+workspace packages.
 
 Client features use persistence/platform adapters and shared workspace packages.
 `client/presentation/browser-session.ts` composes those pieces for the iframe
