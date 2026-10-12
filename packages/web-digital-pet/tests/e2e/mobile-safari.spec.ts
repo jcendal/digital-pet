@@ -85,6 +85,7 @@ test("restoring a cached page and a signaling failure recover both transports", 
   await expect(page.locator("#pair-request")).toBeEnabled()
   expect(registrations.filter((id) => id === device)).toHaveLength(2)
   await page.clock.install()
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
   await page.locator("#battle-button").click()
   const own = await page.locator("#battle-own-code").textContent()
   await page.locator("#battle-target").fill(own === "000001" ? "000002" : "000001")
