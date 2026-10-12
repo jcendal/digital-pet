@@ -8,12 +8,11 @@ import { escapeHtml } from "../../shared/escape-html.ts"
 import type { WorldPanelModel } from "./world-model.ts"
 import worldStylesSource from "./world-styles.css" with { type: "text" }
 
-export const worldMarkup = (photos: readonly string[]) => /* html */ `
-<dialog id="world-dialog" class="web-dialog" aria-labelledby="world-title" data-photos="${escapeHtml(JSON.stringify(photos))}">
-  <header class="dialog-head"><div><p class="dialog-eyebrow" data-i18n="webviews:worldRender.theDigitalWorld">${escapeHtml(IntlModule.translate("worldRender.theDigitalWorld"))}</p><h2 id="world-title" data-i18n="webviews:worldRender.regions">${escapeHtml(IntlModule.translate("worldRender.regions"))}</h2></div><form method="dialog"><button class="dialog-close" aria-label="${escapeHtml(IntlModule.translate("worldRender.closeRegions"))}" data-i18n-aria-label="webviews:worldRender.closeRegions">✕</button></form></header>
-  <div class="dialog-body"><div id="world-content"></div></div>
-  <p id="world-status" class="dialog-feedback" role="status" aria-live="polite"></p>
-</dialog>`
+export const worldRegionsMarkup = (photos: readonly string[]) => /* html */ `
+<section id="world-regions" class="world-regions" role="tabpanel" aria-labelledby="map-regions-tab" tabindex="0" data-photos="${escapeHtml(JSON.stringify(photos))}" hidden>
+  <div id="world-content"></div>
+  <p id="world-status" role="status" aria-live="polite"></p>
+</section>`
 
 const defaultSceneUrl = (locationId: string): string => `/regions/${locationId}/scene.svg`
 

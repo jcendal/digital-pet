@@ -81,12 +81,12 @@ map card; these achievements remain when you start a new companion.
 ## Explore the Digital World
 
 Open **Map** in the bottom navigation, or select the location name above your
-companion. Touch a destination on the pixel island to move your traveler there;
-the location name appears above the map. All eleven places are available, including
+companion. Touch a region on the pixel island, then choose a location to travel there;
+the location name appears above the map. All twenty places are available, including
 **Dragon Eye Lake**, where your journey begins. Travel works offline and remembers
 your destination. A small star marks regions where you have defeated a boss.
 
-For the habitat guide, open **Options → Your World**. Browse the ten regions,
+For the habitat guide, open **Map → Regions**. Browse the ten regions,
 inspect their inhabitants, and choose **Travel Here**.
 
 Each place has its own pixel landscape. The habitat guide marks Digimon you have

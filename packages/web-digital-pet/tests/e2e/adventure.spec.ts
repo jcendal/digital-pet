@@ -1,6 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
 import { saveAdventure as save } from "./helpers/adventure.ts"
-import { openOptions } from "./helpers/navigation.ts"
 
 const saved = (page: Page) =>
   page.evaluate(async () => {
@@ -359,8 +358,7 @@ test("a boss reveals itself in the viewer, awards 50% after combat and leaves a 
   const star = page.locator('[data-map-zone="digital-ocean"] .map-boss-star')
   await expect(star).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath("adventure-boss-map.png") })
-  await openOptions(page)
-  await page.locator("#world-button").click()
+  await page.locator("#map-regions-tab").click()
   await page.locator('[data-region="digital-ocean"]').click()
   await expect(page.locator(".world-bosses .world-boss-star")).toHaveCount(1)
   await page.reload()

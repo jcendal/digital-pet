@@ -8,6 +8,7 @@
   const traveler = view.querySelector("#map-traveler")
   const heading = view.querySelector("#map-location-name")
   const status = view.querySelector("#map-status")
+  const tabs = Array.from(view.querySelectorAll('[role="tab"]'))
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
   let selected = ""
   let openZone
@@ -18,6 +19,35 @@
     openZone = undefined
     for (const zone of zones) zone.setAttribute("aria-expanded", "false")
     if (restoreFocus) previous?.focus()
+  }
+  const selectTab = (tab, focus = false) => {
+    closePicker()
+    if (tab.getAttribute("aria-selected") === "true") {
+      if (focus) tab.focus()
+      return
+    }
+    for (const item of tabs) {
+      const active = item === tab
+      item.setAttribute("aria-selected", String(active))
+      item.tabIndex = active ? 0 : -1
+      document.getElementById(item.getAttribute("aria-controls")).hidden = !active
+    }
+    if (focus) tab.focus()
+    window.dispatchEvent(new Event("digital-pet:map-section"))
+  }
+  for (const [index, tab] of tabs.entries()) {
+    tab.addEventListener("click", () => selectTab(tab))
+    tab.addEventListener("keydown", (event) => {
+      const next = {
+        ArrowRight: (index + 1) % tabs.length,
+        ArrowLeft: (index + tabs.length - 1) % tabs.length,
+        Home: 0,
+        End: tabs.length - 1,
+      }[event.key]
+      if (next === undefined) return
+      event.preventDefault()
+      selectTab(tabs[next], true)
+    })
   }
   const positionPicker = () => {
     if (!openZone || picker.hidden) return
@@ -42,7 +72,6 @@
       if (name) {
         option.dataset.name = name
         option.querySelector(".map-option-name").textContent = name
-        option.title = name
       }
       option.disabled = state.busy
       option.setAttribute("aria-pressed", String(option === location))
@@ -50,16 +79,13 @@
     for (const zone of zones) {
       const name = state.names?.[zone.dataset.mapZone]
       if (name) {
-        zone.dataset.name = name
         zone.setAttribute("aria-label", name)
-        zone.querySelector(".map-place-name").textContent = name
       }
       zone.disabled = state.busy
       zone.setAttribute("aria-pressed", String(zone === current))
       zone.querySelector(".map-boss-star").hidden = !state.bossRegionIds.includes(zone.dataset.regionId)
     }
     heading.textContent = location.dataset.name
-    heading.title = location.dataset.name
     status.textContent = state.error ?? ""
     view.setAttribute("aria-busy", String(state.busy))
     if (selected !== state.locationId) {
@@ -109,7 +135,9 @@
     }
   })
   window.addEventListener("resize", positionPicker)
-  window.addEventListener("digital-pet:map-open", () => closePicker())
+  window.addEventListener("digital-pet:map-open", () => {
+    closePicker()
+  })
   new MutationObserver(() => {
     if (view.hidden) closePicker()
   }).observe(view, { attributes: true, attributeFilter: ["hidden"] })

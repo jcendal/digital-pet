@@ -17,7 +17,7 @@ its own pixel landscape. Every habitat has its own inhabitants and regional boss
 | Unknown | Upside-Down Pyramid and Toy Mansion |
 
 Your journey begins at **Dragon Eye Lake**. In the web app, open **Map** or select
-the place name above your companion to travel. **Options → Your World** lets you
+the place name above your companion to travel. **Map → Regions** lets you
 browse each habitat and its two destinations.
 
 The habitat guide shows the Digimon that live in each region and marks those

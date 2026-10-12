@@ -1,4 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
+import { openOptions } from "./helpers/navigation.ts"
 
 const travel = async (page: Page, locationId: string, zoneId = locationId) => {
   await page.locator(`[data-map-zone="${zoneId}"]`).click()
@@ -24,7 +25,8 @@ test("the LCD map travels to every destination and keeps the save offline", asyn
   await expect(page.locator(".web-view.active")).toHaveCount(0)
   await expect(map.locator("#map-location-name")).toHaveText("Dragon Eye Lake")
   const destinations = map.locator(".map-place")
-  await expect(destinations).toHaveCount(11)
+  await expect(destinations).toHaveCount(10)
+  await expect(page.locator('[data-map-zone="digital-ocean"]')).toHaveAttribute("aria-pressed", "true")
   await expect(map.locator(".map-landscape")).not.toHaveJSProperty("naturalWidth", 0)
   for (const [width, height] of [
     [320, 800],
@@ -52,6 +54,10 @@ test("the LCD map travels to every destination and keeps the save offline", asyn
           )
         }),
       ).toBe(true)
+    }
+    if (width === 390) {
+      await destinations.first().hover()
+      await destinations.first().focus()
     }
     await page.screenshot({ path: testInfo.outputPath(`world-map-${width}.png`) })
   }
@@ -193,7 +199,7 @@ test("computer map preferences stay separate from the browser save and show boss
   await page.locator("#map-button").click()
   await expect(page.locator("#map-location-name")).toHaveText("Dragon Eye Lake")
   await expect(page.locator('[data-map-zone="digital-ocean"] .map-boss-star')).toBeVisible()
-  await expect(page.locator('[data-map-zone="dragon-eye-lake"] .map-boss-star')).toBeVisible()
+  await expect(page.locator(".map-boss-star:visible")).toHaveCount(1)
   await page.screenshot({ path: testInfo.outputPath("world-map-boss-star.png") })
   await travel(page, "digital-city")
   await expect(page.locator("#map-location-name")).toHaveText("Digital City")
@@ -305,4 +311,82 @@ test("zone dropdowns fit mobile screens and dismiss without changing the saved d
   await page.locator("#map-button").click()
   await expect(picker).toBeHidden()
   await context.close()
+})
+
+test("Map and Regions share the visor and region travel persists offline", async ({ page, context }, testInfo) => {
+  const errors: string[] = []
+  page.on("pageerror", (error) => errors.push(error.message))
+  await page.setViewportSize({ width: 390, height: 800 })
+  await page.goto("/")
+  const pet = page.frameLocator('iframe[data-page="sidebar"]')
+  await expect(pet.locator("#name")).not.toHaveText("")
+  const name = await pet.locator("#name").textContent()
+  await openOptions(page)
+  await expect(page.locator("#world-button, #world-dialog")).toHaveCount(0)
+  await expect(page.locator("#language-select")).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath("options-without-world-390.png") })
+  await page.locator("#options-dialog .dialog-close").click()
+  await page.locator("#map-button").click()
+  const atlasTab = page.getByRole("tab", { name: "MAP", exact: true })
+  const regionsTab = page.getByRole("tab", { name: "REGIONS", exact: true })
+  const atlas = page.locator("#map-atlas-panel")
+  const regions = page.locator("#world-regions")
+  await expect(atlasTab).toHaveAttribute("aria-selected", "true")
+  await expect(regions).toBeHidden()
+  await page.locator('[data-map-zone="digital-city"]').click()
+  await expect(page.locator("#map-location-picker")).toBeVisible()
+  await atlasTab.focus()
+  await atlasTab.press("ArrowRight")
+  await expect(regionsTab).toBeFocused()
+  await expect(regionsTab).toHaveAttribute("aria-selected", "true")
+  await expect(atlasTab).toHaveAttribute("tabindex", "-1")
+  await expect(atlas).toBeHidden()
+  await expect(page.locator("#map-location-picker")).toBeHidden()
+  await expect(regions.locator(".region-card")).toHaveCount(10)
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 800 })
+    const overflow = await regions.evaluate((element) => element.scrollWidth > element.clientWidth)
+    expect(overflow).toBe(false)
+    await page.screenshot({ path: testInfo.outputPath(`regions-overview-${width}.png`) })
+  }
+  await page.locator('[data-region="digital-city"]').click()
+  await expect(regions.locator(".region-title")).toHaveText("Digital City")
+  await expect(regions.locator(".world-locations button")).toHaveCount(2)
+  await expect(regions.locator(".world-bosses .resident-row")).toHaveCount(2)
+  await expect(regions.locator("#world-preview-image")).not.toHaveJSProperty("naturalWidth", 0)
+  await page.screenshot({ path: testInfo.outputPath("regions-detail-390.png") })
+  await page.setViewportSize({ width: 320, height: 800 })
+  await page.screenshot({ path: testInfo.outputPath("regions-detail-320.png") })
+  await regionsTab.focus()
+  await regionsTab.press("Home")
+  await expect(atlasTab).toBeFocused()
+  await expect(atlas).toBeVisible()
+  await expect(regions).toBeHidden()
+  await expect(page.locator("#map-location-name")).toHaveText("Dragon Eye Lake")
+  await regionsTab.click()
+  await expect(regions.locator(".region-title")).toHaveText("Digital City")
+  await page.locator("[data-world-back]").click()
+  await expect(regions.locator(".region-card")).toHaveCount(10)
+  await expect(page.locator("#world-map-view")).toHaveAttribute("aria-busy", "false")
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready
+    if (!navigator.serviceWorker.controller)
+      await new Promise<void>((resolve) =>
+        navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), { once: true }),
+      )
+  })
+  await context.setOffline(true)
+  await page.locator('[data-region="digital-city"]').click()
+  await regions.locator('[data-location="factorial-town"]').click()
+  await expect(page.locator("#world-preview-image")).toHaveAttribute("src", /\/factory(?:-[^/]+)?\.svg$/)
+  await page.locator("#world-travel").click()
+  await expect(page.locator("#world-map-view")).toBeHidden()
+  await expect(pet.locator("#world-location")).toHaveText("Factorial Town →")
+  await expect(pet.locator("#name")).toHaveText(name!)
+  await page.reload()
+  await expect(pet.locator("#world-location")).toHaveText("Factorial Town →")
+  await page.locator("#map-button").click()
+  await expect(atlasTab).toHaveAttribute("aria-selected", "true")
+  await expect(page.locator("#map-location-name")).toHaveText("Factorial Town")
+  expect(errors).toEqual([])
 })
