@@ -356,7 +356,7 @@ test("a boss reveals itself in the viewer, awards 50% after combat and leaves a 
   await expect(pet.locator("#percent")).toHaveText("50%")
   await pet.locator("#adventure-stop").click()
   await pet.locator("#world-location").click()
-  const star = page.locator('[data-map-location="digital-ocean"] .map-boss-star')
+  const star = page.locator('[data-map-zone="digital-ocean"] .map-boss-star')
   await expect(star).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath("adventure-boss-map.png") })
   await openOptions(page)
