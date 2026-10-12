@@ -273,5 +273,7 @@
   "music.description": "일상에서는 Butter-Fly, 전투에서는 Brave Heart.",
   "music.tapToPlay": "화면을 터치하면 음악이 시작됩니다.",
   "music.unavailable": "음악을 재생할 수 없습니다. 터치하여 다시 시도하세요.",
-  "music.credit": "8비트 편곡: BgmManJX."
+  "music.credit": "8비트 편곡: BgmManJX.",
+  "navigationMarkup.map": "지도",
+  "navigationMarkup.more": "More"
 }

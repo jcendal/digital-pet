@@ -186,5 +186,8 @@
   "adventure.bossIntro": "Achégase un rival poderoso",
   "adventure.bossEncounter": "Boss: {name}",
   "world.bosses": "Bosses",
-  "world.bossDefeated": "Boss derrotado"
+  "world.bossDefeated": "Boss derrotado",
+  "map.title": "MAPA",
+  "map.destinations": "Destinos do mundo",
+  "map.hint": "Toca unha zona para viaxar."
 }

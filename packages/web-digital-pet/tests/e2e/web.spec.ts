@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test"
+import { openHistory, openOptions } from "./helpers/navigation.ts"
 
 const ready = async (page: import("@playwright/test").Page) => {
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toHaveText("")
@@ -48,13 +49,13 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   await page.goto("/")
   await ready(page)
   const navigation = page.getByRole("navigation", { name: "Digital Pet" })
-  await expect(navigation.locator("svg")).toHaveCount(5)
+  await expect(navigation.locator("svg:visible")).toHaveCount(5)
   await expect(page.locator("#options-dialog #battle-button")).toHaveCount(0)
   for (const width of [320, 430]) {
     await page.setViewportSize({ width, height: 800 })
     const nav = await navigation.boundingBox()
     if (!nav) throw new Error("Missing navigation")
-    for (const control of await navigation.locator("a, button").all()) {
+    for (const control of await navigation.locator("a:visible, button:visible").all()) {
       const box = await control.boundingBox()
       if (!box) throw new Error("Missing navigation control")
       expect(box.width).toBeGreaterThanOrEqual(44)
@@ -70,7 +71,7 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "true")
   await page.locator("#battle-dialog .dialog-close").click()
   await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "false")
-  await page.getByRole("button", { name: "OPTIONS", exact: true }).click()
+  await openOptions(page)
   await expect(page.locator("#options-dialog")).toBeVisible()
   const sections = page.locator("#options-dialog .dialog-body section")
   await expect(sections.nth(0)).toHaveClass(/language-section/)
@@ -87,7 +88,7 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   await page.locator("#options-dialog .dialog-close").click()
   await page.getByRole("link", { name: "DEX", exact: true }).click()
   await expect(page.frameLocator('iframe[data-page="dex"]').locator("#entries")).not.toBeEmpty()
-  await page.getByRole("link", { name: "HISTORY", exact: true }).click()
+  await openHistory(page)
   await expect(page.frameLocator('iframe[data-page="history"]').locator("#generation-count")).not.toHaveText("00")
   expect(errors).toEqual([])
 })
@@ -151,7 +152,7 @@ for (const [label, url] of [
     page.on("pageerror", (error) => errors.push(error.message))
     await page.goto(url!)
     await ready(page)
-    await page.getByRole("button", { name: "OPTIONS", exact: true }).click()
+    await openOptions(page)
     await expect(page.locator("#options-dialog")).toBeVisible()
     expect(await page.evaluate(async () => (await navigator.serviceWorker.getRegistrations()).length)).toBe(0)
     expect(errors).toEqual([])

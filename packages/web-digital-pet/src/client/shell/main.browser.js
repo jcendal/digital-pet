@@ -1,15 +1,23 @@
 import { initBrowserInstallation } from "../features/installation/controller.ts"
 import { initBrowserMusic } from "../features/music/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
+import { initMoreMenu } from "./more-menu.browser.js"
 import "./styles.css"
 ;(() => {
   initBrowserInstallation()
   initBrowserMusic()
+  const moreMenu = initMoreMenu()
   const frames = Array.from(document.querySelectorAll(".web-view"))
   const links = Array.from(document.querySelectorAll(".web-nav a"))
+  const mapView = document.getElementById("world-map-view")
+  const mapButton = document.getElementById("map-button")
   const pageFromPath = (path) => (path === "/dex" ? "dex" : path === "/history" ? "history" : "sidebar")
   const show = (path) => {
+    moreMenu.close()
+    mapView.hidden = true
+    mapButton.removeAttribute("aria-current")
     const page = pageFromPath(new URL(path, location.origin).pathname)
+    moreMenu.setCurrent(page === "history")
     for (const frame of frames) {
       const active = frame.dataset.page === page
       frame.classList.toggle("active", active)
@@ -35,6 +43,19 @@ import "./styles.css"
     history.pushState(null, "", path)
     show(path)
   }
+  const showMap = () => {
+    if (!mapView.hidden) return
+    navigate("/")
+    for (const frame of frames) {
+      frame.classList.remove("active")
+      frame.setAttribute("aria-hidden", "true")
+    }
+    for (const link of links) link.removeAttribute("aria-current")
+    mapButton.setAttribute("aria-current", "page")
+    mapView.hidden = false
+    window.dispatchEvent(new Event("digital-pet:map-open"))
+  }
+  mapButton.addEventListener("click", showMap)
   for (const link of links)
     link.addEventListener("click", (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
@@ -44,6 +65,10 @@ import "./styles.css"
   window.addEventListener("message", (event) => {
     if (event.origin !== location.origin) return
     if (!frames.some((frame) => frame.contentWindow === event.source)) return
+    if (event.data?.type === "digital-pet:map-open") {
+      showMap()
+      return
+    }
     if (event.data?.type === "digital-pet:save-changed") {
       for (const frame of frames) frame.contentWindow?.postMessage({ type: "browser-save-updated" }, location.origin)
       window.dispatchEvent(new Event("digital-pet:save-updated"))

@@ -1,4 +1,5 @@
 import { DEFAULT_WORLD_VISIT, getLocation, getRegion } from "@jcendal/digital-pet-fields/application/world.ts"
+import { LOCATIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import type { WorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { renderWorldOverview, renderWorldRegion } from "@jcendal/digital-pet-webviews/panels/world/world-render.ts"
@@ -25,6 +26,23 @@ export const initBrowserWorld = async (): Promise<void> => {
   let selectedRegion: string | null = null
   let revision = 0
   let model: WorldPanelModel = { registeredIds: [], residents: [] }
+  const mapView = document.querySelector<HTMLElement>("#world-map-view")!
+  let mapReady = false
+  let mapSaving = false
+  let mapError = ""
+  const updateMap = () => {
+    window.dispatchEvent(
+      new CustomEvent("digital-pet:map-state", {
+        detail: {
+          locationId: visit.locationId,
+          names: Object.fromEntries(LOCATIONS.map((place) => [place.id, place.name])),
+          bossRegionIds: (model.bossVictories ?? []).map((victory) => victory.regionId),
+          busy: !mapReady || mapSaving,
+          error: mapError,
+        },
+      }),
+    )
+  }
 
   const applyVisit = () => {
     const place = getLocation(visit.locationId)
@@ -63,6 +81,8 @@ export const initBrowserWorld = async (): Promise<void> => {
   }
   const refresh = async () => {
     const token = ++revision
+    mapReady = false
+    updateMap()
     const preferred = localStorage.getItem(SOURCE_PREFERENCE_KEY)
     const available = await checkComputerSave(document.documentElement.dataset.saveHost === "browser")
     const selectedSource = resolveSaveSource(preferred, available, localStorage.getItem(ACTIVE_SOURCE_KEY))
@@ -70,19 +90,50 @@ export const initBrowserWorld = async (): Promise<void> => {
     if (token !== revision) return
     source = selectedSource
     visit = next
+    mapReady = true
+    mapError = ""
     applyVisit()
-    if (dialog.open) {
+    updateMap()
+    if (dialog.open || !mapView.hidden) {
       status.textContent = IntlModule.translate("controller.loadingHabitatGuide")
       const nextModel = await loadModel(selectedRegion ?? visit.regionId, source)
       if (token !== revision) return
       model = nextModel
-      render()
+      if (dialog.open) render()
+      updateMap()
       status.textContent = ""
     }
   }
   const report = (error: unknown) => {
-    status.textContent = error instanceof Error ? error.message : IntlModule.translate("controller.couldNotLoadRegions")
+    const message = error instanceof Error ? error.message : IntlModule.translate("controller.couldNotLoadRegions")
+    status.textContent = message
+    mapError = message
+    updateMap()
   }
+  window.addEventListener("digital-pet:map-open", () => {
+    updateMap()
+    void refresh().catch(report)
+  })
+  window.addEventListener("digital-pet:map-travel", (event) => {
+    const locationId: unknown = (event as CustomEvent).detail
+    if (mapView.hidden || !mapReady || mapSaving || !LOCATIONS.some((place) => place.id === locationId)) return
+    const place = getLocation(locationId as string)
+    const next = { regionId: place.regionId, locationId: place.id }
+    mapSaving = true
+    mapError = ""
+    updateMap()
+    void worldStoreFor(source)
+      .save(next)
+      .then(async () => {
+        await refresh()
+        for (const frame of frames) frame.contentWindow?.postMessage({ type: "browser-save-updated" }, location.origin)
+      })
+      .catch(report)
+      .finally(() => {
+        mapSaving = false
+        updateMap()
+      })
+  })
   const open = () => {
     selectedRegion = null
     content.innerHTML = ""

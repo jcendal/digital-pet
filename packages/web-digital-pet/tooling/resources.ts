@@ -7,6 +7,7 @@ import type { Plugin } from "vite"
 export const resourceFiles = (root: string): Record<string, string> => {
   const fields = resolve(root, "../digital-pet-fields/assets")
   const files: Record<string, string> = {
+    "/maps/file-island.svg": resolve(fields, "maps/file-island.svg"),
     "/fonts/Silkscreen-Regular.ttf": fileURLToPath(
       import.meta.resolve("@jcendal/digital-pet-webviews/assets/fonts/Silkscreen-Regular.ttf"),
     ),

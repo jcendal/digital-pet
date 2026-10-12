@@ -186,5 +186,8 @@
   "adventure.bossIntro": "A powerful rival approaches",
   "adventure.bossEncounter": "Boss: {name}",
   "world.bosses": "Bosses",
-  "world.bossDefeated": "Boss defeated"
+  "world.bossDefeated": "Boss defeated",
+  "map.title": "MAP",
+  "map.destinations": "World destinations",
+  "map.hint": "Touch a place to travel."
 }

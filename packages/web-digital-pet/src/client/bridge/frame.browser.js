@@ -343,7 +343,7 @@ function initWebBridge(page, locationIds) {
   if (page === "sidebar") {
     document.addEventListener("click", (event) => {
       if (event.target.closest("#world-location"))
-        window.parent.postMessage({ type: "digital-pet:world-open" }, location.origin)
+        window.parent.postMessage({ type: "digital-pet:map-open" }, location.origin)
     })
     window.addEventListener("message", (event) => {
       if (

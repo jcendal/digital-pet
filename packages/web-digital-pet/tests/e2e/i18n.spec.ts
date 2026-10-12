@@ -3,6 +3,7 @@ import { LANGUAGE_PREFERENCE_KEY } from "@jcendal/digital-pet-intl"
 import { catalogs as webviews } from "@jcendal/digital-pet-webviews/i18n"
 import { expect, test } from "@playwright/test"
 import { catalogs as web } from "../../src/shared/i18n.ts"
+import { openHistory, openOptions } from "./helpers/navigation.ts"
 
 const savedIdentity = (page: import("@playwright/test").Page) =>
   page.evaluate(
@@ -38,14 +39,21 @@ for (const [browserLocale, locale] of [
     page.on("pageerror", (error) => errors.push(error.message))
     await page.goto("/")
     await expect(page.locator("html")).toHaveAttribute("lang", locale)
+    await expect(page.locator("#more-button")).toHaveAccessibleName(web[locale]["navigationMarkup.more"])
+    await page.locator("#more-button").click()
     await expect(page.locator("#options-button")).toHaveAccessibleName(web[locale]["navigationMarkup.options"])
+    await page.locator("#more-button").click()
     const partner = page.frameLocator('iframe[data-page="sidebar"]')
     await expect(partner.locator("#name")).not.toHaveText("")
     await expect(partner.locator("html")).toHaveAttribute("lang", locale)
     await expect(partner.locator("#progress-label")).toHaveText(webviews[locale]["sidebarClient.nextCheck"])
     await expect(partner.locator("#world-location")).toHaveText(`${fields[locale]["regions.dragonEyeLake"]} →`)
     expect(await page.evaluate((key) => localStorage.getItem(key), LANGUAGE_PREFERENCE_KEY)).toBeNull()
-    await page.locator("#options-button").click()
+    await page.locator("#map-button").click()
+    await expect(page.locator("#map-button")).toHaveAccessibleName(web[locale]["navigationMarkup.map"])
+    await expect(page.locator("#map-location-name")).toHaveText(fields[locale]["regions.dragonEyeLake"])
+    await page.locator('a[data-page="sidebar"]').click()
+    await openOptions(page)
     await expect(page.locator("#language-select")).toHaveValue(locale)
     await expect(page.locator("#language-select option")).toHaveCount(4)
     await page.screenshot({ path: testInfo.outputPath(`options-${locale}.png`) })
@@ -63,7 +71,7 @@ for (const [browserLocale, locale] of [
     await expect(dex.locator("#entries")).not.toBeEmpty()
     await expect(dex.locator("html")).toHaveAttribute("lang", locale)
     await expect(dex.locator("#search")).toHaveAttribute("placeholder", webviews[locale]["dexRender.name"])
-    await page.locator('a[data-page="history"]').click()
+    await openHistory(page)
     const history = page.frameLocator('iframe[data-page="history"]')
     await expect(history.locator("#generation-count")).not.toHaveText("00")
     await expect(history.locator("#status option[value=all]")).toHaveText(
@@ -100,7 +108,7 @@ test("explicit language overrides the browser and survives offline reloads witho
       )
   })
   await context.setOffline(true)
-  await page.locator("#options-button").click()
+  await openOptions(page)
   await page.locator("#language-select").selectOption("gl")
   await expect(page.locator("html")).toHaveAttribute("lang", "gl")
   await expect(partner.locator("html")).toHaveAttribute("lang", "gl")

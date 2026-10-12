@@ -16,8 +16,19 @@ import {
 } from "../src/application/world.ts"
 import { FIELDS } from "../src/data/fields.ts"
 import { LOCATIONS, REGIONS } from "../src/data/regions.ts"
+import { WORLD_MAP_PLACES, WORLD_MAP_SIZE } from "../src/data/world-map.ts"
 
 describe("Digital World catalog", () => {
+  it("maps every available destination exactly once inside the LCD atlas", () => {
+    expect(WORLD_MAP_PLACES.map((point) => point.locationId).sort()).toEqual(LOCATIONS.map((place) => place.id).sort())
+    for (const point of WORLD_MAP_PLACES) {
+      expect(point.x).toBeGreaterThan(0)
+      expect(point.x).toBeLessThan(WORLD_MAP_SIZE.width)
+      expect(point.y).toBeGreaterThan(0)
+      expect(point.y).toBeLessThan(WORLD_MAP_SIZE.height)
+    }
+    expect(existsSync(new URL("../assets/maps/file-island.svg", import.meta.url))).toBe(true)
+  })
   it("assigns the entire shared catalog and detects new unclassified species", () => {
     expect(auditHabitatCoverage(DIGIMON_CATALOG)).toEqual({
       total: DIGIMON_CATALOG.nodes.length,

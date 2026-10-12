@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { devices, expect, test } from "@playwright/test"
+import { openOptions } from "./helpers/navigation.ts"
 
 test.describe("iOS presentation", () => {
   test.use({ userAgent: devices["iPhone 13"].userAgent, locale: "es-ES" })
@@ -12,7 +13,7 @@ test.describe("iOS presentation", () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto("/")
     await expect(page.locator("#install-banner")).toBeHidden()
-    await page.locator("#options-button").click()
+    await openOptions(page)
     await expect(page.locator("#options-dialog")).toBeVisible()
     await expect(page.locator("#install-section")).toBeHidden()
     await expect(page.locator("#install-instructions")).toHaveCount(0)
@@ -53,7 +54,7 @@ test.describe("iOS presentation", () => {
       window.dispatchEvent(new Event("beforeinstallprompt", { cancelable: true }))
     })
     await expect(page.locator("#install-banner")).toBeHidden()
-    await page.locator("#options-button").click()
+    await openOptions(page)
     await expect(page.locator("#install-section")).toBeHidden()
   })
 })
@@ -131,7 +132,7 @@ test.describe("native installation prompt", () => {
       window.dispatchEvent(event)
     })
     await expect(page.locator("#install-banner")).toBeVisible()
-    await page.locator("#options-button").click()
+    await openOptions(page)
     await expect(page.locator("#install-section > *")).toHaveCount(1)
     await expect(page.locator("#install-app")).toHaveText("Install app")
     await page.locator("#options-dialog .dialog-close").click()
@@ -154,7 +155,7 @@ test.describe("native installation prompt", () => {
     await expect(page.locator("#install-banner")).toBeVisible()
     await page.locator("#install-dismiss").click()
     await expect(page.locator("#install-banner")).toBeHidden()
-    await page.locator("#options-button").click()
+    await openOptions(page)
     await expect(page.locator("#install-app")).toBeVisible()
     await page.locator("#install-app").click()
     await expect(page.locator("#install-section")).toBeHidden()
