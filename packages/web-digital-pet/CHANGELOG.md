@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-12
+
+### Changed
+
+- Feat/pixel world map
+
+
 ## [0.10.0] - 2026-10-11
 
 ### Changed
