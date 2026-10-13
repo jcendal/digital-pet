@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-13
+
+### Changed
+
+- feat(web): move regions into tabbed map view
+
+
 ## [0.11.0] - 2026-10-12
 
 ### Changed
