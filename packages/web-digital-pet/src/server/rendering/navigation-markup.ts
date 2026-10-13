@@ -18,9 +18,6 @@ const icons = {
     '<g stroke="currentColor" stroke-width="2" stroke-linejoin="miter"><path fill="var(--case)" d="M21 3h-4L4 16l4 4L21 7z"/><path fill="var(--case)" d="M3 3h4l13 13-4 4L3 7z"/><path fill="none" d="m3 14 7 7m4 0 7-7M5 19l-3 3m17-3 3 3"/></g>',
   ),
   more: icon('<path fill="currentColor" d="M2 10h4v4H2zm8 0h4v4h-4zm8 0h4v4h-4z"/>'),
-  history: icon(
-    '<path fill="none" stroke="currentColor" stroke-width="2" d="M4 8V3M4 8h5m-5 0 4-4h8l4 4v8l-4 4H8l-4-4m8-9v6h5"/>',
-  ),
   options: icon(
     '<path fill="currentColor" d="M9 2h6v3h3v3h4v8h-4v3h-3v3H9v-3H6v-3H2V8h4V5h3z"/><path fill="var(--case)" d="M9 9h6v6H9z"/>',
   ),
@@ -36,15 +33,14 @@ export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string =>
       const key = view === "sidebar" ? "navigationMarkup.partner" : `navigation.${view}`
       const name = escapeHtml(IntlModule.translate(key))
       const symbol = view === "sidebar" ? icons.partner : icons[view]
-      const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${view === page ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
+      const current = view === page || (view === "dex" && page === "history")
+      const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${current ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
       const mapButton = `<button id="map-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.map"))}" data-i18n-aria-label="web:navigationMarkup.map" aria-controls="world-map-view">${icons.map}${label("navigationMarkup.map")}</button>`
       return view === "sidebar" ? link : link + mapButton + battleButton
     })
     .join("")
-  const historyName = escapeHtml(IntlModule.translate("navigation.history"))
-  const more = `<div class="nav-more"><button id="more-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.more"))}" data-i18n-aria-label="web:navigationMarkup.more" aria-controls="more-menu" aria-expanded="false"${page === "history" ? ' aria-current="page"' : ""}>${icons.more}${label("navigationMarkup.more")}</button><div id="more-menu" class="more-menu" hidden>
+  const more = `<div class="nav-more"><button id="more-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.more"))}" data-i18n-aria-label="web:navigationMarkup.more" aria-controls="more-menu" aria-expanded="false">${icons.more}${label("navigationMarkup.more")}</button><div id="more-menu" class="more-menu" hidden>
   <button id="options-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.options"))}" data-i18n-aria-label="web:navigationMarkup.options" title="${escapeHtml(IntlModule.translate("navigationMarkup.options2"))}" data-i18n-title="web:navigationMarkup.options2" aria-haspopup="dialog" aria-controls="options-dialog" aria-expanded="false">${icons.options}${label("navigationMarkup.options")}</button>
-  <a href="/history" data-page="history" aria-label="${historyName}" data-i18n-aria-label="web:navigation.history"${page === "history" ? ' aria-current="page"' : ""}>${icons.history}${label("navigation.history")}</a>
   </div></div>`
   return `${installation}<nav class="web-nav" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}" data-i18n-aria-label="web:navigationMarkup.digitalPet">${links}${more}</nav>`
 }

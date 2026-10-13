@@ -10,6 +10,6 @@ export const openOptions = async (page: Page) => {
 }
 
 export const openHistory = async (page: Page) => {
-  await openMore(page)
-  await page.locator('a[data-page="history"]').click()
+  if (!(await page.locator("#dex-view").isVisible())) await page.locator('a[data-page="dex"]').click()
+  await page.locator("#dex-history-tab").click()
 }

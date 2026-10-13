@@ -11,3 +11,24 @@ body {
   height: 100dvh;
   box-shadow: none;
 }
+
+body[data-page="dex"],
+body[data-page="history"] {
+  background: var(--lcd);
+}
+.device:is(.dex, .history) {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: var(--lcd);
+}
+.device:is(.dex, .history)::before,
+.device:is(.dex, .history) > .masthead,
+.device:is(.dex, .history) > .footer {
+  display: none;
+}
+.device:is(.dex, .history) > .screen {
+  padding: 0 4px;
+  border: 0;
+  box-shadow: none;
+}

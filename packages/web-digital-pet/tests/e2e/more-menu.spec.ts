@@ -3,10 +3,7 @@ import { openHistory, openOptions } from "./helpers/navigation.ts"
 
 test.use({ locale: "es-ES" })
 
-test("More groups Options and History and closes on selection, outside taps and Escape", async ({
-  page,
-  browserName,
-}, testInfo) => {
+test("More opens Options and closes on selection, outside taps and Escape", async ({ page }, testInfo) => {
   await page.goto("/")
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toHaveText("")
   const more = page.locator("#more-button")
@@ -15,7 +12,7 @@ test("More groups Options and History and closes on selection, outside taps and 
   await expect(more).toHaveAccessibleName("More")
   await expect(navigation.locator("a:visible, button:visible")).toHaveCount(5)
   await expect(page.locator("#options-button")).not.toBeVisible()
-  await expect(page.locator('a[data-page="history"]')).not.toBeVisible()
+  await expect(menu.locator("a, button")).toHaveCount(1)
 
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 800 })
@@ -46,8 +43,9 @@ test("More groups Options and History and closes on selection, outside taps and 
   await openHistory(page)
   await expect(page.locator('iframe[data-page="history"]')).toHaveClass(/active/)
   await expect(menu).not.toBeVisible()
-  await expect(more).toHaveAttribute("aria-current", "page")
-  await page.screenshot({ path: testInfo.outputPath("more-history.png") })
+  await expect(page.locator('a[data-page="dex"]')).toHaveAttribute("aria-current", "page")
+  await expect(more).not.toHaveAttribute("aria-current", "page")
+  await page.screenshot({ path: testInfo.outputPath("dex-history.png") })
 
   await more.click()
   await page.locator("#map-button").click()
@@ -61,9 +59,6 @@ test("More groups Options and History and closes on selection, outside taps and 
   await more.focus()
   await more.press("Enter")
   await expect(page.locator("#options-button")).toBeFocused()
-  // Safari's default keyboard mode includes links when Option is held.
-  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab")
-  await expect(page.locator('a[data-page="history"]')).toBeFocused()
   await page.keyboard.press("Escape")
   await expect(menu).not.toBeVisible()
   await expect(more).toBeFocused()

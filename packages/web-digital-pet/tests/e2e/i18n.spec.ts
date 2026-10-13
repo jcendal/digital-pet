@@ -73,6 +73,8 @@ for (const [browserLocale, locale] of [
     await expect(dex.locator("#entries")).not.toBeEmpty()
     await expect(dex.locator("html")).toHaveAttribute("lang", locale)
     await expect(dex.locator("#search")).toHaveAttribute("placeholder", webviews[locale]["dexRender.name"])
+    await expect(page.locator("#dex-dex-tab")).toHaveText(web[locale]["navigation.dex"])
+    await expect(page.locator("#dex-history-tab")).toHaveText(web[locale]["navigation.history"])
     await openHistory(page)
     const history = page.frameLocator('iframe[data-page="history"]')
     await expect(history.locator("#generation-count")).not.toHaveText("00")

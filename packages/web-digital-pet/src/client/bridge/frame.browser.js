@@ -366,7 +366,7 @@ function initWebBridge(page, locationIds) {
       event.origin === location.origin &&
       event.data?.type === "digital-pet:view-visible"
     ) {
-      if (page === "dex") dexSelection = event.data.selected || "current"
+      if (page === "dex" && !event.data.preserveSelection) dexSelection = event.data.selected || "current"
       refresh()
     }
     if (

@@ -21,15 +21,19 @@ const parseHooksJson = (raw: string): HooksJson => {
 const isDigitalPetHook = (entry: { readonly command: string }): boolean =>
   entry.command.includes(DIGITAL_PET_HOOK_MARKER)
 
-export const installDigitalPetHooks = (bridgePath: string): { readonly hooksPath: string } => {
-  const hooksPath = resolveHooksJsonPath()
+export const installDigitalPetHooks = (
+  bridgePath: string,
+  hooksPath = resolveHooksJsonPath(),
+): { readonly hooksPath: string } => {
   const command = `node "${bridgePath}"`
 
   mkdirSync(dirname(hooksPath), { recursive: true })
 
   let config: HooksJson
+  let previousContents: string | undefined
   try {
-    config = parseHooksJson(readFileSync(hooksPath, "utf8"))
+    previousContents = readFileSync(hooksPath, "utf8")
+    config = parseHooksJson(previousContents)
   } catch {
     config = { version: 1, hooks: {} }
   }
@@ -42,7 +46,8 @@ export const installDigitalPetHooks = (bridgePath: string): { readonly hooksPath
   ensureHook("beforeSubmitPrompt")
   ensureHook("stop")
 
-  writeFileSync(hooksPath, `${JSON.stringify(config, null, 2)}\n`, "utf8")
+  const nextContents = `${JSON.stringify(config, null, 2)}\n`
+  if (nextContents !== previousContents) writeFileSync(hooksPath, nextContents, "utf8")
   return { hooksPath }
 }
 

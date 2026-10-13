@@ -17,13 +17,17 @@ describe("walking landscape", () => {
     expect(landscapeMotionEnabled("off", false)).toBe(false)
     expect(landscapeMotionEnabled("invalid", true)).toBe(false)
   })
-  it("follows actual steps in the same direction and pauses between them", () => {
-    expect(landscapeDirection(left, { ...left, offset: -1 })).toBe(-1)
-    expect(landscapeDirection(left, { ...left, offset: 1, facing: "right" })).toBe(1)
+  it("scrolls opposite actual steps and pauses between them", () => {
+    expect(landscapeDirection(left, { ...left, offset: -1 })).toBe(1)
+    expect(landscapeDirection(left, { ...left, offset: 1, facing: "right" })).toBe(-1)
     expect(landscapeDirection(left, left)).toBe(0)
     expect(landscapeDirection(left, { ...left, offset: -1, walking: false })).toBe(0)
     expect(landscapeDirection({ ...left, walking: false }, left)).toBe(0)
     expect(landscapeDirection(undefined, left)).toBe(0)
+  })
+  it("ignores position resets that contradict the walking pose", () => {
+    expect(landscapeDirection({ ...left, offset: -5 }, left)).toBe(0)
+    expect(landscapeDirection({ ...left, offset: 5, facing: "right" }, { ...left, facing: "right" })).toBe(0)
   })
   it("does not mistake a new pet or resized viewport for walking", () => {
     expect(landscapeDirection(left, { ...left, offset: -5, partnerKey: "gabumon:false" })).toBe(0)

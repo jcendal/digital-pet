@@ -31,8 +31,8 @@ export const landscapeDirection = (previous: SceneMotion | undefined, next: Scen
   )
     return 0
   const delta = next.offset - previous.offset
-  if (delta < 0 && next.facing === "left") return -1
-  if (delta > 0 && next.facing === "right") return 1
+  if (delta < 0 && next.facing === "left") return 1
+  if (delta > 0 && next.facing === "right") return -1
   return 0
 }
 

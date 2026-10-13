@@ -11,6 +11,7 @@ import { buildSidebarWebviewHtml } from "@jcendal/digital-pet-webviews/sidebar/s
 import { IntlModule, catalogs as webCatalogs } from "../../shared/i18n.ts"
 import { battleMarkup } from "./battle-markup.ts"
 import { assetUrl, type WebResources } from "./build-resources.ts"
+import { dexMarkup } from "./dex-markup.ts"
 import { dexModel, historyModel } from "./host-models.ts"
 import { navigationMarkup } from "./navigation-markup.ts"
 import { optionsMarkup } from "./options-markup.ts"
@@ -54,12 +55,9 @@ export const renderPage = (page: "sidebar" | "dex" | "history", web: WebResource
 
 export const renderShell = (page: "sidebar" | "dex" | "history", web: WebResources): string => {
   const nonce = nonceFor(web)
-  const views = (["sidebar", "dex", "history"] as const)
-    .map(
-      (view) =>
-        `<iframe class="web-view${view === page ? " active" : ""}" data-page="${view}" src="${web.views?.[view] ?? `/view/${view}`}" title="${escapeHtml(IntlModule.translate(view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"))}" data-i18n-title="web:${view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"}"${view === page ? "" : ' aria-hidden="true"'}></iframe>`,
-    )
-    .join("")
+  const frame = (view: "sidebar" | "dex" | "history") =>
+    `<iframe class="web-view${view === page ? " active" : ""}" data-page="${view}" src="${web.views?.[view] ?? `/view/${view}`}" title="${escapeHtml(IntlModule.translate(view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"))}" data-i18n-title="web:${view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"}"${view === "sidebar" ? "" : ` id="dex-${view}-panel" role="tabpanel" aria-labelledby="dex-${view}-tab"`}${view === page ? "" : ' aria-hidden="true"'}></iframe>`
+  const views = frame("sidebar") + dexMarkup(frame("dex") + frame("history"), page === "history" ? "history" : "dex")
   return `<!DOCTYPE html><html lang="en" data-save-host="${web.mode}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${web.development ? " ws://localhost:* ws://127.0.0.1:*" : ""}"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="${assetUrl(web, "/favicon.ico")}"><link rel="icon" type="image/png" sizes="16x16" href="${assetUrl(web, "/icons/digital-pet-16.png")}"><link rel="icon" type="image/png" sizes="32x32" href="${assetUrl(web, "/icons/digital-pet-32.png")}"><link rel="apple-touch-icon" sizes="180x180" href="${assetUrl(web, "/icons/digital-pet-180.png")}"><title data-i18n="web:navigationMarkup.digitalPet">${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('${assetUrl(web, "/fonts/Silkscreen-Regular.ttf")}') format('truetype'); font-display: swap; }${PANEL_THEME}</style></head><body><div class="view-stack">${views}${worldMapMarkup(
     assetUrl(web, "/maps/file-island.svg"),
     (id) => assetUrl(web, `/regions/${id}/scene.svg`),

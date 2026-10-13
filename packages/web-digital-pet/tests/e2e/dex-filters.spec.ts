@@ -62,8 +62,17 @@ test("owned companions include past generations, filters survive refreshing, and
   await expect(dex.locator("#no-results")).toBeVisible()
   await dex.locator("#search").fill("")
   await expect(dex.locator(".entry")).toHaveCount(1)
-  for (const selector of [".entry-name", ".detail-name h2", ".masthead h1", ".footer > span:first-child"]) {
+  for (const selector of [".entry-name", ".detail-name h2"]) {
     const text = dex.locator(selector).first()
+    await text.evaluate((node) => {
+      node.textContent = "Nombre de Digimon extremadamente largo para comprobar el espacio disponible"
+    })
+    await expect(text).toHaveCSS("text-overflow", "ellipsis")
+    await expect(text).toHaveCSS("white-space", "nowrap")
+    expect(await text.evaluate((node) => node.scrollWidth > node.clientWidth)).toBe(true)
+  }
+  for (const selector of [".masthead h1", ".footer > span:first-child"]) {
+    const text = page.locator(`#dex-view ${selector}`).first()
     await text.evaluate((node) => {
       node.textContent = "Nombre de Digimon extremadamente largo para comprobar el espacio disponible"
     })

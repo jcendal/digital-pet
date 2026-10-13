@@ -4,6 +4,12 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+### Changed
+
+- Group Dex and History in one view with keyboard-accessible tabs.
+- Keep save selectors square and remove the evolution experience slider's outer border.
+- Scroll the landscape opposite the companion's steps during ordinary walks, as in adventures.
+
 ## [0.12.0] - 2026-10-13
 
 ### Changed
