@@ -4,6 +4,8 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-13
+
 ### Changed
 
 - Group Dex and History in one view with keyboard-accessible tabs.
