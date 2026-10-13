@@ -1,5 +1,46 @@
 .map-device .screen {
   gap: 12px;
+  overflow: hidden;
+}
+.map-tabs {
+  display: flex;
+  flex: none;
+  border-bottom: 2px solid var(--muted);
+}
+.map-tabs button {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  font: inherit;
+  font-size: 11px;
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.map-tabs button[aria-selected="true"] {
+  color: var(--lcd);
+  background: var(--muted);
+}
+.map-tabs button:hover:not([aria-selected="true"]) {
+  background: var(--lcd-edge);
+}
+.map-tabs button:focus-visible {
+  outline: 2px dotted currentColor;
+  outline-offset: -4px;
+}
+.map-atlas-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 .map-heading {
   flex: none;
@@ -83,39 +124,6 @@
   z-index: 3;
   outline: 2px dotted var(--ink);
   outline-offset: -8px;
-}
-.map-place-name {
-  position: absolute;
-  bottom: 38px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: 150px;
-  padding: 4px 6px;
-  font-size: 9px;
-  line-height: 1.5;
-  text-align: center;
-  background: var(--lcd);
-  border: 1px solid var(--muted);
-  visibility: hidden;
-  pointer-events: none;
-}
-.map-place[data-label-align="left"] .map-place-name {
-  left: 0;
-  transform: none;
-}
-.map-place[data-label-align="right"] .map-place-name {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-.map-place:hover:not(:disabled) .map-place-name,
-.map-place:focus-visible .map-place-name {
-  visibility: visible;
-}
-.map-place[aria-expanded="true"] .map-place-name,
-.map-place[aria-expanded="true"]:hover .map-place-name {
-  visibility: hidden;
 }
 .map-location-picker {
   position: absolute;

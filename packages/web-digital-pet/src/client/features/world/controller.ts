@@ -15,11 +15,10 @@ import {
 } from "../../platform/save-source.ts"
 
 export const initBrowserWorld = async (): Promise<void> => {
-  const dialog = document.querySelector<HTMLDialogElement>("#world-dialog")!
+  const regions = document.querySelector<HTMLElement>("#world-regions")!
   const content = document.querySelector<HTMLElement>("#world-content")!
   const status = document.querySelector<HTMLElement>("#world-status")!
-  const options = document.querySelector<HTMLDialogElement>("#options-dialog")!
-  const photos = new Set<string>(JSON.parse(dialog.dataset.photos ?? "[]"))
+  const photos = new Set<string>(JSON.parse(regions.dataset.photos ?? "[]"))
   const frames = Array.from(document.querySelectorAll<HTMLIFrameElement>(".web-view"))
   let visit: WorldVisit = DEFAULT_WORLD_VISIT
   let source: SaveSource = "browser"
@@ -50,7 +49,6 @@ export const initBrowserWorld = async (): Promise<void> => {
       ? `linear-gradient(#0b171a44, #0b171a55), url('${webAsset(`/regions/${place.id}/background.png`)}') center / cover no-repeat`
       : `linear-gradient(160deg, ${place.atmosphere[0]}, ${place.atmosphere[1]})`
     document.documentElement.style.background = photo
-    document.querySelector<HTMLElement>("#world-current")!.textContent = place.name
     for (const frame of frames)
       frame.contentWindow?.postMessage(
         { type: "digital-pet:world-changed", locationId: place.id, name: place.name },
@@ -77,7 +75,7 @@ export const initBrowserWorld = async (): Promise<void> => {
           (id) => webAsset(`/regions/${id}/scene.svg`),
           model.bossVictories,
         )
-    dialog.querySelector<HTMLElement>(".dialog-body")!.scrollTop = 0
+    regions.scrollTop = 0
   }
   const refresh = async () => {
     const token = ++revision
@@ -94,12 +92,12 @@ export const initBrowserWorld = async (): Promise<void> => {
     mapError = ""
     applyVisit()
     updateMap()
-    if (dialog.open || !mapView.hidden) {
+    if (!mapView.hidden) {
       status.textContent = IntlModule.translate("controller.loadingHabitatGuide")
       const nextModel = await loadModel(selectedRegion ?? visit.regionId, source)
       if (token !== revision) return
       model = nextModel
-      if (dialog.open) render()
+      if (!regions.hidden) render()
       updateMap()
       status.textContent = ""
     }
@@ -134,21 +132,8 @@ export const initBrowserWorld = async (): Promise<void> => {
         updateMap()
       })
   })
-  const open = () => {
-    selectedRegion = null
-    content.innerHTML = ""
-    status.textContent = IntlModule.translate("controller.loadingRegions")
-    if (!dialog.open) dialog.showModal()
-    void refresh().catch(report)
-  }
-  document.querySelector("#world-button")!.addEventListener("click", open)
-  window.addEventListener("message", (event) => {
-    if (
-      event.origin === location.origin &&
-      frames.some((frame) => frame.contentWindow === event.source) &&
-      event.data?.type === "digital-pet:world-open"
-    )
-      open()
+  window.addEventListener("digital-pet:map-section", () => {
+    if (!mapView.hidden && !regions.hidden) void refresh().catch(report)
   })
   window.addEventListener("digital-pet:save-updated", () => {
     void refresh().catch(report)
@@ -160,26 +145,13 @@ export const initBrowserWorld = async (): Promise<void> => {
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button")
     if (!button) return
     if (button.dataset.region) {
-      const regionId = button.dataset.region
-      selectedRegion = regionId
-      status.textContent = IntlModule.translate("controller.loadingHabitatGuide")
-      const token = ++revision
-      void loadModel(regionId, source)
-        .then((nextModel) => {
-          if (token !== revision) return
-          model = nextModel
-          render()
-          status.textContent = ""
-        })
-        .catch(report)
+      selectedRegion = button.dataset.region
+      void refresh().catch(report)
     } else if (button.hasAttribute("data-world-back")) {
-      ++revision
       selectedRegion = null
       render()
-      status.textContent = ""
+      void refresh().catch(report)
     } else if (button.dataset.worldDex) {
-      dialog.close()
-      options.close()
       window.dispatchEvent(
         new CustomEvent("digital-pet:navigate", {
           detail: `/dex?selected=${encodeURIComponent(button.dataset.worldDex)}`,
@@ -194,8 +166,6 @@ export const initBrowserWorld = async (): Promise<void> => {
         .save(next)
         .then(async () => {
           await refresh()
-          dialog.close()
-          options.close()
           window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: "/" }))
         })
         .catch((error) => {

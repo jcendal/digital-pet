@@ -37,12 +37,12 @@ pixels, muted palette, and space for the companion. Locations can share a scene.
 `assets/maps/file-island.svg` is original vector pixel artwork inspired by the
 [File Island map in the Adventure Digivice](https://humulos.com/digimon/dvc/adventure/):
 central Infinity Mountain, a western lake, southern rainforest, and stepped coast.
-It retains eleven zone markers for our ten habitats, including Server and
+It has one zone marker for each of our ten habitats, including Server and
 Spiral Mountain habitats; it is not a canonical map of the series or a copied sprite.
 `src/data/world-map.ts` owns positions in its 160 × 176 coordinate system.
-Coverage tests require every habitat to have a marker. A marker opens a dropdown
+Coverage tests require exactly one marker per habitat. A marker opens a dropdown
 for its habitat's locations. Shared webviews own markers,
-the traveler and labels; the web host owns navigation and saves through the existing
+the traveler and location picker; the web host owns navigation and saves through the existing
 world store. Browser visits remain in the transferable save, while computer visits
 remain a separate web preference.
 

@@ -20,8 +20,8 @@ import { LOCATIONS, REGIONS } from "../src/data/regions.ts"
 import { WORLD_MAP_PLACES, WORLD_MAP_SIZE } from "../src/data/world-map.ts"
 
 describe("Digital World catalog", () => {
-  it("keeps the original atlas markers and covers every habitat", () => {
-    expect(WORLD_MAP_PLACES).toHaveLength(11)
+  it("provides one atlas marker per habitat", () => {
+    expect(WORLD_MAP_PLACES).toHaveLength(REGIONS.length)
     expect(new Set(WORLD_MAP_PLACES.map((point) => point.locationId)).size).toBe(WORLD_MAP_PLACES.length)
     expect([...new Set(WORLD_MAP_PLACES.map((point) => getLocation(point.locationId).regionId))].sort()).toEqual(
       REGIONS.map((region) => region.id).sort(),

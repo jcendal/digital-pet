@@ -4,7 +4,6 @@ import { IntlModule } from "../../shared/i18n.ts"
 
 const deviceIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 2h8v2H2zm0 2h2v12H2zm6 0h2v12H8zm-6 12h8v2H2zm2-3h4v2H4zm10-7h8v2h-8zm0 2h2v12h-2zm6 0h2v12h-2zm-6 12h8v2h-8zm2-3h4v2h-4zM10 8h4v2h-4zm0 4h4v2h-4z"/></svg>`
 const eggIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 2h4v2h-4zM8 4h2v4H8zm6 0h2v4h-2zM6 8h2v4H6zm10 0h2v4h-2zM4 12h2v6H4zm14 0h2v6h-2zM6 18h2v2H6zm10 0h2v2h-2zM8 20h8v2H8zM8 10h4v4H8zm4 6h4v2h-4z"/></svg>`
-const mapIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 6h2v16H2zM8 2h2v16H8zM14 6h2v16h-2zM20 2h2v16h-2zM4 4h2v2H4zM6 2h2v2H6zM10 2h2v2h-2zM12 4h2v2h-2zM16 4h2v2h-2zM18 2h2v2h-2zM4 20h2v2H4zM6 18h2v2H6zM10 18h2v2h-2zM12 20h2v2h-2zM16 20h2v2h-2zM18 18h2v2h-2z"/></svg>`
 
 export const optionsMarkup = /* html */ `
 <dialog id="options-dialog" class="web-dialog" aria-labelledby="options-title">
@@ -17,7 +16,6 @@ export const optionsMarkup = /* html */ `
         ${["en", "ko", "es", "gl"].map((locale) => `<option value="${locale}">${escapeHtml(languageIntl.translate(`language.${locale}`))}</option>`).join("")}
       </select>
     </section>
-    <section class="world-section"><div class="action-heading">${mapIcon}<div><h3 data-i18n="web:optionsMarkup.yourWorld">${escapeHtml(IntlModule.translate("optionsMarkup.yourWorld"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.exploreANewHomeWithYourCompanion">${escapeHtml(IntlModule.translate("optionsMarkup.exploreANewHomeWithYourCompanion"))}</p></div></div><button id="world-button" class="wide-action" type="button" aria-haspopup="dialog"><span><span data-i18n="web:options.exploreRegions">${escapeHtml(IntlModule.translate("options.exploreRegions"))}</span><span id="world-current" data-i18n="web:optionsMarkup.dragonEyeLake">${escapeHtml(IntlModule.translate("optionsMarkup.dragonEyeLake"))}</span></span><span aria-hidden="true">→</span></button></section>
     <fieldset id="new-partner-options"><legend class="sr-only" data-i18n="web:optionsMarkup.browserCompanionOptions">${escapeHtml(IntlModule.translate("optionsMarkup.browserCompanionOptions"))}</legend>
       <section class="new-partner-section"><div class="action-heading">${eggIcon}<div><h3 data-i18n="web:optionsMarkup.aNewJourney">${escapeHtml(IntlModule.translate("optionsMarkup.aNewJourney"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.startFreshKeepYourPastCompanions">${escapeHtml(IntlModule.translate("optionsMarkup.startFreshKeepYourPastCompanions"))}</p></div></div>
         <button id="new-partner" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.startANewEgg">${escapeHtml(IntlModule.translate("optionsMarkup.startANewEgg"))}</span><span aria-hidden="true">+</span></button>
