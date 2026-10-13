@@ -7,6 +7,8 @@ window.createAdventureClient = (bridge, intl) => {
   const decline = document.getElementById("adventure-decline")
   const loot = document.getElementById("adventure-loot")
   const root = document.querySelector(".pet-module")
+  const scenery = document.querySelector(".adventure-scenery")
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")
   let view = { available: false, readyAt: 0, lootLifetimeMs: 0 }
   let phase = "idle"
   let collecting = null
@@ -62,6 +64,11 @@ window.createAdventureClient = (bridge, intl) => {
     stop.setAttribute("aria-label", intl.translate("adventure.stop"))
     stop.title = intl.translate("adventure.stop")
     root.classList.toggle("adventuring", Boolean(running && event?.kind !== "battle" && phase === "idle"))
+    // Drive the landscape from the saved journey clock so repeated updates cannot restart its motion.
+    if (scenery)
+      scenery.style.backgroundPositionX = reducedMotion?.matches
+        ? "0px"
+        : -Math.max(0, trip?.elapsedMs ?? 0) * 0.06 + "px"
     loot.hidden = !running || phase !== "idle" || event?.kind !== "loot"
     if (!loot.hidden) {
       if (collecting !== event.id) collecting = null
@@ -122,6 +129,7 @@ window.createAdventureClient = (bridge, intl) => {
     if (document.hidden && view.state?.running) send({ kind: "pause" })
   })
   getIntlModule().subscribe(render)
+  reducedMotion?.addEventListener("change", render)
   return {
     update(next) {
       view = next

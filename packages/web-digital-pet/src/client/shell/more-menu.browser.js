@@ -43,11 +43,5 @@ export const initMoreMenu = () => {
     const active = document.activeElement
     if (active === document.body || active.id === "options-button" || options.contains(active)) button.focus()
   })
-  return {
-    close,
-    setCurrent: (current) => {
-      if (current) button.setAttribute("aria-current", "page")
-      else button.removeAttribute("aria-current")
-    },
-  }
+  return { close }
 }

@@ -123,7 +123,9 @@ battle can continue when you return or reload. Battle codes change when you relo
 
 ## Options
 
-Open **More ···** in the bottom navigation for **Options** and **History**.
+Open **More ···** in the bottom navigation for **Options**. Open **Dex** for the
+**Dex** and **History** tabs, which keep your catalog filters and generation
+selection while you switch between them.
 
 Choose your language, travel to another region, adjust growth speed, or start a
 new egg. Starting over keeps your previous companion in History.

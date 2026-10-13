@@ -1,0 +1,81 @@
+import { expect, test } from "@playwright/test"
+import { openOptions } from "./helpers/navigation.ts"
+
+test("Dex tabs preserve filters, support keyboard navigation, history routes and browser Back", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/dex")
+  const dexTab = page.locator("#dex-dex-tab")
+  const historyTab = page.locator("#dex-history-tab")
+  const dex = page.frameLocator('iframe[data-page="dex"]')
+  const history = page.frameLocator('iframe[data-page="history"]')
+  await expect(dex.locator("#entries")).not.toBeEmpty()
+  await expect(dexTab).toHaveAttribute("aria-selected", "true")
+  await expect(historyTab).toHaveAttribute("tabindex", "-1")
+  await dex.locator("#filters summary").click()
+  await dex.locator("#search").fill("Agumon")
+  await dex.locator("#stage").selectOption("3")
+  await dexTab.focus()
+  await dexTab.press("ArrowRight")
+  await expect(historyTab).toBeFocused()
+  await expect(historyTab).toHaveAttribute("aria-selected", "true")
+  await expect(page).toHaveURL(/\/history$/)
+  await expect(history.locator("#generation-count")).not.toHaveText("00")
+  await expect(page.locator('iframe[data-page="dex"]')).not.toBeVisible()
+  await expect(page.locator('a[data-page="dex"]')).toHaveAttribute("aria-current", "page")
+  await historyTab.press("Home")
+  await expect(dexTab).toBeFocused()
+  await expect(dex.locator("#search")).toHaveValue("Agumon")
+  await expect(dex.locator("#stage")).toHaveValue("3")
+  await expect(dex.locator("#filters")).toHaveAttribute("open", "")
+  await dexTab.press("End")
+  await expect(historyTab).toBeFocused()
+  await historyTab.press("ArrowLeft")
+  await expect(dexTab).toBeFocused()
+  await page.goBack()
+  await expect(historyTab).toHaveAttribute("aria-selected", "true")
+  await page.reload()
+  await expect(historyTab).toHaveAttribute("aria-selected", "true")
+  await expect(history.locator("#generation-count")).not.toHaveText("00")
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 800 })
+    for (const tab of [dexTab, historyTab]) {
+      const box = await tab.boundingBox()
+      if (!box) throw new Error("Missing Dex tab")
+      expect(box.height).toBeGreaterThanOrEqual(44)
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(width)
+    }
+    await page.screenshot({ path: testInfo.outputPath(`history-tab-${width}.png`) })
+  }
+  await page.locator("#map-button").click()
+  await expect(page.locator("#dex-view")).not.toBeVisible()
+  await expect(page.locator("#world-map-view")).toBeVisible()
+})
+
+test("save selectors stay square and evolution experience has no outer input border", async ({ page }, testInfo) => {
+  await page.goto("/")
+  await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toHaveText("")
+  await openOptions(page)
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 800 })
+    for (const id of ["source-computer", "source-browser"]) {
+      const selector = page.locator(`#${id}`)
+      await selector.scrollIntoViewIfNeeded()
+      const box = await selector.boundingBox()
+      if (!box) throw new Error("Missing save selector")
+      expect(box.width).toBe(16)
+      expect(box.height).toBe(16)
+    }
+    const slider = page.locator("#experience-level")
+    await slider.scrollIntoViewIfNeeded()
+    for (const side of ["top", "right", "bottom", "left"]) await expect(slider).toHaveCSS(`border-${side}-width`, "0px")
+    await page.screenshot({ path: testInfo.outputPath(`options-controls-${width}.png`) })
+  }
+  await page.locator('[data-experience-index="0"]').click()
+  await expect(page.locator("#experience-level")).toHaveValue("0")
+  await expect(page.locator("#experience-amount")).toHaveText("10%")
+  await page.locator("#experience-level").focus()
+  await page.locator("#experience-level").press("ArrowRight")
+  await expect(page.locator("#experience-amount")).toHaveText("50%")
+})

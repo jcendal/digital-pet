@@ -121,6 +121,33 @@ const sidebarPreview = (idleAlignment?: string) => {
 }
 
 describe("sidebar render", () => {
+  test("adventure landscape follows elapsed travel time across repeated updates, pause and combat", () => {
+    const { element, send } = sidebarPreview()
+    const update = (running: boolean, elapsedMs: number) =>
+      send({
+        type: "adventure-state",
+        view: {
+          available: true,
+          readyAt: 0,
+          lootLifetimeMs: 10000,
+          state: { id: "trip", status: "travel", running, elapsedMs },
+        },
+      })
+    update(true, 2000)
+    expect(element(".pet-module").classes.has("adventuring")).toBe(true)
+    expect(element(".adventure-scenery").style.backgroundPositionX).toBe("-120px")
+    update(true, 2000)
+    expect(element(".adventure-scenery").style.backgroundPositionX).toBe("-120px")
+    update(false, 2000)
+    expect(element(".pet-module").classes.has("adventuring")).toBe(false)
+    update(true, 2250)
+    expect(element(".adventure-scenery").style.backgroundPositionX).toBe("-135px")
+    send({ type: "presentation-state", state: { phase: "battle" } })
+    expect(element(".pet-module").classes.has("adventuring")).toBe(false)
+    send({ type: "presentation-state", state: { phase: "idle" } })
+    expect(element(".pet-module").classes.has("adventuring")).toBe(true)
+    expect(element(".adventure-scenery").style.backgroundPositionX).toBe("-135px")
+  })
   test("feeding keeps the idle canvas size, alignment and column count in narrow views", () => {
     for (const alignment of ["xMidYMid", "xMidYMax"]) {
       const { element, send } = sidebarPreview(alignment)

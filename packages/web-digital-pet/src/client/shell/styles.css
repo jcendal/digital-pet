@@ -1,6 +1,7 @@
 @import "@jcendal/digital-pet-webviews/shared/panel-styles.css";
 @import "../styles/base.css";
 @import "./more-menu.css";
+@import "./dex-tabs.css";
 @import "../features/options/styles.css";
 @import "@jcendal/digital-pet-webviews/panels/world/world-styles.css";
 @import "@jcendal/digital-pet-webviews/panels/world/map-styles.css";

@@ -4,6 +4,12 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+### Fixed
+
+- Refresh previously enabled Agent hooks after extension updates so token experience keeps working when old versions are removed.
+- Keep the companion above the adventure scenery so its pixels retain their full contrast.
+- Advance the adventure landscape with elapsed travel time and preserve its position when pausing or receiving repeated updates.
+
 ## [0.15.0] - 2026-10-11
 
 ### Changed
