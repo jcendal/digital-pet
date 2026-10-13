@@ -4,6 +4,8 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-10-13
+
 ### Fixed
 
 - Refresh previously enabled Agent hooks after extension updates so token experience keeps working when old versions are removed.
