@@ -92,7 +92,7 @@ The importer validates PNG checksums, RGBA dimensions and the 16×16 pixel grid.
 All 44 first frames pass these checks. There are 35 valid second frames; the
 second frames for designs 27–34 and 37 are not aligned to the source pixel grid.
 Their original PNGs and checksums are retained in `alternateReview`; the renderer
-uses frame 0 until these assets are reviewed. The three currently selectable
+uses frame 0 until these assets are reviewed. All ten selectable regional
 origins have valid animated pairs.
 
 To refresh this reviewed export from the repository root:
@@ -137,10 +137,55 @@ The remaining source designs are retained as an offline resource archive.
 
 ## Evolution references
 
-[Humulos](https://humulos.com/digimon/) remains the reference used by the current
-evolution audit and a cross-check for device conditions. Omnipet's structured
-module data should enrich and reconcile that audit, preserving discrepancies for
-review rather than silently mixing conditions from different versions.
+[Humulos](https://humulos.com/digimon/) supplies the generated evolution reference
+snapshot and device-condition evidence. Omnipet's structured module data should
+enrich and reconcile that snapshot, preserving discrepancies for review rather
+than silently mixing conditions from different versions.
 Official reference links supplied by Omnipet identify species information.
 Game balance, region difficulty, token thresholds and manual fusion semantics
 remain authored game rules, with their adaptations documented explicitly.
+
+
+### Reference import and game adaptations
+
+The reviewed snapshot in `digital-pet-core/src/data/evolution-reference.json`
+contains 1,898 connections: 1,467 normal, 230 Jogress and 201 special. It retains
+source URLs, care masks and 44 normal connections with numeric victory conditions.
+The importer combines the supported devices' confirmed routes; this is not an
+emulator of one device. Ambiguous names and unmatched species are excluded.
+Unverified legacy branches cannot be chosen for new EXP evolutions, but remain
+valid for finishing an already pending target. Species IDs and history stay stable.
+
+Care uses the current 0–3 unclean piles at post-win target selection. Source
+care-mistake ranges are clamped to that scale; documented care takes precedence
+over alternatives that omit it. Unrestricted care labels are omitted in the Dex.
+Humulos fixed battle windows such as 12–15 victories are adapted to a minimum of
+12 within the current form. Care and victories within one alternative both have
+to hold; separate alternatives remain OR groups. An unrestricted alternative
+covering a care category does not invent a victory requirement for that category.
+Device timing, level and effort are adapted to EXP, without separate training or
+win-ratio systems.
+
+Non-egg threshold duels start at 100% without selecting a target. A win adds a
+victory before evaluating routes. With no eligible result, keep the species and
+victory, show the notice and reset EXP. A loss resets EXP without adding a win.
+Adventure and evolution-duel wins count per form, survive reserve switches and
+save transfers, and reset on a form change. PvP wins currently do not count.
+Existing pending targets stay fixed. SQLite migration 10 and browser transactions
+prevent duplicate or stale resolution; transfer v3 preserves counters and
+targetless duels while accepting v1/v2 backups.
+
+Jogress, slot/connection unlocks, permanent objectives and same/backward-stage
+changes remain separate from automatic EXP evolution. Garurumon → Orochimon is
+referenced for Vital Bracelet as Jogress with a Virus Adult, not an ordinary EXP
+choice. Manual fusion and the remaining objective/origin adaptations are tracked
+in the [remaining implementation plan](evolution-gameplay-plan.md).
+
+To regenerate the snapshot, download the guides named in its `sources` map using
+`digital-pet-humulos-<guide>.html` filenames, export `DIGIMON_DATA` as JSON, and run
+from the repository root with BeautifulSoup 4 installed:
+
+```sh
+python3 scripts/import-evolution-reference.py --html-dir /path/to/html --catalog /path/to/catalog.json
+npx biome format --write packages/digital-pet-core/src/data/evolution-reference.json
+```

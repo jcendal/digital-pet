@@ -168,47 +168,20 @@ with a full team requires selecting the replaced slot; fusion consumes the reser
 and keeps both parents' provenance. These are proposed defaults rather than
 additional user decisions.
 
-## Current UI evidence and designs
+## Current UI evidence and pending designs
 
-The [capture manifest](../assets/design/evolution-gameplay/current/capture-manifest.json)
-records actual local application captures using an isolated browser test save.
-It does not read or change the user's save. Web captures use 390×844 and
-1440×1000 viewports. The 320×560 Cursor capture renders the existing shared
-sidebar document with a test host bridge; it is renderer evidence, not a screenshot
-of a live Cursor extension window.
+The [design index](design/evolution-gameplay/README.md) links the actual implemented
+companion switch, Dex Team tab, New Journey carousel, regional difficulty and
+post-combat evolution captures. The superseded interactive preview has been
+removed. Keep the existing Silkscreen font, LCD colors, pixel sprites, brown shell
+and Companion / Dex / Map / Battle / More navigation.
 
-| Current screen | Observed constraint | Proposed change |
-| --- | --- | --- |
-| [Companion](../assets/design/evolution-gameplay/current/companion-mobile.png) | Single portrait, experience and adventure controls; five navigation entries. | Preserve that layout. Add the circular reserve portrait and switch indicator in the area below the companion name, with a 44px touch target. No second arena, reserve row or new action grid. |
-| [Recruitment](../assets/design/evolution-gameplay/current/recruitment-mobile.png) | Accepting archives the current pet and starts a replacement. | Show the incoming pet and both occupied slots. Select a slot, review replacement, confirm or continue exploring. |
-| [Dex routes](../assets/design/evolution-gameplay/current/dex-routes-mobile.png) | Care labels and a generic special-route lock. | Preserve the current route layout and add requirement details in place. Extend the existing tab bar to Dex / Team / History. |
-| [Regions](../assets/design/evolution-gameplay/current/regions-mobile.png) | Region gallery, registered species counts and existing boss stars. | Add egg discovery to region details; reuse boss stars for permanent achievement status. |
-| [Options](../assets/design/evolution-gameplay/current/options-mobile.png) | New egg currently replaces the sole pet. | Open the egg carousel from the new-journey action, then explicitly choose the destination slot. |
-| [Cursor sidebar](../assets/design/evolution-gameplay/current/cursor-sidebar.png) | A compact shared pet card with Dex and History actions. | Preserve the card and add the same circular switch control below the companion name. Management lives in the Dex Team tab. |
-
-All eleven current captures are in [current/](../assets/design/evolution-gameplay/current/).
-The interactive design source and rendered proposals are in
-[design/evolution-gameplay/](design/evolution-gameplay/README.md).
-Retained screen layouts preserve the existing Silkscreen font, LCD colors,
-pixel sprites and brown shell. Discard the prototype's screen-picker/navigation
-and its companion redesign. Production navigation stays Companion / Dex / Map /
-Battle / More; the management tabs live inside Dex.
-
-| Proposed screen | Mobile design |
-| --- | --- |
-| Principal and reserve | [Team](../assets/design/evolution-gameplay/proposed/team-390.png) |
-| Recruitment slot selection | [Encounter](../assets/design/evolution-gameplay/proposed/recruitment-390.png) |
-| Manual fusion and result | [Jogress](../assets/design/evolution-gameplay/proposed/fusion-390.png) and [confirmation](../assets/design/evolution-gameplay/proposed/fusion-confirmation-390.png) |
-
-These are independent illustrative screen states. The preview simulates local
-actions; it does not persist a game or prove route eligibility. Egg family names,
-regional reward assignments and achievement copy are proposed content.
-
-The former companion, routes, eggs, region and achievements proposals are
-superseded. Create replacement designs against the captured current UI: the
-minimal face switch, Dex's three-tab bar and the New Journey egg carousel, and the new-journey
-egg carousel. Do not reintroduce a separate achievements screen or a general
-management screen selector.
+Recruitment slot selection and manual fusion retain their approved content
+references, but still require production implementation. Their screenshots do
+not prove persistence or route eligibility. Place management inside the Dex;
+do not reintroduce the rejected screen selector or achievements screen. Cursor
+and OpenCode remain compact companion experiences rather than full web-game
+management interfaces.
 
 ## Architecture and shared contracts
 
@@ -415,7 +388,7 @@ rules vary by device and distinguish generic attribute Jogress from exact specia
 pairs. Consuming the reserve and making fusion manual are our proposed game
 adaptations, not claims about the Vital Bracelet's original behavior. See the
 [Vital Series guide](https://humulos.com/digimon/vbdm/all/) and the local
-[evolution audit](evolution-audit.md).
+[evolution reference and adaptations](data-sources.md#evolution-references).
 
 ### Implementation
 
