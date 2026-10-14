@@ -6,6 +6,8 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ### Changed
 
+- Start the evolution duel at 100% even without an eligible route. Count a win before choosing the target; without a result, retain the companion and victory, show the notice and reset EXP.
+- Persist adventure and evolution-duel victories per form, prevent replayed rewards and show numeric Dex requirements only on applicable routes.
 - Prepare shared team persistence for a principal and resting reserve, with atomic slot replacement, revision checks and active-only token attribution. Team controls are not exposed yet.
 - Omit unrestricted care labels in the shared Dex and include reviewed jungle/dark habitat affinities.
 - Use shared regional boss tiers and preserve pending fights against previous regional bosses.

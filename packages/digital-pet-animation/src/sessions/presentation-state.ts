@@ -8,6 +8,6 @@ export type PresentationState =
       readonly bossIntro?: boolean
     }
   | { readonly phase: "evolving" | "evolved"; readonly fromNodeId: string; readonly toNodeId: string }
-  | { readonly phase: "defeated" | "draw" | "feeding"; readonly fromNodeId: string }
+  | { readonly phase: "defeated" | "draw" | "feeding" | "no_evolution"; readonly fromNodeId: string }
 
 export type PresentationStateListener = (state: PresentationState) => Promise<void>

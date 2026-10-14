@@ -162,6 +162,17 @@ const MIGRATIONS = [
         BEGIN SELECT RAISE(ABORT, 'A team can own at most two partners'); END`,
     ],
   },
+  {
+    version: 10,
+    sql: [
+      `CREATE TABLE partner_combat_progress (
+      partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id),
+      node_id TEXT NOT NULL,
+      victories INTEGER NOT NULL DEFAULT 0 CHECK (victories BETWEEN 0 AND 1000000),
+      battle_id TEXT
+    )`,
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

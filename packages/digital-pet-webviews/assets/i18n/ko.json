@@ -228,5 +228,9 @@
   "world.difficulty.hard": "어려움",
   "worldRender.nextRegion": "다음 →",
   "eggs.regionalName": "{region}의 알",
-  "eggs.regionalHint": "{region}의 보스를 이기세요."
+  "eggs.regionalHint": "{region}의 보스를 이기세요.",
+  "phase.no_evolution": "진화 없음",
+  "sidebar.noEvolutionsAvailable": "진화 가능한 경로가 없습니다.",
+  "dexClient.victoryRequirementMinimum": "전투 승리: {count}회 이상",
+  "dexClient.victoryRequirementRange": "전투 승리: {minimum}–{maximum}회"
 }

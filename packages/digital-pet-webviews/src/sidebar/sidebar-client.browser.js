@@ -235,6 +235,11 @@ byId("pet-switch")?.addEventListener("click", () => {
   })
 })
 const render = () => {
+  const notice = byId("evolution-notice")
+  if (notice) {
+    notice.hidden = state.phase !== "no_evolution"
+    notice.textContent = IntlModule.translate("sidebar.noEvolutionsAvailable")
+  }
   renderSwitch()
   renderEgg()
   renderPet()

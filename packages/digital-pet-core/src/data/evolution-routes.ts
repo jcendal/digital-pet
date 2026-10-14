@@ -15,11 +15,36 @@ for (const [fromId, targetId, kind, careMask, sources] of reference.routes) {
     !sources.every((source) => typeof source === "string" && source in reference.sources)
   )
     throw new Error("Invalid referenced evolution route")
+  const groups = (reference.requirements as Record<string, readonly (readonly (number | null)[])[]>)[
+    `${fromId}:${targetId}`
+  ]
+  const conditions = groups?.map(([mask, min, max]) => {
+    if (
+      mask === null ||
+      mask === undefined ||
+      !Number.isInteger(mask) ||
+      mask < 1 ||
+      mask > 15 ||
+      min === null ||
+      min === undefined ||
+      !Number.isSafeInteger(min) ||
+      min < 0 ||
+      (max !== null && (max === undefined || !Number.isSafeInteger(max) || max < min))
+    )
+      throw new Error("Invalid victory condition")
+    return Object.freeze({ careMask: mask, minVictories: min, maxVictories: max ?? null })
+  })
   EVOLUTION_ROUTES.set(
     fromId,
     Object.freeze([
       ...(EVOLUTION_ROUTES.get(fromId) ?? []),
-      Object.freeze({ targetId, kind, careMask, sources: Object.freeze([...sources]) }),
+      Object.freeze({
+        targetId,
+        kind,
+        careMask,
+        sources: Object.freeze([...sources]),
+        ...(conditions ? { requirements: Object.freeze(conditions) } : {}),
+      }),
     ]),
   )
 }

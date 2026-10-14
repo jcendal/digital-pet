@@ -65,5 +65,6 @@
   "phase.draw": "DRAW",
   "phase.feeding": "FEEDING",
   "cli.help": "Usage: opencode-digital-pet <init|update> [--dry-run]\n\nCommands:\n  init       Install the current package version through OpenCode's global plugin installer.\n  update     Reinstall the current package version through the same installer.\n\nOptions:\n  --dry-run  Show the native OpenCode command without running it.\n  --help      Show this help text.\n",
-  "cli.installed": "OpenCode plugin installation completed. Restart OpenCode.\n"
+  "cli.installed": "OpenCode plugin installation completed. Restart OpenCode.\n",
+  "phase.no_evolution": "NO EVOLUTIONS AVAILABLE"
 }

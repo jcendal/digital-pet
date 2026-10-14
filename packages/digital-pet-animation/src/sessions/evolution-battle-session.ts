@@ -26,7 +26,7 @@ export const runEvolutionBattleSession = async (
   viewportWidth: number,
   dependencies: EvolutionBattleSessionDependencies,
 ): Promise<boolean> => {
-  if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return false
+  if (snapshot.battleOpponentNodeId === null) return false
 
   const player = dependencies.digimonCatalog.byId.get(snapshot.currentNodeId)
   const opponent = dependencies.digimonCatalog.byId.get(snapshot.battleOpponentNodeId)
@@ -40,21 +40,28 @@ export const runEvolutionBattleSession = async (
   )
     return false
 
-  const outcome = await presentEvolution(
+  const battleId = dependencies.repository.getEvolutionBattleId?.()
+  await presentEvolution(
     snapshot.currentNodeId,
     snapshot.pendingEvolutionTargetId,
     snapshot.battleOpponentNodeId,
     viewportWidth,
-    dependencies,
+    {
+      ...dependencies,
+      resolveTarget: async (outcome) => {
+        const result = resolveEvolutionBattleForPartner(
+          dependencies.repository,
+          outcome === "player",
+          dependencies.digimonCatalog.byId,
+          new Date().toISOString(),
+          { ...expected, ...(battleId !== undefined ? { battleId } : {}) },
+          dependencies.random,
+        )
+        await dependencies.onResolved?.(result)
+        if (result.kind === "no_pending_battle") return undefined
+        return result.kind === "won" ? result.evolution.toNodeId : null
+      },
+    },
   )
-
-  const result = resolveEvolutionBattleForPartner(
-    dependencies.repository,
-    outcome === "player",
-    dependencies.digimonCatalog.byId,
-    new Date().toISOString(),
-    expected,
-  )
-  await dependencies.onResolved?.(result)
   return true
 }

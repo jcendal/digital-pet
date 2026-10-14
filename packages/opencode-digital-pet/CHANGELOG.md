@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Start the evolution duel at 100% even without an eligible route. Count a win before choosing the target; without a result, retain the companion and victory, show the notice and reset EXP.
+- Persist adventure and evolution-duel victories per form, prevent replayed rewards and show numeric Dex requirements only on applicable routes.
 - Prepare shared SQLite team persistence for two owned companions, preserving the existing active pet during migration and keeping token receipts on the principal. Team controls are not exposed yet.
 - Choose experience evolutions from referenced normal routes according to the current 0–3 unclean piles. Exclude Jogress and unverified routes from automatic evolution.
 

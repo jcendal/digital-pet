@@ -31,14 +31,20 @@ const command = (pet: LocalPetState, kind: "switch" | "place" = "switch"): TeamC
       : {}),
   }) as TeamCommand
 
-test("switching both ways keeps each companion's experience, care and remaining clocks", () => {
-  const placed = applyLocalTeamCommand(state, command(state, "place"), "reserve", now, false).state
+test("switching both ways keeps each companion's experience, victories, care and remaining clocks", () => {
+  const principal = { ...state, combatVictories: 11 }
+  const placed = applyLocalTeamCommand(principal, command(principal, "place"), "reserve", now, false).state
   expect(placed.partnerId).toBe("principal")
   const switched = applyLocalTeamCommand(placed, command(placed), "ignored", now, false).state
   expect(switched.partnerId).toBe("reserve")
   expect(switched.gauge).toBe(20)
+  expect(switched.combatVictories).toBe(0)
+  expect(switched.reserve?.combatVictories).toBe(11)
+  expect(parsePetTransfer({ version: 3, state: switched }).state.combatVictories).toBe(0)
+  expect(parsePetTransfer({ version: 3, state: switched }).state.reserve?.combatVictories).toBe(11)
   const returned = applyLocalTeamCommand(switched, command(switched), "ignored", now + 100_000_000, false).state
   expect(returned.gauge).toBe(10)
+  expect(returned.combatVictories).toBe(11)
   expect(returned.hygiene?.poops).toEqual(state.hygiene?.poops)
   expect(returned.hygiene?.nextAt).toBe(now + 100_000_000 + 3600000)
   expect(returned.food).toEqual({ kind: "scheduled", availableAt: now + 100_000_000 + 3600000 })
@@ -61,7 +67,7 @@ test("duplicate commands, busy state and same-identity recruits cannot change th
 
 test("team transfer v2 preserves reserve and imports legacy v1 without dropping fields", () => {
   const placed = applyLocalTeamCommand(state, command(state, "place"), "reserve", now, false).state
-  expect(parsePetTransfer({ version: 2, state: placed })).toEqual({ version: 2, state: placed })
+  expect(parsePetTransfer({ version: 2, state: placed })).toEqual({ version: 3, state: placed })
   expect(parsePetTransfer({ version: 1, state }).state).toEqual(state)
   expect(() => parsePetTransfer({ version: 1, state: placed })).toThrow()
   expect(() =>

@@ -67,7 +67,7 @@ describe("cursor-digital-pet game persistence", () => {
       applyTokenUsage(repository, "receipt-threshold", 1, { thresholds: battleThresholds })
 
       const pending = repository.getSidebarSnapshot()
-      expect(pending?.pendingEvolutionTargetId).not.toBeNull()
+      expect(pending?.pendingEvolutionTargetId).toBeNull()
       expect(pending?.battleOpponentNodeId).not.toBeNull()
     } finally {
       repository.close()

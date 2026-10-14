@@ -29,7 +29,9 @@ test("Garurumon has a referenced Jogress route to Orochimon which EXP cannot sel
         STAGE_GAUGE_THRESHOLDS,
         care,
       )
-      expect(availableEvolutionTargets(garurumon, care)).toContain(next.pendingEvolutionTargetId!)
+      const resolved = resolveEvolutionBattle(next, true, DIGIMON_CATALOG.byId, care, () => selection)
+      expect(availableEvolutionTargets(garurumon, care, 1)).toContain(resolved.current.id)
+      expect(resolved.current.id).not.toBe("5-104")
     }
   }
 })
@@ -69,7 +71,20 @@ test("token receipts receive care from the ledger rather than assuming a clean c
             },
             care,
           )
-          chosen = progression.pendingEvolutionTargetId
+          const node = DIGIMON_CATALOG.byId.get(progression.currentNodeId)!
+          chosen = resolveEvolutionBattle(
+            {
+              current: node,
+              gauge: progression.gauge,
+              isTerminal: progression.isTerminal,
+              pendingEvolutionTargetId: progression.pendingEvolutionTargetId,
+              battleOpponentNodeId: progression.battleOpponentNodeId,
+            },
+            true,
+            DIGIMON_CATALOG.byId,
+            care,
+            () => 0.8,
+          ).current.id
           return { kind: "applied" }
         },
       },
@@ -98,11 +113,10 @@ test("legacy pending routes finish without rewriting companions or their history
   expect(resolved.current.id).toBe("5-104")
 })
 
-test("a dirty companion with no eligible route retains full EXP and can evolve after cleaning", () => {
+test("a dirty companion fights without a route, retains the win and loses EXP", () => {
   const current = DIGIMON_CATALOG.byId.get("4-010")!
-  const initial = { ...state, current }
-  const waiting = applyTokenProgress(
-    initial,
+  const pending = applyTokenProgress(
+    { ...state, current },
     STAGE_GAUGE_THRESHOLDS[4],
     () => 0,
     DIGIMON_CATALOG.byId,
@@ -110,22 +124,26 @@ test("a dirty companion with no eligible route retains full EXP and can evolve a
     STAGE_GAUGE_THRESHOLDS,
     3,
   )
-  expect(waiting.isTerminal).toBe(false)
-  expect(waiting.gauge).toBe(STAGE_GAUGE_THRESHOLDS[4])
-  expect(waiting.pendingEvolutionTargetId).toBeNull()
+  expect(pending.pendingEvolutionTargetId).toBeNull()
+  expect(pending.battleOpponentNodeId).not.toBeNull()
+  const won = resolveEvolutionBattle(pending, true, DIGIMON_CATALOG.byId, 3)
+  expect(won.current.id).toBe(current.id)
+  expect(won.gauge).toBe(0)
+  expect(won.combatVictories).toBe(1)
   const cleaned = applyTokenProgress(
-    waiting,
-    0,
+    won,
+    STAGE_GAUGE_THRESHOLDS[4],
     () => 0,
     DIGIMON_CATALOG.byId,
     DIGIMON_CATALOG.nodes,
     STAGE_GAUGE_THRESHOLDS,
     2,
   )
-  expect(availableEvolutionTargets(current, 2)).toContain(cleaned.pendingEvolutionTargetId!)
+  const evolved = resolveEvolutionBattle(cleaned, true, DIGIMON_CATALOG.byId, 2, () => 0)
+  expect(availableEvolutionTargets(current, 2, 2)).toContain(evolved.current.id)
 })
 
-test("adventure loot applies the same care decision before opening an evolution battle", async () => {
+test("adventure loot opens a duel and ends the trip even with no eligible route", async () => {
   const current = DIGIMON_CATALOG.byId.get("4-010")!
   for (const count of [2, 3]) {
     let mutation: AdventureMutation | undefined
@@ -173,13 +191,9 @@ test("adventure loot applies the same care decision before opening an evolution 
       () => 0,
     )
     await service.act({ kind: "collect", adventureId: "trip", eventId: 1 }, 1000)
-    if (count === 3) {
-      expect(mutation?.progression?.pendingEvolutionTargetId).toBeNull()
-      expect(mutation?.progression?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[4])
-      expect(mutation?.adventure.status).toBe("travel")
-    } else {
-      expect(availableEvolutionTargets(current, count)).toContain(mutation?.progression?.pendingEvolutionTargetId ?? "")
-      expect(mutation?.adventure.status).toBe("evolved")
-    }
+    expect(mutation?.progression?.pendingEvolutionTargetId).toBeNull()
+    expect(mutation?.progression?.battleOpponentNodeId).not.toBeNull()
+    expect(mutation?.progression?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[4])
+    expect(mutation?.adventure.status).toBe("evolved")
   }
 })

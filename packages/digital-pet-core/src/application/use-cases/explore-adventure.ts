@@ -26,7 +26,7 @@ export const createAdventureService = (
       if (!current) return undefined
       if (command.adventureId !== undefined && command.adventureId !== adventure?.id) return undefined
       if (command.kind === "start" && now < readyAt) return undefined
-      if (partner.pendingEvolutionTargetId && adventure?.status === "travel")
+      if ((partner.pendingEvolutionTargetId || partner.battleOpponentNodeId) && adventure?.status === "travel")
         return { adventure: endAdventure(adventure, now) }
       if (blocked && command.kind !== "pause" && command.kind !== "stop")
         return adventure ? { adventure: { ...adventure, running: false, lastTickAt: now } } : undefined
@@ -64,10 +64,17 @@ export const createAdventureService = (
             },
           }
         : {}
+      const combat = change.adventure.victories > (adventure?.victories ?? 0) ? { combatVictory: true } : {}
       const cooldown = command.kind === "start" ? { readyAt: now + ADVENTURE_PACING.cooldownMs } : {}
       const fraction = change.experienceFraction
-      if (!fraction || partner.isTerminal || partner.pendingEvolutionTargetId || blocked)
-        return { adventure: change.adventure, ...cooldown, ...achievement }
+      if (
+        !fraction ||
+        partner.isTerminal ||
+        partner.pendingEvolutionTargetId ||
+        partner.battleOpponentNodeId ||
+        blocked
+      )
+        return { adventure: change.adventure, ...cooldown, ...achievement, ...combat }
       const progress = applyTokenProgress(
         {
           current,
@@ -85,10 +92,11 @@ export const createAdventureService = (
       )
       return {
         adventure:
-          progress.pendingEvolutionTargetId || progress.current.id !== current.id
+          progress.battleOpponentNodeId || progress.pendingEvolutionTargetId || progress.current.id !== current.id
             ? endAdventure(change.adventure, now)
             : change.adventure,
         ...achievement,
+        ...combat,
         progression: {
           currentNodeId: progress.current.id,
           gauge: progress.gauge,

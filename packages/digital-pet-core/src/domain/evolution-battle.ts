@@ -11,8 +11,13 @@ export const assertEvolutionBranch = (current: DigimonNode, targetId: string): v
     throw new Error(`Evolution ${current.id} -> ${targetId} is outside its branches`)
 }
 
-export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSelector, uncleanPoops = 0): string => {
-  const targets = availableEvolutionTargets(current, uncleanPoops)
+export const pickEvolutionTarget = (
+  current: DigimonNode,
+  selector: EvolutionSelector,
+  uncleanPoops = 0,
+  combatVictories = 0,
+): string => {
+  const targets = availableEvolutionTargets(current, uncleanPoops, combatVictories)
   if (targets.length === 0) {
     throw new Error(IntlModule.translate("errors.noEvolutionOptions"))
   }

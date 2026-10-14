@@ -48,5 +48,6 @@
   "contributions.configuration.properties.digital-pet.databasePath.description": "Override path to pet.db (default: shared opencode-digital-pet/pet.db)",
   "contributions.configuration.properties.digital-pet.usage.settleDelayMs.description": "Initial delay before API watermark fallback (ms)",
   "contributions.configuration.properties.digital-pet.devTools.description": "Enable development tools for previewing feed, evolution reveal, and evolution battle animations.",
-  "installHooks.invalidShape": "Invalid hooks.json shape"
+  "installHooks.invalidShape": "Invalid hooks.json shape",
+  "sidebarOrchestrator.noEvolutionsAvailable": "No evolutions available."
 }

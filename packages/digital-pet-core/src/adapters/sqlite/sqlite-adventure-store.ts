@@ -3,6 +3,7 @@ import { parseAdventure } from "../../domain/adventure.ts"
 import { limitAdventureReadyAt } from "../../domain/adventure-pacing.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "../../domain/evolution.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
+import { addCombatVictory, syncCombatProgress } from "./sqlite-combat-progress.ts"
 import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sqlite-digital-pet-schema.ts"
 import { readEvolutionHygiene } from "./sqlite-evolution-care.ts"
 import { spawnSqlitePartner } from "./sqlite-partner-lifecycle.ts"
@@ -36,7 +37,8 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
           !control ||
           control.frozen === 1 ||
           control.cheat_node_id !== null ||
-          row.pending_evolution_target_id !== null,
+          row.pending_evolution_target_id !== null ||
+          row.battle_opponent_node_id !== null,
         thresholds: STAGE_GAUGE_THRESHOLDS,
         regionId,
         hygiene: readEvolutionHygiene(executor, row.partner_id),
@@ -57,6 +59,7 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
           "INSERT INTO boss_victories (region_id, node_id, defeated_at) VALUES (?, ?, ?) ON CONFLICT(region_id, node_id) DO NOTHING",
           [next.bossVictory.regionId, next.bossVictory.nodeId, next.bossVictory.defeatedAt],
         )
+      if (next.combatVictory) addCombatVictory(executor, row.partner_id, row.current_node_id)
       if (next.replacement) spawnSqlitePartner(executor, next.replacement)
       const progress = next.progression
       if (progress) {
@@ -71,6 +74,7 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
             row.partner_id,
           ],
         )
+        syncCombatProgress(executor, row.partner_id, progress)
         executor.run(
           "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, NULL, NULL, ?)",
           [

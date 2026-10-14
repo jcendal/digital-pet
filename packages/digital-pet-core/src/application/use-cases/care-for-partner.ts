@@ -31,6 +31,7 @@ export const createPartnerHygieneService = (
           !current?.stage ||
           frozen ||
           isSetOverride ||
+          partner.battleOpponentNodeId !== null ||
           partner.pendingEvolutionTargetId !== null
         )
           return undefined

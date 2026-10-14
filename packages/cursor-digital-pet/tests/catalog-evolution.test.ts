@@ -92,13 +92,14 @@ describe("catalog and evolution", () => {
       STAGE_GAUGE_THRESHOLDS,
     )
 
-    expect(pending.pendingEvolutionTargetId).not.toBeNull()
+    expect(pending.pendingEvolutionTargetId).toBeNull()
     expect(resolveEvolutionBattle(pending, false, DIGIMON_CATALOG.byId)).toEqual({
       current: andromon,
       gauge: 0,
       isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
+      combatVictories: 0,
     })
   })
 })

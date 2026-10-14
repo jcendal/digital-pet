@@ -228,5 +228,9 @@
   "world.difficulty.hard": "Hard",
   "worldRender.nextRegion": "Next →",
   "eggs.regionalName": "Egg of {region}",
-  "eggs.regionalHint": "Defeat a boss in {region}."
+  "eggs.regionalHint": "Defeat a boss in {region}.",
+  "phase.no_evolution": "NO EVOLUTIONS AVAILABLE",
+  "sidebar.noEvolutionsAvailable": "No evolutions available.",
+  "dexClient.victoryRequirementMinimum": "Combat victories: {count}+",
+  "dexClient.victoryRequirementRange": "Combat victories: {minimum}–{maximum}"
 }

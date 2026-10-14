@@ -47,18 +47,30 @@ def care_mask(condition):
     return sum(1 << count for count in range(low, high + 1)), True
 
 
+def victory_range(condition):
+    result = re.search(r"(\d+)(?:\s*-\s*(\d+)|(\+))?\s+Victories", condition, re.I)
+    if result:
+        # The game has one cumulative form counter, not a device's fixed battle
+        # window or win ratio. Keep the required minimum; retain an explicit
+        # zero-based upper bracket only when it separates a later unlock.
+        low = int(result[1])
+        return low, int(result[2]) if low == 0 and result[2] else None
+    result = re.search(r"Win\s+(\d+)\s+(?:Cumulative\s+)?Battles", condition, re.I)
+    return (int(result[1]), None) if result else (0, None)
+
+
 facts = {}
 sources = {}
 
 
-def add(source, target, kind, mask, explicit_care, guide, stage=None):
+def add(source, target, kind, mask, explicit_care, guide, stage=None, victories=(0, None)):
     source = match(source, stage)
     target = match(target, by_id[source]["stage"] + 1 if source else None)
     if not source or not target or source == target:
         return
     if kind == "normal" and by_id[target]["stage"] <= by_id[source]["stage"]:
         kind = "special"
-    facts.setdefault((source, target), []).append((kind, mask, explicit_care, guide))
+    facts.setdefault((source, target), []).append((kind, mask, explicit_care, guide, *victories))
 
 
 for file in sorted(args.html_dir.glob("digital-pet-humulos-*.html")):
@@ -84,9 +96,9 @@ for file in sorted(args.html_dir.glob("digital-pet-humulos-*.html")):
             alternatives = re.split(r"\s*•\s*", condition.get_text(" ", strip=True))
             for alternative in filter(None, alternatives):
                 alternative = re.sub(r"Library slots?\s+[\d/]+\s+not unlocked,?\s*", "", alternative, flags=re.I)
-                kind = "jogress" if "Jogress" in alternative else "special" if re.search(r"Slot\s*\d|unlocked|cleared|50\+ Victories|100\+ Victories|Defeat", alternative, re.I) else "normal"
+                kind = "jogress" if "Jogress" in alternative else "special" if re.search(r"Slot\s*\d|unlocked|cleared|Defeat", alternative, re.I) else "normal"
                 mask, explicit = care_mask(alternative)
-                add(name.get_text(strip=True), target.get_text(strip=True), kind, mask, explicit, guide, stage)
+                add(name.get_text(strip=True), target.get_text(strip=True), kind, mask, explicit, guide, stage, victory_range(alternative))
     names, edges = {}, []
     for profile in soup.select(".profile"):
         image = profile.find("img", title=True)
@@ -111,17 +123,31 @@ for file in sorted(args.html_dir.glob("digital-pet-humulos-*.html")):
             add(names[source], names[target], kind, 15, False, guide)
 
 routes = []
+requirements = {}
 for (source, target), evidence in sorted(facts.items()):
     normal = [row for row in evidence if row[0] == "normal"]
     if normal:
+        precise = {row[3] for row in normal if row[2] or row[4] > 0 or row[5] is not None}
+        normal = [row for row in normal if row[3] not in precise or row[2] or row[4] > 0 or row[5] is not None]
         care = [row for row in normal if row[2]] or normal
         mask = 0
         for row in care:
             mask |= row[1]
         kind = "normal"
+        groups = sorted({(row[1], row[4], row[5]) for row in care}, key=lambda row: (row[0], row[1], row[2] if row[2] is not None else 1000001))
+        unrestricted = 0
+        for group_mask, low, high in groups:
+            if low == 0 and high is None:
+                unrestricted |= group_mask
+        groups = ([ (unrestricted, 0, None) ] if unrestricted else []) + [
+            (group_mask & ~unrestricted, low, high) for group_mask, low, high in groups
+            if (low > 0 or high is not None) and group_mask & ~unrestricted
+        ]
+        if any(low > 0 or high is not None for _, low, high in groups) and (15, 0, None) not in groups:
+            requirements[f"{source}:{target}"] = groups
     else:
         mask = 0
         kind = "jogress" if any(row[0] == "jogress" for row in evidence) else "special"
     routes.append([source, target, kind, mask, sorted({row[3] for row in evidence})])
-args.output.write_text(json.dumps({"reviewedAt": "2026-10-14", "sources": sources, "routes": routes}, indent=2) + "\n")
+args.output.write_text(json.dumps({"reviewedAt": "2026-10-14", "sources": sources, "routes": routes, "requirements": requirements}, indent=2) + "\n")
 print(f"Generated {len(routes)} referenced routes ({sum(row[2] == 'normal' for row in routes)} normal)")

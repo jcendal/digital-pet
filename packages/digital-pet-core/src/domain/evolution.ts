@@ -23,6 +23,7 @@ export type PartnerEvolutionState = {
   readonly isTerminal: boolean
   readonly pendingEvolutionTargetId: string | null
   readonly battleOpponentNodeId: string | null
+  readonly combatVictories?: number
 }
 
 export type EvolutionSelector = () => number
@@ -40,8 +41,7 @@ const isStageThresholds = (thresholds: unknown): thresholds is StageThresholds =
   })
 }
 
-const hasPendingBattle = (state: PartnerEvolutionState): boolean =>
-  state.pendingEvolutionTargetId != null && state.battleOpponentNodeId != null
+const hasPendingBattle = (state: PartnerEvolutionState): boolean => state.battleOpponentNodeId != null
 
 export const applyTokenProgress = (
   state: PartnerEvolutionState,
@@ -65,15 +65,10 @@ export const applyTokenProgress = (
     return { ...state, gauge: 0, isTerminal: true, pendingEvolutionTargetId: null, battleOpponentNodeId: null }
   }
 
-  if (availableEvolutionTargets(state.current, uncleanPoops).length === 0) return { ...state, gauge: threshold }
-
-  const pendingEvolutionTargetId = pickEvolutionTarget(state.current, selector, uncleanPoops)
-  const target = digimonById.get(pendingEvolutionTargetId)
-  if (target === undefined) {
-    throw new Error(`Evolution target ${pendingEvolutionTargetId} is missing from the catalog`)
-  }
-
   if (state.current.stage === 0) {
+    const targetId = pickEvolutionTarget(state.current, selector, uncleanPoops)
+    const target = digimonById.get(targetId)
+    if (!target) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
     return {
       current: target,
       gauge: 0,
@@ -92,7 +87,7 @@ export const applyTokenProgress = (
     current: state.current,
     gauge: threshold,
     isTerminal: false,
-    pendingEvolutionTargetId,
+    pendingEvolutionTargetId: null,
     battleOpponentNodeId,
   }
 }
@@ -101,16 +96,16 @@ export const resolveEvolutionBattle = (
   state: PartnerEvolutionState,
   won: boolean,
   digimonById: ReadonlyMap<string, DigimonNode>,
+  uncleanPoops = 0,
+  selector: EvolutionSelector = Math.random,
 ): PartnerEvolutionState => {
   const targetId = state.pendingEvolutionTargetId
   const opponentId = state.battleOpponentNodeId
-  if (targetId === null || opponentId === null) {
+  if (opponentId === null) {
     throw new Error(IntlModule.translate("errors.noPendingBattle"))
   }
 
-  assertEvolutionBranch(state.current, targetId)
-  const current = digimonById.get(targetId)
-  if (current === undefined) throw new Error(`Evolution target ${targetId} is missing from the catalog`)
+  if (targetId !== null) assertEvolutionBranch(state.current, targetId)
   const opponent = digimonById.get(opponentId)
   if (!opponent || opponent.stage !== state.current.stage)
     throw new Error(IntlModule.translate("errors.invalidEvolutionOpponent"))
@@ -122,14 +117,22 @@ export const resolveEvolutionBattle = (
       isTerminal: state.isTerminal,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
+      combatVictories: state.combatVictories ?? 0,
     }
   }
 
+  const victories = Math.min(1_000_000, (state.combatVictories ?? 0) + 1)
+  const eligible = availableEvolutionTargets(state.current, uncleanPoops, victories)
+  const selected =
+    targetId ?? (eligible.length ? pickEvolutionTarget(state.current, selector, uncleanPoops, victories) : undefined)
+  const current = selected ? digimonById.get(selected) : state.current
+  if (!current) throw new Error(`Evolution target ${selected} is missing from the catalog`)
   return {
     current,
     gauge: 0,
     isTerminal: current.nextEvolutions.length === 0,
     pendingEvolutionTargetId: null,
     battleOpponentNodeId: null,
+    combatVictories: current.id === state.current.id ? victories : 0,
   }
 }

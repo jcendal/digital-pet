@@ -145,3 +145,16 @@ Latest actual Chromium captures verify the smaller principal egg and previews:
 The [unlocked Metal Empire egg](../../../assets/design/evolution-gameplay/regional-eggs/regional-machine-egg-390.png)
 capture follows an isolated test-save boss victory and verifies regional creation
 and origin persistence after reload.
+
+
+## Threshold evolution duels — 2026-10-15
+
+These are actual Safari screenshots from isolated browser saves at 390 px, not
+proposed mockups. Chromium verifies the same flow. The no-evolution result retains
+the existing companion, reports the unavailable routes and displays the reset
+EXP gauge. The Dex shows the numeric requirement on Meicoomon → Meicrackmon;
+its twelfth victorious duel unlocks that route in the same transaction.
+
+[Win without an eligible evolution](../../../assets/design/evolution-gameplay/evolution-duels/no-evolution-390.png)
+
+[Numeric combat requirement in the Dex](../../../assets/design/evolution-gameplay/evolution-duels/victory-requirement-dex-390.png)

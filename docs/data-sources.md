@@ -62,8 +62,8 @@ documented as a special frame; it is not automatically the projectile.
   attributes do not become invented Vaccine/Data/Virus assignments.
 - Keep original source requirements separate from game adaptations: current
   unclean piles represent care, adventures represent effort, and save-wide boss
-  achievements represent applicable unlocks. Retain private combat thresholds
-  internally, following the gameplay plan.
+  achievements represent applicable unlocks. Display numeric combat-victory requirements in the Dex only where applicable,
+  following the revised gameplay plan.
 - Generate shared metadata and rule data under `digital-pet-core`; regional
   placements belong in `digital-pet-fields`. Import projectile and animation
   resources into their owner in `digital-pet-animation`, with manifest entries

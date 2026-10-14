@@ -21,6 +21,7 @@ export type AdventureMutation = {
   readonly replacement?: SpawnPartnerInput
   readonly progression?: PartnerProgression
   readonly rewardId?: string
+  readonly combatVictory?: boolean
 }
 export type AdventureStore = {
   nextReadyAt(): Promise<number> | number

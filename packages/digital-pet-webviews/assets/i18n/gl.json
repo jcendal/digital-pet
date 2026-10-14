@@ -228,5 +228,9 @@
   "world.difficulty.hard": "Difícil",
   "worldRender.nextRegion": "Seguinte →",
   "eggs.regionalName": "Ovo de {region}",
-  "eggs.regionalHint": "Vence un xefe en {region}."
+  "eggs.regionalHint": "Vence un xefe en {region}.",
+  "phase.no_evolution": "SEN EVOLUCIÓNS",
+  "sidebar.noEvolutionsAvailable": "Non hai evolucións dispoñibles.",
+  "dexClient.victoryRequirementMinimum": "Vitorias de combate: {count}+",
+  "dexClient.victoryRequirementRange": "Vitorias de combate: {minimum}–{maximum}"
 }

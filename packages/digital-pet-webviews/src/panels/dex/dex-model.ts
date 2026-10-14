@@ -22,6 +22,14 @@ export type DexEntry = {
   readonly nextIds: readonly string[]
   readonly specialNextIds?: readonly string[]
   readonly evolutionCare?: readonly { readonly targetId: string; readonly uncleanPoops: readonly number[] }[]
+  readonly evolutionRequirements?: readonly {
+    readonly targetId: string
+    readonly alternatives: readonly {
+      readonly uncleanPoops: readonly number[]
+      readonly minVictories: number
+      readonly maxVictories: number | null
+    }[]
+  }[]
   readonly firstSeen: string | null
   readonly generations: number
   readonly url: string
@@ -127,6 +135,19 @@ export const buildDexPanelModel = (
               })) ?? [])
           : [],
         firstSeen: seen?.firstSeen ?? null,
+        evolutionRequirements: row.discovered
+          ? (node.evolutionRoutes
+              ?.filter((route) => route.kind === "normal" && route.requirements)
+              .map((route) => ({
+                targetId: route.targetId,
+                alternatives:
+                  route.requirements?.map((rule) => ({
+                    uncleanPoops: [0, 1, 2, 3].filter((count) => (rule.careMask & (1 << count)) !== 0),
+                    minVictories: rule.minVictories,
+                    maxVictories: rule.maxVictories,
+                  })) ?? [],
+              })) ?? [])
+          : [],
         generations: seen?.partners.size ?? 0,
         url: row.discovered ? node.url : "",
         combatStats: row.discovered ? node.combatStats : null,

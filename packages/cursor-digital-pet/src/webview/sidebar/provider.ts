@@ -150,7 +150,11 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
     const snapshot = this.snapshotReader.getSidebarSnapshot()
     const node = snapshot && DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)
     const available = Boolean(
-      node?.stage && !snapshot?.frozen && !snapshot?.isSetOverride && !snapshot?.pendingEvolutionTargetId,
+      node?.stage &&
+        !snapshot?.frozen &&
+        !snapshot?.isSetOverride &&
+        !snapshot?.pendingEvolutionTargetId &&
+        !snapshot?.battleOpponentNodeId,
     )
     await this.view.webview.postMessage({
       type: "adventure-state",
@@ -193,6 +197,7 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
               !snapshot.isSetOverride &&
               !snapshot.isTerminal &&
               !snapshot.pendingEvolutionTargetId &&
+              !snapshot.battleOpponentNodeId &&
               !this.isPresentationInProgress(),
           }
         : undefined
@@ -205,7 +210,8 @@ export class DigitalPetSidebarProvider implements vscode.WebviewViewProvider {
             !this.isPresentationInProgress() &&
             !this.adventureBusy() &&
             !snapshot?.frozen &&
-            !snapshot?.pendingEvolutionTargetId,
+            !snapshot?.pendingEvolutionTargetId &&
+            !snapshot?.battleOpponentNodeId,
         }
       : undefined
     await this.orchestrator.refresh()

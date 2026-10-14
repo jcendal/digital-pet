@@ -135,7 +135,7 @@ export const createTui =
       }
       const snapshot = scheduling.getSnapshot()
       if (snapshot === null) return false
-      if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return false
+      if (snapshot.battleOpponentNodeId === null) return false
 
       battleInProgress = true
       try {

@@ -1,8 +1,43 @@
 # Evolution, companions and discovery implementation plan
 
 Status: partially implemented; implementation reviewed against the code on
-2026-10-14. The progress and remaining-work sections distinguish shipped code
+2026-10-15. The progress and remaining-work sections distinguish shipped code
 from design-only proposals. The evolution audit is included in this delivery.
+
+## Scope clarification — 2026-10-14
+
+At 100% EXP, start the evolution duel even when no evolution is currently
+eligible. After a win, count that victory before evaluating the available
+experience routes: the duel itself may unlock one. If a route is eligible,
+evolve; otherwise keep the species, show `No evolutions available`, reset EXP
+to zero and retain the victory. A loss keeps the existing behavior: no evolution,
+EXP reset and no added win. Making the duel cosmetic was an agent interpretation
+and is not part of the plan. Existing Digitama hatching keeps its direct hatch path.
+
+Keep gameplay inputs limited to EXP as the trigger, 0–3 current unclean piles,
+origin egg, specific permanent boss/exploration unlocks, combat
+victories, and the reserve partner for manual fusion. Import original conditions
+as evidence and adapt supported routes to these inputs; this does not require
+recreating every device's mechanics. Attribute checks, if a reviewed Jogress
+rule needs them, are part of pair matching, not a new player-managed stat.
+
+The agreed simplified progression uses one victory counter
+per current form, spanning trips and preserved while in reserve. Do not add a
+separate effort score, training activity, timer requirement or win ratio in this
+slice. A new form starts a new counter. Authoritative adventure and evolution-duel
+wins count, including a successful duel that finds no eligible evolution. The
+Dex displays the numeric victory requirement only on routes that have one, just
+as it displays relevant care counts. This replaces the earlier requirement to
+hide victory thresholds. A separate HUD/training panel is not requested.
+Whether player-versus-player wins also count is awaiting clarification; the
+current planning assumption is adventure plus evolution-duel wins.
+
+The expanded Team, recruitment selection, regional egg collection and manual
+fusion experience belongs to the web game. Cursor and OpenCode remain companion
+experiences with token-driven growth and care. Preserve shared-save compatibility
+and the active companion without requiring full web-game UI or native Team,
+egg-carousel, recruitment-management or fusion commands. Existing native features
+remain available; feature parity is not the target.
 
 ## Implementation progress
 
@@ -10,8 +45,8 @@ The team foundation and browser interface are implemented in the working tree.
 SQLite migration 9 provides principal/reserve membership, revision checks,
 independent care clocks, atomic replacement and active-only token attribution.
 Browser saves now preserve two live companions, resting clocks, paused adventure
-state and stable History generation numbering. Transfer v2 includes the reserve;
-v1 backups remain readable, and unsupported live peers reject the request.
+state and stable History generation numbering. Transfer v3 includes the reserve, per-form combat victories and targetless duels;
+v1/v2 backups remain readable, and unsupported live peers reject the request.
 
 The web Dex now has Dex, Team and History tabs. The existing companion view
 adds one small circular switch control below the companion name. New Journey opens an egg
@@ -43,53 +78,59 @@ for creation/cancellation, switches, stale commands, locked origins, active
 adventure rejection, offline navigation, translations, legacy stars and boss
 tiers. The end-of-turn report records the final results.
 
-Still pending: native team/egg controls and origin persistence, recruitment slot
-selection, complete device condition imports, immediate normal-evolution fallback
-coverage, private per-form adventure progression, and manual Jogress eligibility,
-transactions, lineage and animations. This interface work does not unlock all
-special routes or remove the existing full-gauge waiting policy. No achievements
+Threshold duels now start without a preselected target. Their result is committed
+before presentation: a win increments the per-form counter, then evaluates care
+and numeric victory requirements. With no eligible route, the companion retains
+the win and gets the no-evolution notice with EXP reset to zero. Existing pending
+targets remain fixed. SQLite migration 10 persists per-form victories and unique
+duel identities; browser transactions bind results to the pending companion/form
+and timestamp. Adventure wins count once, reserve switches retain each counter,
+and a new form starts at zero. The Dex shows numeric thresholds only on applicable
+routes, including 44 source-backed route requirement groups.
+
+Still pending: web recruitment slot selection, origin/objective-specific later
+routes, and manual Jogress eligibility, transactions, lineage and animations.
+This delivery does not unlock all special routes. No achievements
 screen or alternative main companion layout has been introduced.
 
-## Remaining-work review — 2026-10-14
+## Remaining-work review — 2026-10-15
 
 This review checks the actual domain, persistence and presentation sources;
 the existence of a prototype or imported route does not mark its gameplay done.
 
 | Workstream | Verified implementation | Remaining work |
 | --- | --- | --- |
-| Route rules and Dex | Normal/Jogress/special classification, source URLs, 0–3 current unclean-pile masks, public care requirements and hidden unrestricted care labels. | Full AND/OR device conditions, distinct rules per device/trigger, attributes, origin/achievement/pair/private-adventure predicates and parser fixtures. The importer currently collapses evidence into one kind/mask per connection. |
-| Automatic evolution | Shared care selection across token, time, food, cleaning and adventure rewards; pending targets remain fixed. | Remove full-gauge waiting; review normal fallback coverage for all four care values; make normal evolution guaranteed even when its duel is lost; make special-only species mature for normal EXP; migrate old waiting/pending saves. |
-| Principal and reserve | SQLite migration 9 and transactional team commands; browser Team UI, quick switch, independent rest/care/food/adventure state, active-only token attribution and transfer v2 with v1 compatibility. | Native Cursor/OpenCode commands and team presentation, browser computer-save writes, and per-slot EXP display if retaining that part of Workstream 2. Native reads follow the principal pointer, but do not yet expose team actions. |
+| Route rules and Dex | Normal/Jogress/special classification, source URLs, 0–3 current unclean-pile masks, combined care/victory alternatives and numeric Dex requirements; unrestricted care labels omitted. | Review origin, permanent objective and fusion pair predicates and retain distinct rules per trigger. Do not build a device emulator or new player-managed stats. |
+| Automatic evolution | Targetless threshold duels, atomic post-win care/victory selection, no-evolution notice and EXP reset, replay protection and compatibility with fixed legacy pending targets. | No outstanding work for the agreed threshold-duel behavior. |
+| Principal and reserve | SQLite migration 9 and transactional team commands; browser Team UI, quick switch, independent rest/care/food/adventure state, active-only token attribution and transfer v3 with v1/v2 compatibility. | Complete the web slot workflows and preserve compatibility with simplified native companions. Full native Team controls are outside the revised scope. |
 | Recruitment | Existing encounter offer and decline/accept behavior; accepting preserves the browser reserve. | Choose principal/reserve or an empty reserve through a revisioned slot command. Accepting still replaces the principal through `replacement` / `replaceLocalPartner`; the accepted recruitment screen is a design only. |
 | Manual Jogress | Referenced Jogress connections are excluded from normal EXP and shown locked in the Dex. | Pair eligibility, manual fusion use case, confirmation UI, transaction/race protection, reserve consumption, both-parent lineage/history/export and two-parent animation. The fusion screen is a design only. |
-| Hidden victories and training | Per-trip victory totals are omitted from shared presentation. | Persistent private counters spanning adventures within a form; active exploration effort; deduplicated outcome receipts; reset on committed evolution/recruitment/fusion; reviewed source adaptations and seeded balance. Per-trip `AdventureState.victories` alone does not implement this. |
+| Combat victories and training | Per-form adventure/evolution wins persist across trips, restarts and reserve switches, reset on form changes and cannot be counted twice. Numeric route requirements are shown in the Dex. | PvP wins currently do not count. No independent effort/training score or ratios. |
 | Boss/exploration achievements | Save-wide boss victories, regional stars, legacy boss aliases and regional egg unlocks. | Map reviewed objectives to specific evolution rules, exploration-clear objectives, stable reward/achievement IDs, grant-once receipts and unlock feedback. Boss victories currently unlock eggs, not the blocked special evolution routes. |
-| Origin eggs | Ten distinct animated eggs for ten regions; village available initially, nine regional boss unlocks; carousel/slot preview, origin-specific first forms and browser persistence/transfer. | Origin-specific later evolution predicates (including reviewed device variants), native origin storage/creation and discovery feedback. Hatch/design assignments are authored and documented, not inferred official source mappings. |
+| Origin eggs | Ten distinct animated eggs for ten regions; village available initially, nine regional boss unlocks; carousel/slot preview, origin-specific first forms and browser persistence/transfer. | Origin-specific later evolution predicates and discovery feedback in the web game; preserve origin metadata where save compatibility requires it. Full native egg creation/collection is outside the revised scope. |
 | Difficulty | Easy/Medium/Hard gallery order, stages 5/6, 6/6 and 7/7, distinct bosses, compatible old stars and pending fights. | No outstanding gameplay work for the agreed difficulty scope. No extra enemy/reward multipliers or difficulty selector are planned. |
 
-The urgent mismatch is the threshold policy in
-`digital-pet-core/src/domain/evolution.ts`: no eligible normal route returns
-`gauge: threshold`, and `resolveEvolutionBattle(..., false, ...)` retains the
-old species. `tests/evolution-care.test.ts` explicitly exercises the waiting
-behavior. The browser delegates to those same rules.
+The previous full-gauge waiting policy is replaced by threshold combat. A win can
+legitimately finish without evolving; that result retains the win and resets EXP.
+Legacy pending targets are preserved, while new targetless saves and transfers
+are accepted. Losing still clears EXP without adding a victory.
 
-A direct catalog review found **46 of 453 non-egg species with normal routes**
+A care-only review on 2026-10-14, before the victory predicates were applied,
+found **46 of 453 non-egg species with normal routes**
 missing an eligible normal result for at least one care value: 3 at care 0,
 3 at care 1, 9 at care 2 and 43 at care 3; these groups overlap. Another **92**
-non-egg species have outgoing connections but no usable normal route. They need
-reviewed special-only maturity or confirmed ordinary content, not invented
-fallback evolutions. These counts describe the current catalog, not source-wide
-Digimon coverage.
+non-egg species have outgoing connections but no usable normal route. These
+counts are a content review inventory, not a requirement to invent fallback
+evolutions or to force a result after every victory. A successful threshold duel
+may legitimately finish without evolving. These historical counts describe the
+care-only catalog snapshot, not current victory eligibility or source-wide coverage.
 
 Recommended next sequence:
 
-1. Complete route condition extraction and the fallback coverage review, then
-   guarantee automatic normal evolution at the threshold. Keep existing care
-   semantics and explicit adaptations in the Dex.
-2. Finish native team/origin commands and revisioned recruitment slot selection.
-3. Add private per-form adventure progress and permanent objective-to-route
+1. Finish web recruitment slot selection with revisioned team commands.
+2. Add permanent objective-to-route
    unlocks, using the existing boss achievements as evidence.
-4. Implement manual Jogress end to end once pair/attribute/origin rules are
+3. Implement manual Jogress end to end once pair/attribute/origin rules are
    verified, including lineage, transfers, confirmation and animation.
 
 The rejected Eggs tab and achievements screen are not pending deliverables.
@@ -101,12 +142,12 @@ Recruitment prototypes still require production implementation.
 
 | Area | Agreed behavior |
 | --- | --- |
-| Normal evolution | At the experience threshold, evolve automatically to an eligible result. Never hold experience at 100% while waiting for requirements. |
+| Normal evolution | At 100%, fight even without an eligible evolution. A win counts before route evaluation. With no result, show the notice, keep the species and victory, and reset EXP; preserve loss behavior. |
 | Route information | Read requirements in the Dex. No target selection or reservation. |
 | Care | Count the 0–3 unclean piles when selecting the evolution, not accumulated mistakes throughout the stage. |
 | Team | One principal companion and one reserve; either can originate from an egg or recruitment. |
 | Jogress | Manual action when the pair meets its requirements, as explicitly selected by the user. |
-| Victories | Evaluate internally. Do not display totals, ratios, thresholds or progress toward them. |
+| Victories | Accumulate adventure and evolution-duel wins within the current form. Show numeric victory requirements in the Dex only where relevant. PvP inclusion remains to be clarified. |
 | Training | Adventure provides training. Do not introduce a separate training activity. |
 | Bosses | Achievements belong to the save and permanently unlock associated routes. |
 | Eggs | One family available initially; discover additional origin families in regions. |
@@ -115,6 +156,7 @@ Recruitment prototypes still require production implementation.
 | New companion | Open an egg carousel when creating a new companion through the existing new-journey action; ordinary adventure exploration does not choose an egg. |
 | Achievement UI | Keep achievements internal for now. Existing regional stars show boss victories; no standalone achievement screen. |
 | Regional difficulty | Easy to hard ordering; for now difficulty changes only the two boss tiers. |
+| Native hosts | Cursor/OpenCode remain token-driven companion experiences; preserve compatible data without full web-game feature parity. |
 
 The user confirmed that `Supremo I` refers to the catalog's existing `Supremo`
 stage, not a new stage. Therefore Easy uses stages 5 and 6, Medium uses 6 and 6,
@@ -195,12 +237,12 @@ versioned route-rule model with:
   complete alternative. Keep conditions together; never combine one device's
   care range with another device's unrelated victory requirement.
 - Care masks; egg family IDs; achievement IDs; verified partner species or
-  stage/attribute predicates; and private adventure predicates.
+  stage/attribute predicates; and combat victory predicates.
 - Explicit source requirements and their gameplay adaptation. Separate
   unsupported/unverified rules from implemented conditions.
-- A safe presentation projection containing public requirements only. Private
-  thresholds never enter render models, DOM attributes, accessibility labels,
-  translated text or messages sent to a view.
+- A safe presentation projection of applicable route requirements, including
+  numeric care and victory requirements. Internal deduplication/provenance data
+  and unused requirements do not belong in the presentation.
 
 Preserve multiple rules for the same source and target. A target can be reachable
 normally in one device and through Jogress in another; one `kind` per edge loses
@@ -221,58 +263,65 @@ egg unlocks and world discoveries. Partner progress holds current-form counters,
 care, food, origin and evolution history. Reserve is a live owned partner, not a
 retired partner.
 
-## Workstream 1: automatic evolution and readable requirements
+## Workstream 1: threshold combat and readable requirements
 
 ### Gameplay
 
-At the threshold, evaluate care after advancing hygiene to the authoritative
-timestamp. Include private adventure history, origin and save achievements.
-Choose immediately among complete, eligible experience rules. Prefer explicitly
-ordered advanced rules over the ordinary fallback; use the existing seeded
-selection only for equally ranked results. The user does not choose a target.
-Jogress is excluded from this selection even when the reserve is compatible.
+For a companion using the evolution-duel flow, reaching 100% starts a combat
+regardless of the current number of eligible evolutions. The pending combat may
+have an opponent without a selected evolution target; do not encode a fake
+self-evolution or unrelated target just to satisfy old validation.
 
-Remove the current `gauge: threshold` return when there are no eligible routes.
-Every species that exposes normal evolution progress needs a reviewed ordinary
-fallback for each care value. Fallback targets must already be confirmed normal
-connections; any relaxed conditions are explicit game adaptations reflected in
-the Dex, never a silent bypass. Validate all four care values at catalog build
-time. This coverage is a release prerequisite, not a runtime waiting state.
+Resolve a win in this order, in one authoritative transaction:
 
-Species with only manual/special routes are mature for normal progression and
-show their available special actions instead of a permanently full experience
-bar. Species with no verified next route likewise have no normal progress meter.
-Missing evidence is a content task; never invent a transition to cover it.
+1. Add the victory to the companion's current-form counter exactly once.
+2. Advance hygiene and evaluate the current unclean piles, updated victories,
+   origin and permanent unlocks against reviewed experience rules.
+3. If a result is eligible, choose automatically and evolve. Reset EXP and the
+   new form's victory counter while preserving origin and save-wide unlocks.
+4. If no result is eligible, retain the species and updated victory counter,
+   reset EXP to zero and display `No evolutions available`.
 
-The existing evolution battle can currently cancel a transformation on loss.
-To satisfy the requested guaranteed threshold behavior, normal target selection
-must commit the evolution; any retained evolution duel becomes presentation and
-cannot veto it. Adventure battles keep their existing combat rules. Do not count
-a cosmetic evolution duel toward private victory requirements.
+The victory that completes a requirement can therefore unlock and trigger a
+route in the same resolution. Losing keeps the species, resets EXP and adds no
+victory. A no-evolution win does not retire the companion or reset its prior wins.
+Keep existing Digitama hatching separate from this combat flow.
+
+Missing care coverage is an audit fact, not a mandate to invent a fallback or
+force every victory to evolve. A route may legitimately remain unavailable.
+Jogress stays manual and is excluded from automatic experience selection.
 
 ### Implementation
 
 - Extend `domain/evolution-options.ts`, `domain/evolution.ts` and
-  `domain/evolution-battle.ts`; introduce a pure rule evaluator and coverage check.
+  `domain/evolution-battle.ts`; introduce a pure rule evaluator with combat
+  victories and explicit duel outcomes, including a win without evolution.
 - Reuse the evaluator in `application/use-cases/record-usage.ts`,
-  `care-for-partner.ts` and `explore-adventure.ts`. Evaluate once and persist the
-  chosen transition atomically; animation is a projection of that transition.
+  `care-for-partner.ts`, `explore-adventure.ts` and battle resolution. Threshold
+  inputs open the duel; winning resolution increments the counter and chooses
+  the target atomically. Animation projects the committed outcome.
 - Replace browser-only eligibility decisions in
   `web-digital-pet/src/domain/pet/progress.ts` with the same core rule inputs.
 - Extend `digital-pet-webviews/src/panels/dex/dex-model.ts` and
-  `dex-client.browser.js`. Requirements show `0–2 unclean piles`, an origin,
-  achievement or compatible partner when relevant; no hidden combat counts.
+  `dex-client.browser.js`. Requirements show care, origin, achievement,
+  compatible partner or numeric victory requirements only when relevant.
+- Update SQLite/IndexedDB pending-state handling, transfer validation and battle
+  presentation to accept a pending duel without an evolution target. Persist a
+  battle receipt bound to partner ID and form revision so replay/reload cannot
+  add a second victory, reroll a route or apply it to another companion.
 - Migrate old full-gauge states on the next authoritative tick. Existing pending
   evolution targets finish through a versioned legacy path, with no second target
   choice or duplicate reward.
 
 ### Acceptance
 
-Threshold crossing initiates one guaranteed normal evolution. Failure to satisfy
-an advanced route selects the reviewed fallback. Care is sampled once, at that
-crossing. Reload, offline catch-up, cleaning and repeated token receipts cannot
-select twice. Dex requirements match the implemented adaptations. No special or
-unverified route enters normal selection.
+Threshold crossing initiates one duel even when no route is eligible. The win
+that completes a victory requirement evolves in that same resolution. A win
+without an eligible result gives the notice and resets EXP, retaining the win;
+a loss resets EXP without adding a win. Care is sampled at authoritative target
+selection. Reload, offline catch-up and replay cannot count or select twice.
+Numeric Dex requirements match the implemented rules; manual/unverified routes
+never enter automatic experience selection.
 
 ## Workstream 2: principal, reserve and recruitment
 
@@ -326,9 +375,9 @@ pixelated. Keep the circle visually small without shrinking its touch target.
 - Replace the recruitment `SpawnPartnerInput` result in `explore-adventure.ts`
   with an explicit slot operation; update `sqlite-adventure-store.ts` and the
   browser adventure adapter to commit that operation exactly once.
-- Compose team services in Cursor `bootstrap/container.ts` and OpenCode's
-  composition layer. Extend the shared sidebar provider/protocol and native TUI
-  commands. Update both SQLite snapshot adapters, not just the web save.
+- Keep Cursor/OpenCode active-pointer reads and shared-save compatibility intact.
+  Full native Team presentation and commands are outside the revised scope;
+  implement the expanded management flows in the web game.
 - Extend the existing Dex panel navigation to include Team as the second tab. Keep
   History's deep link compatible and use one active tab state rather than nested
   tab bars. At 320px, fit all three short labels with consistent 44px targets;
@@ -377,8 +426,8 @@ adaptations, not claims about the Vital Bracelet's original behavior. See the
 - Reuse evolution presentation in `digital-pet-animation`; add a two-parent
   composition and result reveal. Respect reduced motion and narrow layouts.
 - Add a shared panel in `digital-pet-webviews/src/panels/` with a renderer,
-  `.css` and `.browser.js`. Cursor, browser and OpenCode use identical rules;
-  OpenCode receives native TUI management rather than copied HTML behavior.
+  `.css` and `.browser.js`, composed into the web game. Shared domain rules remain
+  host-independent; native fusion management is outside the revised scope.
 - A normal threshold transition and fusion command compete on team revision.
   Whichever commits first invalidates the other's old preview. Never fuse a pet
   whose stage changed after the confirmation opened.
@@ -390,45 +439,46 @@ stage, origin or achievement prevents fusion. Double clicks, reconnects and
 replays produce one result. A completed fusion survives reload/export and
 History can identify both parents.
 
-## Workstream 4: hidden victories and adventure training
+## Workstream 4: combat victories and adventure training
 
 ### Gameplay
 
-Adventures provide the training input: active exploration and completed encounters
-contribute private effort; victorious encounters contribute private victories.
-Paused time, unattended wall-clock jumps and repeated battle presentation provide
-no effort. A defeat records its outcome without discarding existing effort.
-Counters span multiple trips within the same form and reset on committed
-evolution, recruitment or fusion. Switching preserves them.
+Use combat victories as the sole training input, including adventure wins and
+evolution-duel wins. PvP inclusion remains to be clarified. Paused time,
+unattended wall-clock jumps, ordinary EXP and repeated battle presentation do not
+count as victories. A defeat does not remove earlier wins. Counters span multiple
+trips within the same form and reset on committed evolution, recruitment or
+fusion. Switching preserves them.
 
-Do not display battle counts, win ratios, training points, target thresholds or
-their partial progress. Where a route has such conditions, the Dex can say
-`Se desarrolla con la experiencia de aventura`; it must not show individual
-counter completion or expose hidden values in tooltips or accessible names.
-Care, origin, boss achievements and compatible partners remain readable.
+Display the numeric required victories in the Dex when a route has that
+condition, using the same requirement layout as care. Omit the row when there
+is no victory requirement. No separate training activity, effort score or win
+ratio is introduced. Care, origin, boss achievements and compatible partners
+remain readable.
 
 ### Implementation
 
-- Add typed per-form progress in core, separate from the current per-trip
+- Add typed per-form combat victories in core, separate from the current per-trip
   `AdventureState.victories`. Do not infer lifetime progression from a single
   trip that disappears when the next trip begins.
-- Accumulate bounded active effort through the shared adventure reducer;
-  checkpoint it with adventure state. Account for battles only when the
-  authoritative outcome is committed, not when an animation completes.
+- Accumulate bounded victories through authoritative adventure and evolution-duel
+  resolution; checkpoint them with partner state. Account for battles only when
+  the authoritative outcome is committed, not when an animation completes.
 - Persist deduplication by encounter/outcome ID and form revision with both
   SQLite and IndexedDB adapters. Keep token receipt attribution on the active
   pet at receipt time, preventing replay after a team switch.
-- Map device trophies/effort/wins/ratios to explicit reviewed private predicates;
-  avoid copying device numbers indiscriminately into a much shorter adventure.
-  Balance in configuration with reproducible seeded simulations.
+- Map supported device victory/training conditions to the single reviewed victory
+  predicate; avoid copying device numbers indiscriminately into a much shorter
+  adventure. Balance in configuration with reproducible seeded simulations.
 
 ### Acceptance
 
-Multiple adventures accumulate once; reload and checkpoint replay add nothing
-twice. Pausing/reserve adds no effort. Successful evolution resets the appropriate
-form, while losses retain progress. Snapshots/DOM/translations expose no hidden
-numbers. A failing private predicate selects an ordinary evolution at the
-threshold rather than delaying it.
+Multiple adventures and evolution duels accumulate wins once; reload and
+checkpoint replay add nothing twice. Pausing/reserve adds no victories. A win
+without an evolution retains the accumulated victories; successful evolution
+starts the new form's counter at zero. The Dex displays the numeric requirement
+only where relevant. Failure to meet a requirement never holds EXP at 100%:
+the duel can resolve without evolution and clear EXP.
 
 ## Workstream 5: permanent boss and exploration achievements
 
@@ -510,7 +560,8 @@ union of every egg-exclusive route. Default: retain the principal origin.
   away, such as Dracomon's blue/green Coredramon alternatives. Map source device
   variants to named game families with documented adaptation.
 - Add unlocked-family state and discovery receipts save-wide; attach origin to
-  partner creation, recruitment and fusion provenance.
+  partner creation, recruitment and fusion provenance in the web game; preserve
+  compatible metadata on native hosts without adding native egg collection UI.
 - Change default spawning and the current options `new egg` flow to use the
   team-slot creation use case. Use the new-journey carousel and region
   discovery feedback; do not introduce a separate item-inventory screen.
@@ -599,8 +650,8 @@ remaining durations, not repeatedly shifted timestamps. Save-wide experience
 settings, adventure schedule, discoveries and achievements must not reset on
 switching; pet-specific food/hygiene/pending state belongs to each pet.
 
-Upgrade `web-digital-pet/src/domain/transfer/protocol.ts` from the current v1
-single-pet envelope to a v2 team envelope. Keep a v1 import migration. Update
+The current `web-digital-pet/src/domain/transfer/protocol.ts` uses a v3 envelope
+for team state, counters and targetless duels. Keep v1/v2 import compatibility. Update
 backup export/import, pairing negotiation, server-backed reads and host bridges
 to include both pets and save unlocks; older clients must reject unsupported
 team export rather than silently dropping reserve. Re-evaluate the current
@@ -623,11 +674,11 @@ production or edit catalog/build output manually.
 
 | Slice | Concrete deliverable | Dependencies / required checks |
 | --- | --- | --- |
-| Route rules | Generated rule alternatives, attributes, source snapshots, public/private projections and care fallback coverage report. | Parser fixtures; dangling target/unknown predicate tests; all care brackets covered. |
-| Automatic evolution | Immediate threshold transition and versioned handling of old pending/full-gauge states. | Core progression, SQLite offline/token/care tests, browser progression tests; no 100% waiting. |
-| Team foundation | Migrations, explicit active pointer, two pet states, clocks, transfer v2 and host read/write contracts. | v1/v2 round trips; migration/transaction rollback; stale revisions; no double attribution. |
-| Team UI and recruitment | Dex Team tab, below-name face switch, replacement selection, egg slot creation and native TUI controls. | Narrow/mobile/desktop and Cursor renderer E2E; keyboard, pending states, history parity. |
-| Adventure progression | Private form effort/victories and deduplicated outcome receipts. | Pause/offline/reserve tests, seeded balance runs and public-model secrecy assertions. |
+| Route rules | Reviewed rule alternatives for the limited inputs, source snapshots, numeric care/victory requirements and coverage inventory. | Parser fixtures; dangling target/unknown predicate tests; absent requirements omitted. |
+| Automatic evolution | Threshold combat even without a target, atomic post-win route selection, no-evolution notice/EXP reset and legacy compatibility. | Win unlocks a route; win without route; loss; targetless save/transfer; receipt replay and native companion checks. |
+| Team foundation | Migrations, explicit active pointer, two pet states, clocks, transfer v3 and host read/write contracts. | v1/v2/v3 round trips; migration/transaction rollback; stale revisions; no double attribution. |
+| Team UI and recruitment | Web Dex Team tab, below-name face switch, replacement selection and egg slot creation. | Narrow/mobile/desktop E2E; keyboard, pending states, history and native-save compatibility. |
+| Combat progression | Per-form adventure/evolution-duel victories and deduplicated outcome receipts. | Pause/offline/reserve tests, retained wins without evolution, form reset and numeric Dex requirement checks. |
 | Achievements and eggs | Permanent boss/exploration rewards, starter family, regional unlocks and egg UI. | Backfill, grant-once, first-form/region mapping, transfer and server-host tests. |
 | Jogress | Verified pair rules, transactional manual fusion, lineage, result animation and confirmation UI. | Pair/attribute/origin tests, race/replay tests, reduced motion, History/export verification. |
 | Regional difficulty | Authored Easy/Medium/Hard order and reviewed 5/6, 6/6, 7/7 boss pairs; preserve existing stars. | Tier/uniqueness validation, pending-fight compatibility, legacy victory mapping, unchanged ordinary encounters. |
@@ -648,15 +699,14 @@ to have run for unimplemented features.
 
 ## Content boundaries and release gates
 
-The audit currently distinguishes 1,465 referenced normal connections, 230
-Jogress connections, 203 other special connections and 399 unverified legacy
+The audit currently distinguishes 1,467 referenced normal connections, 230
+Jogress connections, 201 other special connections and 399 unverified legacy
 connections, plus 31 legacy hatch choices. These mechanisms can cover verified
 special requirements after rule enrichment; they do not automatically validate
-or unlock all 832 blocked connections. Unverified connections require evidence.
+or unlock all 830 blocked connections. Unverified connections require evidence.
 
-Before gameplay implementation ships, finish the structured source extraction,
-normal fallback coverage, reviewed pair/attribute/origin definitions and regional
-reward mapping. Device connection/slot requirements need individual adaptations
+Before the remaining special-route gameplay ships, finish reviewed
+pair/attribute/origin definitions and regional reward mapping. Device connection/slot requirements need individual adaptations
 (for example, a specific achievement or egg discovery); unsupported requirements
 stay unavailable with an honest explanation. Same-stage or backward-stage
 transformations need explicit manual rules and loop protection, not inclusion in

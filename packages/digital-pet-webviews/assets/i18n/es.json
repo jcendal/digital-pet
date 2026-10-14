@@ -228,5 +228,9 @@
   "world.difficulty.hard": "Difícil",
   "worldRender.nextRegion": "Siguiente →",
   "eggs.regionalName": "Huevo de {region}",
-  "eggs.regionalHint": "Vence a un jefe en {region}."
+  "eggs.regionalHint": "Vence a un jefe en {region}.",
+  "phase.no_evolution": "SIN EVOLUCIONES",
+  "sidebar.noEvolutionsAvailable": "No hay evoluciones disponibles.",
+  "dexClient.victoryRequirementMinimum": "Victorias de combate: {count}+",
+  "dexClient.victoryRequirementRange": "Victorias de combate: {minimum}–{maximum}"
 }

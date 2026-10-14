@@ -38,7 +38,13 @@ export const rejectTeamCommand = (team: PartnerTeam, command: TeamCommand, block
     command.expectedReserveId !== (team.reserve?.partnerId ?? null)
   )
     return { kind: "rejected", reason: "stale" }
-  if (blocked || team.principal?.pendingEvolutionTargetId || team.reserve?.pendingEvolutionTargetId)
+  if (
+    blocked ||
+    team.principal?.pendingEvolutionTargetId ||
+    team.reserve?.pendingEvolutionTargetId ||
+    team.principal?.battleOpponentNodeId ||
+    team.reserve?.battleOpponentNodeId
+  )
     return { kind: "rejected", reason: "busy" }
   if (command.kind === "switch" && !team.reserve) return { kind: "rejected", reason: "empty_reserve" }
   if (command.kind === "switch" && !team.principal) return { kind: "rejected", reason: "no_principal" }

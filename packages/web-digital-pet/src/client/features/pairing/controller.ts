@@ -14,7 +14,7 @@ import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-so
 import { BrowserTransfer, CODE_LENGTH, displayDeviceCode, normalizeDeviceCode, validDeviceCode } from "./transport.ts"
 
 type PairMessage =
-  | { type: "request"; version: 2; sync: boolean }
+  | { type: "request"; version: 3; sync: boolean }
   | { type: "snapshot"; transfer: PetTransfer }
   | { type: "result"; accepted: boolean }
   | { type: "decline" }

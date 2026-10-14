@@ -1,8 +1,9 @@
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
-import type { ResolveEvolutionBattleOutcome, UsageReceiptMetadata } from "../../application/models/usage.ts"
+import type { UsageReceiptMetadata } from "../../application/models/usage.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import { IntlModule } from "../../i18n.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
+import { syncCombatProgress } from "./sqlite-combat-progress.ts"
 import {
   ACTIVE_PARTNER_SELECT,
   PARTNER_BY_GENERATION_SELECT,
@@ -19,6 +20,7 @@ import {
 } from "./sqlite-digital-pet-schema.ts"
 import type { SqliteDigitalPetWriteStore } from "./sqlite-digital-pet-types.ts"
 import { readEvolutionCare } from "./sqlite-evolution-care.ts"
+import { createSqliteEvolutionBattleStore } from "./sqlite-evolution-resolution.ts"
 import { runMigrations } from "./sqlite-migrations.ts"
 import { spawnSqlitePartner } from "./sqlite-partner-lifecycle.ts"
 import { createSqlitePartnerTeamStore } from "./sqlite-partner-team-store.ts"
@@ -160,6 +162,7 @@ export const createSqliteDigitalPetWriteStore = (
             activePartner.partnerId,
           ],
         )
+        syncCombatProgress(executor, activePartner.partnerId, nextState)
         executor.run(
           "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, ?, ?, ?)",
           [
@@ -193,49 +196,7 @@ export const createSqliteDigitalPetWriteStore = (
     listUsageReceipts() {
       return executor.all<UsageReceiptRow>(USAGE_RECEIPTS_SELECT).map(toUsageReceiptRecord)
     },
-    resolveEvolutionBattle(nextState: PartnerProgression, createdAt: string): ResolveEvolutionBattleOutcome {
-      return executor.transaction(() => {
-        const activePartnerRow = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
-        if (activePartnerRow === null) return { kind: "no_pending_battle" } as const
-
-        const activePartner = toPartner(activePartnerRow)
-        if (activePartner.pendingEvolutionTargetId === null || activePartner.battleOpponentNodeId === null) {
-          return { kind: "no_pending_battle" } as const
-        }
-
-        const fromNodeId = activePartner.currentNodeId
-        executor.run(
-          "UPDATE partners SET current_node_id = ?, gauge = ?, is_terminal = ?, pending_evolution_target_id = ?, battle_opponent_node_id = ? WHERE partner_id = ?",
-          [
-            nextState.currentNodeId,
-            nextState.gauge,
-            nextState.isTerminal,
-            nextState.pendingEvolutionTargetId,
-            nextState.battleOpponentNodeId,
-            activePartner.partnerId,
-          ],
-        )
-        executor.run(
-          "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, NULL, NULL, ?)",
-          [
-            `event-battle-${createdAt}`,
-            activePartner.partnerId,
-            nextState.currentNodeId,
-            nextState.gauge,
-            nextState.isTerminal,
-            createdAt,
-          ],
-        )
-
-        if (nextState.currentNodeId !== fromNodeId) {
-          return {
-            kind: "won",
-            evolution: { fromNodeId, toNodeId: nextState.currentNodeId },
-          } as const
-        }
-        return { kind: "lost" } as const
-      })
-    },
+    ...createSqliteEvolutionBattleStore(executor),
   } satisfies SqliteDigitalPetWriteStore
 
   return store

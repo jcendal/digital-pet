@@ -17,6 +17,7 @@ import {
   type ExperienceLevel,
   experienceThresholds,
   type LocalPetState,
+  pendingEvolutionKey,
   petLocalEgg,
   replaceLocalPartner,
 } from "../../domain/pet/progress.ts"
@@ -158,11 +159,16 @@ export const browserAdventureStore: AdventureStore = {
       })
       if (next) {
         const victory = next.bossVictory
-        const rewardedState =
+        let rewardedState =
           victory &&
           !state.bossVictories?.some((saved) => saved.regionId === victory.regionId && saved.nodeId === victory.nodeId)
             ? { ...state, bossVictories: [...(state.bossVictories ?? []), victory] }
             : state
+        if (next.combatVictory)
+          rewardedState = {
+            ...rewardedState,
+            combatVictories: Math.min(1_000_000, (rewardedState.combatVictories ?? 0) + 1),
+          }
         if (rewardedState !== state) store.put(rewardedState, STATE_KEY)
         if (next.adventure !== adventure)
           store.put({ partnerId: state.partnerId, state: next.adventure }, ADVENTURE_KEY)
@@ -188,7 +194,7 @@ export const browserAdventureStore: AdventureStore = {
               ...rewardedState,
               gauge: progress.gauge,
               isTerminal: progress.isTerminal,
-              ...(progress.pendingEvolutionTargetId
+              ...(progress.pendingEvolutionTargetId || progress.battleOpponentNodeId
                 ? {
                     pendingEvolution: {
                       targetNodeId: progress.pendingEvolutionTargetId,
@@ -500,8 +506,28 @@ const changeLocalState = async (
 export const setExperienceLevel = (level: ExperienceLevel): Promise<void> =>
   changeLocalState((state) => ({ ...state, experienceLevel: level }))
 
-export const finishLocalEvolution = (expectedKey: string, won: boolean, active: () => boolean): Promise<void> =>
-  changeLocalState((state) => (active() ? completeLocalEvolution(state, expectedKey, won, Date.now()) : state))
+export const finishLocalEvolution = async (
+  expectedKey: string,
+  won: boolean,
+  active: () => boolean,
+): Promise<{ accepted: boolean; targetNodeId: string | null; currentNodeId: string | null }> => {
+  let result: { accepted: boolean; targetNodeId: string | null; currentNodeId: string | null } = {
+    accepted: false,
+    targetNodeId: null,
+    currentNodeId: null,
+  }
+  await changeLocalState((state) => {
+    if (!active() || pendingEvolutionKey(state) !== expectedKey) return state
+    const next = completeLocalEvolution(state, expectedKey, won, Date.now())
+    result = {
+      accepted: true,
+      targetNodeId: next.currentNodeId !== state.currentNodeId ? next.currentNodeId : null,
+      currentNodeId: next.currentNodeId,
+    }
+    return next
+  })
+  return result
+}
 
 export const startNewPartner = (): Promise<void> =>
   changeLocalState((state) => beginNewPartner(state, crypto.randomUUID(), Date.now()), true)

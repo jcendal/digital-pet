@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { resolveHostDatabasePath } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
+import { readCombatProgress } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-combat-progress.ts"
 import { createAdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
@@ -114,9 +115,19 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
     if (offer?.event?.kind !== "offer") throw new Error("Missing companion offer")
     const defeatedNodeId = offer.event.opponentNodeId
     const oldPartner = repository.getActivePartner()!
+    const combatProgress = () => {
+      const database = openReadonlySqliteDatabase(resolveHostDatabasePath(options))
+      try {
+        return readCombatProgress(database.executor, oldPartner.partnerId, oldPartner.currentNodeId)
+      } finally {
+        database.close()
+      }
+    }
+    expect(combatProgress().victories).toBe(1)
     const cooldown = await service().nextReadyAt()
     await repository.close()
     repository = await createSqliteDigitalPetRepository(options)
+    expect(combatProgress().victories).toBe(1)
     expect((await service().act({ kind: "read" }, 56_000))?.event).toEqual(offer.event)
     const choice = { kind: "accept-companion" as const, eventId: offer.event.id, adventureId: offer.id }
     await service().act(choice, 57_000)
@@ -152,7 +163,7 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
     const finished = await finds.act({ kind: "collect", eventId: 1 }, readyAt + 63_000)
     expect(finished?.running).toBe(false)
     expect(finished?.status).toBe("evolved")
-    expect(repository.getActivePartner()?.pendingEvolutionTargetId).not.toBeNull()
+    expect(repository.getActivePartner()?.pendingEvolutionTargetId).toBeNull()
     expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3])
   } finally {
     await repository.close()
@@ -196,7 +207,7 @@ test("a victory that reaches evolution ends the trip before a recruitment offer 
     const active = repository.getActivePartner()!
     expect(active.partnerId).toBe(partner.partnerId)
     expect(active.gauge).toBe(STAGE_GAUGE_THRESHOLDS[3])
-    expect(active.pendingEvolutionTargetId).not.toBeNull()
+    expect(active.pendingEvolutionTargetId).toBeNull()
     await service.act({ kind: "accept-companion", eventId: trip.event.id, adventureId: trip.id }, 56_000)
     expect(repository.getActivePartner()?.partnerId).toBe(partner.partnerId)
     expect(await service.nextReadyAt()).toBeGreaterThan(56_000)

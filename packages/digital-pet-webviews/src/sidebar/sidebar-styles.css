@@ -68,6 +68,20 @@ body {
   position: relative;
   z-index: 1;
 }
+#evolution-notice {
+  position: absolute;
+  z-index: 10;
+  bottom: 12px;
+  left: 8px;
+  right: 8px;
+  margin: 0;
+  padding: 10px;
+  border: 2px solid var(--muted);
+  background: var(--lcd);
+  color: var(--ink);
+  text-align: center;
+  font-size: var(--type-small);
+}
 .arena.with-battle-hud svg {
   height: calc(100% - 56px);
   margin-top: 24px;

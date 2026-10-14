@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test"
-import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { availableEvolutionTargets } from "@jcendal/digital-pet-core/domain/evolution-options.ts"
 import {
   advanceLocalPet,
   beginNewPartner,
   cleanLocalPoop,
+  completeLocalEvolution,
   experienceThresholds,
   type LocalPetState,
+  pendingEvolutionKey,
 } from "../../../src/domain/pet/progress.ts"
 import { parsePetTransfer } from "../../../src/domain/transfer/protocol.ts"
 
@@ -44,17 +44,21 @@ test("cleaning at 95% queues normal evolution; a new egg discards the old hygien
   expect(advanceLocalPet(egg, NOW).hygiene).toBeUndefined()
 })
 
-test("full EXP waits with three piles and cleaning chooses a route using the remaining two", () => {
+test("full EXP starts a duel with three piles and a win without evolution clears EXP", () => {
   const dirty = { ...state, currentNodeId: "4-010", gauge: experienceThresholds("low")[4] }
-  const waiting = advanceLocalPet(dirty, NOW, () => 0)
-  expect(waiting.pendingEvolution).toBeUndefined()
-  expect(waiting.isTerminal).toBe(false)
-  expect(waiting.gauge).toBe(dirty.gauge)
+  const ready = advanceLocalPet(dirty, NOW, () => 0)
+  expect(ready.pendingEvolution?.targetNodeId).toBeNull()
+  expect(ready.pendingEvolution?.opponentNodeId).not.toBeNull()
+  const key = pendingEvolutionKey(ready)
+  if (!key) throw new Error("Missing duel")
+  const resolved = completeLocalEvolution(ready, key, true, NOW)
+  expect(resolved.currentNodeId).toBe(dirty.currentNodeId)
+  expect(resolved.gauge).toBe(0)
+  expect(resolved.combatVictories).toBe(1)
+  expect(completeLocalEvolution(resolved, key, true, NOW)).toBe(resolved)
   const id = dirty.hygiene?.poops[0]
   if (id === undefined) throw new Error("Missing pile")
-  const cleaned = cleanLocalPoop(waiting, dirty.partnerId, id, NOW)
+  const cleaned = cleanLocalPoop(resolved, dirty.partnerId, id, NOW)
   expect(cleaned.hygiene?.poops).toHaveLength(2)
-  const node = DIGIMON_CATALOG.byId.get(dirty.currentNodeId)
-  if (!node) throw new Error("Missing companion")
-  expect(availableEvolutionTargets(node, 2)).toContain(cleaned.pendingEvolution?.targetNodeId ?? "")
+  expect(cleaned.combatVictories).toBe(1)
 })

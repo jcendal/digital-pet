@@ -10,11 +10,11 @@ import { IntlModule } from "../../shared/i18n.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState, LocalReservePartner } from "../pet/progress.ts"
 import { partnerState } from "../pet/team.ts"
 
-export const TRANSFER_VERSION = 2
+export const TRANSFER_VERSION = 3
 export const MAX_TRANSFER_BYTES = 64 * 1024
 export const MAX_BACKUP_BYTES = 4 * 1024 * 1024
 
-export type PetTransfer = { readonly version: 2; readonly state: LocalPetState }
+export type PetTransfer = { readonly version: 3; readonly state: LocalPetState }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -39,12 +39,24 @@ const parseEvents = (value: unknown): LocalPetState["events"] => {
 }
 
 export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES): PetTransfer => {
-  if (!isRecord(input) || (input.version !== 1 && input.version !== TRANSFER_VERSION) || !isRecord(input.state))
+  if (
+    !isRecord(input) ||
+    (input.version !== 1 && input.version !== 2 && input.version !== TRANSFER_VERSION) ||
+    !isRecord(input.state)
+  )
     throw new Error(IntlModule.translate("protocol.unsupportedSaveFormat"))
   if (new TextEncoder().encode(JSON.stringify(input)).byteLength > maxBytes)
     throw new Error(IntlModule.translate("protocol.theReceivedSaveIsTooLarge"))
 
   const state = input.state
+  if (
+    state.combatVictories !== undefined &&
+    (!Number.isSafeInteger(state.combatVictories) ||
+      typeof state.combatVictories !== "number" ||
+      state.combatVictories < 0 ||
+      state.combatVictories > 1_000_000)
+  )
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
   if (state.originEggId !== undefined && !isEggFamilyId(state.originEggId))
     throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
   if (input.version === 1 && state.reserve !== undefined)
@@ -113,21 +125,22 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       : undefined
     if (
       !isRecord(pending) ||
-      !validNodeId(pending.targetNodeId) ||
-      !current?.nextEvolutions.includes(pending.targetNodeId) ||
+      !current ||
+      (pending.targetNodeId !== null &&
+        (!validNodeId(pending.targetNodeId) || !current.nextEvolutions.includes(pending.targetNodeId))) ||
       typeof pending.readyAt !== "number" ||
       !Number.isSafeInteger(pending.readyAt) ||
       pending.readyAt < 0 ||
       pending.readyAt > Date.now() + 24 * 60 * 60 * 1000 ||
       state.isTerminal ||
       (current.stage === 0
-        ? pending.opponentNodeId !== null
+        ? pending.opponentNodeId !== null || pending.targetNodeId === null
         : !validNodeId(pending.opponentNodeId) ||
           DIGIMON_CATALOG.byId.get(pending.opponentNodeId)?.stage !== current.stage)
     )
       throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidPendingEvolution"))
     pendingEvolution = {
-      targetNodeId: pending.targetNodeId,
+      targetNodeId: pending.targetNodeId as string | null,
       opponentNodeId: pending.opponentNodeId as string | null,
       readyAt: pending.readyAt,
     }
@@ -229,6 +242,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
       events,
+      ...(state.combatVictories !== undefined ? { combatVictories: state.combatVictories as number } : {}),
       ...(isEggFamilyId(state.originEggId) ? { originEggId: state.originEggId } : {}),
       ...(bossVictories ? { bossVictories } : {}),
       ...(pendingEvolution ? { pendingEvolution } : {}),

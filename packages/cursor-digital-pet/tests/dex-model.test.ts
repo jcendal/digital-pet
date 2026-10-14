@@ -58,8 +58,11 @@ describe("Cursor Digidex records", () => {
     expect(agumon?.artwork).not.toBe("")
     expect(agumon?.nextIds).toContain("4-054")
     expect(agumon?.nextIds).toContain("4-088")
-    expect(agumon?.nextIds).not.toContain("7-041")
-    expect(agumon?.specialNextIds).toContain("7-041")
+    expect(agumon?.nextIds).toContain("7-041")
+    expect(
+      agumon?.evolutionRequirements?.find((rule) => rule.targetId === "7-041")?.alternatives[0]?.minVictories,
+    ).toBe(50)
+    expect(agumon?.specialNextIds).not.toContain("7-041")
     expect(agumon?.evolutionCare?.find((route) => route.targetId === "4-088")?.uncleanPoops).toEqual([3])
     expect(agumon?.previousIds).toContain("2-013")
     expect(model.entries.find((entry) => entry.id === agumon?.nextIds[0])?.name).toBe("Unknown Digimon")

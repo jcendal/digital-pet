@@ -325,7 +325,7 @@ test("backup v2 exports both companions and restores them on another device", as
   const path = await download.path()
   if (!path) throw new Error("Missing backup")
   const exported = JSON.parse(await readFile(path, "utf8"))
-  expect(exported.version).toBe(2)
+  expect(exported.version).toBe(3)
   expect(exported.state.partnerId).toBe(team.partnerId)
   expect(exported.state.reserve.partnerId).toBe((team.reserve as { partnerId: string }).partnerId)
   const context = await browser.newContext({ locale: "es-ES" })

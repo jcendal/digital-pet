@@ -42,7 +42,7 @@ test("partner care works through a storage port with injected thresholds, includ
   expect(care.cleanPoop("old-partner", 2, 100)).toBe(false)
   expect(care.cleanPoop("pet", 2, 100)).toBe(true)
   expect(snapshot.partner.gauge).toBe(100)
-  expect(snapshot.partner.pendingEvolutionTargetId).not.toBeNull()
+  expect(snapshot.partner.pendingEvolutionTargetId).toBeNull()
   expect(snapshot.partner.battleOpponentNodeId).not.toBeNull()
   expect(care.cleanPoop("pet", 3, 100)).toBe(false)
   expect(snapshot.hygiene?.poops).toEqual([3])

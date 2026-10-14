@@ -32,6 +32,7 @@ export const partnerState = (state: LocalPartnerState): LocalPartnerState => ({
   isTerminal: state.isTerminal,
   lastTickAt: state.lastTickAt,
   events: state.events,
+  combatVictories: state.combatVictories ?? 0,
   ...(state.originEggId ? { originEggId: state.originEggId } : {}),
   ...(state.food ? { food: state.food } : {}),
   ...(state.hygiene ? { hygiene: state.hygiene } : {}),
@@ -68,6 +69,7 @@ export const applyLocalTeamCommand = (
     if (command.slot === "principal") {
       next = {
         ...replaceLocalPartner(settled, newPartnerId, now, command.partner.currentNodeId, command.partner.isTerminal),
+        combatVictories: 0,
         gauge: command.partner.gauge,
         teamRevision: revision,
       }
@@ -80,6 +82,7 @@ export const applyLocalTeamCommand = (
           partnerId: newPartnerId,
           createdAt,
           currentNodeId: command.partner.currentNodeId,
+          combatVictories: 0,
           gauge: command.partner.gauge,
           isTerminal: command.partner.isTerminal,
           lastTickAt: now,

@@ -130,3 +130,33 @@ Source URLs and care masks are retained in the snapshot. Unmatched species and
 ambiguous names are not silently converted into confirmed routes. This preserves
 the initial review's limitations instead of presenting unverified connections
 as valid evolution choices.
+
+
+## Updated on 2026-10-15
+
+The threshold waiting policy described above is superseded. New non-egg duels
+start at 100% without a selected target. Winning adds one combat victory before
+selecting from eligible normal routes using current unclean piles and per-form
+victories. A win with no eligible result keeps the form and victory, shows the
+no-evolution notice and clears EXP. Loss clears EXP without adding a win. Legacy
+pending targets still finish their previously selected evolution.
+
+The generated snapshot now has **1,467 normal, 230 Jogress and 201 special**
+connections, including **44 normal connections with numeric victory conditions**.
+Victory-only unlocks are eligible normal routes; pair, slot, permanent objective
+and transformation gates remain separate. Meicoomon → Meicrackmon, for example,
+requires at least 12 combat victories and can unlock on the twelfth winning duel.
+
+Humulos battle windows such as 12–15 victories are adapted to a minimum of 12
+within the current form. This game has no fixed device battle window, win ratio
+or separate effort stat. Care and victories within a source alternative must both
+hold; alternatives remain OR groups. Source alternatives whose care categories
+are already covered by an unrestricted route do not invent a victory requirement.
+Source-specific timing, effort and level remain EXP adaptations. The counter
+includes adventure and evolution-duel wins, survives reserve switches and save
+transfer, and resets on an actual form change. PvP wins currently do not count.
+
+SQLite migration 10 commits the result and its unique duel identity atomically.
+Browser IndexedDB commits before the result animation and uses the pending duel's
+companion, form and ready timestamp to reject stale results. Transfer v3 includes
+these counters and targetless duels; v1/v2 backups remain readable.

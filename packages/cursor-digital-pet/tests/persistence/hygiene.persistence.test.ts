@@ -3,7 +3,6 @@ import { createPartnerHygieneService } from "@jcendal/digital-pet-core/applicati
 import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
-import { availableEvolutionTargets } from "@jcendal/digital-pet-core/domain/evolution-options.ts"
 import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { createTempTestRoot, removeTempTestRoot } from "./persistence-fixtures.ts"
 
@@ -50,7 +49,7 @@ test("Cursor persists piles, cleans once, rewards stage XP, and resets on a new 
   }
 })
 
-test("offline piles affect Cursor token evolution inside the save transaction; cleaning unblocks it", async () => {
+test("offline piles affect post-duel eligibility and cleaning remains blocked during the duel", async () => {
   const root = await createTempTestRoot()
   const repository = await createSqliteDigitalPetRepository({ appDataRoot: root.appDataRoot })
   const now = Date.now()
@@ -83,10 +82,13 @@ test("offline piles affect Cursor token evolution inside the save transaction; c
     expect(piles).toHaveLength(3)
     const id = piles?.[0]
     if (id === undefined) throw new Error("Missing saved pile")
+    expect(repository.getActivePartner()?.battleOpponentNodeId).not.toBeNull()
+    expect(care.cleanPoop(partner.partnerId, id, now)).toBe(false)
+    expect(repository.completeEvolutionBattle(true, new Date(now).toISOString(), undefined, () => 0).kind).toBe(
+      "won_without_evolution",
+    )
+    expect(repository.getActivePartner()?.gauge).toBe(0)
     expect(care.cleanPoop(partner.partnerId, id, now)).toBe(true)
-    const node = DIGIMON_CATALOG.byId.get(partner.currentNodeId)
-    if (!node) throw new Error("Missing companion")
-    expect(availableEvolutionTargets(node, 2)).toContain(repository.getActivePartner()?.pendingEvolutionTargetId ?? "")
   } finally {
     await repository.close()
     await removeTempTestRoot(root)

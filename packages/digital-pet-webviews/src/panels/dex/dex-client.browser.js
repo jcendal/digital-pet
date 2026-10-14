@@ -49,7 +49,7 @@ const selectEntry = (id, focus = false) => {
     button?.scrollIntoView({ block: "nearest" })
   }
 }
-const routeGroup = (label, ids, care = []) => {
+const routeGroup = (label, ids, care = [], rules = []) => {
   const section = element("section", "routes")
   section.append(element("h3", "route-label", label))
   const items = element("div", "route-items")
@@ -59,15 +59,37 @@ const routeGroup = (label, ids, care = []) => {
     const button = element("button", "route", target.discovered ? target.name : "???")
     button.type = "button"
     button.append(element("span", "", id))
-    const requirement = care.find((route) => route.targetId === id)
-    if (requirement && requirement.uncleanPoops.length > 0 && requirement.uncleanPoops.length < 4)
-      button.append(
-        element(
-          "span",
-          "micro",
-          IntlModule.translate("dexClient.carePiles", { counts: requirement.uncleanPoops.join("/") }),
-        ),
-      )
+    const conditions = rules.find((route) => route.targetId === id)?.alternatives
+    if (conditions?.length) {
+      const alternatives = conditions
+        .map((rule) => {
+          const requirements = []
+          if (rule.uncleanPoops.length && rule.uncleanPoops.length < 4)
+            requirements.push(IntlModule.translate("dexClient.carePiles", { counts: rule.uncleanPoops.join("/") }))
+          if (rule.maxVictories !== null)
+            requirements.push(
+              IntlModule.translate("dexClient.victoryRequirementRange", {
+                minimum: rule.minVictories,
+                maximum: rule.maxVictories,
+              }),
+            )
+          else if (rule.minVictories > 0)
+            requirements.push(IntlModule.translate("dexClient.victoryRequirementMinimum", { count: rule.minVictories }))
+          return requirements.join(" · ")
+        })
+        .filter(Boolean)
+      button.append(element("span", "micro", alternatives.join(" / ")))
+    } else {
+      const requirement = care.find((route) => route.targetId === id)
+      if (requirement && requirement.uncleanPoops.length > 0 && requirement.uncleanPoops.length < 4)
+        button.append(
+          element(
+            "span",
+            "micro",
+            IntlModule.translate("dexClient.carePiles", { counts: requirement.uncleanPoops.join("/") }),
+          ),
+        )
+    }
     button.addEventListener("click", () => {
       // A route may leave the current filter. Reset filters so the selected entry stays in its catalog context.
       search.value = ""
@@ -157,7 +179,12 @@ const renderSelection = () => {
     extra.append(
       history,
       routeGroup(IntlModule.translate("dexClient.evolvesFrom"), entry.previousIds),
-      routeGroup(IntlModule.translate("dexClient.evolvesTo"), entry.nextIds, entry.evolutionCare),
+      routeGroup(
+        IntlModule.translate("dexClient.evolvesTo"),
+        entry.nextIds,
+        entry.evolutionCare,
+        entry.evolutionRequirements,
+      ),
     )
     if (entry.specialNextIds?.length)
       extra.append(routeGroup(IntlModule.translate("dexClient.specialEvolutions"), entry.specialNextIds))

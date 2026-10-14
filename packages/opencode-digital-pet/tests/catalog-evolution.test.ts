@@ -174,12 +174,13 @@ describe("catalog and evolution", () => {
 
     expect(pending.current.id).toBe("5-003")
     expect(pending.pendingEvolutionTargetId).not.toBe("5-033")
-    expect(catalog.byId.get(pending.pendingEvolutionTargetId ?? "")?.stage).toBe(6)
+    expect(pending.pendingEvolutionTargetId).toBeNull()
     expect(pending.battleOpponentNodeId).not.toBe("5-003")
     expect(pending.gauge).toBe(STAGE_GAUGE_THRESHOLDS[5])
 
     const evolved = resolveEvolutionBattle(pending, true, catalog.byId)
-    expect(evolved.current.id).toBe(pending.pendingEvolutionTargetId!)
+    expect(evolved.current.stage).toBe(6)
+    expect(evolved.current.id).not.toBe("5-033")
     expect(evolved.gauge).toBe(0)
     expect(evolved.pendingEvolutionTargetId).toBeNull()
   })
@@ -379,6 +380,7 @@ describe("catalog and evolution", () => {
       isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
+      combatVictories: 0,
     })
   })
 })

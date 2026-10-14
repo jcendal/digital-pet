@@ -45,8 +45,11 @@ export const buildTeamPanelModel = (
       !blocked &&
       Boolean(team.principal && team.reserve) &&
       !team.principal?.pendingEvolutionTargetId &&
-      !team.reserve?.pendingEvolutionTargetId,
-    canCreate: writable && !blocked && !team.principal?.pendingEvolutionTargetId,
+      !team.principal?.battleOpponentNodeId &&
+      !team.reserve?.pendingEvolutionTargetId &&
+      !team.reserve?.battleOpponentNodeId,
+    canCreate:
+      writable && !blocked && !team.principal?.pendingEvolutionTargetId && !team.principal?.battleOpponentNodeId,
   }
 }
 
