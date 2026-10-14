@@ -18,6 +18,12 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 - Start with Botamon eggs and discover Forest/Yuramon and Aquatic/Pichimon origins through regional boss victories.
 - Order regions by Easy/Medium/Hard difficulty with boss stages 5/6, 6/6 and 7/7 while preserving existing stars and saved boss encounters.
 - Keep adventure victory counters out of presentation messages.
+
+## [0.12.1] - 2026-10-13
+
+### Changed
+
+- Group Dex and History in one view with keyboard-accessible tabs.
 - Keep save selectors square and remove the evolution experience slider's outer border.
 - Scroll the landscape opposite the companion's steps during ordinary walks, as in adventures.
 
