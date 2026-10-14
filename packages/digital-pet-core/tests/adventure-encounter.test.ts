@@ -135,3 +135,51 @@ test("missing regional tiers use the nearest available non-egg rival and its act
   }
   expect(chooseAdventureEncounter(current, [], [], () => 0)).toBeUndefined()
 })
+
+test("saved legacy boss fights finish but legacy bosses are not selected for new encounters", () => {
+  const replacement = DIGIMON_CATALOG.byId.get("5-082")!
+  const saved: AdventureState = {
+    id: "old-boss",
+    nodeId: current.id,
+    regionId: "digital-ocean",
+    running: true,
+    elapsedMs: 1000,
+    lastTickAt: 1000,
+    nextEventAt: 60000,
+    sequence: 1,
+    collected: 0,
+    victories: 0,
+    status: "travel",
+    event: {
+      kind: "battle",
+      id: 1,
+      opponentNodeId: boss.id,
+      rank: "boss",
+      difficult: true,
+      completedShots: 3,
+      plan: { outcome: "player", shots: [1, 2, 3].map(() => ({ shooter: "player", hit: true })) },
+    },
+  }
+  expect(
+    changeAdventure(saved, { kind: "finish-battle", eventId: 1 }, current, saved.regionId, [], 1000, () => 0.9, [
+      replacement,
+    ]),
+  ).toBeUndefined()
+  const finished = changeAdventure(
+    saved,
+    { kind: "finish-battle", eventId: 1 },
+    current,
+    saved.regionId,
+    [],
+    1000,
+    () => 0.9,
+    [replacement],
+    [boss],
+  )
+  expect(finished?.defeatedBossNodeId).toBe(boss.id)
+  expect(finished?.experienceFraction).toBe(0.5)
+  const values = [0.95, 0]
+  expect(chooseAdventureEncounter(current, residents, [replacement], () => values.shift() ?? 0)?.opponent.id).toBe(
+    replacement.id,
+  )
+})

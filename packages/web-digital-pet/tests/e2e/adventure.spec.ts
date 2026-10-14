@@ -14,12 +14,12 @@ const saved = (page: Page) =>
         const request = store.get(key)
         request.onsuccess = () => resolve(request.result)
       })
-    const pet = await read<{ gauge: number }>("current")
+    const pet = await read<{ gauge: number; combatVictories?: number }>("current")
     const adventure = await read<{
       state: { elapsedMs: number; running: boolean; event?: { plan?: unknown }; collected: number; victories: number }
     }>("adventure")
     database.close()
-    return { gauge: pet.gauge, adventure: adventure.state }
+    return { gauge: pet.gauge, combatVictories: pet.combatVictories ?? 0, adventure: adventure.state }
   })
 
 test("adventure walks quickly, finds move past, collection earns once, and reload resumes paused", async ({
@@ -149,6 +149,7 @@ test("a saved adventure fight plays in the pet viewer and XP waits for the last 
   }
   await expect.poll(async () => (await saved(page)).gauge).toBe(2_000_000)
   expect((await saved(page)).adventure.victories).toBe(1)
+  expect((await saved(page)).combatVictories).toBe(1)
   const transitions = await pet.locator("html").evaluate(() => Reflect.get(window, "battleTransitions"))
   await testInfo.attach("battle-end-transitions", {
     body: JSON.stringify(transitions, null, 2),
@@ -160,6 +161,7 @@ test("a saved adventure fight plays in the pet viewer and XP waits for the last 
   await page.reload()
   await expect(pet.locator("#percent")).toHaveText("5%")
   expect((await saved(page)).gauge).toBe(2_000_000)
+  expect((await saved(page)).combatVictories).toBe(1)
   expect(errors).toEqual([])
 })
 
@@ -281,6 +283,7 @@ test("recruitment survives reload and adopts a new generation without losing his
       food?: unknown
       hygiene?: unknown
       pendingEvolution?: unknown
+      combatVictories?: number
     }>((resolve) => {
       request.onsuccess = () => resolve(request.result)
     })
@@ -293,6 +296,7 @@ test("recruitment survives reload and adopts a new generation without losing his
   })
   expect(result.state.currentNodeId).toBe("3-007")
   expect(result.state.gauge).toBe(0)
+  expect(result.state.combatVictories).toBe(0)
   expect(result.state.events.map((event) => event.currentNodeId)).toEqual(["3-007"])
   expect(result.state.retiredPartners.map((partner) => partner.partnerId)).toEqual(["adventure-pet"])
   expect(result.state.retiredPartners[0]?.events.map((event) => event.currentNodeId)).toEqual(["3-001"])

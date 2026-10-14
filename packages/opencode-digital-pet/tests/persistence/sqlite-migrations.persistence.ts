@@ -53,6 +53,10 @@ const withDatabase = async (operation: (database: Database) => void): Promise<vo
 
 const createV2Database = (database: Database): void => {
   runMigrations(createExecutor(database))
+  database.run("DROP TABLE partner_team")
+  database.run("DROP TRIGGER partners_limit_owned_insert")
+  database.run("DROP TRIGGER partners_limit_owned_restore")
+  database.run("CREATE UNIQUE INDEX partners_one_active_partner ON partners ((1)) WHERE retired_at IS NULL")
   database.run("DROP TABLE vpet_control_receipts")
   database.run("DROP TABLE vpet_control_state")
   database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
@@ -61,21 +65,27 @@ const createV2Database = (database: Database): void => {
   database.run("DROP TABLE partner_adventures")
   database.run("DROP TABLE adventure_schedule")
   database.run("DROP TABLE boss_victories")
-  database.run("DELETE FROM schema_migrations WHERE version IN (3, 4, 5, 6, 7, 8)")
+  database.run("DROP TABLE partner_combat_progress")
+  database.run("DELETE FROM schema_migrations WHERE version IN (3, 4, 5, 6, 7, 8, 9, 10)")
 }
 
 const createV3Database = (database: Database): void => {
   runMigrations(createExecutor(database))
+  database.run("DROP TABLE partner_team")
+  database.run("DROP TRIGGER partners_limit_owned_insert")
+  database.run("DROP TRIGGER partners_limit_owned_restore")
+  database.run("CREATE UNIQUE INDEX partners_one_active_partner ON partners ((1)) WHERE retired_at IS NULL")
   database.run("ALTER TABLE partners DROP COLUMN pending_evolution_target_id")
   database.run("ALTER TABLE partners DROP COLUMN battle_opponent_node_id")
   database.run("DROP TABLE partner_hygiene")
   database.run("DROP TABLE partner_adventures")
   database.run("DROP TABLE adventure_schedule")
   database.run("DROP TABLE boss_victories")
-  database.run("DELETE FROM schema_migrations WHERE version IN (4, 5, 6, 7, 8)")
+  database.run("DROP TABLE partner_combat_progress")
+  database.run("DELETE FROM schema_migrations WHERE version IN (4, 5, 6, 7, 8, 9, 10)")
 }
 
-const ALL_MIGRATIONS = [1, 2, 3, 4, 5, 6, 7, 8] as const
+const ALL_MIGRATIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 
 const partnerLegacyColumns = "partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at"
 

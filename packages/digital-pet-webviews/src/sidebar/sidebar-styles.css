@@ -68,6 +68,20 @@ body {
   position: relative;
   z-index: 1;
 }
+#evolution-notice {
+  position: absolute;
+  z-index: 10;
+  bottom: 12px;
+  left: 8px;
+  right: 8px;
+  margin: 0;
+  padding: 10px;
+  border: 2px solid var(--muted);
+  background: var(--lcd);
+  color: var(--ink);
+  text-align: center;
+  font-size: var(--type-small);
+}
 .arena.with-battle-hud svg {
   height: calc(100% - 56px);
   margin-top: 24px;
@@ -496,16 +510,6 @@ body {
 #pet-partner:focus:not(:focus-visible) {
   outline: none;
 }
-#egg-pet-hint {
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 12px;
-  color: var(--ink);
-  pointer-events: none;
-}
 #egg-pet-feedback {
   pointer-events: none;
   color: var(--ink);
@@ -576,4 +580,54 @@ body {
     animation: none;
     transform: translate(-50%, -10px);
   }
+}
+
+#pet-switch {
+  position: absolute;
+  z-index: 9;
+  left: 8px;
+  top: 8px;
+  width: 52px;
+  height: 52px;
+  padding: 5px;
+  overflow: visible;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  background: var(--lcd);
+  color: var(--ink);
+  box-shadow:
+    inset 0 0 0 2px var(--lcd),
+    inset 0 0 0 3px var(--lcd-edge);
+  cursor: pointer;
+}
+#pet-switch .switch-portrait {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+#pet-switch .switch-arrows {
+  position: absolute;
+  bottom: -3px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border: 2px solid var(--lcd);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--lcd);
+}
+#pet-switch:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: var(--lcd-edge);
+}
+#pet-switch:focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: 4px;
+}
+#pet-switch:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

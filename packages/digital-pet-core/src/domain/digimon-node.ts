@@ -1,4 +1,5 @@
 import type { CombatStats } from "./combat.ts"
+import type { EvolutionRoute } from "./evolution-options.ts"
 import type { DigimonStage } from "./stage.ts"
 
 export type DigimonNode = {
@@ -6,6 +7,7 @@ export type DigimonNode = {
   readonly nameEn: string
   readonly nameJp: string
   readonly nextEvolutions: readonly string[]
+  readonly evolutionRoutes?: readonly EvolutionRoute[]
   readonly sprite: string
   readonly stage: DigimonStage
   readonly url: string

@@ -2,6 +2,7 @@ import { type AdventureCommand, type AdventureState, changeAdventure, endAdventu
 import { ADVENTURE_PACING } from "../../domain/adventure-pacing.ts"
 import type { DigimonCatalog, DigimonNode } from "../../domain/digimon-node.ts"
 import { applyTokenProgress } from "../../domain/evolution.ts"
+import { advanceHygiene } from "../../domain/hygiene.ts"
 import type { AdventureStore } from "../ports/adventure-store.ts"
 
 export type AdventureService = {
@@ -14,17 +15,18 @@ export const createAdventureService = (
   residentsFor: (regionId: string) => readonly DigimonNode[],
   random: () => number = Math.random,
   bossesFor: (regionId: string) => readonly DigimonNode[] = () => [],
+  legacyBossesFor: (regionId: string) => readonly DigimonNode[] = () => [],
 ): AdventureService => ({
   async nextReadyAt() {
     return store.nextReadyAt()
   },
   async act(command, now) {
-    return store.updateAdventure(({ partner, adventure, readyAt, blocked, thresholds, regionId }) => {
+    return store.updateAdventure(({ partner, adventure, readyAt, blocked, thresholds, regionId, hygiene }) => {
       const current = catalog.byId.get(partner.currentNodeId)
       if (!current) return undefined
       if (command.adventureId !== undefined && command.adventureId !== adventure?.id) return undefined
       if (command.kind === "start" && now < readyAt) return undefined
-      if (partner.pendingEvolutionTargetId && adventure?.status === "travel")
+      if ((partner.pendingEvolutionTargetId || partner.battleOpponentNodeId) && adventure?.status === "travel")
         return { adventure: endAdventure(adventure, now) }
       if (blocked && command.kind !== "pause" && command.kind !== "stop")
         return adventure ? { adventure: { ...adventure, running: false, lastTickAt: now } } : undefined
@@ -37,6 +39,7 @@ export const createAdventureService = (
         now,
         random,
         bossesFor(adventure?.regionId ?? regionId),
+        legacyBossesFor(adventure?.regionId ?? regionId),
       )
       if (!change) return undefined
       if (change.recruitedNodeId) {
@@ -61,10 +64,17 @@ export const createAdventureService = (
             },
           }
         : {}
+      const combat = change.adventure.victories > (adventure?.victories ?? 0) ? { combatVictory: true } : {}
       const cooldown = command.kind === "start" ? { readyAt: now + ADVENTURE_PACING.cooldownMs } : {}
       const fraction = change.experienceFraction
-      if (!fraction || partner.isTerminal || partner.pendingEvolutionTargetId || blocked)
-        return { adventure: change.adventure, ...cooldown, ...achievement }
+      if (
+        !fraction ||
+        partner.isTerminal ||
+        partner.pendingEvolutionTargetId ||
+        partner.battleOpponentNodeId ||
+        blocked
+      )
+        return { adventure: change.adventure, ...cooldown, ...achievement, ...combat }
       const progress = applyTokenProgress(
         {
           current,
@@ -78,13 +88,15 @@ export const createAdventureService = (
         catalog.byId,
         catalog.nodes,
         thresholds,
+        advanceHygiene(hygiene, current.stage === 0, now)?.poops.length ?? 0,
       )
       return {
         adventure:
-          progress.pendingEvolutionTargetId || progress.current.id !== current.id
+          progress.battleOpponentNodeId || progress.pendingEvolutionTargetId || progress.current.id !== current.id
             ? endAdventure(change.adventure, now)
             : change.adventure,
         ...achievement,
+        ...combat,
         progression: {
           currentNodeId: progress.current.id,
           gauge: progress.gauge,

@@ -6,7 +6,9 @@ import type {
 } from "../../application/models/usage.ts"
 import type { DigitalPetControl } from "../../application/ports/digital-pet-control.ts"
 import type { PartnerLifecycle } from "../../application/ports/partner-lifecycle.ts"
+import type { PartnerTeamStore } from "../../application/ports/partner-team-store.ts"
 import type { UsageLedger } from "../../application/ports/usage-ledger.ts"
+import type { EvolutionBattleExpectation } from "../../application/use-cases/resolve-evolution-battle.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 
 export type PersistedPartner = Partner
@@ -40,6 +42,7 @@ export type TrainerState = {
 export type PersistedPartnerSummary = Partner
 
 export type SqliteDigitalPetWriteStore = PartnerLifecycle &
+  PartnerTeamStore &
   UsageLedger &
   DigitalPetControl & {
     close: () => Promise<void>
@@ -52,6 +55,13 @@ export type SqliteDigitalPetWriteStore = PartnerLifecycle &
     listPartnerEvents: (partnerId: string) => readonly PersistedPartnerEvent[]
     listUsageReceipts: () => readonly UsageReceiptRecord[]
     resolveEvolutionBattle: (nextState: PartnerProgression, createdAt: string) => ResolveEvolutionBattleOutcome
+    getEvolutionBattleId: () => string | null
+    completeEvolutionBattle: (
+      won: boolean,
+      createdAt: string,
+      expected?: EvolutionBattleExpectation,
+      selector?: () => number,
+    ) => ResolveEvolutionBattleOutcome
   }
 
 export type { ApplyUsageReceiptOutcome, PartnerProgression, SpawnPartnerInput, UsageReceiptMetadata }

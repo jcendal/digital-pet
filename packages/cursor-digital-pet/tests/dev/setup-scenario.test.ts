@@ -46,7 +46,7 @@ const advancePartnerToStage = (
 
     applyDevUsage(repository, `dev-progress-${step}`)
     const pending = repository.getActivePartner()
-    if (pending?.pendingEvolutionTargetId !== null && pending?.battleOpponentNodeId !== null) {
+    if (pending?.battleOpponentNodeId !== null) {
       resolveEvolutionBattleForPartner(repository, true, DIGIMON_CATALOG.byId, `dev-battle-${step}-${Date.now()}`)
     }
   }
@@ -66,7 +66,7 @@ describe("cursor-digital-pet dev setup-scenario", () => {
 
         setupBattlePending(repository)
         const snapshot = repository.getSidebarSnapshot()
-        expect(snapshot?.pendingEvolutionTargetId).not.toBeNull()
+        expect(snapshot?.pendingEvolutionTargetId).toBeNull()
         expect(snapshot?.battleOpponentNodeId).not.toBeNull()
       } finally {
         repository.close()
@@ -83,7 +83,7 @@ describe("cursor-digital-pet dev setup-scenario", () => {
       try {
         setupBattlePending(repository)
         const snapshot = repository.getSidebarSnapshot()
-        expect(snapshot?.pendingEvolutionTargetId).not.toBeNull()
+        expect(snapshot?.pendingEvolutionTargetId).toBeNull()
         expect(snapshot?.battleOpponentNodeId).not.toBeNull()
       } finally {
         repository.close()

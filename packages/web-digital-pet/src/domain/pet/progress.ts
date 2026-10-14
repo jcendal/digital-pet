@@ -1,4 +1,6 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { eggNodeForOrigin } from "@jcendal/digital-pet-core/data/egg-families.ts"
+import type { AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { eggPettingExperience } from "@jcendal/digital-pet-core/domain/egg-petting.ts"
 import {
@@ -52,7 +54,9 @@ export type LocalArchivedPartner = {
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
 }
 
-export type LocalPetState = {
+export type LocalPartnerState = {
+  readonly combatVictories?: number
+  readonly originEggId?: string
   readonly partnerId: string
   readonly createdAt: string
   readonly currentNodeId: string
@@ -60,17 +64,27 @@ export type LocalPetState = {
   readonly isTerminal: boolean
   readonly lastTickAt: number
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
+  readonly food?: FoodState
+  readonly hygiene?: HygieneState
+  readonly pendingEvolution?: {
+    readonly targetNodeId: string | null
+    readonly opponentNodeId: string | null
+    readonly readyAt: number
+  }
+}
+
+export type LocalReservePartner = LocalPartnerState & {
+  readonly pausedAt: number
+  readonly adventure?: AdventureState
+}
+
+export type LocalPetState = LocalPartnerState & {
   readonly bossVictories?: readonly BossVictory[]
   readonly worldVisit?: WorldVisit
   readonly experienceLevel?: ExperienceLevel
   readonly retiredPartners?: readonly LocalArchivedPartner[]
-  readonly food?: FoodState
-  readonly hygiene?: HygieneState
-  readonly pendingEvolution?: {
-    readonly targetNodeId: string
-    readonly opponentNodeId: string | null
-    readonly readyAt: number
-  }
+  readonly reserve?: LocalReservePartner
+  readonly teamRevision?: number
 }
 
 export const advanceLocalPet = (
@@ -78,9 +92,10 @@ export const advanceLocalPet = (
   now: number,
   selector: EvolutionSelector = Math.random,
 ): LocalPetState => {
-  const current = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
-  if (!current)
+  const catalogNode = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
+  if (!catalogNode)
     throw new Error(IntlModule.translate("progress.unknownBrowserPartner", { currentNodeId: initial.currentNodeId }))
+  const current = eggNodeForOrigin(catalogNode, initial.originEggId)
   const hygiene = advanceHygiene(initial.hygiene, current.stage === 0, now)
   if (hygiene !== initial.hygiene) {
     const { hygiene: _old, ...rest } = initial
@@ -112,9 +127,10 @@ export const advanceLocalPet = (
       DIGIMON_CATALOG.byId,
       DIGIMON_CATALOG.nodes,
       thresholds,
+      initial.hygiene?.poops.length ?? 0,
     )
     const targetNodeId = next.pendingEvolutionTargetId ?? (next.current.id !== current.id ? next.current.id : null)
-    if (targetNodeId) {
+    if (targetNodeId || next.battleOpponentNodeId) {
       return {
         ...initial,
         gauge: thresholds[current.stage],
@@ -157,24 +173,30 @@ export const completeLocalEvolution = (
   if (!state.pendingEvolution || pendingEvolutionKey(state) !== expectedKey) return state
   const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
   const pending = state.pendingEvolution
-  const target = DIGIMON_CATALOG.byId.get(pending.targetNodeId)
-  if (!current || !target || !current.nextEvolutions.includes(target.id))
+  const target = pending.targetNodeId ? DIGIMON_CATALOG.byId.get(pending.targetNodeId) : undefined
+  if (!current || (pending.targetNodeId !== null && (!target || !current.nextEvolutions.includes(target.id))))
     throw new Error(IntlModule.translate("progress.invalidPendingEvolution"))
   if ((current.stage === 0) !== (pending.opponentNodeId === null))
     throw new Error(IntlModule.translate("progress.invalidPendingEvolutionBattle"))
   const resolved =
     pending.opponentNodeId === null
-      ? { current: target, isTerminal: target.nextEvolutions.length === 0 }
+      ? target
+        ? { current: target, isTerminal: target.nextEvolutions.length === 0, combatVictories: 0 }
+        : (() => {
+            throw new Error("Missing hatch target")
+          })()
       : resolveEvolutionBattle(
           {
             current,
             gauge: state.gauge,
             isTerminal: false,
-            pendingEvolutionTargetId: target.id,
+            pendingEvolutionTargetId: pending.targetNodeId,
             battleOpponentNodeId: pending.opponentNodeId,
+            combatVictories: state.combatVictories ?? 0,
           },
           won,
           DIGIMON_CATALOG.byId,
+          advanceHygiene(state.hygiene, false, now)?.poops.length ?? 0,
         )
   const { pendingEvolution: _pending, ...rest } = state
   return {
@@ -182,6 +204,7 @@ export const completeLocalEvolution = (
     currentNodeId: resolved.current.id,
     gauge: 0,
     isTerminal: resolved.isTerminal,
+    combatVictories: resolved.combatVictories ?? 0,
     ...(current.stage === 0 ? { hygiene: createHygiene(now) } : {}),
     ...(resolved.current.id === current.id ? {} : { food: scheduleFood(now, BROWSER_FEEDING_POLICY) }),
     lastTickAt: now,
@@ -255,6 +278,9 @@ export const replaceLocalPartner = (
     experienceLevel: settled.experienceLevel ?? "high",
     ...(settled.bossVictories ? { bossVictories: settled.bossVictories } : {}),
     ...(settled.worldVisit ? { worldVisit: settled.worldVisit } : {}),
+    ...(settled.reserve ? { reserve: settled.reserve } : {}),
+    ...(settled.teamRevision !== undefined ? { teamRevision: settled.teamRevision + 1 } : {}),
+    combatVictories: 0,
     events: [{ currentNodeId: nodeId, createdAt }],
     retiredPartners: [
       ...(settled.retiredPartners ?? []),

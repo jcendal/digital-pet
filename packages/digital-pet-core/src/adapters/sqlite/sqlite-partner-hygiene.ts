@@ -2,6 +2,7 @@ import type { PartnerHygieneStore } from "../../application/ports/partner-hygien
 import { parseHygiene } from "../../domain/hygiene.ts"
 import { IntlModule } from "../../i18n.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
+import { syncCombatProgress } from "./sqlite-combat-progress.ts"
 import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sqlite-digital-pet-schema.ts"
 
 export const createSqlitePartnerHygiene = (executor: SqliteExecutor): PartnerHygieneStore => ({
@@ -43,6 +44,7 @@ export const createSqlitePartnerHygiene = (executor: SqliteExecutor): PartnerHyg
             partner.partnerId,
           ],
         )
+      if (progress) syncCombatProgress(executor, partner.partnerId, progress)
       if (mutation.cleaned)
         executor.run(
           "INSERT INTO partner_events (event_id, partner_id, kind, current_node_id, gauge, is_terminal, token_delta, receipt_key, created_at) VALUES (?, ?, 'usage_applied', ?, ?, ?, NULL, NULL, ?)",

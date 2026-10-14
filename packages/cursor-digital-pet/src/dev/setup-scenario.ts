@@ -35,8 +35,7 @@ const applyTokenUsage = (ledger: UsageLedger, receiptKey: string, tokenDelta = 1
     thresholds: DEV_INSTANT_BATTLE_THRESHOLDS,
   })
 
-const hasPendingBattle = (snapshot: SidebarSnapshot): boolean =>
-  snapshot.pendingEvolutionTargetId !== null && snapshot.battleOpponentNodeId !== null
+const hasPendingBattle = (snapshot: SidebarSnapshot): boolean => snapshot.battleOpponentNodeId !== null
 
 const assertPartnerCanBattle = (snapshot: SidebarSnapshot): void => {
   const current = DIGIMON_CATALOG.byId.get(snapshot.currentNodeId)

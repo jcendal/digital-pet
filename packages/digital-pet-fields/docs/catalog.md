@@ -55,3 +55,51 @@ are thematic assignments inspired by [Adventure](https://lineup.toei-anim.co.jp/
 [The Revenge of Diaboromon](https://lineup.toei-anim.co.jp/ja/movie/digimon_diavolo/story/),
 and *Last Evolution Kizuna*. Keep existing catalog IDs and walking/attack sprites;
 do not edit generated species data. Tests verify every zone and required sprite.
+
+
+Regions have authored Easy, Medium and Hard difficulties. `REGION_BOSS_TIERS`
+requires stages 5/6, 6/6 and 7/7 respectively. The gallery uses
+`REGIONS_BY_DIFFICULTY`; map geography, residence assignments, travel access,
+encounter odds and reward fractions remain unchanged. Species use their real
+catalog stage and combat statistics, with no extra regional multiplier.
+
+Boss slots carry previous-species aliases. Their victory projection preserves
+stars earned before the boss lineup changed, and `getLegacyRegionBosses` lets
+saved encounters finish against the original opponent. Legacy bosses are not
+added to the new encounter pool. Transfer validation accepts both current and
+legacy boss IDs for their actual region.
+
+`egg-discoveries.ts` maps authored regional victories to egg families defined in
+core. Browser origins currently include Starter/Botamon, Forest/Yuramon and
+Aquatic/Pichimon. Only Starter begins unlocked; prior regional wins unlock their
+families without granting any new boss achievement. Origins use the generic
+Digitama sprite and constrain only the first form; legacy eggs keep their original
+hatch options. Native origin persistence and further egg families remain pending.
+
+
+## Reviewed game affinities (2026-10-14)
+
+`habitat-affinities.ts` supplements source Field memberships with explicit game
+placements. The review used Omnipet's [Field lists](https://digimon-db.omnipet.app.br/api/fields)
+and its species lists for [Insectoid](https://digimon-db.omnipet.app.br/api/digimon?type=66&limit=216),
+[Vegetation](https://digimon-db.omnipet.app.br/api/digimon?type=54&limit=216),
+[Demon](https://digimon-db.omnipet.app.br/api/digimon?type=27&limit=216),
+[Dark Angel](https://digimon-db.omnipet.app.br/api/digimon?type=76&limit=216) and
+[Evil King](https://digimon-db.omnipet.app.br/api/digimon?type=11&limit=216).
+
+The new affinities place insects/plants in Tropical Jungle and demons/dark angels
+in Vamdemon Castle, even when their documented Field is another category. They
+are authored game placements inferred from those types, not claims that Omnipet
+classifies every added species as Jungle Troopers or Dark Area. Existing source
+memberships remain intact and a species can live in multiple regions.
+
+| Region / Field | Before | After | Added game affinities |
+| --- | --- | --- | --- |
+| Vamdemon Castle / Dark Area | 55 | 62 | Fugamon, Ogremon X, DoneDevimon, LadyDevimon, NeoDevimon, Murmukusmon, Beelzemon X |
+| Tropical Jungle / Jungle Troopers | 45 | 60 | Morphomon, Hudiemon, Roachmon, Shadramon, JewelBeemon, Okuwamon, SkullScorpiomon, Palmon X, Pomumon, RedVegiemon, Togemon X, Blossomon, Entmon, Jagamon, Toropiamon |
+
+The review records explicit catalog/source IDs. Generic aliases and empty sprite
+names cannot stand in for an exact form: ordinary Ophanimon is not its Falldown
+form, and a base species is not its X variant. No species were removed or added
+to the 650-record catalog. Tests verify membership, no duplicate assignments and
+retention of all existing source Fields.

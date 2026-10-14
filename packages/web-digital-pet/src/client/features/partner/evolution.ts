@@ -28,13 +28,18 @@ export const presentPendingEvolution = async (
     const opponent = pending.opponentNodeId ? DIGIMON_CATALOG.byId.get(pending.opponentNodeId) : null
     if (!player || (pending.opponentNodeId && !opponent))
       throw new Error(IntlModule.translate("evolution.invalidPendingBattle"))
-    let won = true
+    let committedNodeId: string | null = null
     await runForegroundEvolution({
       active,
       valid: () => presentationCurrent(revision) && valid(),
       current: async () => {
         const current = await peekLocalState()
-        return Boolean(current && pendingEvolutionKey(current) === key)
+        return Boolean(
+          current &&
+            (committedNodeId
+              ? current.partnerId === state.partnerId && current.currentNodeId === committedNodeId
+              : pendingEvolutionKey(current) === key),
+        )
       },
       wait: () => new Promise((resolve) => window.setTimeout(resolve, 100)),
       present: async (checkpoint) => {
@@ -47,7 +52,7 @@ export const presentPendingEvolution = async (
             const presentation = buildSidebarPresentation(
               {
                 currentNodeId: node.id,
-                gauge: node.id === player.id ? state.gauge : 0,
+                gauge: !committedNodeId && node.id === player.id ? state.gauge : 0,
                 isTerminal: node.nextEvolutions.length === 0,
                 frozen: false,
                 isSetOverride: false,
@@ -66,16 +71,26 @@ export const presentPendingEvolution = async (
             await checkpoint()
             deliver({ type: "animation-frame", artwork, ...(hud ? { hud } : {}) })
           }
-        won =
-          (await presentEvolution(player.id, pending.targetNodeId, pending.opponentNodeId, width, {
-            frameCatalog: MONSTER_FRAME_CATALOG,
-            digimonCatalog: DIGIMON_CATALOG,
-            onState,
-            onArtwork,
-          })) === "player"
+        await presentEvolution(player.id, pending.targetNodeId, pending.opponentNodeId, width, {
+          frameCatalog: MONSTER_FRAME_CATALOG,
+          digimonCatalog: DIGIMON_CATALOG,
+          onState,
+          onArtwork,
+          resolveTarget: async (outcome) => {
+            await checkpoint()
+            const won = outcome === "player"
+            const result = await finishLocalEvolution(
+              key,
+              won,
+              () => active() && valid() && presentationCurrent(revision),
+            )
+            if (!result.accepted || !result.currentNodeId) throw new PresentationCancelled()
+            committedNodeId = result.currentNodeId
+            return result.targetNodeId
+          },
+        })
       },
       complete: async () => {
-        await finishLocalEvolution(key, won, () => active() && valid() && presentationCurrent(revision))
         updated()
       },
     })

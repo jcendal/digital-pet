@@ -109,7 +109,7 @@ it("keeps boss stars through replacement and transfer without inventing Dex owne
     [victory],
   )
   expect(model.registeredIds).toEqual([])
-  expect(model.bosses?.find((boss) => boss.id === victory.nodeId)).toMatchObject({ defeated: true, registered: false })
+  expect(model.bosses?.[0]).toMatchObject({ defeated: true, registered: false })
   const html = renderWorldOverview(
     new Set(),
     { regionId: "digital-ocean", locationId: "dragon-eye-lake" },

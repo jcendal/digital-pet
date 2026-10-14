@@ -19,6 +19,6 @@ export const getSidebarCardInputs = (reader: SidebarSnapshotReader, catalog: Dig
     frozen: snapshot.frozen,
     isSetOverride: snapshot.isSetOverride,
     trainerTotalTokens: snapshot.trainerTotalTokens,
-    evolutionBattlePending: snapshot.pendingEvolutionTargetId !== null && snapshot.battleOpponentNodeId !== null,
+    evolutionBattlePending: snapshot.battleOpponentNodeId !== null,
   }
 }

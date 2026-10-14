@@ -4,6 +4,13 @@ import type { Partner } from "../../domain/partner.ts"
 import type { ResolveEvolutionBattleOutcome } from "../models/usage.ts"
 
 export type EvolutionBattleRepository = {
+  getEvolutionBattleId?: () => string | null
+  completeEvolutionBattle?: (
+    won: boolean,
+    createdAt: string,
+    expected?: EvolutionBattleExpectation,
+    selector?: () => number,
+  ) => ResolveEvolutionBattleOutcome
   getActivePartner: () => Partner | null
   resolveEvolutionBattle: (
     nextState: import("../../domain/partner.ts").PartnerProgression,
@@ -11,13 +18,20 @@ export type EvolutionBattleRepository = {
   ) => ResolveEvolutionBattleOutcome
 }
 
+export type EvolutionBattleExpectation = Pick<
+  Partner,
+  "partnerId" | "currentNodeId" | "pendingEvolutionTargetId" | "battleOpponentNodeId"
+> & { readonly battleId?: string | null }
+
 export const resolveEvolutionBattleForPartner = (
   repository: EvolutionBattleRepository,
   won: boolean,
   digimonById: ReadonlyMap<string, DigimonNode>,
   createdAt: string,
-  expected?: Pick<Partner, "partnerId" | "currentNodeId" | "pendingEvolutionTargetId" | "battleOpponentNodeId">,
+  expected?: EvolutionBattleExpectation,
+  selector: () => number = Math.random,
 ): ResolveEvolutionBattleOutcome => {
+  if (repository.completeEvolutionBattle) return repository.completeEvolutionBattle(won, createdAt, expected, selector)
   const partner = repository.getActivePartner()
   if (partner === null) return { kind: "no_pending_battle" }
   if (
@@ -34,7 +48,7 @@ export const resolveEvolutionBattleForPartner = (
     throw new Error(`Persisted partner node ${partner.currentNodeId} is missing from the catalog`)
   }
 
-  if (partner.pendingEvolutionTargetId === null || partner.battleOpponentNodeId === null) {
+  if (partner.battleOpponentNodeId === null) {
     return { kind: "no_pending_battle" }
   }
 
@@ -48,6 +62,8 @@ export const resolveEvolutionBattleForPartner = (
     },
     won,
     digimonById,
+    0,
+    selector,
   )
 
   return repository.resolveEvolutionBattle(

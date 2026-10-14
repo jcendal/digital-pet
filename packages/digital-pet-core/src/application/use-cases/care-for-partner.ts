@@ -31,6 +31,7 @@ export const createPartnerHygieneService = (
           !current?.stage ||
           frozen ||
           isSetOverride ||
+          partner.battleOpponentNodeId !== null ||
           partner.pendingEvolutionTargetId !== null
         )
           return undefined
@@ -52,6 +53,7 @@ export const createPartnerHygieneService = (
           catalog.byId,
           catalog.nodes,
           thresholds,
+          next.poops.length,
         )
         return {
           hygiene: next,

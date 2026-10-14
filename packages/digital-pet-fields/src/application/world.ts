@@ -1,5 +1,5 @@
 import type { DigimonCatalog, DigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
-import { REGION_BOSS_IDS } from "../data/bosses.ts"
+import { legacyRegionBossIds, REGION_BOSS_IDS } from "../data/bosses.ts"
 import { FIELDS } from "../data/fields.ts"
 import { LOCATIONS, REGIONS } from "../data/regions.ts"
 import type { Field, Region, WorldLocation, WorldVisit } from "../domain/world.ts"
@@ -74,3 +74,10 @@ export const getRegionBosses = (regionId: string, catalog: DigimonCatalog): read
     return node
   })
 }
+
+export const getLegacyRegionBosses = (regionId: string, catalog: DigimonCatalog): readonly DigimonNode[] =>
+  legacyRegionBossIds(regionId).map((id) => {
+    const node = catalog.byId.get(id)
+    if (!node) throw new Error(IntlModule.translate("world.unknownResidentIn", { id, regionId }))
+    return node
+  })

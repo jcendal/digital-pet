@@ -65,5 +65,6 @@
   "phase.draw": "무승부",
   "phase.feeding": "먹는 중",
   "cli.help": "사용법: opencode-digital-pet <init|update> [--dry-run]\n\n명령어:\n  init       OpenCode 전역 플러그인 설치 프로그램으로 현재 버전을 설치합니다.\n  update     같은 설치 프로그램으로 현재 버전을 다시 설치합니다.\n\n옵션:\n  --dry-run  실행하지 않고 OpenCode 명령어만 표시합니다.\n  --help     도움말을 표시합니다.\n",
-  "cli.installed": "OpenCode 플러그인 설치가 완료되었습니다. OpenCode를 다시 시작하세요.\n"
+  "cli.installed": "OpenCode 플러그인 설치가 완료되었습니다. OpenCode를 다시 시작하세요.\n",
+  "phase.no_evolution": "진화 없음"
 }

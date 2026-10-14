@@ -65,5 +65,6 @@
   "phase.draw": "EMPATE",
   "phase.feeding": "COMIENDO",
   "cli.help": "Uso: opencode-digital-pet <init|update> [--dry-run]\n\nComandos:\n  init       Instala la versión actual mediante el instalador global de OpenCode.\n  update     Reinstala la versión actual mediante el mismo instalador.\n\nOpciones:\n  --dry-run  Muestra el comando nativo de OpenCode sin ejecutarlo.\n  --help     Muestra esta ayuda.\n",
-  "cli.installed": "Instalación de OpenCode completada. Reinicia OpenCode.\n"
+  "cli.installed": "Instalación de OpenCode completada. Reinicia OpenCode.\n",
+  "phase.no_evolution": "SIN EVOLUCIONES"
 }

@@ -195,7 +195,7 @@ describe("server threshold policy", () => {
         currentNodeId: partner.currentNodeId,
         gauge: 1,
         isTerminal: false,
-        pendingEvolutionTargetId: expect.any(String),
+        pendingEvolutionTargetId: null,
         battleOpponentNodeId: expect.any(String),
       }),
     ])

@@ -30,6 +30,7 @@ export const createEggPettingService = (
         frozen ||
         isSetOverride ||
         partner.isTerminal ||
+        partner.battleOpponentNodeId !== null ||
         partner.pendingEvolutionTargetId !== null
       )
         return undefined

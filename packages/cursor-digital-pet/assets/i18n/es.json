@@ -48,5 +48,6 @@
   "contributions.configuration.properties.digital-pet.databasePath.description": "Cambiar la ruta a pet.db (por defecto: opencode-digital-pet/pet.db compartido)",
   "contributions.configuration.properties.digital-pet.usage.settleDelayMs.description": "Espera inicial antes de usar la API de uso como alternativa (ms)",
   "contributions.configuration.properties.digital-pet.devTools.description": "Activa herramientas de desarrollo para previsualizar animaciones de comida, evolución y combate.",
-  "installHooks.invalidShape": "El formato de hooks.json no es válido"
+  "installHooks.invalidShape": "El formato de hooks.json no es válido",
+  "sidebarOrchestrator.noEvolutionsAvailable": "No hay evoluciones disponibles."
 }

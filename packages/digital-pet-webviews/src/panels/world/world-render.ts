@@ -1,7 +1,7 @@
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { IntlModule as CoreIntlModule } from "@jcendal/digital-pet-core/i18n"
 import { getField, getRegionLocations, getRegionProgress } from "@jcendal/digital-pet-fields/application/world.ts"
-import { REGIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
+import { REGIONS_BY_DIFFICULTY } from "@jcendal/digital-pet-fields/data/regions.ts"
 import type { Region, WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { IntlModule } from "../../i18n.ts"
 import { escapeHtml } from "../../shared/escape-html.ts"
@@ -26,13 +26,13 @@ export const renderWorldOverview = (
   bossVictories: readonly BossVictory[] = [],
 ): string => `
 <p class="world-intro" data-i18n="webviews:worldRender.chooseAPlaceToExploreWithYourCompanion">${escapeHtml(IntlModule.translate("worldRender.chooseAPlaceToExploreWithYourCompanion"))}</p>
-<div class="world-grid">${REGIONS.map((region) => {
+<div class="world-grid">${REGIONS_BY_DIFFICULTY.map((region) => {
   const field = getField(region)
   const progress = getRegionProgress(region.id, registered)
   return `<button class="region-card" type="button" data-region="${region.id}" aria-label="${escapeHtml(IntlModule.translate("world.explore", { name: region.name }))}">
     <span class="region-card-thumbnail"><img src="${escapeHtml(sceneUrl(region.defaultLocationId))}" alt="" width="160" height="160">${bossVictories.some((victory) => victory.regionId === region.id) ? bossStar() : ""}</span>
     <span class="region-card-meta">${field.code}${visit.regionId === region.id ? `<span class="world-here" data-i18n="webviews:worldRender.here">${escapeHtml(IntlModule.translate("worldRender.here"))}</span>` : ""}</span>
-    <strong>${escapeHtml(region.name)}</strong><small>${escapeHtml(IntlModule.translate("world.registeredCount", { count: progress.registered, total: progress.total }))}</small></button>`
+    <strong>${escapeHtml(region.name)}</strong><small class="region-difficulty">${escapeHtml(IntlModule.translate(`world.difficulty.${region.difficulty}`))}</small><small>${escapeHtml(IntlModule.translate("world.registeredCount", { count: progress.registered, total: progress.total }))}</small></button>`
 }).join("")}</div>`
 
 export const renderWorldRegion = (
@@ -54,9 +54,13 @@ export const renderWorldRegion = (
       )
       .join("")
   const remaining = model.residents.length - 5
-  return `<button class="world-back text-action" type="button" data-world-back data-i18n="webviews:worldRender.allRegions">${escapeHtml(IntlModule.translate("worldRender.allRegions"))}</button>
+  const nextRegion =
+    REGIONS_BY_DIFFICULTY[
+      (REGIONS_BY_DIFFICULTY.findIndex((candidate) => candidate.id === region.id) + 1) % REGIONS_BY_DIFFICULTY.length
+    ]!
+  return `<nav class="world-region-navigation" aria-label="${escapeHtml(IntlModule.translate("worldRender.allRegions"))}"><button class="world-back text-action" type="button" data-world-back data-i18n="webviews:worldRender.allRegions">${escapeHtml(IntlModule.translate("worldRender.allRegions"))}</button><button class="world-next text-action" type="button" data-region="${nextRegion.id}" data-i18n="webviews:worldRender.nextRegion">${escapeHtml(IntlModule.translate("worldRender.nextRegion"))}</button></nav>
     <div class="world-preview"><img id="world-preview-image" src="${escapeHtml(sceneUrl(selected.id))}" alt="${escapeHtml(IntlModule.translate("world.landscape", { name: selected.name }))}"><span>${escapeHtml(field.name)}</span></div>
-    <h3 class="region-title">${escapeHtml(region.name)}</h3><p class="section-description">${escapeHtml(region.description)}</p>
+    <h3 class="region-title">${escapeHtml(region.name)}</h3><p class="setting-caption region-difficulty">${escapeHtml(IntlModule.translate(`world.difficulty.${region.difficulty}`))}</p><p class="section-description">${escapeHtml(region.description)}</p>
     <p class="setting-caption">${escapeHtml(field.description)}</p>
     <div class="world-locations" role="group" aria-label="${escapeHtml(IntlModule.translate("worldRender.locations"))}" data-i18n-aria-label="webviews:worldRender.locations">${locations.map((location) => `<button type="button" data-location="${location.id}" aria-pressed="${location.id === selected.id}">${escapeHtml(location.name)}</button>`).join("")}</div>
     <button id="world-travel" class="primary-action" type="button" data-location="${selected.id}"><span>${escapeHtml(IntlModule.translate(visit.locationId === selected.id ? "world.youAreHere" : "world.travelHere"))}</span><span aria-hidden="true">→</span></button>

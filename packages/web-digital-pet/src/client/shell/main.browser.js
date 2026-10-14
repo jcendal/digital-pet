@@ -3,6 +3,7 @@ import { initBrowserMusic } from "../features/music/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
 import { initMoreMenu } from "./more-menu.browser.js"
 import "./styles.css"
+import { initBrowserTeam } from "../features/team/controller.ts"
 ;(() => {
   initBrowserInstallation()
   initBrowserMusic()
@@ -13,12 +14,22 @@ import "./styles.css"
   const mapButton = document.getElementById("map-button")
   const dexView = document.getElementById("dex-view")
   const dexTabs = Array.from(document.querySelectorAll("[data-dex-page]"))
-  const pageFromPath = (path) => (path === "/dex" ? "dex" : path === "/history" ? "history" : "sidebar")
+  const pageFromPath = (path) => {
+    const url = new URL(path, location.origin)
+    const tab = url.searchParams.get("tab")
+    return url.pathname === "/dex"
+      ? tab === "team"
+        ? tab
+        : "dex"
+      : url.pathname === "/history"
+        ? "history"
+        : "sidebar"
+  }
   const show = (path, preserveSelection = false) => {
     moreMenu.close()
     mapView.hidden = true
     mapButton.removeAttribute("aria-current")
-    const page = pageFromPath(new URL(path, location.origin).pathname)
+    const page = pageFromPath(path)
     dexView.hidden = page === "sidebar"
     for (const tab of dexTabs) {
       const selected = tab.dataset.dexPage === page
@@ -31,8 +42,9 @@ import "./styles.css"
       if (active) frame.removeAttribute("aria-hidden")
       else frame.setAttribute("aria-hidden", "true")
     }
+    document.getElementById("dex-team-panel").hidden = page !== "team"
     for (const link of links) {
-      if (link.dataset.page === page || (link.dataset.page === "dex" && page === "history"))
+      if (link.dataset.page === page || (link.dataset.page === "dex" && ["history", "team"].includes(page)))
         link.setAttribute("aria-current", "page")
       else link.removeAttribute("aria-current")
     }
@@ -56,7 +68,8 @@ import "./styles.css"
     show(path, preserveSelection)
   }
   for (const [index, tab] of dexTabs.entries()) {
-    tab.addEventListener("click", () => navigate(`/${tab.dataset.dexPage}`, true))
+    const pathFor = (page) => (page === "team" ? "/dex?tab=team" : `/${page}`)
+    tab.addEventListener("click", () => navigate(pathFor(tab.dataset.dexPage), true))
     tab.addEventListener("keydown", (event) => {
       let next = index
       if (event.key === "ArrowRight") next = (index + 1) % dexTabs.length
@@ -65,7 +78,7 @@ import "./styles.css"
       else if (event.key === "End") next = dexTabs.length - 1
       else return
       event.preventDefault()
-      navigate(`/${dexTabs[next].dataset.dexPage}`, true)
+      navigate(pathFor(dexTabs[next].dataset.dexPage), true)
       dexTabs[next].focus()
     })
   }
@@ -105,11 +118,15 @@ import "./styles.css"
   })
   window.addEventListener("digital-pet:navigate", (event) => {
     const path = event.detail
-    if (typeof path === "string" && /^\/(?:dex(?:\?selected=[0-7]-[0-9]{3})?|history)?$/.test(path)) navigate(path)
+    if (typeof path === "string" && /^\/(?:dex(?:\?(?:selected=[0-7]-[0-9]{3}|tab=team))?|history)?$/.test(path))
+      navigate(path)
   })
   import("../features/world/controller.ts").then((module) => module.initBrowserWorld()).catch(() => {})
   window.addEventListener("popstate", () => show(location.pathname + location.search))
   show(location.pathname + location.search)
+  initBrowserTeam().catch((error) => {
+    document.getElementById("team-status").textContent = String(error)
+  })
   import("../features/options/controller.ts")
     .then((module) => module.initBrowserOptions())
     .catch((error) => {

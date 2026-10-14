@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { createPartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
+import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
 import { createSqliteDigitalPetRepository } from "../../src/adapters/sqlite/sqlite-digital-pet-write-store.ts"
@@ -42,6 +43,52 @@ test("Cursor persists piles, cleans once, rewards stage XP, and resets on a new 
     })
     expect(care().refreshHygiene(cleanAt)).toBeUndefined()
     expect(care().cleanPoop(partner.partnerId, id, cleanAt)).toBe(false)
+  } finally {
+    await repository.close()
+    await removeTempTestRoot(root)
+  }
+})
+
+test("offline piles affect post-duel eligibility and cleaning remains blocked during the duel", async () => {
+  const root = await createTempTestRoot()
+  const repository = await createSqliteDigitalPetRepository({ appDataRoot: root.appDataRoot })
+  const now = Date.now()
+  const care = createPartnerHygieneService(repository, DIGIMON_CATALOG, STAGE_GAUGE_THRESHOLDS, () => 0)
+  try {
+    const partner = repository.spawnPartner({
+      currentNodeId: "4-010",
+      gauge: 0,
+      isTerminal: false,
+      createdAt: new Date(now - 27 * 3_600_000).toISOString(),
+    })
+    care.refreshHygiene(now - 27 * 3_600_000)
+    recordUsage({
+      ledger: repository,
+      usage: {
+        receiptKey: "dirty-threshold",
+        eventId: "dirty-threshold",
+        tokenDelta: STAGE_GAUGE_THRESHOLDS[4],
+        cost: null,
+        createdAt: new Date(now).toISOString(),
+      },
+      digimonById: DIGIMON_CATALOG.byId,
+      catalogNodes: DIGIMON_CATALOG.nodes,
+      selector: () => 0,
+      thresholds: STAGE_GAUGE_THRESHOLDS,
+    })
+    expect(repository.getActivePartner()?.pendingEvolutionTargetId).toBeNull()
+    expect(repository.getActivePartner()?.gauge).toBe(STAGE_GAUGE_THRESHOLDS[4])
+    const piles = care.refreshHygiene(now)?.hygiene.poops
+    expect(piles).toHaveLength(3)
+    const id = piles?.[0]
+    if (id === undefined) throw new Error("Missing saved pile")
+    expect(repository.getActivePartner()?.battleOpponentNodeId).not.toBeNull()
+    expect(care.cleanPoop(partner.partnerId, id, now)).toBe(false)
+    expect(repository.completeEvolutionBattle(true, new Date(now).toISOString(), undefined, () => 0).kind).toBe(
+      "won_without_evolution",
+    )
+    expect(repository.getActivePartner()?.gauge).toBe(0)
+    expect(care.cleanPoop(partner.partnerId, id, now)).toBe(true)
   } finally {
     await repository.close()
     await removeTempTestRoot(root)

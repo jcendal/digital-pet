@@ -36,6 +36,41 @@ const createRepository = (outcome: "won" | "lost"): EvolutionBattleRepository =>
 })
 
 describe("evolution battle session", () => {
+  test("a targetless victory commits before presenting the no-evolution result, while stale results stay silent", async () => {
+    const original = createRepository("won")
+    const partner = original.getActivePartner()
+    if (!partner) throw new Error("Missing test partner")
+    for (const kind of ["won_without_evolution", "no_pending_battle"] as const) {
+      const phases: string[] = []
+      let committed = false
+      const battled = await runEvolutionBattleSession(
+        { ...pendingBattleSnapshot, pendingEvolutionTargetId: null },
+        80,
+        {
+          frameCatalog: MONSTER_FRAME_CATALOG,
+          digimonCatalog: DIGIMON_CATALOG,
+          random: () => 0,
+          repository: {
+            ...original,
+            getActivePartner: () => ({ ...partner, pendingEvolutionTargetId: null }),
+            completeEvolutionBattle: (won) => {
+              expect(won).toBe(true)
+              committed = true
+              return { kind }
+            },
+          },
+          onArtwork: async () => {},
+          onState: async (state) => {
+            phases.push(state.phase)
+            if (state.phase === "no_evolution") expect(committed).toBe(true)
+          },
+        },
+      )
+      expect(battled).toBe(true)
+      expect(phases).toEqual(kind === "won_without_evolution" ? ["battle", "no_evolution"] : ["battle"])
+    }
+  })
+
   test("a draw displays DRAW, never reveals a transformation and resolves without evolution", async () => {
     const phases: string[] = []
     const huds: BattleFrameHud[] = []

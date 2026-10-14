@@ -18,7 +18,7 @@ export type UsageEvolutionTransition = {
 
 export type EvolutionBattlePending = {
   readonly opponentNodeId: string
-  readonly targetNodeId: string
+  readonly targetNodeId: string | null
 }
 
 export type UsageProcessingResult =
@@ -34,4 +34,5 @@ export type UsageProcessingResult =
 export type ResolveEvolutionBattleOutcome =
   | { readonly kind: "won"; readonly evolution: UsageEvolutionTransition }
   | { readonly kind: "lost" }
+  | { readonly kind: "won_without_evolution" }
   | { readonly kind: "no_pending_battle" }

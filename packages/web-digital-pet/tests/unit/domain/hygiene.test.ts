@@ -3,8 +3,10 @@ import {
   advanceLocalPet,
   beginNewPartner,
   cleanLocalPoop,
+  completeLocalEvolution,
   experienceThresholds,
   type LocalPetState,
+  pendingEvolutionKey,
 } from "../../../src/domain/pet/progress.ts"
 import { parsePetTransfer } from "../../../src/domain/transfer/protocol.ts"
 
@@ -40,4 +42,23 @@ test("cleaning at 95% queues normal evolution; a new egg discards the old hygien
   const egg = beginNewPartner(state, "egg", NOW)
   expect(egg.hygiene).toBeUndefined()
   expect(advanceLocalPet(egg, NOW).hygiene).toBeUndefined()
+})
+
+test("full EXP starts a duel with three piles and a win without evolution clears EXP", () => {
+  const dirty = { ...state, currentNodeId: "4-010", gauge: experienceThresholds("low")[4] }
+  const ready = advanceLocalPet(dirty, NOW, () => 0)
+  expect(ready.pendingEvolution?.targetNodeId).toBeNull()
+  expect(ready.pendingEvolution?.opponentNodeId).not.toBeNull()
+  const key = pendingEvolutionKey(ready)
+  if (!key) throw new Error("Missing duel")
+  const resolved = completeLocalEvolution(ready, key, true, NOW)
+  expect(resolved.currentNodeId).toBe(dirty.currentNodeId)
+  expect(resolved.gauge).toBe(0)
+  expect(resolved.combatVictories).toBe(1)
+  expect(completeLocalEvolution(resolved, key, true, NOW)).toBe(resolved)
+  const id = dirty.hygiene?.poops[0]
+  if (id === undefined) throw new Error("Missing pile")
+  const cleaned = cleanLocalPoop(resolved, dirty.partnerId, id, NOW)
+  expect(cleaned.hygiene?.poops).toHaveLength(2)
+  expect(cleaned.combatVictories).toBe(1)
 })

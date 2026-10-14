@@ -1,13 +1,23 @@
 import type { SpawnPartnerInput } from "../../application/models/spawn-partner.ts"
 import type { Partner } from "../../domain/partner.ts"
+import type { TeamSlot } from "../../domain/partner-team.ts"
 import { IntlModule } from "../../i18n.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sqlite-digital-pet-schema.ts"
 
 /** Called inside the host transaction so retirement, history and the new generation commit together. */
-export const spawnSqlitePartner = (executor: SqliteExecutor, input: SpawnPartnerInput): Partner => {
-  executor.run("UPDATE vpet_control_state SET frozen = 0, cheat_node_id = NULL WHERE control_id = 1")
-  const activePartnerRow = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
+export const spawnSqlitePartner = (
+  executor: SqliteExecutor,
+  input: SpawnPartnerInput,
+  slot: TeamSlot = "principal",
+): Partner => {
+  if (slot === "principal")
+    executor.run("UPDATE vpet_control_state SET frozen = 0, cheat_node_id = NULL WHERE control_id = 1")
+  const activePartnerRow = executor.get<PersistedPartnerRow>(
+    slot === "principal"
+      ? ACTIVE_PARTNER_SELECT
+      : "SELECT * FROM partners WHERE partner_id = (SELECT reserve_id FROM partner_team WHERE team_id = 1) AND retired_at IS NULL",
+  )
   if (activePartnerRow !== null) {
     const activePartner = toPartner(activePartnerRow)
     executor.run("UPDATE partners SET retired_at = ? WHERE partner_id = ?", [input.createdAt, activePartner.partnerId])
@@ -43,6 +53,13 @@ export const spawnSqlitePartner = (executor: SqliteExecutor, input: SpawnPartner
       input.createdAt,
     ],
   )
+  if (slot === "principal")
+    executor.run("UPDATE partner_team SET principal_id = ?, revision = revision + 1 WHERE team_id = 1", [partnerId])
+  else
+    executor.run(
+      "UPDATE partner_team SET reserve_id = ?, reserve_paused_at = ?, revision = revision + 1 WHERE team_id = 1",
+      [partnerId, Date.parse(input.createdAt)],
+    )
   return {
     partnerId,
     generation: generationRow.generation,

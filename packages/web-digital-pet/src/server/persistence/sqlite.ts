@@ -10,6 +10,7 @@ import {
   ACTIVE_PARTNER_SELECT,
   ARCHIVE_PARTNER_EVENTS_SELECT,
   ARCHIVE_PARTNERS_SELECT,
+  LEGACY_ACTIVE_PARTNER_SELECT,
   type PersistedPartnerEventRow,
   type PersistedPartnerRow,
   type TrainerStateRow,
@@ -56,7 +57,12 @@ export const readSidebarSnapshot = (): SidebarSnapshot | null =>
         battleOpponentNodeId: null,
       }
     }
-    const row = database.prepare(ACTIVE_PARTNER_SELECT).get() as PersistedPartnerRow | undefined
+    const migrated = database
+      .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'partner_team'")
+      .get()
+    const row = database.prepare(migrated ? ACTIVE_PARTNER_SELECT : LEGACY_ACTIVE_PARTNER_SELECT).get() as
+      | PersistedPartnerRow
+      | undefined
     if (row === undefined) return null
     const partner = toPartner(row)
     return {
@@ -102,3 +108,30 @@ export const readArchive = (): DigitalPetArchiveResult =>
 
 export const readBossVictories = (): readonly BossVictory[] =>
   readDatabase((database) => (database.prepare(BOSS_VICTORIES_SELECT).all() as BossVictoryRow[]).map(toBossVictory), [])
+
+/** Read legacy saves without migrating or writing the host database. */
+export const readTeam = (): import("@jcendal/digital-pet-core/domain/partner-team.ts").PartnerTeam =>
+  readDatabase(
+    (database) => {
+      const exists = database
+        .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'partner_team'")
+        .get()
+      if (!exists) {
+        const principal = database.prepare(LEGACY_ACTIVE_PARTNER_SELECT).get() as PersistedPartnerRow | undefined
+        return { revision: 0, principal: principal ? toPartner(principal) : null, reserve: null }
+      }
+      const team = database
+        .prepare("SELECT revision, principal_id, reserve_id FROM partner_team WHERE team_id = 1")
+        .get() as { revision: number; principal_id: string | null; reserve_id: string | null } | undefined
+      const member = (id: string | null | undefined) => {
+        const row = id
+          ? (database.prepare("SELECT * FROM partners WHERE partner_id = ? AND retired_at IS NULL").get(id) as
+              | PersistedPartnerRow
+              | undefined)
+          : undefined
+        return row ? toPartner(row) : null
+      }
+      return { revision: team?.revision ?? 0, principal: member(team?.principal_id), reserve: member(team?.reserve_id) }
+    },
+    { revision: 0, principal: null, reserve: null },
+  )

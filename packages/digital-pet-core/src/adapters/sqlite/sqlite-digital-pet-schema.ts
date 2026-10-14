@@ -1,4 +1,5 @@
 import type { Partner } from "../../domain/partner.ts"
+import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import type {
   PersistedPartnerEvent,
   PersistedPartnerEventKind,
@@ -58,13 +59,29 @@ const PARTNER_COLUMNS = `
     retired_at
 `
 
-export const ACTIVE_PARTNER_SELECT = `
+/** Only used by read-only hosts while the writer has not migrated its legacy database. */
+export const LEGACY_ACTIVE_PARTNER_SELECT = `
   SELECT
     ${PARTNER_COLUMNS}
   FROM partners
   WHERE retired_at IS NULL
   LIMIT 1
 `
+
+export const ACTIVE_PARTNER_SELECT = `
+  SELECT ${PARTNER_COLUMNS}
+  FROM partners
+  WHERE partner_id = (SELECT principal_id FROM partner_team WHERE team_id = 1)
+    AND retired_at IS NULL
+  LIMIT 1
+`
+
+export const readSqliteActivePartner = (executor: Pick<SqliteExecutor, "get">): PersistedPartnerRow | null => {
+  const migrated = executor.get<{ name: string }>(
+    "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'partner_team'",
+  )
+  return executor.get<PersistedPartnerRow>(migrated ? ACTIVE_PARTNER_SELECT : LEGACY_ACTIVE_PARTNER_SELECT)
+}
 
 export const PARTNERS_SELECT = `
   SELECT

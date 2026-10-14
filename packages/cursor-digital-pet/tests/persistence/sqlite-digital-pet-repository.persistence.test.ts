@@ -135,7 +135,7 @@ describe("SQLite digital-pet repository persistence", () => {
       })
 
       const pending = repository.getSidebarSnapshot()
-      expect(pending?.pendingEvolutionTargetId).not.toBeNull()
+      expect(pending?.pendingEvolutionTargetId).toBeNull()
       expect(pending?.battleOpponentNodeId).not.toBeNull()
 
       resolveEvolutionBattleForPartner(repository, true, DIGIMON_CATALOG.byId, "2026-09-09T12:02:00.000Z")

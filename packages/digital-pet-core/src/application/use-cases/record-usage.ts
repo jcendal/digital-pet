@@ -23,14 +23,14 @@ export const recordUsage = ({
   thresholds,
 }: RecordUsageInput): UsageProcessingResult => {
   let evolution: UsageEvolutionTransition | undefined
-  let evolutionBattlePending: { readonly opponentNodeId: string; readonly targetNodeId: string } | undefined
+  let evolutionBattlePending: { readonly opponentNodeId: string; readonly targetNodeId: string | null } | undefined
 
-  const outcome = ledger.applyUsageReceipt(usage, (partner) => {
+  const outcome = ledger.applyUsageReceipt(usage, (partner, uncleanPoops = 0) => {
     const current = digimonById.get(partner.currentNodeId)
     if (current === undefined)
       throw new Error(`Persisted partner node ${partner.currentNodeId} is missing from the catalog`)
 
-    const hadPendingBattle = partner.pendingEvolutionTargetId != null && partner.battleOpponentNodeId != null
+    const hadPendingBattle = partner.battleOpponentNodeId != null
 
     const next = applyTokenProgress(
       {
@@ -45,14 +45,10 @@ export const recordUsage = ({
       digimonById,
       catalogNodes,
       thresholds,
+      uncleanPoops,
     )
 
-    if (
-      !hadPendingBattle &&
-      next.pendingEvolutionTargetId !== null &&
-      next.battleOpponentNodeId !== null &&
-      next.current.id === current.id
-    ) {
+    if (!hadPendingBattle && next.battleOpponentNodeId !== null && next.current.id === current.id) {
       evolutionBattlePending = {
         opponentNodeId: next.battleOpponentNodeId,
         targetNodeId: next.pendingEvolutionTargetId,

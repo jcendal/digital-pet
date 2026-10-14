@@ -105,7 +105,7 @@ export const createSidebarOrchestrator = ({
     if (presentationInProgress) return
     const snapshot = snapshotReader.getSidebarSnapshot()
     if (snapshot === null) return
-    if (snapshot.pendingEvolutionTargetId === null || snapshot.battleOpponentNodeId === null) return
+    if (snapshot.battleOpponentNodeId === null) return
 
     presentationInProgress = true
     animationHost.setPresentationBlocked(true)
@@ -126,6 +126,8 @@ export const createSidebarOrchestrator = ({
           if (result.kind === "won") {
             pendingEvolutionReveal = undefined
             notification.showInformation(IntlModule.translate("sidebarOrchestrator.victoryYourPartnerEvolved"))
+          } else if (result.kind === "won_without_evolution") {
+            notification.showInformation(IntlModule.translate("sidebarOrchestrator.noEvolutionsAvailable"))
           } else if (result.kind === "lost") {
             notification.showInformation(IntlModule.translate("sidebarOrchestrator.defeatYouLostAllTokensForThisStage"))
           }

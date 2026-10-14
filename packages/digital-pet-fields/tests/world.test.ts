@@ -136,3 +136,40 @@ it("provides two distinct, animated bosses for every available region", () => {
     }
   }
 })
+
+it("applies boss tiers without changing species stages and preserves old boss slots", async () => {
+  const { REGION_BOSS_TIERS, defeatedBossSlot, legacyRegionBossIds } = await import("../src/data/bosses.ts")
+  const { REGIONS_BY_DIFFICULTY } = await import("../src/data/regions.ts")
+  const tiers = REGIONS_BY_DIFFICULTY.map((region) => region.difficulty)
+  expect(tiers).toEqual(["easy", "easy", "easy", "medium", "medium", "medium", "medium", "hard", "hard", "hard"])
+  for (const region of REGIONS) {
+    const bosses = getRegionBosses(region.id, DIGIMON_CATALOG)
+    expect(bosses.map((boss) => boss.stage)).toEqual([...REGION_BOSS_TIERS[region.difficulty]])
+    for (const boss of bosses) expect(boss).toBe(DIGIMON_CATALOG.byId.get(boss.id)!)
+    for (const [index, nodeId] of legacyRegionBossIds(region.id).entries()) {
+      const victory = { regionId: region.id, nodeId, defeatedAt: new Date().toISOString() }
+      expect(defeatedBossSlot(region.id, index, [victory])).toBe(true)
+      expect(defeatedBossSlot(region.id, 1 - index, [victory])).toBe(false)
+      expect(defeatedBossSlot(region.id, index, [])).toBe(false)
+    }
+  }
+})
+
+it("includes reviewed jungle and dark affinities while preserving source memberships", async () => {
+  const { HABITAT_AFFINITIES } = await import("../src/data/habitat-affinities.ts")
+  const { HABITATS } = await import("../src/data/habitats.ts")
+  const reference = (await import("../src/data/field-reference.json", { with: { type: "json" } })).default
+  expect(getRegionResidents("vamdemon-castle", DIGIMON_CATALOG)).toHaveLength(62)
+  expect(getRegionResidents("tropical-jungle", DIGIMON_CATALOG)).toHaveLength(60)
+  expect(new Set(HABITAT_AFFINITIES.map((affinity) => `${affinity.fieldId}:${affinity.nodeId}`)).size).toBe(
+    HABITAT_AFFINITIES.length,
+  )
+  for (const affinity of HABITAT_AFFINITIES) {
+    expect(DIGIMON_CATALOG.byId.has(affinity.nodeId)).toBe(true)
+    expect(HABITATS[affinity.fieldId]).toContain(affinity.nodeId)
+  }
+  for (const [nodeId, entry] of Object.entries(reference))
+    for (const field of entry.fields) expect(HABITATS[field as keyof typeof HABITATS]).toContain(nodeId)
+  expect(HABITATS["dark-area"]).not.toContain("6-100") // Ordinary Ophanimon is not its Falldown form.
+  expect(HABITATS["dark-area"]).not.toContain("2-033") // Empty sprite/alias cannot match a source name.
+})

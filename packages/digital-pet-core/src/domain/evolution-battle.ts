@@ -1,6 +1,7 @@
 import { IntlModule } from "../i18n.ts"
 import type { DigimonNode } from "./digimon-node.ts"
 import type { EvolutionSelector } from "./evolution.ts"
+import { availableEvolutionTargets } from "./evolution-options.ts"
 
 export const isEvolutionBranch = (current: DigimonNode, targetId: string): boolean =>
   current.nextEvolutions.includes(targetId)
@@ -10,8 +11,14 @@ export const assertEvolutionBranch = (current: DigimonNode, targetId: string): v
     throw new Error(`Evolution ${current.id} -> ${targetId} is outside its branches`)
 }
 
-export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSelector): string => {
-  if (current.nextEvolutions.length === 0) {
+export const pickEvolutionTarget = (
+  current: DigimonNode,
+  selector: EvolutionSelector,
+  uncleanPoops = 0,
+  combatVictories = 0,
+): string => {
+  const targets = availableEvolutionTargets(current, uncleanPoops, combatVictories)
+  if (targets.length === 0) {
     throw new Error(IntlModule.translate("errors.noEvolutionOptions"))
   }
 
@@ -20,7 +27,7 @@ export const pickEvolutionTarget = (current: DigimonNode, selector: EvolutionSel
     throw new Error(`Evolution selector must return a finite number in [0, 1), received ${selection}`)
   }
 
-  const targetId = current.nextEvolutions[Math.floor(selection * current.nextEvolutions.length)]
+  const targetId = targets[Math.floor(selection * targets.length)]
   if (targetId === undefined) throw new Error(IntlModule.translate("errors.evolutionSelectionFailed"))
   return targetId
 }

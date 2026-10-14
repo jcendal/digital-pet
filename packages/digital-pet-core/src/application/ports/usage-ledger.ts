@@ -4,6 +4,6 @@ import type { ApplyUsageReceiptOutcome, UsageReceiptMetadata } from "../models/u
 export type UsageLedger = {
   applyUsageReceipt: (
     metadata: UsageReceiptMetadata,
-    evolve: (partner: Partner) => PartnerProgression,
+    evolve: (partner: Partner, uncleanPoops?: number) => PartnerProgression,
   ) => ApplyUsageReceiptOutcome
 }

@@ -69,7 +69,9 @@ describe("browser pet progression", () => {
     const replacement = beginNewPartner(ready, "replacement", ready.lastTickAt)
     expect(completeLocalEvolution(replacement, pendingEvolutionKey(ready)!, true, ready.lastTickAt)).toBe(replacement)
     const won = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, true, ready.lastTickAt)
-    expect(won.currentNodeId).toBe(ready.pendingEvolution!.targetNodeId)
+    expect(ready.pendingEvolution!.targetNodeId).toBeNull()
+    expect(won.currentNodeId).toBe("2-001")
+    expect(won.combatVictories).toBe(0)
     expect(won.events).toHaveLength(2)
   })
 

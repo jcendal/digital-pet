@@ -14,7 +14,7 @@ import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-so
 import { BrowserTransfer, CODE_LENGTH, displayDeviceCode, normalizeDeviceCode, validDeviceCode } from "./transport.ts"
 
 type PairMessage =
-  | { type: "request"; version: 1; sync: boolean }
+  | { type: "request"; version: 3; sync: boolean }
   | { type: "snapshot"; transfer: PetTransfer }
   | { type: "result"; accepted: boolean }
   | { type: "decline" }
@@ -248,6 +248,10 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   async function receive(remote: DataConnection, data: unknown): Promise<void> {
     if (remote !== connection || finishing || typeof data !== "object" || data === null || !("type" in data)) return
     const message = data as { type: string; [key: string]: unknown }
+    if (direction === "send" && message.type === "request" && message.version !== TRANSFER_VERSION) {
+      finish({ type: "result", accepted: false }, IntlModule.translate("protocol.unsupportedSaveFormat"))
+      return
+    }
     if (direction === "send" && message.type === "request" && message.version === TRANSFER_VERSION && !approved) {
       requireBrowser()
       pairedCode = await getPairedDevice()
@@ -272,6 +276,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       const catalog = await import("../../presentation/browser-session.ts")
       const events = [
         ...parsed.state.events,
+        ...(parsed.state.reserve?.events ?? []),
         ...(parsed.state.retiredPartners ?? []).flatMap((partner) => partner.events),
       ]
       if (

@@ -4,8 +4,7 @@ import {
   resolveHostDatabasePath,
 } from "@jcendal/digital-pet-core/adapters/sqlite/app-data-path.ts"
 import {
-  ACTIVE_PARTNER_SELECT,
-  type PersistedPartnerRow,
+  readSqliteActivePartner,
   type TrainerStateRow,
   toPartner,
 } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-schema.ts"
@@ -50,7 +49,7 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
     }
   }
 
-  const partnerRow = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
+  const partnerRow = readSqliteActivePartner(executor)
   if (partnerRow === null) return null
 
   const partner = toPartner(partnerRow)

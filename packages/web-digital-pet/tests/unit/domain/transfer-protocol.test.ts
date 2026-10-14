@@ -13,6 +13,28 @@ const state = {
 }
 
 describe("browser save transfer", () => {
+  it("round-trips a targetless duel with its form victories and rejects invalid counters", () => {
+    const duel = {
+      ...state,
+      currentNodeId: "4-077",
+      combatVictories: 11,
+      events: [{ createdAt: state.createdAt, currentNodeId: "4-077" }],
+      pendingEvolution: { targetNodeId: null, opponentNodeId: "4-001", readyAt: state.lastTickAt },
+    }
+    expect(parsePetTransfer({ version: 3, state: duel }).state).toEqual(duel)
+    for (const combatVictories of [-1, 1.5, "12", 1_000_001])
+      expect(() => parsePetTransfer({ version: 3, state: { ...duel, combatVictories } })).toThrow()
+    expect(() =>
+      parsePetTransfer({
+        version: 3,
+        state: { ...duel, pendingEvolution: { ...duel.pendingEvolution, opponentNodeId: "3-001" } },
+      }),
+    ).toThrow()
+    expect(() =>
+      parsePetTransfer({ version: 3, state: { ...state, pendingEvolution: duel.pendingEvolution } }),
+    ).toThrow()
+  })
+
   it("preserves a pending evolution through transfer and rejects unrelated targets", () => {
     const pending = advanceLocalPet({ ...state, gauge: 5_000_000 }, Date.now(), () => 0)
     expect(pending.pendingEvolution).toBeDefined()
@@ -36,7 +58,7 @@ describe("browser save transfer", () => {
   })
 
   it("rejects malformed and inconsistent histories before import", () => {
-    expect(() => parsePetTransfer({ version: 2, state })).toThrow()
+    expect(() => parsePetTransfer({ version: 4, state })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, currentNodeId: "1-001" } })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, gauge: -1 } })).toThrow()
     expect(() =>

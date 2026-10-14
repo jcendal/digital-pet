@@ -137,6 +137,42 @@ const MIGRATIONS = [
       "CREATE TABLE IF NOT EXISTS boss_victories (region_id TEXT NOT NULL, node_id TEXT NOT NULL, defeated_at TEXT NOT NULL, PRIMARY KEY (region_id, node_id))",
     ],
   },
+  {
+    version: 9,
+    sql: [
+      `CREATE TABLE partner_team (
+        team_id INTEGER PRIMARY KEY CHECK (team_id = 1),
+        principal_id TEXT REFERENCES partners(partner_id),
+        reserve_id TEXT REFERENCES partners(partner_id),
+        reserve_paused_at INTEGER,
+        revision INTEGER NOT NULL DEFAULT 0 CHECK (revision >= 0),
+        CHECK (reserve_id IS NULL OR (principal_id IS NOT NULL AND reserve_id <> principal_id)),
+        CHECK ((reserve_id IS NULL AND reserve_paused_at IS NULL) OR
+          (reserve_id IS NOT NULL AND reserve_paused_at IS NOT NULL AND reserve_paused_at >= 0))
+      )`,
+      `INSERT INTO partner_team (team_id, principal_id, reserve_id, reserve_paused_at, revision)
+        VALUES (1, (SELECT partner_id FROM partners WHERE retired_at IS NULL LIMIT 1), NULL, NULL, 0)`,
+      "DROP INDEX partners_one_active_partner",
+      `CREATE TRIGGER partners_limit_owned_insert BEFORE INSERT ON partners
+        WHEN NEW.retired_at IS NULL AND (SELECT COUNT(*) FROM partners WHERE retired_at IS NULL) >= 2
+        BEGIN SELECT RAISE(ABORT, 'A team can own at most two partners'); END`,
+      `CREATE TRIGGER partners_limit_owned_restore BEFORE UPDATE OF retired_at ON partners
+        WHEN OLD.retired_at IS NOT NULL AND NEW.retired_at IS NULL
+          AND (SELECT COUNT(*) FROM partners WHERE retired_at IS NULL) >= 2
+        BEGIN SELECT RAISE(ABORT, 'A team can own at most two partners'); END`,
+    ],
+  },
+  {
+    version: 10,
+    sql: [
+      `CREATE TABLE partner_combat_progress (
+      partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id),
+      node_id TEXT NOT NULL,
+      victories INTEGER NOT NULL DEFAULT 0 CHECK (victories BETWEEN 0 AND 1000000),
+      battle_id TEXT
+    )`,
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {
