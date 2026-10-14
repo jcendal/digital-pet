@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-14
+
 ### Changed
 
 - Start the evolution duel at 100% even without an eligible route. Count a win before choosing the target; without a result, retain the companion and victory, show the notice and reset EXP.
