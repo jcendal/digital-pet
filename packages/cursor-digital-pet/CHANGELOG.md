@@ -4,6 +4,8 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-14
+
 ### Changed
 
 - Start the evolution duel at 100% even without an eligible route. Count a win before choosing the target; without a result, retain the companion and victory, show the notice and reset EXP.
