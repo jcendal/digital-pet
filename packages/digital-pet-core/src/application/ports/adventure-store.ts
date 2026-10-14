@@ -1,6 +1,7 @@
 import type { AdventureState } from "../../domain/adventure.ts"
 import type { BossVictory } from "../../domain/boss-victory.ts"
 import type { StageThresholds } from "../../domain/evolution.ts"
+import type { HygieneState } from "../../domain/hygiene.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 import type { SpawnPartnerInput } from "../models/spawn-partner.ts"
 
@@ -11,6 +12,7 @@ export type AdventureSnapshot = {
   readonly blocked: boolean
   readonly thresholds: StageThresholds
   readonly regionId: string
+  readonly hygiene?: HygieneState | undefined
 }
 export type AdventureMutation = {
   readonly adventure: AdventureState

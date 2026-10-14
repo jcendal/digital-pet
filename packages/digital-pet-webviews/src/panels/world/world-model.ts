@@ -5,6 +5,7 @@ import { getStageLabel, getStageTranslationKey } from "@jcendal/digital-pet-core
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import { getRegionBosses, getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
+import { defeatedBossSlot } from "@jcendal/digital-pet-fields/data/bosses.ts"
 import { artworkToCenteredPixelArt } from "../../shared/pixel-artwork.ts"
 
 export type WorldResident = {
@@ -51,9 +52,9 @@ export const buildWorldPanelModel = (
   return {
     registeredIds: [...registeredIds],
     bossVictories,
-    bosses: getRegionBosses(regionId, catalog).map((node) => ({
+    bosses: getRegionBosses(regionId, catalog).map((node, index) => ({
       ...resident(node),
-      defeated: bossVictories.some((victory) => victory.regionId === regionId && victory.nodeId === node.id),
+      defeated: defeatedBossSlot(regionId, index, bossVictories),
     })),
     residents: getRegionResidents(regionId, catalog).map(resident),
   }

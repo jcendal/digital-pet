@@ -7,6 +7,7 @@ let artworkColumns = 32
 let battleHud = null
 let eggInteraction = null
 let petInteraction = null
+let switching = false
 const byId = (id) => document.getElementById(id)
 const root = document.querySelector(".pet-module")
 const positionPetControls = () => {
@@ -28,15 +29,12 @@ const positionPetControls = () => {
 }
 const renderEgg = () => {
   const button = byId("pet-egg")
-  const hint = byId("egg-pet-hint")
-  if (!button || !hint) return
+  if (!button) return
   const egg = model?.kind === "partner" ? model.egg : null
   button.hidden = !egg || state.phase !== "idle"
-  hint.hidden = button.hidden
   button.disabled = !egg?.canPet || eggInteraction !== null || state.phase !== "idle"
   button.title = IntlModule.translate("egg.pet")
   button.setAttribute("aria-label", IntlModule.translate("egg.pet"))
-  hint.textContent = IntlModule.translate("egg.hint")
   positionPetControls()
 }
 const renderPet = () => {
@@ -209,7 +207,35 @@ const renderPoops = () => {
     button.setAttribute("aria-label", IntlModule.translate("sidebar.cleanPoop", { number: index + 1 }))
   }
 }
+const renderSwitch = () => {
+  const button = byId("pet-switch")
+  if (!button) return
+  const team = model?.team
+  button.hidden = !team?.reserve
+  button.disabled = switching || !team?.canSwitch || state.phase !== "idle"
+  if (!team?.reserve) return
+  button.setAttribute("aria-label", IntlModule.translate("team.switchTo", { name: team.reserve.name }))
+  button.title = button.getAttribute("aria-label")
+  button.querySelector(".switch-portrait").setAttribute("viewBox", team.reserve.portraitViewBox ?? team.reserve.viewBox)
+  button.querySelector(".switch-portrait path").setAttribute("d", team.reserve.artwork)
+}
+byId("pet-switch")?.addEventListener("click", () => {
+  const team = model?.team
+  if (switching || !team?.canSwitch || state.phase !== "idle") return
+  switching = true
+  renderSwitch()
+  vscode.postMessage({
+    type: "switch-companion",
+    command: {
+      kind: "switch",
+      expectedRevision: team.revision,
+      expectedPrincipalId: team.principal?.partnerId ?? null,
+      expectedReserveId: team.reserve?.partnerId ?? null,
+    },
+  })
+})
 const render = () => {
+  renderSwitch()
   renderEgg()
   renderPet()
   renderPoops()
@@ -294,7 +320,8 @@ const reportWidth = () => {
   const arena = document.querySelector(".arena")
   const width = arena.clientWidth
   if (width > 0) {
-    const pixelSize = parseFloat(getComputedStyle(arena).getPropertyValue("--artwork-pixel-size")) || 6
+    const basePixelSize = parseFloat(getComputedStyle(arena).getPropertyValue("--artwork-pixel-size")) || 6
+    const pixelSize = basePixelSize * (model?.egg && state.phase === "idle" ? 0.75 : 1)
     const columns = Math.max(
       state.phase === "idle" || state.phase === "feeding" ? 16 : 36,
       Math.floor(width / pixelSize),
@@ -334,6 +361,10 @@ window.addEventListener("message", (event) => {
     if (model?.canPet && state.phase === "idle" && ["happy", "angry"].includes(message.reaction))
       showPetParticles(message.reaction)
     renderPet()
+  }
+  if (message?.type === "team-result") {
+    switching = false
+    renderSwitch()
   }
   if (message?.type === "sidebar-model") {
     model = message

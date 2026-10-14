@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Prepare shared SQLite team persistence for two owned companions, preserving the existing active pet during migration and keeping token receipts on the principal. Team controls are not exposed yet.
+- Choose experience evolutions from referenced normal routes according to the current 0–3 unclean piles. Exclude Jogress and unverified routes from automatic evolution.
+
 ## [0.14.0] - 2026-10-11
 
 ### Changed

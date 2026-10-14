@@ -8,19 +8,28 @@ import { experienceThresholds, type LocalPetState } from "./progress.ts"
 export const archiveFor = (state: LocalPetState): DigitalPetArchiveResult => ({
   kind: "available",
   partners: [
-    ...(state.retiredPartners ?? []).map((partner, index) => ({
+    ...(state.retiredPartners ?? []),
+    { partnerId: state.partnerId, createdAt: state.createdAt, retiredAt: null, events: state.events },
+    ...(state.reserve
+      ? [
+          {
+            partnerId: state.reserve.partnerId,
+            createdAt: state.reserve.createdAt,
+            retiredAt: null,
+            events: state.reserve.events,
+          },
+        ]
+      : []),
+  ]
+    .sort(
+      (first, second) =>
+        first.createdAt.localeCompare(second.createdAt) || first.partnerId.localeCompare(second.partnerId),
+    )
+    .map((partner, index) => ({
       ...partner,
       generation: index + 1,
-      events: partner.events.map((event, eventIndex) => ({ eventId: `${index}:${eventIndex}`, ...event })),
+      events: partner.events.map((event, eventIndex) => ({ eventId: `${partner.partnerId}:${eventIndex}`, ...event })),
     })),
-    {
-      partnerId: state.partnerId,
-      generation: (state.retiredPartners?.length ?? 0) + 1,
-      createdAt: state.createdAt,
-      retiredAt: null,
-      events: state.events.map((event, index) => ({ eventId: String(index), ...event })),
-    },
-  ],
 })
 
 export const settingsFor = (state: LocalPetState) => ({

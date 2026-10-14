@@ -47,7 +47,9 @@ export type WorldLocation = {
   readonly backgroundFile: string
   readonly atmosphere: readonly [string, string]
 }
+export type RegionDifficulty = "easy" | "medium" | "hard"
 export type Region = {
+  readonly difficulty: RegionDifficulty
   readonly id: string
   readonly name: string
   readonly fieldId: FieldId

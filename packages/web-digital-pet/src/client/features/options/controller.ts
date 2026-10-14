@@ -14,7 +14,6 @@ import {
   replaceLocalState,
   restorePreviousSave,
   setExperienceLevel,
-  startNewPartner,
 } from "../../persistence/pet-store.ts"
 import { checkComputerSave } from "../../platform/computer-save.ts"
 import {
@@ -24,6 +23,7 @@ import {
   SOURCE_PREFERENCE_KEY,
 } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
+import { openNewEgg, registerTeamBusyGuard } from "../team/controller.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
@@ -69,7 +69,6 @@ export const initBrowserOptions = async (): Promise<void> => {
   const slider = byId<HTMLInputElement>("experience-level")
   const description = byId<HTMLElement>("experience-description")
   const status = byId<HTMLElement>("options-status")
-  const confirmation = byId<HTMLElement>("new-partner-confirm")
   const backupFile = byId<HTMLInputElement>("backup-file")
   const backupConfirm = byId<HTMLElement>("backup-confirm")
   const backupRestore = byId<HTMLButtonElement>("backup-restore")
@@ -140,7 +139,6 @@ export const initBrowserOptions = async (): Promise<void> => {
     fieldset.disabled = source !== "browser"
     newPartnerOptions.disabled = source !== "browser"
     byId("browser-options-hint").hidden = source === "browser"
-    confirmation.hidden = true
     backupConfirm.hidden = true
     pendingBackup = null
     pairing?.setBrowserEnabled(source === "browser")
@@ -304,28 +302,15 @@ export const initBrowserOptions = async (): Promise<void> => {
       status.textContent = String(error)
     }
   })
+  registerTeamBusyGuard(() => Boolean(pairing?.busy || battles?.busy))
   byId("new-partner").addEventListener("click", () => {
-    confirmation.hidden = false
-    byId("new-partner-cancel").focus()
-  })
-  byId("new-partner-cancel").addEventListener("click", () => {
-    confirmation.hidden = true
-    byId("new-partner").focus()
-  })
-  byId("new-partner-accept").addEventListener("click", async () => {
     if (source !== "browser") return
     if (pairing?.busy || battles?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
-    try {
-      await startNewPartner()
-      confirmation.hidden = true
-      refreshBrowserViews()
-      status.textContent = IntlModule.translate("controller.aNewEggIsReadyYourPreviousCompanion")
-    } catch (error) {
-      status.textContent = String(error)
-    }
+    dialog.close()
+    openNewEgg()
   })
   window.addEventListener("digital-pet:save-updated", () => {
     void refreshSettings()

@@ -6,7 +6,16 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ### Changed
 
-- Group Dex and History in one view with keyboard-accessible tabs.
+- Choose experience evolution routes from referenced normal branches using 0–3 unclean piles as care mistakes. Keep Jogress and other special routes separate in the Dex.
+- Put Team second in Dex / Team / History. Link each member to its Dex record, use a circular-arrow Change Principal action and keep egg selection in New Journey.
+- Move the reserve switch below the companion name, omit success text and the New Companion action from Team, and hide unrestricted care labels.
+- Integrate local Omnipet Digitama sprites, preserve egg animation, refine the circular reserve control and anchor Team actions at the bottom.
+- Offer one visually matched egg per region, unlock nine through regional boss victories and reduce Digitama display sizes.
+- Add Next beside All Regions and expand reviewed jungle/dark habitat affinities.
+- Preserve two browser companions, reserve care clocks, adventure handoff and stable History numbers. Transfer v2 includes the reserve and still imports v1 backups.
+- Start with Botamon eggs and discover Forest/Yuramon and Aquatic/Pichimon origins through regional boss victories.
+- Order regions by Easy/Medium/Hard difficulty with boss stages 5/6, 6/6 and 7/7 while preserving existing stars and saved boss encounters.
+- Keep adventure victory counters out of presentation messages.
 - Keep save selectors square and remove the evolution experience slider's outer border.
 - Scroll the landscape opposite the companion's steps during ordinary walks, as in adventures.
 

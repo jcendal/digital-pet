@@ -49,7 +49,7 @@ const selectEntry = (id, focus = false) => {
     button?.scrollIntoView({ block: "nearest" })
   }
 }
-const routeGroup = (label, ids) => {
+const routeGroup = (label, ids, care = []) => {
   const section = element("section", "routes")
   section.append(element("h3", "route-label", label))
   const items = element("div", "route-items")
@@ -59,6 +59,15 @@ const routeGroup = (label, ids) => {
     const button = element("button", "route", target.discovered ? target.name : "???")
     button.type = "button"
     button.append(element("span", "", id))
+    const requirement = care.find((route) => route.targetId === id)
+    if (requirement && requirement.uncleanPoops.length > 0 && requirement.uncleanPoops.length < 4)
+      button.append(
+        element(
+          "span",
+          "micro",
+          IntlModule.translate("dexClient.carePiles", { counts: requirement.uncleanPoops.join("/") }),
+        ),
+      )
     button.addEventListener("click", () => {
       // A route may leave the current filter. Reset filters so the selected entry stays in its catalog context.
       search.value = ""
@@ -148,8 +157,10 @@ const renderSelection = () => {
     extra.append(
       history,
       routeGroup(IntlModule.translate("dexClient.evolvesFrom"), entry.previousIds),
-      routeGroup(IntlModule.translate("dexClient.evolvesTo"), entry.nextIds),
+      routeGroup(IntlModule.translate("dexClient.evolvesTo"), entry.nextIds, entry.evolutionCare),
     )
+    if (entry.specialNextIds?.length)
+      extra.append(routeGroup(IntlModule.translate("dexClient.specialEvolutions"), entry.specialNextIds))
     extra.append(element("p", "hint", IntlModule.translate("dexClient.routesFollowThisVPetCatalogOtherDigimon")))
     if (entry.url) {
       const reference = element("button", "utility reference", IntlModule.translate("dexClient.openDigimonReference"))

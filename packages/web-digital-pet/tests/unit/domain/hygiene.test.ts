@@ -1,4 +1,6 @@
 import { expect, test } from "bun:test"
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { availableEvolutionTargets } from "@jcendal/digital-pet-core/domain/evolution-options.ts"
 import {
   advanceLocalPet,
   beginNewPartner,
@@ -40,4 +42,19 @@ test("cleaning at 95% queues normal evolution; a new egg discards the old hygien
   const egg = beginNewPartner(state, "egg", NOW)
   expect(egg.hygiene).toBeUndefined()
   expect(advanceLocalPet(egg, NOW).hygiene).toBeUndefined()
+})
+
+test("full EXP waits with three piles and cleaning chooses a route using the remaining two", () => {
+  const dirty = { ...state, currentNodeId: "4-010", gauge: experienceThresholds("low")[4] }
+  const waiting = advanceLocalPet(dirty, NOW, () => 0)
+  expect(waiting.pendingEvolution).toBeUndefined()
+  expect(waiting.isTerminal).toBe(false)
+  expect(waiting.gauge).toBe(dirty.gauge)
+  const id = dirty.hygiene?.poops[0]
+  if (id === undefined) throw new Error("Missing pile")
+  const cleaned = cleanLocalPoop(waiting, dirty.partnerId, id, NOW)
+  expect(cleaned.hygiene?.poops).toHaveLength(2)
+  const node = DIGIMON_CATALOG.byId.get(dirty.currentNodeId)
+  if (!node) throw new Error("Missing companion")
+  expect(availableEvolutionTargets(node, 2)).toContain(cleaned.pendingEvolution?.targetNodeId ?? "")
 })

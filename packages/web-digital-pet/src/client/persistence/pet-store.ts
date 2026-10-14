@@ -1,7 +1,10 @@
 import type { AdventureStore } from "@jcendal/digital-pet-core/application/ports/adventure-store.ts"
+import { isEggFamilyId } from "@jcendal/digital-pet-core/data/egg-families.ts"
 import { adventureBusy, parseAdventure } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import { limitAdventureReadyAt } from "@jcendal/digital-pet-core/domain/adventure-pacing.ts"
+import type { TeamCommand, TeamCommandOutcome } from "@jcendal/digital-pet-core/domain/partner-team.ts"
 import { DEFAULT_WORLD_VISIT, isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
+import { discoveredEggFamilies } from "@jcendal/digital-pet-fields/data/egg-discoveries.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
 import { rewardBattleWinner } from "../../domain/battle/reward.ts"
 import { type AgreedBattle, type PendingBattle, parsePendingBattle } from "../../domain/battle/saved-battle.ts"
@@ -17,6 +20,7 @@ import {
   petLocalEgg,
   replaceLocalPartner,
 } from "../../domain/pet/progress.ts"
+import { applyLocalTeamCommand } from "../../domain/pet/team.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 
 const DB_NAME = "web-digital-pet"
@@ -29,6 +33,66 @@ const PENDING_BATTLE_KEY = "pending-battle"
 const ADVENTURE_KEY = "adventure"
 const ADVENTURE_READY_KEY = "adventure-ready-at"
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+/** Identity checks, rest clocks and adventure handoff share a single IndexedDB write. */
+export const applyBrowserTeamCommand = async (
+  command: TeamCommand,
+  active: () => boolean = () => true,
+  eggFamilyId?: string,
+): Promise<TeamCommandOutcome> => {
+  const database = await openDatabase()
+  try {
+    const transaction = database.transaction(STORE_NAME, "readwrite")
+    const done = completed(transaction)
+    const store = transaction.objectStore(STORE_NAME)
+    const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
+    const pending = await resultOf(store.get(PENDING_BATTLE_KEY))
+    const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
+    const adventure = saved && saved.partnerId === state?.partnerId ? parseAdventure(saved.state) : undefined
+    if (!state || !active()) {
+      await done
+      return { kind: "rejected", reason: "busy" }
+    }
+    const now = Date.now()
+    if (
+      eggFamilyId !== undefined &&
+      (command.kind !== "place" ||
+        command.partner.currentNodeId !== "0-001" ||
+        !isEggFamilyId(eggFamilyId) ||
+        !discoveredEggFamilies(state.bossVictories ?? []).includes(eggFamilyId))
+    ) {
+      await done
+      return { kind: "rejected", reason: "invalid_input" }
+    }
+    const changed = applyLocalTeamCommand(
+      state,
+      command,
+      crypto.randomUUID(),
+      now,
+      Boolean(pending || adventureBusy(adventure)),
+    )
+    if (changed.outcome.kind === "applied") {
+      let next = changed.state
+      if (eggFamilyId) {
+        if (command.kind === "place" && command.slot === "reserve" && next.reserve)
+          next = { ...next, reserve: { ...next.reserve, originEggId: eggFamilyId } }
+        else next = { ...next, originEggId: eggFamilyId }
+      }
+      if (command.kind === "switch") {
+        if (next.reserve && adventure)
+          next = { ...next, reserve: { ...next.reserve, adventure: { ...adventure, lastTickAt: now } } }
+        const resumed = state.reserve?.adventure
+        if (resumed) store.put({ partnerId: next.partnerId, state: { ...resumed, lastTickAt: now } }, ADVENTURE_KEY)
+        else store.delete(ADVENTURE_KEY)
+      } else if (command.slot === "principal") store.delete(ADVENTURE_KEY)
+      store.put(next, STATE_KEY)
+    } else if (changed.state !== state) store.put(changed.state, STATE_KEY)
+    await done
+    return changed.outcome
+  } finally {
+    database.close()
+  }
+}
 
 export const readAdventureState = async () => {
   const database = await openDatabase()
@@ -90,6 +154,7 @@ export const browserAdventureStore: AdventureStore = {
         blocked: Boolean(battle || state.pendingEvolution),
         thresholds: experienceThresholds(state.experienceLevel),
         regionId: state.worldVisit?.regionId ?? DEFAULT_WORLD_VISIT.regionId,
+        hygiene: state.hygiene,
       })
       if (next) {
         const victory = next.bossVictory
@@ -298,6 +363,7 @@ const initialState = (now: number): LocalPetState => {
     partnerId: crypto.randomUUID(),
     createdAt,
     currentNodeId: "0-001",
+    originEggId: "starter",
     gauge: 0,
     isTerminal: false,
     lastTickAt: now,

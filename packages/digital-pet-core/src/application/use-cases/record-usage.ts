@@ -25,7 +25,7 @@ export const recordUsage = ({
   let evolution: UsageEvolutionTransition | undefined
   let evolutionBattlePending: { readonly opponentNodeId: string; readonly targetNodeId: string } | undefined
 
-  const outcome = ledger.applyUsageReceipt(usage, (partner) => {
+  const outcome = ledger.applyUsageReceipt(usage, (partner, uncleanPoops = 0) => {
     const current = digimonById.get(partner.currentNodeId)
     if (current === undefined)
       throw new Error(`Persisted partner node ${partner.currentNodeId} is missing from the catalog`)
@@ -45,6 +45,7 @@ export const recordUsage = ({
       digimonById,
       catalogNodes,
       thresholds,
+      uncleanPoops,
     )
 
     if (

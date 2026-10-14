@@ -1,0 +1,335 @@
+@font-face {
+  font-family: "Evolution Plan Pixel";
+  src: url("__PIXEL_FONT__") format("truetype");
+  font-display: swap;
+}
+#evolution-gameplay-preview {
+  --pet-case: #594130;
+  --pet-edge: #9a7750;
+  --pet-case-ink: #d6c5a3;
+  --pet-lcd: #bac79c;
+  --pet-lcd-edge: #89966f;
+  --pet-ink: #26351e;
+  --pet-muted: #435334;
+  --pet-line: #8fa276;
+  padding: 8px;
+}
+#evolution-gameplay-preview * {
+  box-sizing: border-box;
+}
+#evolution-gameplay-preview [hidden] {
+  display: none !important;
+}
+#evolution-gameplay-preview .pet-window {
+  max-width: 760px;
+  margin: 0 auto;
+  border: 4px solid var(--pet-edge);
+  outline: 2px solid var(--pet-case);
+  background: var(--pet-case);
+  color: var(--pet-ink);
+  font:
+    16px / 1.5 "Evolution Plan Pixel",
+    monospace;
+  text-transform: uppercase;
+}
+#evolution-gameplay-preview .pet-window * {
+  font-family: inherit;
+}
+#evolution-gameplay-preview .pet-masthead,
+#evolution-gameplay-preview .pet-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  color: var(--pet-case-ink);
+  font-size: 14px;
+}
+#evolution-gameplay-preview .pet-screen {
+  margin: 4px 8px;
+  padding: 18px;
+  border: 4px solid var(--pet-lcd-edge);
+  background: var(--pet-lcd);
+  min-width: 0;
+}
+#evolution-gameplay-preview h2 {
+  font-size: 22px;
+  font-weight: 400;
+  margin: 16px 0;
+  overflow-wrap: anywhere;
+}
+#evolution-gameplay-preview h3 {
+  font-size: 17px;
+  font-weight: 400;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+#evolution-gameplay-preview p {
+  margin: 8px 0;
+}
+#evolution-gameplay-preview .small {
+  font-size: 12px;
+}
+#evolution-gameplay-preview .note {
+  color: var(--pet-muted);
+  margin: 18px 0;
+}
+#evolution-gameplay-preview .design-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 2px solid var(--pet-muted);
+  padding-bottom: 14px;
+}
+#evolution-gameplay-preview button {
+  font: inherit;
+  font-size: 13px;
+  text-transform: uppercase;
+  min-height: 44px;
+  border: 2px solid var(--pet-muted);
+  border-radius: 0;
+  padding: 10px 12px;
+  background: var(--pet-lcd);
+  color: var(--pet-ink);
+  overflow-wrap: anywhere;
+}
+#evolution-gameplay-preview button[aria-pressed="true"],
+#evolution-gameplay-preview button.primary {
+  background: var(--pet-ink);
+  color: var(--pet-lcd);
+}
+#evolution-gameplay-preview .full {
+  width: 100%;
+}
+#evolution-gameplay-preview .heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#evolution-gameplay-preview .partner-list {
+  margin: 12px 0 20px;
+}
+#evolution-gameplay-preview .partner-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 18px 0;
+  border-top: 2px solid var(--pet-line);
+}
+#evolution-gameplay-preview .role-label {
+  display: block;
+  font-size: 12px;
+  color: var(--pet-muted);
+  margin-bottom: 4px;
+}
+#evolution-gameplay-preview .pet-sprite {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+#evolution-gameplay-preview .pet-sprite.large {
+  width: 128px;
+  height: 128px;
+}
+#evolution-gameplay-preview .companion-arena {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  min-height: 220px;
+  padding: 16px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+#evolution-gameplay-preview .companion-landscape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+#evolution-gameplay-preview .companion-arena .pet-sprite {
+  position: relative;
+}
+#evolution-gameplay-preview .reserve-summary {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 16px 0;
+  margin-top: 16px;
+  border-top: 2px solid var(--pet-line);
+}
+#evolution-gameplay-preview .reserve-summary .pet-sprite {
+  width: 48px;
+  height: 48px;
+}
+#evolution-gameplay-preview meter {
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin-top: 8px;
+}
+#evolution-gameplay-preview meter::-webkit-meter-bar {
+  background: var(--pet-lcd-edge);
+  border: 0;
+  border-radius: 0;
+}
+#evolution-gameplay-preview meter::-webkit-meter-optimum-value {
+  background: var(--pet-ink);
+}
+#evolution-gameplay-preview meter::-moz-meter-bar {
+  background: var(--pet-ink);
+}
+#evolution-gameplay-preview .action-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#evolution-gameplay-preview .action-pair button {
+  flex: 1;
+}
+#evolution-gameplay-preview .encounter {
+  text-align: center;
+  padding: 12px;
+}
+#evolution-gameplay-preview .compact button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 16px;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  margin: 8px 0;
+}
+#evolution-gameplay-preview .compact .pet-sprite {
+  width: 64px;
+  height: 64px;
+}
+#evolution-gameplay-preview .fusion-parents {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+#evolution-gameplay-preview .fusion-parents h3 {
+  font-size: 14px;
+}
+#evolution-gameplay-preview .fusion-result {
+  text-align: center;
+  border-top: 2px solid var(--pet-line);
+  border-bottom: 2px solid var(--pet-line);
+  padding: 12px;
+  margin: 16px 0;
+}
+#evolution-gameplay-preview .fusion-result img {
+  display: block;
+  margin: 0 auto;
+}
+#evolution-gameplay-preview .requirement-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  font-size: 13px;
+}
+#evolution-gameplay-preview .requirement-list li {
+  margin: 8px 0;
+}
+#evolution-gameplay-preview .route-entry {
+  padding: 20px 0;
+  border-top: 2px solid var(--pet-line);
+}
+#evolution-gameplay-preview .egg-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 2px solid var(--pet-line);
+}
+#evolution-gameplay-preview .egg-row .pet-sprite {
+  width: 64px;
+  height: 64px;
+}
+#evolution-gameplay-preview .unknown-egg {
+  font-size: 42px;
+  text-align: center;
+}
+#evolution-gameplay-preview .region-scene {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+#evolution-gameplay-preview dialog {
+  max-width: min(520px, calc(100% - 24px));
+  border: 4px solid var(--pet-muted);
+  padding: 20px;
+  background: var(--pet-lcd);
+  color: var(--pet-ink);
+  font: inherit;
+}
+#evolution-gameplay-preview dialog::backdrop {
+  background: #10120ec4;
+}
+#evolution-gameplay-preview select {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  font-size: 16px;
+  background: var(--pet-lcd);
+  color: var(--pet-ink);
+  border: 2px solid var(--pet-muted);
+  margin: 8px 0 20px;
+}
+#evolution-gameplay-preview #design-status:empty {
+  display: none;
+}
+#evolution-gameplay-preview #design-status {
+  font-size: 13px;
+  margin-top: 20px;
+  border-top: 2px solid var(--pet-muted);
+  padding-top: 14px;
+}
+@media (max-width: 450px) {
+  #evolution-gameplay-preview {
+    padding: 4px;
+  }
+  #evolution-gameplay-preview .pet-screen {
+    padding: 12px;
+    margin: 4px;
+  }
+  #evolution-gameplay-preview .pet-window {
+    font-size: 14px;
+  }
+  #evolution-gameplay-preview h2 {
+    font-size: 19px;
+  }
+  #evolution-gameplay-preview .partner-row {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 10px;
+  }
+  #evolution-gameplay-preview .partner-row .pet-sprite {
+    width: 72px;
+    height: 72px;
+  }
+  #evolution-gameplay-preview .egg-row {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+  }
+  #evolution-gameplay-preview .egg-row .pet-sprite {
+    width: 48px;
+    height: 48px;
+  }
+  #evolution-gameplay-preview .egg-row > button,
+  #evolution-gameplay-preview .egg-row > .small {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

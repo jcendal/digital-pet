@@ -10,7 +10,7 @@ export const adventureView = (
 ): AdventureView => {
   const timing = { readyAt, lootLifetimeMs: ADVENTURE_POLICY.lootLifetimeMs }
   if (!state) return { available, ...timing }
-  const { event, ...travel } = state
+  const { event, victories: _victories, ...travel } = state
   return {
     available,
     ...timing,

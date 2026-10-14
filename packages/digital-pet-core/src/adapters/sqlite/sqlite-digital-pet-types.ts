@@ -6,6 +6,7 @@ import type {
 } from "../../application/models/usage.ts"
 import type { DigitalPetControl } from "../../application/ports/digital-pet-control.ts"
 import type { PartnerLifecycle } from "../../application/ports/partner-lifecycle.ts"
+import type { PartnerTeamStore } from "../../application/ports/partner-team-store.ts"
 import type { UsageLedger } from "../../application/ports/usage-ledger.ts"
 import type { Partner, PartnerProgression } from "../../domain/partner.ts"
 
@@ -40,6 +41,7 @@ export type TrainerState = {
 export type PersistedPartnerSummary = Partner
 
 export type SqliteDigitalPetWriteStore = PartnerLifecycle &
+  PartnerTeamStore &
   UsageLedger &
   DigitalPetControl & {
     close: () => Promise<void>

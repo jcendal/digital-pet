@@ -1,0 +1,94 @@
+<div id="evolution-gameplay-preview" class="viz-dotted-background">
+  <style>__PRODUCT_STYLES__</style>
+  <main class="pet-window" aria-label="Propuesta de interfaces de evolución">
+    <header class="pet-masthead"><span>DIGITAL MONSTER</span><span id="design-title">EQUIPO</span></header>
+    <div class="pet-screen">
+      <nav class="design-nav" aria-label="Pantallas de la propuesta">
+        <button type="button" data-view="companion" aria-pressed="false">Compañero</button>
+        <button type="button" data-view="team" aria-pressed="true">Equipo</button>
+        <button type="button" data-view="recruitment" aria-pressed="false">Encuentro</button>
+        <button type="button" data-view="fusion" aria-pressed="false">Fusión</button>
+        <button type="button" data-view="routes" aria-pressed="false">Rutas</button>
+        <button type="button" data-view="eggs" aria-pressed="false">Huevos</button>
+        <button type="button" data-view="region" aria-pressed="false">Región</button>
+        <button type="button" data-view="achievements" aria-pressed="false">Logros</button>
+      </nav>
+      <section data-screen="companion" aria-labelledby="companion-heading" hidden>
+        <div class="heading-row"><span class="role-label">■ Activo</span><button type="button" data-go="team">Equipo</button></div>
+        <p class="small note">Lago Ojo de Dragón →</p>
+        <div class="heading-row"><h2 id="companion-heading">Garurumon</h2><span class="small">Adulto</span></div>
+        <div class="companion-arena"><img src="__LAKE__" alt="" class="companion-landscape"><img src="__GARURUMON__" alt="Garurumon" class="pet-sprite large"></div>
+        <label class="small">Próxima evolución · 65 %<meter min="0" max="100" value="65">65 %</meter></label>
+        <div class="reserve-summary"><img src="__AGUMON__" alt="" class="pet-sprite"><div><span class="role-label">Reserva · Descansando</span><h3>Agumon</h3></div><button type="button" data-go="team">Ver</button></div>
+        <div class="action-pair"><button type="button" data-go="eggs">Huevos</button><button type="button" data-go="achievements">Logros</button></div>
+      </section>
+      <section data-screen="team" aria-labelledby="team-heading">
+        <div class="heading-row"><h2 id="team-heading">Tus compañeros</h2><span class="small">2 / 2</span></div>
+        <div class="partner-list">
+          <article class="partner-row" id="main-partner">
+            <img src="__GARURUMON__" alt="" class="pet-sprite">
+            <div><span class="role-label">Principal</span><h3>Garurumon</h3><p class="small">Adulto · Lago Ojo de Dragón</p><label class="small">Próxima evolución · 65 %<meter min="0" max="100" value="65">65 %</meter></label></div>
+          </article>
+          <article class="partner-row" id="reserve-partner">
+            <img src="__AGUMON__" alt="" class="pet-sprite">
+            <div><span class="role-label">Reserva</span><h3>Agumon</h3><p class="small">Niño · Descansando</p><label class="small">Próxima evolución · 24 %<meter min="0" max="100" value="24">24 %</meter></label></div>
+          </article>
+        </div>
+        <button type="button" class="primary full" id="switch-partner">Alternar compañeros</button>
+        <p class="small note">El principal gana experiencia. La reserva descansa.</p>
+        <div class="action-pair"><button type="button" data-go="fusion">Ver fusión</button><button type="button" data-go="eggs">Criar un huevo</button></div>
+      </section>
+      <section data-screen="recruitment" aria-labelledby="recruit-heading" hidden>
+        <h2 id="recruit-heading">Un nuevo compañero</h2>
+        <div class="encounter"><img src="__DEVIMON__" alt="Devimon" class="pet-sprite large"><h3>Devimon quiere unirse</h3></div>
+        <p>Tu equipo está completo. Elige a quién sustituir.</p>
+        <div class="partner-list compact">
+          <button type="button" data-replace="principal"><img src="__GARURUMON__" alt="" class="pet-sprite"><span><span class="role-label">Principal</span>Garurumon</span><span aria-hidden="true">→</span></button>
+          <button type="button" data-replace="reserva"><img src="__AGUMON__" alt="" class="pet-sprite"><span><span class="role-label">Reserva</span>Agumon</span><span aria-hidden="true">→</span></button>
+        </div>
+        <p class="small note">El compañero sustituido quedará en el Historial.</p>
+        <button type="button" class="full" id="decline-recruit">Seguir explorando</button>
+      </section>
+      <section data-screen="fusion" aria-labelledby="fusion-heading" hidden>
+        <h2 id="fusion-heading">Jogress</h2>
+        <div class="fusion-parents"><div><img src="__GARURUMON__" alt="" class="pet-sprite"><h3>Garurumon</h3></div><span aria-hidden="true">+</span><div><img src="__DEVIMON__" alt="" class="pet-sprite"><h3>Devimon</h3></div></div>
+        <div class="fusion-result"><span class="small">Resultado</span><img src="__OROCHIMON__" alt="" class="pet-sprite large"><h3>Orochimon</h3></div>
+        <ul class="requirement-list"><li>✓ Garurumon como principal</li><li>✓ Adulto de atributo Virus en reserva</li><li>✓ Ambos disponibles</li></ul>
+        <p class="small note">Los dos compañeros se fusionan. La reserva queda libre.</p>
+        <button type="button" class="primary full" id="fusion-button">Fusionar compañeros</button>
+      </section>
+      <section data-screen="routes" aria-labelledby="route-heading" hidden>
+        <div class="heading-row"><h2 id="route-heading">Garurumon</h2><span class="small">Dex</span></div>
+        <p class="small note">Al completar la experiencia, evolucionará según su cuidado y recorrido.</p>
+        <article class="route-entry"><span class="role-label">Evolución normal</span><h3>WereGarurumon</h3><ul class="requirement-list"><li>✓ Cacas sin limpiar: 0–2</li><li>○ Experiencia por completar</li></ul></article>
+        <article class="route-entry"><span class="role-label">Jogress · Manual</span><h3>Orochimon</h3><ul class="requirement-list"><li>○ Adulto de atributo Virus en reserva</li></ul><button type="button" data-go="fusion">Ver pareja de fusión</button></article>
+        <p class="small note">Consulta cada ruta en el Dex.</p>
+      </section>
+      <section data-screen="eggs" aria-labelledby="eggs-heading" hidden>
+        <div class="heading-row"><h2 id="eggs-heading">Huevos de origen</h2><span class="small">Colección</span></div>
+        <p class="small note">El origen acompaña al pet durante toda su vida.</p>
+        <article class="egg-row"><img src="__EGG__" alt="" class="pet-sprite"><div><h3>Huevo inicial</h3><span class="small">Disponible desde el comienzo</span></div><button type="button" data-egg="inicial">Criar</button></article>
+        <article class="egg-row"><img src="__EGG__" alt="" class="pet-sprite"><div><h3>Huevo del bosque</h3><span class="small">Descubierto · Bosque Digital</span></div><button type="button" data-egg="del bosque">Criar</button></article>
+        <article class="egg-row locked"><span class="unknown-egg" aria-hidden="true">?</span><div><h3>Huevo acuático</h3><span class="small">Explora la Playa Coela</span></div><span class="small">Bloqueado</span></article>
+        <p class="small note">Puedes criar un huevo en cualquiera de los dos huecos.</p>
+      </section>
+      <section data-screen="region" aria-labelledby="region-heading" hidden>
+        <div class="heading-row"><h2 id="region-heading">Bosque Digital</h2><span class="small">WG</span></div>
+        <img src="__FOREST__" alt="Paisaje pixelado del Bosque Digital" class="region-scene">
+        <article class="route-entry"><span class="role-label">Logro de la partida</span><h3>Guardián del bosque</h3><p class="small">✓ Jefe regional vencido</p><p class="small note">Las rutas asociadas quedan disponibles para tus compañeros.</p></article>
+        <article class="route-entry"><span class="role-label">Descubrimiento</span><h3>Huevo del bosque</h3><p class="small">✓ Añadido a tu colección</p><button type="button" data-go="eggs">Ver huevos</button></article>
+      </section>
+      <section data-screen="achievements" aria-labelledby="achievements-heading" hidden>
+        <h2 id="achievements-heading">Logros de tu partida</h2>
+        <p class="small note">Los desbloqueos acompañan a todos tus compañeros.</p>
+        <article class="route-entry"><span class="role-label">✓ Conseguido</span><h3>Guardián del bosque</h3><p class="small">Bosque Digital · Jefe regional</p><p class="small note">Recompensa: rutas de evolución asociadas.</p><button type="button" data-go="region">Ver región</button></article>
+        <article class="route-entry"><span class="role-label">✓ Descubierto</span><h3>Huevo del bosque</h3><p class="small">Un nuevo origen para tu equipo</p><button type="button" data-go="eggs">Ver huevos</button></article>
+        <article class="route-entry"><span class="role-label">○ Pendiente</span><h3>Guardián de la costa</h3><p class="small">Vence a un jefe de Playa Coela.</p></article>
+      </section>
+      <dialog id="design-confirmation" aria-labelledby="confirmation-title"><h2 id="confirmation-title"></h2><p id="confirmation-description"></p><label id="egg-slot-label" hidden>Hueco del equipo<select id="egg-slot"><option value="principal">Principal · Garurumon</option><option value="reserva" selected>Reserva · Agumon</option></select></label><div class="action-pair"><button type="button" id="confirm-action" class="primary">Confirmar</button><button type="button" id="cancel-action">Cancelar</button></div></dialog>
+      <p id="design-status" role="status" aria-live="polite"></p>
+    </div>
+    <footer class="pet-footer"><span>VPET · ARCHIVO DE DATOS</span><span aria-hidden="true">▪ ▪ ▪</span></footer>
+  </main>
+  <script>__PRODUCT_SCRIPT__</script>
+</div>

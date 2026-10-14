@@ -1,4 +1,6 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { eggNodeForOrigin } from "@jcendal/digital-pet-core/data/egg-families.ts"
+import type { AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import { eggPettingExperience } from "@jcendal/digital-pet-core/domain/egg-petting.ts"
 import {
@@ -52,7 +54,8 @@ export type LocalArchivedPartner = {
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
 }
 
-export type LocalPetState = {
+export type LocalPartnerState = {
+  readonly originEggId?: string
   readonly partnerId: string
   readonly createdAt: string
   readonly currentNodeId: string
@@ -60,10 +63,6 @@ export type LocalPetState = {
   readonly isTerminal: boolean
   readonly lastTickAt: number
   readonly events: readonly { readonly currentNodeId: string; readonly createdAt: string }[]
-  readonly bossVictories?: readonly BossVictory[]
-  readonly worldVisit?: WorldVisit
-  readonly experienceLevel?: ExperienceLevel
-  readonly retiredPartners?: readonly LocalArchivedPartner[]
   readonly food?: FoodState
   readonly hygiene?: HygieneState
   readonly pendingEvolution?: {
@@ -73,14 +72,29 @@ export type LocalPetState = {
   }
 }
 
+export type LocalReservePartner = LocalPartnerState & {
+  readonly pausedAt: number
+  readonly adventure?: AdventureState
+}
+
+export type LocalPetState = LocalPartnerState & {
+  readonly bossVictories?: readonly BossVictory[]
+  readonly worldVisit?: WorldVisit
+  readonly experienceLevel?: ExperienceLevel
+  readonly retiredPartners?: readonly LocalArchivedPartner[]
+  readonly reserve?: LocalReservePartner
+  readonly teamRevision?: number
+}
+
 export const advanceLocalPet = (
   initial: LocalPetState,
   now: number,
   selector: EvolutionSelector = Math.random,
 ): LocalPetState => {
-  const current = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
-  if (!current)
+  const catalogNode = DIGIMON_CATALOG.byId.get(initial.currentNodeId)
+  if (!catalogNode)
     throw new Error(IntlModule.translate("progress.unknownBrowserPartner", { currentNodeId: initial.currentNodeId }))
+  const current = eggNodeForOrigin(catalogNode, initial.originEggId)
   const hygiene = advanceHygiene(initial.hygiene, current.stage === 0, now)
   if (hygiene !== initial.hygiene) {
     const { hygiene: _old, ...rest } = initial
@@ -112,6 +126,7 @@ export const advanceLocalPet = (
       DIGIMON_CATALOG.byId,
       DIGIMON_CATALOG.nodes,
       thresholds,
+      initial.hygiene?.poops.length ?? 0,
     )
     const targetNodeId = next.pendingEvolutionTargetId ?? (next.current.id !== current.id ? next.current.id : null)
     if (targetNodeId) {
@@ -255,6 +270,8 @@ export const replaceLocalPartner = (
     experienceLevel: settled.experienceLevel ?? "high",
     ...(settled.bossVictories ? { bossVictories: settled.bossVictories } : {}),
     ...(settled.worldVisit ? { worldVisit: settled.worldVisit } : {}),
+    ...(settled.reserve ? { reserve: settled.reserve } : {}),
+    ...(settled.teamRevision !== undefined ? { teamRevision: settled.teamRevision + 1 } : {}),
     events: [{ currentNodeId: nodeId, createdAt }],
     retiredPartners: [
       ...(settled.retiredPartners ?? []),

@@ -4,7 +4,11 @@ import { createAdventureService } from "@jcendal/digital-pet-core/application/us
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import type { AdventureCommand, AdventureState } from "@jcendal/digital-pet-core/domain/adventure.ts"
-import { getRegionBosses, getRegionResidents } from "@jcendal/digital-pet-fields/application/world.ts"
+import {
+  getLegacyRegionBosses,
+  getRegionBosses,
+  getRegionResidents,
+} from "@jcendal/digital-pet-fields/application/world.ts"
 import { adventureView } from "@jcendal/digital-pet-webviews/sidebar/adventure-view.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { settingsFor } from "../../../domain/pet/models.ts"
@@ -24,6 +28,7 @@ const service = createAdventureService(
   (regionId) => getRegionResidents(regionId, DIGIMON_CATALOG),
   Math.random,
   (regionId) => getRegionBosses(regionId, DIGIMON_CATALOG),
+  (regionId) => getLegacyRegionBosses(regionId, DIGIMON_CATALOG),
 )
 let state: AdventureState | undefined
 let initialized = false

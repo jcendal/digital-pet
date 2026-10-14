@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+### Changed
+
+- Prepare shared team persistence for a principal and resting reserve, with atomic slot replacement, revision checks and active-only token attribution. Team controls are not exposed yet.
+- Omit unrestricted care labels in the shared Dex and include reviewed jungle/dark habitat affinities.
+- Use shared regional boss tiers and preserve pending fights against previous regional bosses.
+- Apply referenced normal evolution routes and current unclean-pile care to token usage, adventure rewards and cleaning. Separate special evolution routes in the Dex.
+
 ### Fixed
 
 - Refresh previously enabled Agent hooks after extension updates so token experience keeps working when old versions are removed.

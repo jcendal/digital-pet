@@ -4,6 +4,7 @@ import { limitAdventureReadyAt } from "../../domain/adventure-pacing.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "../../domain/evolution.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sqlite-digital-pet-schema.ts"
+import { readEvolutionHygiene } from "./sqlite-evolution-care.ts"
 import { spawnSqlitePartner } from "./sqlite-partner-lifecycle.ts"
 
 const readReadyAt = (executor: SqliteExecutor): number => {
@@ -38,6 +39,7 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
           row.pending_evolution_target_id !== null,
         thresholds: STAGE_GAUGE_THRESHOLDS,
         regionId,
+        hygiene: readEvolutionHygiene(executor, row.partner_id),
       })
       if (!next) return undefined
       if (next.adventure !== adventure)

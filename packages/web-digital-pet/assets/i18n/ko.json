@@ -275,5 +275,8 @@
   "music.unavailable": "음악을 재생할 수 없습니다. 터치하여 다시 시도하세요.",
   "music.credit": "8비트 편곡: BgmManJX.",
   "navigationMarkup.map": "지도",
-  "navigationMarkup.more": "More"
+  "navigationMarkup.more": "More",
+  "navigation.team": "팀",
+  "navigation.eggs": "알",
+  "optionsMarkup.chooseEggAndSlot": "알을 선택하고 들어갈 팀 자리를 정하세요."
 }

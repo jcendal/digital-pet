@@ -1,10 +1,13 @@
 import { createServer, type ServerResponse } from "node:http"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { discoveredEggFamilies } from "@jcendal/digital-pet-fields/data/egg-discoveries.ts"
 import { REGIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
+import { buildEggCollectionModel } from "@jcendal/digital-pet-webviews/panels/team/egg-model.ts"
+import { buildTeamPanelModel } from "@jcendal/digital-pet-webviews/panels/team/team-model.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import { hasHostDatabase, readArchive, readBossVictories } from "../persistence/sqlite.ts"
+import { hasHostDatabase, readArchive, readBossVictories, readTeam } from "../persistence/sqlite.ts"
 import type { WebResources } from "../rendering/build-resources.ts"
 import { dexModel, historyModel, sidebarData } from "../rendering/host-models.ts"
 import { renderPage, renderShell } from "../rendering/pages.ts"
@@ -71,6 +74,17 @@ export const createWebHandler = (resources: WebResources, clientRoot?: string) =
         if (!hasHostDatabase()) return send(response, 200, "application/json; charset=utf-8", '{"mode":"browser"}')
         const width = Number(url.searchParams.get("width") ?? 40)
         return send(response, 200, "application/json; charset=utf-8", JSON.stringify(sidebarData(width)))
+      }
+      if (url.pathname === "/api/team") {
+        return send(
+          response,
+          200,
+          "application/json; charset=utf-8",
+          JSON.stringify({
+            model: buildTeamPanelModel(readTeam(), DEFAULT_DIGITAL_PET_SETTINGS, false, true),
+            eggs: buildEggCollectionModel(discoveredEggFamilies(readBossVictories())),
+          }),
+        )
       }
       if (url.pathname === "/api/dex") {
         if (!hasHostDatabase()) return send(response, 200, "application/json; charset=utf-8", '{"mode":"browser"}')

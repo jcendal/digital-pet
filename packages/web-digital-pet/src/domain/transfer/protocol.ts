@@ -1,17 +1,20 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import { eggNodeForOrigin, isEggFamilyId } from "@jcendal/digital-pet-core/data/egg-families.ts"
+import { adventureBusy, parseAdventure } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { parseHygiene } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
-import { REGION_BOSS_IDS } from "@jcendal/digital-pet-fields/data/bosses.ts"
+import { isRegionalBossId } from "@jcendal/digital-pet-fields/data/bosses.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import type { ExperienceLevel, LocalArchivedPartner, LocalPetState } from "../pet/progress.ts"
+import type { ExperienceLevel, LocalArchivedPartner, LocalPetState, LocalReservePartner } from "../pet/progress.ts"
+import { partnerState } from "../pet/team.ts"
 
-export const TRANSFER_VERSION = 1
+export const TRANSFER_VERSION = 2
 export const MAX_TRANSFER_BYTES = 64 * 1024
 export const MAX_BACKUP_BYTES = 4 * 1024 * 1024
 
-export type PetTransfer = { readonly version: 1; readonly state: LocalPetState }
+export type PetTransfer = { readonly version: 2; readonly state: LocalPetState }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -36,18 +39,23 @@ const parseEvents = (value: unknown): LocalPetState["events"] => {
 }
 
 export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES): PetTransfer => {
-  if (!isRecord(input) || input.version !== TRANSFER_VERSION || !isRecord(input.state))
+  if (!isRecord(input) || (input.version !== 1 && input.version !== TRANSFER_VERSION) || !isRecord(input.state))
     throw new Error(IntlModule.translate("protocol.unsupportedSaveFormat"))
   if (new TextEncoder().encode(JSON.stringify(input)).byteLength > maxBytes)
     throw new Error(IntlModule.translate("protocol.theReceivedSaveIsTooLarge"))
 
   const state = input.state
+  if (state.originEggId !== undefined && !isEggFamilyId(state.originEggId))
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
+  if (input.version === 1 && state.reserve !== undefined)
+    throw new Error(IntlModule.translate("protocol.unsupportedSaveFormat"))
   if (
     typeof state.partnerId !== "string" ||
     state.partnerId.length < 1 ||
     state.partnerId.length > 100 ||
     !validDate(state.createdAt) ||
     !validNodeId(state.currentNodeId) ||
+    !DIGIMON_CATALOG.byId.has(state.currentNodeId) ||
     typeof state.gauge !== "number" ||
     !Number.isSafeInteger(state.gauge) ||
     state.gauge < 0 ||
@@ -86,7 +94,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
         !isRecord(victory) ||
         typeof victory.regionId !== "string" ||
         !validNodeId(victory.nodeId) ||
-        !REGION_BOSS_IDS[victory.regionId]?.includes(victory.nodeId) ||
+        !isRegionalBossId(victory.regionId, victory.nodeId) ||
         !validDate(victory.defeatedAt)
       )
         throw new Error(IntlModule.translate("protocol.invalidBossVictories"))
@@ -99,7 +107,10 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
   let pendingEvolution: LocalPetState["pendingEvolution"]
   if (state.pendingEvolution !== undefined) {
     const pending = state.pendingEvolution
-    const current = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+    const node = DIGIMON_CATALOG.byId.get(state.currentNodeId)
+    const current = node
+      ? eggNodeForOrigin(node, typeof state.originEggId === "string" ? state.originEggId : undefined)
+      : undefined
     if (
       !isRecord(pending) ||
       !validNodeId(pending.targetNodeId) ||
@@ -161,6 +172,53 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     })
   }
 
+  let reserve: LocalReservePartner | undefined
+  if (
+    state.teamRevision !== undefined &&
+    (typeof state.teamRevision !== "number" || !Number.isSafeInteger(state.teamRevision) || state.teamRevision < 0)
+  )
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
+  if (state.reserve !== undefined) {
+    const value = state.reserve
+    if (
+      !isRecord(value) ||
+      [
+        "reserve",
+        "retiredPartners",
+        "bossVictories",
+        "worldVisit",
+        "experienceLevel",
+        "teamRevision",
+        "pendingEvolution",
+      ].some((key) => value[key] !== undefined) ||
+      typeof value.pausedAt !== "number" ||
+      !Number.isSafeInteger(value.pausedAt) ||
+      value.pausedAt < 0 ||
+      value.pausedAt > Date.now() + 24 * 60 * 60 * 1000
+    )
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
+    const parsed = parsePetTransfer({ version: 2, state: value }, maxBytes).state
+    if (
+      parsed.partnerId === state.partnerId ||
+      parsed.lastTickAt > value.pausedAt ||
+      Date.parse(parsed.createdAt) > value.pausedAt
+    )
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
+    const adventure = value.adventure === undefined ? undefined : parseAdventure(value.adventure)
+    if (
+      value.adventure !== undefined &&
+      (!adventure || adventureBusy(adventure) || adventure.nodeId !== parsed.currentNodeId)
+    )
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
+    reserve = { ...partnerState(parsed), pausedAt: value.pausedAt, ...(adventure ? { adventure } : {}) }
+  }
+  const liveIds = new Set([state.partnerId, ...(reserve ? [reserve.partnerId] : [])])
+  for (const retired of retiredPartners ?? []) {
+    if (liveIds.has(retired.partnerId))
+      throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidArchive"))
+    liveIds.add(retired.partnerId)
+  }
+
   return {
     version: TRANSFER_VERSION,
     state: {
@@ -171,6 +229,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       isTerminal: state.isTerminal as boolean,
       lastTickAt: state.lastTickAt as number,
       events,
+      ...(isEggFamilyId(state.originEggId) ? { originEggId: state.originEggId } : {}),
       ...(bossVictories ? { bossVictories } : {}),
       ...(pendingEvolution ? { pendingEvolution } : {}),
       ...(food ? { food } : {}),
@@ -180,6 +239,8 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
         : {}),
       ...(state.experienceLevel !== undefined ? { experienceLevel: state.experienceLevel as ExperienceLevel } : {}),
       ...(retiredPartners !== undefined ? { retiredPartners } : {}),
+      ...(reserve ? { reserve } : {}),
+      ...(state.teamRevision !== undefined ? { teamRevision: state.teamRevision as number } : {}),
     },
   }
 }

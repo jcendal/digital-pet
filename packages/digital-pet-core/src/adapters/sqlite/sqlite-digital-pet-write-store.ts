@@ -18,8 +18,10 @@ import {
   type UsageReceiptRow,
 } from "./sqlite-digital-pet-schema.ts"
 import type { SqliteDigitalPetWriteStore } from "./sqlite-digital-pet-types.ts"
+import { readEvolutionCare } from "./sqlite-evolution-care.ts"
 import { runMigrations } from "./sqlite-migrations.ts"
 import { spawnSqlitePartner } from "./sqlite-partner-lifecycle.ts"
+import { createSqlitePartnerTeamStore } from "./sqlite-partner-team-store.ts"
 
 export type CreateSqliteDigitalPetWriteStoreOptions = {
   readonly databasePath: string
@@ -43,6 +45,7 @@ export const createSqliteDigitalPetWriteStore = (
   const appliedMigrations = runMigrations(executor)
 
   const store = {
+    ...createSqlitePartnerTeamStore(executor),
     databasePath,
     async close() {
       await close()
@@ -107,7 +110,10 @@ export const createSqliteDigitalPetWriteStore = (
     listPartnerEvents(partnerId: string) {
       return executor.all<PersistedPartnerEventRow>(PARTNER_EVENTS_SELECT, [partnerId]).map(toPersistedPartnerEvent)
     },
-    applyUsageReceipt(metadata: UsageReceiptMetadata, evolve: (partner: Partner) => PartnerProgression) {
+    applyUsageReceipt(
+      metadata: UsageReceiptMetadata,
+      evolve: (partner: Partner, uncleanPoops?: number) => PartnerProgression,
+    ) {
       return executor.transaction(() => {
         const canonicalReceipt = executor.get<ReceiptLedgerRow>(
           "SELECT receipt_key FROM usage_receipts WHERE receipt_key = ? LIMIT 1",
@@ -142,7 +148,7 @@ export const createSqliteDigitalPetWriteStore = (
         const activePartnerRow = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
         if (activePartnerRow === null) return { kind: "no_active_partner" } as const
         const activePartner = toPartner(activePartnerRow)
-        const nextState = evolve(activePartner)
+        const nextState = evolve(activePartner, readEvolutionCare(executor, activePartner.partnerId, Date.now()))
         executor.run(
           "UPDATE partners SET current_node_id = ?, gauge = ?, is_terminal = ?, pending_evolution_target_id = ?, battle_opponent_node_id = ? WHERE partner_id = ?",
           [

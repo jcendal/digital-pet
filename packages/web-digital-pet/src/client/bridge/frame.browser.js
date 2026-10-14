@@ -68,6 +68,16 @@ function initWebBridge(page, locationIds) {
     }
   }
   window.addEventListener("message", receiveBattle)
+  window.addEventListener("message", (event) => {
+    if (
+      event.source !== window.parent ||
+      event.origin !== location.origin ||
+      event.data?.type !== "digital-pet:team-result"
+    )
+      return
+    deliver(event.data.result)
+    refresh()
+  })
   const navigate = (path) => {
     if (window.parent === window) {
       location.href = path
@@ -199,6 +209,22 @@ function initWebBridge(page, locationIds) {
     },
     setState: (state) => sessionStorage.setItem(key, JSON.stringify(state)),
     postMessage: (message) => {
+      if (message.type === "switch-companion" && page === "sidebar") {
+        if (window.parent !== window)
+          window.parent.postMessage({ type: "digital-pet:switch-companion", command: message.command }, location.origin)
+        else
+          void import("../persistence/pet-store.ts")
+            .then(async (store) => {
+              const outcome = await store.applyBrowserTeamCommand(message.command, browserSave)
+              deliver({ type: "team-result", accepted: outcome.kind === "applied" })
+              refresh()
+            })
+            .catch(() => {
+              deliver({ type: "team-result", accepted: false })
+              refresh()
+            })
+        return
+      }
       if (message.type === "adventure" && page === "sidebar") {
         if (!browserSave()) return
         void import("../features/partner/adventure.ts")

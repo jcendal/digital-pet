@@ -1,8 +1,10 @@
 import { NEUTRAL_COMBAT_STATS } from "../domain/combat.ts"
 import type { DigimonCatalog, DigimonNode } from "../domain/digimon-node.ts"
+import type { EvolutionRoute } from "../domain/evolution-options.ts"
 import { isDigimonStage } from "../domain/stage.ts"
 import { COMBAT_STATS } from "./combat-stats.ts"
 import { DIGIMON_DATA } from "./digimon-data.ts"
+import { EVOLUTION_ROUTES } from "./evolution-routes.ts"
 
 export type { DigimonCatalog, DigimonNode } from "../domain/digimon-node.ts"
 
@@ -49,6 +51,31 @@ export const parseDigimonCatalog = (input: readonly RawDigimonNode[]): DigimonCa
   return Object.freeze({ nodes: Object.freeze(nodes), byId })
 }
 
-export const DIGIMON_CATALOG = parseDigimonCatalog(DIGIMON_DATA)
+// Retain historical connections for pending saves, while only referenced normal
+// routes can be chosen for new experience evolutions.
+const referencedData = DIGIMON_DATA.map((node) => ({
+  ...node,
+  next_evolutions: [
+    ...new Set([...node.next_evolutions, ...(EVOLUTION_ROUTES.get(node.id) ?? []).map((route) => route.targetId)]),
+  ],
+}))
+const baseCatalog = parseDigimonCatalog(referencedData)
+const nodes = baseCatalog.nodes.map((node) => {
+  const referenced = EVOLUTION_ROUTES.get(node.id) ?? []
+  const known = new Set(referenced.map((route) => route.targetId))
+  const legacy: EvolutionRoute[] = node.nextEvolutions
+    .filter((id) => !known.has(id))
+    .map((targetId) => ({
+      targetId,
+      kind: node.stage === 0 ? "normal" : "unverified",
+      careMask: node.stage === 0 ? 15 : 0,
+      sources: [],
+    }))
+  return Object.freeze({ ...node, evolutionRoutes: Object.freeze([...referenced, ...legacy]) })
+})
+export const DIGIMON_CATALOG: DigimonCatalog = Object.freeze({
+  nodes: Object.freeze(nodes),
+  byId: new Map(nodes.map((node) => [node.id, node])),
+})
 
 export const loadDigimonCatalog = async (): Promise<DigimonCatalog> => DIGIMON_CATALOG

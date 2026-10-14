@@ -1,6 +1,7 @@
 import type { FieldId } from "../domain/world.ts"
 import { FIELD_IDS } from "../domain/world.ts"
 import reference from "./field-reference.json" with { type: "json" }
+import { HABITAT_AFFINITIES } from "./habitat-affinities.ts"
 import { HABITAT_FALLBACKS } from "./habitat-fallbacks.ts"
 
 // Preserve the original game habitats alongside the reference Fields.
@@ -193,6 +194,7 @@ export const HABITATS: Readonly<Record<FieldId, readonly string[]>> = Object.fre
         [
           ...new Set([
             ...CURATED_HABITATS[field],
+            ...HABITAT_AFFINITIES.filter((affinity) => affinity.fieldId === field).map((affinity) => affinity.nodeId),
             ...Object.entries(reference)
               .filter(([, entry]) => entry.fields.includes(field))
               .map(([id]) => id),

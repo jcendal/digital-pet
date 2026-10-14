@@ -56,9 +56,33 @@ describe("Cursor Digidex records", () => {
     expect(agumon?.generations).toBe(2)
     expect(agumon?.firstSeen).toBe("2026-09-03T00:00:00Z")
     expect(agumon?.artwork).not.toBe("")
-    expect(agumon?.nextIds).toEqual(DIGIMON_CATALOG.byId.get("3-001")?.nextEvolutions)
+    expect(agumon?.nextIds).toContain("4-054")
+    expect(agumon?.nextIds).toContain("4-088")
+    expect(agumon?.nextIds).not.toContain("7-041")
+    expect(agumon?.specialNextIds).toContain("7-041")
+    expect(agumon?.evolutionCare?.find((route) => route.targetId === "4-088")?.uncleanPoops).toEqual([3])
     expect(agumon?.previousIds).toContain("2-013")
     expect(model.entries.find((entry) => entry.id === agumon?.nextIds[0])?.name).toBe("Unknown Digimon")
+  })
+
+  test("unrestricted care is not exposed as an evolution requirement", () => {
+    const archive = {
+      kind: "available" as const,
+      partners: [
+        {
+          partnerId: "egg",
+          generation: 1,
+          createdAt: "2026-10-14T00:00:00Z",
+          retiredAt: null,
+          events: [{ eventId: "egg", currentNodeId: "0-001", createdAt: "2026-10-14T00:00:00Z" }],
+        },
+      ],
+    }
+    const egg = buildDexPanelModel(archive, DIGIMON_CATALOG, DEFAULT_DIGITAL_PET_SETTINGS).entries.find(
+      (entry) => entry.id === "0-001",
+    )!
+    expect(egg.nextIds.length).toBeGreaterThan(0)
+    expect(egg.evolutionCare).toEqual([])
   })
 
   test("half blocks are reconstructed into separate square pixels", () => {

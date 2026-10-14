@@ -20,6 +20,8 @@ export type DexEntry = {
   readonly artwork: string
   readonly previousIds: readonly string[]
   readonly nextIds: readonly string[]
+  readonly specialNextIds?: readonly string[]
+  readonly evolutionCare?: readonly { readonly targetId: string; readonly uncleanPoops: readonly number[] }[]
   readonly firstSeen: string | null
   readonly generations: number
   readonly url: string
@@ -49,7 +51,9 @@ export const buildDexPanelModel = (
   if (view.kind !== "available") throw new Error("Expected a complete Dex catalog")
   const previousIds = new Map<string, string[]>()
   for (const node of catalog.nodes) {
-    for (const nextId of node.nextEvolutions) {
+    for (const nextId of node.evolutionRoutes
+      ?.filter((route) => route.kind !== "unverified")
+      .map((route) => route.targetId) ?? node.nextEvolutions) {
       const ids = previousIds.get(nextId) ?? []
       ids.push(node.id)
       previousIds.set(nextId, ids)
@@ -105,7 +109,23 @@ export const buildDexPanelModel = (
         discovered: row.discovered,
         artwork: frame === undefined ? "" : artworkToPixelPath(frame.content),
         previousIds: row.discovered ? (previousIds.get(node.id) ?? []) : [],
-        nextIds: row.discovered ? node.nextEvolutions : [],
+        nextIds: row.discovered
+          ? (node.evolutionRoutes?.filter((route) => route.kind === "normal").map((route) => route.targetId) ??
+            node.nextEvolutions)
+          : [],
+        specialNextIds: row.discovered
+          ? (node.evolutionRoutes
+              ?.filter((route) => route.kind === "jogress" || route.kind === "special")
+              .map((route) => route.targetId) ?? [])
+          : [],
+        evolutionCare: row.discovered
+          ? (node.evolutionRoutes
+              ?.filter((route) => route.kind === "normal" && route.careMask !== 15)
+              .map((route) => ({
+                targetId: route.targetId,
+                uncleanPoops: [0, 1, 2, 3].filter((count) => (route.careMask & (1 << count)) !== 0),
+              })) ?? [])
+          : [],
         firstSeen: seen?.firstSeen ?? null,
         generations: seen?.partners.size ?? 0,
         url: row.discovered ? node.url : "",

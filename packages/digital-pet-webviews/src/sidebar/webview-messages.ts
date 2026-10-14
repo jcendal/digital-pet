@@ -7,7 +7,7 @@ export type AdventureView = {
   readonly available: boolean
   readonly readyAt: number
   readonly lootLifetimeMs: number
-  readonly state?: Omit<AdventureState, "event"> & {
+  readonly state?: Omit<AdventureState, "event" | "victories"> & {
     readonly event?:
       | { readonly kind: "loot"; readonly id: number; readonly item: "food" | "fragment"; readonly appearedAt: number }
       | {

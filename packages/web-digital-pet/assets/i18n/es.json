@@ -275,5 +275,8 @@
   "music.unavailable": "No se pudo reproducir la música. Toca para reintentar.",
   "music.credit": "Versiones de 8 bits de BgmManJX.",
   "navigationMarkup.map": "MAPA",
-  "navigationMarkup.more": "More"
+  "navigationMarkup.more": "More",
+  "navigation.team": "EQUIPO",
+  "navigation.eggs": "HUEVOS",
+  "optionsMarkup.chooseEggAndSlot": "Elige un huevo y el hueco del equipo al que se une."
 }

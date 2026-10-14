@@ -84,6 +84,7 @@ export const changeAdventure = (
   now: number,
   random: () => number = Math.random,
   bosses: readonly DigimonNode[] = [],
+  legacyBosses: readonly DigimonNode[] = [],
 ): AdventureChange | undefined => {
   if (current.stage === 0 || !Number.isFinite(now)) return undefined
   if (command.adventureId !== undefined && command.adventureId !== state?.id) return undefined
@@ -117,7 +118,7 @@ export const changeAdventure = (
   const event = state.event
   if (command.kind === "accept-companion" || command.kind === "decline-companion") {
     if (event?.kind !== "offer" || event.id !== command.eventId || command.adventureId !== state.id) return undefined
-    const opponent = [...residents, ...bosses].find((node) => node.id === event.opponentNodeId)
+    const opponent = [...residents, ...bosses, ...legacyBosses].find((node) => node.id === event.opponentNodeId)
     if (!opponent || opponent.stage === 0) return undefined
     const accepted = command.kind === "accept-companion"
     return {
@@ -145,8 +146,9 @@ export const changeAdventure = (
   if (command.kind === "finish-battle") {
     if (event?.kind !== "battle" || event.id !== command.eventId || event.completedShots !== event.plan.shots.length)
       return undefined
-    const opponent = [...residents, ...bosses].find((node) => node.id === event.opponentNodeId)
-    if (event.rank === "boss" && !bosses.some((node) => node.id === event.opponentNodeId)) return undefined
+    const opponent = [...residents, ...bosses, ...legacyBosses].find((node) => node.id === event.opponentNodeId)
+    if (event.rank === "boss" && ![...bosses, ...legacyBosses].some((node) => node.id === event.opponentNodeId))
+      return undefined
     const won = event.plan.outcome === "player"
     const lost = event.plan.outcome === "opponent"
     const offer = won && opponent && random() < ADVENTURE_POLICY.recruitmentChance

@@ -52,6 +52,7 @@ export const createPartnerHygieneService = (
           catalog.byId,
           catalog.nodes,
           thresholds,
+          next.poops.length,
         )
         return {
           hygiene: next,

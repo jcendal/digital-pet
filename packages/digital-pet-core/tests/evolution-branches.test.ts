@@ -2,6 +2,7 @@ import { expect, test } from "bun:test"
 import { DIGIMON_CATALOG } from "../src/data/catalog.ts"
 import { resolveEvolutionBattle } from "../src/domain/evolution.ts"
 import { assertEvolutionBranch, pickEvolutionTarget } from "../src/domain/evolution-battle.ts"
+import { availableEvolutionTargets } from "../src/domain/evolution-options.ts"
 
 test("the entire catalogue is reachable from the egg through explicit branches", () => {
   const reached = new Set(["0-001"])
@@ -16,9 +17,12 @@ test("the entire catalogue is reachable from the egg through explicit branches",
         queue.push(target)
       }
     }
-    if (node.nextEvolutions.length)
-      for (const selector of [0, 0.25, 0.5, 0.999999])
-        expect(node.nextEvolutions).toContain(pickEvolutionTarget(node, () => selector))
+    for (const care of [0, 1, 2, 3]) {
+      const available = availableEvolutionTargets(node, care)
+      if (available.length)
+        for (const selector of [0, 0.25, 0.5, 0.999999])
+          expect(available).toContain(pickEvolutionTarget(node, () => selector, care))
+    }
   }
   expect(reached.size).toBe(650)
 })

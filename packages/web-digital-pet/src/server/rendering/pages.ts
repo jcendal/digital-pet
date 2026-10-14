@@ -4,6 +4,7 @@ import { buildIntlBrowserScript } from "@jcendal/digital-pet-intl/browser-script
 import { catalogs as webviewCatalogs } from "@jcendal/digital-pet-webviews/i18n"
 import { buildDexWebviewHtml } from "@jcendal/digital-pet-webviews/panels/dex/dex-render.ts"
 import { buildHistoryWebviewHtml } from "@jcendal/digital-pet-webviews/panels/history/history-render.ts"
+import { TEAM_SCRIPT, TEAM_STYLES } from "@jcendal/digital-pet-webviews/panels/team/team-render.ts"
 import { worldMapMarkup, worldMapScript } from "@jcendal/digital-pet-webviews/panels/world/map-render.ts"
 import { escapeHtml } from "@jcendal/digital-pet-webviews/shared/escape-html.ts"
 import { PANEL_THEME } from "@jcendal/digital-pet-webviews/shared/theme.ts"
@@ -62,5 +63,5 @@ export const renderShell = (page: "sidebar" | "dex" | "history", web: WebResourc
     assetUrl(web, "/maps/file-island.svg"),
     (id) => assetUrl(web, `/regions/${id}/scene.svg`),
     LOCATIONS.filter((place) => web.assets[`/regions/${place.id}/background.png`]).map((place) => place.id),
-  )}</div>${navigationMarkup(page)}${optionsMarkup}${battleMarkup}<script nonce="${nonce}">${buildIntlBrowserScript({ web: webCatalogs, webviews: webviewCatalogs }, true)}</script><script nonce="${nonce}">${worldMapScript}</script>${web.entryTags("shell")}</body></html>`
+  )}</div>${navigationMarkup(page)}${optionsMarkup}${battleMarkup}<style>${TEAM_STYLES}</style><script nonce="${nonce}">${buildIntlBrowserScript({ web: webCatalogs, webviews: webviewCatalogs }, true)}</script><script nonce="${nonce}">${worldMapScript}</script><script nonce="${nonce}">${TEAM_SCRIPT}</script>${web.entryTags("shell")}</body></html>`
 }

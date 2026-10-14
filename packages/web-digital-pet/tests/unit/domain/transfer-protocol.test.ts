@@ -36,7 +36,7 @@ describe("browser save transfer", () => {
   })
 
   it("rejects malformed and inconsistent histories before import", () => {
-    expect(() => parsePetTransfer({ version: 2, state })).toThrow()
+    expect(() => parsePetTransfer({ version: 3, state })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, currentNodeId: "1-001" } })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, gauge: -1 } })).toThrow()
     expect(() =>

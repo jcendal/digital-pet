@@ -2,6 +2,7 @@ import { type AdventureCommand, type AdventureState, changeAdventure, endAdventu
 import { ADVENTURE_PACING } from "../../domain/adventure-pacing.ts"
 import type { DigimonCatalog, DigimonNode } from "../../domain/digimon-node.ts"
 import { applyTokenProgress } from "../../domain/evolution.ts"
+import { advanceHygiene } from "../../domain/hygiene.ts"
 import type { AdventureStore } from "../ports/adventure-store.ts"
 
 export type AdventureService = {
@@ -14,12 +15,13 @@ export const createAdventureService = (
   residentsFor: (regionId: string) => readonly DigimonNode[],
   random: () => number = Math.random,
   bossesFor: (regionId: string) => readonly DigimonNode[] = () => [],
+  legacyBossesFor: (regionId: string) => readonly DigimonNode[] = () => [],
 ): AdventureService => ({
   async nextReadyAt() {
     return store.nextReadyAt()
   },
   async act(command, now) {
-    return store.updateAdventure(({ partner, adventure, readyAt, blocked, thresholds, regionId }) => {
+    return store.updateAdventure(({ partner, adventure, readyAt, blocked, thresholds, regionId, hygiene }) => {
       const current = catalog.byId.get(partner.currentNodeId)
       if (!current) return undefined
       if (command.adventureId !== undefined && command.adventureId !== adventure?.id) return undefined
@@ -37,6 +39,7 @@ export const createAdventureService = (
         now,
         random,
         bossesFor(adventure?.regionId ?? regionId),
+        legacyBossesFor(adventure?.regionId ?? regionId),
       )
       if (!change) return undefined
       if (change.recruitedNodeId) {
@@ -78,6 +81,7 @@ export const createAdventureService = (
         catalog.byId,
         catalog.nodes,
         thresholds,
+        advanceHygiene(hygiene, current.stage === 0, now)?.poops.length ?? 0,
       )
       return {
         adventure:

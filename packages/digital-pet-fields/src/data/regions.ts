@@ -1,5 +1,6 @@
 import type { Region, WorldLocation } from "../domain/world.ts"
 import { IntlModule } from "../i18n.ts"
+import { REGION_DIFFICULTIES } from "./bosses.ts"
 import { HABITATS } from "./habitats.ts"
 
 export const REGIONS: readonly Region[] = Object.freeze(
@@ -118,6 +119,7 @@ export const REGIONS: readonly Region[] = Object.freeze(
   ].map((region) =>
     Object.freeze({
       ...region,
+      difficulty: REGION_DIFFICULTIES[region.id]!,
       get name() {
         return region.name
       },
@@ -341,3 +343,17 @@ export const LOCATIONS: readonly WorldLocation[] = Object.freeze(
     }),
   ) as WorldLocation[],
 )
+
+/** Geography stays fixed; only the gallery uses this authored progression order. */
+export const REGIONS_BY_DIFFICULTY: readonly Region[] = [
+  "village-of-beginnings",
+  "gear-savannah",
+  "digital-ocean",
+  "digital-forest",
+  "digital-city",
+  "ancient-dino-region",
+  "tropical-jungle",
+  "wasteland",
+  "vamdemon-castle",
+  "upside-down-pyramid",
+].map((id) => REGIONS.find((region) => region.id === id)!)

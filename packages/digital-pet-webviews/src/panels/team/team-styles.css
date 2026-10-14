@@ -1,0 +1,160 @@
+.team-management {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 6px 2px;
+}
+.team-actions {
+  margin-top: auto;
+  padding-top: 20px;
+  flex: none;
+}
+.team-management h2 {
+  font-size: var(--type-name);
+  margin: 6px 0 18px;
+}
+.team-member {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  border-top: 2px solid var(--line);
+  padding: 20px 0;
+}
+.team-member svg {
+  width: 80px;
+  height: 80px;
+  fill: var(--ink);
+}
+.team-member h3 {
+  overflow-wrap: anywhere;
+  font-size: var(--type-label);
+}
+.team-caption,
+#team-status,
+#egg-status {
+  color: var(--muted);
+  font-size: var(--type-small);
+  margin: 14px 0;
+}
+.team-actions .team-caption {
+  margin-bottom: 4px;
+}
+.team-management button,
+.egg-carousel button,
+.egg-carousel select {
+  min-height: 44px;
+  font: inherit;
+  font-size: var(--type-small);
+  color: var(--ink);
+  background: var(--lcd);
+  border: 2px solid var(--muted);
+  border-radius: 0;
+  padding: 8px 12px;
+}
+.team-management button:disabled,
+.egg-carousel button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.team-management .primary-action,
+.egg-carousel .primary-action {
+  width: 100%;
+  background: var(--ink);
+  color: var(--lcd);
+}
+.egg-carousel {
+  max-width: min(430px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  background: var(--lcd);
+  color: var(--ink);
+  border: 4px solid var(--case-edge);
+  padding: 18px;
+  font: inherit;
+}
+.egg-carousel::backdrop {
+  background: #10120ecc;
+}
+.egg-carousel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.egg-carousel h2 {
+  font-size: var(--type-name);
+}
+.egg-carousel-stage {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+  margin: 22px 0;
+  text-align: center;
+}
+.egg-carousel-stage svg {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 14px;
+  fill: var(--ink);
+}
+.egg-carousel-stage h3 {
+  overflow-wrap: anywhere;
+}
+.egg-carousel-stage p,
+#egg-replacement {
+  font-size: var(--type-small);
+  margin: 12px 0;
+}
+.egg-carousel select {
+  width: 100%;
+  font-size: 16px;
+  margin: 10px 0;
+}
+@media (max-width: 350px) {
+  .team-member {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .team-member svg {
+    width: 64px;
+    height: 64px;
+  }
+  .egg-carousel {
+    padding: 12px;
+  }
+}
+
+.team-empty-art {
+  text-align: center;
+  color: var(--muted);
+}
+
+.team-member {
+  color: var(--ink);
+  text-decoration: none;
+}
+a.team-member:hover {
+  background: var(--lcd-edge);
+}
+a.team-member:focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: -3px;
+}
+#team-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+#team-switch .switch-symbol {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+#team-status:empty {
+  display: none;
+}

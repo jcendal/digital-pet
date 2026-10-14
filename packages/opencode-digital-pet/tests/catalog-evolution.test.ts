@@ -157,7 +157,7 @@ describe("catalog and evolution", () => {
     expect(() => parseDigimonCatalog([root])).toThrow(/next_evolutions/i)
   })
 
-  test("Given a threshold crossing on a same-stage edge When token progress applies Then it opens a pending evolution battle", async () => {
+  test("Given a legacy same-stage edge When token progress applies Then it selects a referenced higher-stage route", async () => {
     const catalog = await loadDigimonCatalog()
     const andromon = catalog.byId.get("5-003")
 
@@ -173,12 +173,13 @@ describe("catalog and evolution", () => {
     )
 
     expect(pending.current.id).toBe("5-003")
-    expect(pending.pendingEvolutionTargetId).toBe("5-033")
+    expect(pending.pendingEvolutionTargetId).not.toBe("5-033")
+    expect(catalog.byId.get(pending.pendingEvolutionTargetId ?? "")?.stage).toBe(6)
     expect(pending.battleOpponentNodeId).not.toBe("5-003")
     expect(pending.gauge).toBe(STAGE_GAUGE_THRESHOLDS[5])
 
     const evolved = resolveEvolutionBattle(pending, true, catalog.byId)
-    expect(evolved.current.id).toBe("5-033")
+    expect(evolved.current.id).toBe(pending.pendingEvolutionTargetId!)
     expect(evolved.gauge).toBe(0)
     expect(evolved.pendingEvolutionTargetId).toBeNull()
   })

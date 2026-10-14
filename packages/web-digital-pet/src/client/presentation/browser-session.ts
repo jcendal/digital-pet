@@ -1,12 +1,15 @@
+import { withDigitamaOriginArtwork } from "@jcendal/digital-pet-animation/render/digitama-artwork.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { hygieneMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { buildDexPanelModel } from "@jcendal/digital-pet-webviews/panels/dex/dex-model.ts"
 import { buildHistoryPanelModel } from "@jcendal/digital-pet-webviews/panels/history/history-model.ts"
+import { buildTeamPanelModel } from "@jcendal/digital-pet-webviews/panels/team/team-model.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { archiveFor, settingsFor } from "../../domain/pet/models.ts"
+import { localTeam } from "../../domain/pet/team.ts"
 import { IntlModule } from "../../shared/i18n.ts"
 import { isPresentingEvolution } from "../features/partner/presentation.ts"
 import {
@@ -63,6 +66,13 @@ export const sidebar = async (requestedWidth: number) => {
     },
     model: {
       ...presentation.payload,
+      team: buildTeamPanelModel(
+        localTeam(state),
+        settingsFor(state),
+        true,
+        Boolean(battle) || adventuring || isPresentingEvolution(),
+        { principal: state.originEggId, reserve: state.reserve?.originEggId },
+      ),
       ...(DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage === 0
         ? { egg: { partnerId: state.partnerId, canPet: !state.pendingEvolution && !battle && !adventureTraveling() } }
         : {}),
@@ -81,7 +91,7 @@ export const sidebar = async (requestedWidth: number) => {
     },
     frame: {
       type: "animation-frame",
-      artwork: renderPositionedArtwork(frame, width),
+      artwork: renderPositionedArtwork(withDigitamaOriginArtwork(frame, state.originEggId), width),
       motion: { ...sceneMotionFor(frame, partnerKey, width), adventuring: adventureTraveling() },
     },
   }

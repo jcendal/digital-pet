@@ -1,6 +1,7 @@
 import { IntlModule } from "../i18n.ts"
 import type { DigimonNode } from "./digimon-node.ts"
 import { assertEvolutionBranch, pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
+import { availableEvolutionTargets } from "./evolution-options.ts"
 import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
 
 export type StageThresholds = Readonly<Record<DigimonStage, number>>
@@ -49,6 +50,7 @@ export const applyTokenProgress = (
   digimonById: ReadonlyMap<string, DigimonNode>,
   catalogNodes: readonly DigimonNode[],
   thresholds: unknown,
+  uncleanPoops = 0,
 ): PartnerEvolutionState => {
   if (!isStageThresholds(thresholds)) {
     throw new Error(IntlModule.translate("errors.invalidEvolutionThresholds"))
@@ -63,7 +65,9 @@ export const applyTokenProgress = (
     return { ...state, gauge: 0, isTerminal: true, pendingEvolutionTargetId: null, battleOpponentNodeId: null }
   }
 
-  const pendingEvolutionTargetId = pickEvolutionTarget(state.current, selector)
+  if (availableEvolutionTargets(state.current, uncleanPoops).length === 0) return { ...state, gauge: threshold }
+
+  const pendingEvolutionTargetId = pickEvolutionTarget(state.current, selector, uncleanPoops)
   const target = digimonById.get(pendingEvolutionTargetId)
   if (target === undefined) {
     throw new Error(`Evolution target ${pendingEvolutionTargetId} is missing from the catalog`)
