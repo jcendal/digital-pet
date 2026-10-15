@@ -129,6 +129,7 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
     repository = await createSqliteDigitalPetRepository(options)
     expect(combatProgress().victories).toBe(1)
     expect((await service().act({ kind: "read" }, 56_000))?.event).toEqual(offer.event)
+    expect(await service().nextReadyAt()).toBe(cooldown)
     const choice = { kind: "accept-companion" as const, eventId: offer.event.id, adventureId: offer.id }
     await service().act(choice, 57_000)
     const adopted = repository.getActivePartner()!
@@ -147,8 +148,8 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
     if (dex.kind !== "available") throw new Error("Missing adopted Dex")
     expect(dex.rows.find((node) => node.id === oldPartner.currentNodeId)?.discovered).toBe(true)
     expect(dex.rows.find((node) => node.id === adopted.currentNodeId)?.discovered).toBe(true)
-    expect(await service().nextReadyAt()).toBe(cooldown)
-    expect(await service().act({ kind: "start", id: "adoption-bypass" }, 58_000)).toBeUndefined()
+    expect(await service().nextReadyAt()).toBe(0)
+    expect((await service().act({ kind: "start", id: "adopted-trip" }, 58_000))?.status).toBe("travel")
     repository.spawnPartner({
       currentNodeId: "3-001",
       gauge: STAGE_GAUGE_THRESHOLDS[3] * 0.99,
@@ -156,8 +157,8 @@ test("Cursor persists battle rolls and checkpoints, defers XP, and pauses a trip
       createdAt: new Date(60_000).toISOString(),
     })
     const finds = service(() => 0.9)
-    const readyAt = await finds.nextReadyAt()
-    expect(await finds.act({ kind: "start", id: "too-soon" }, 60_000)).toBeUndefined()
+    expect(await finds.nextReadyAt()).toBe(0)
+    const readyAt = 60_000
     await finds.act({ kind: "start", id: "evolve-route" }, readyAt)
     for (let now = readyAt + 1000; now <= readyAt + 63_000; now += 1000) await finds.act({ kind: "tick" }, now)
     const finished = await finds.act({ kind: "collect", eventId: 1 }, readyAt + 63_000)
@@ -278,7 +279,7 @@ test("boss achievements commit with XP once and survive evolution, replacement a
   }
 })
 
-test("old cooldowns are shortened and persisted without resetting on reload or companion replacement", async () => {
+test("old cooldowns are shortened once per companion; replacement starts with its own ready timer", async () => {
   const root = await createTempTestRoot()
   const options = { appDataRoot: root.appDataRoot }
   let repository = await createSqliteDigitalPetRepository(options)
@@ -294,7 +295,8 @@ test("old cooldowns are shortened and persisted without resetting on reload or c
     })
     const database = openWritableSqliteDatabase(resolveHostDatabasePath(options))
     try {
-      database.executor.run("INSERT INTO adventure_schedule (schedule_id, ready_at) VALUES (1, ?)", [
+      database.executor.run("INSERT INTO partner_adventure_schedule (partner_id, ready_at) VALUES (?, ?)", [
+        repository.getActivePartner()?.partnerId ?? null,
         now + 6 * 3600_000,
       ])
     } finally {
@@ -312,9 +314,8 @@ test("old cooldowns are shortened and persisted without resetting on reload or c
       isTerminal: false,
       createdAt: new Date(Date.now()).toISOString(),
     })
-    expect(await service().nextReadyAt()).toBe(shortened)
-    expect(await service().act({ kind: "start", id: "early" }, shortened - 1)).toBeUndefined()
-    expect((await service().act({ kind: "start", id: "ready" }, shortened))?.status).toBe("travel")
+    expect(await service().nextReadyAt()).toBe(0)
+    expect((await service().act({ kind: "start", id: "new-partner" }, Date.now()))?.status).toBe("travel")
   } finally {
     await repository.close()
     await removeTempTestRoot(root)

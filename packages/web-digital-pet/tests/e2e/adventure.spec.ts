@@ -235,7 +235,7 @@ test.describe("battle intro artwork", () => {
   })
 })
 
-test("recruitment survives reload and adopts a new generation without losing history, Dex or cooldown", async ({
+test("recruitment survives reload and adopts a new generation with its own adventure timer", async ({
   page,
 }, testInfo) => {
   const errors: string[] = []
@@ -267,7 +267,7 @@ test("recruitment survives reload and adopts a new generation without losing his
   await expect(pet.locator("#name")).toHaveText("Betamon")
   await expect(pet.locator("#adventure-offer")).toBeHidden()
   await expect(pet.locator("#adventure-toggle")).toBeVisible()
-  await expect(pet.locator("#adventure-toggle")).toBeDisabled()
+  await expect(pet.locator("#adventure-toggle")).toBeEnabled()
   const result = await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
       const request = indexedDB.open("web-digital-pet", 1)
@@ -284,15 +284,12 @@ test("recruitment survives reload and adopts a new generation without losing his
       hygiene?: unknown
       pendingEvolution?: unknown
       combatVictories?: number
+      adventureReadyAt?: number
     }>((resolve) => {
       request.onsuccess = () => resolve(request.result)
     })
-    const readyRequest = store.get("adventure-ready-at")
-    const readyAt = await new Promise<number>((resolve) => {
-      readyRequest.onsuccess = () => resolve(readyRequest.result)
-    })
     database.close()
-    return { state, readyAt, now: Date.now() }
+    return { state, now: Date.now() }
   })
   expect(result.state.currentNodeId).toBe("3-007")
   expect(result.state.gauge).toBe(0)
@@ -301,7 +298,7 @@ test("recruitment survives reload and adopts a new generation without losing his
   expect(result.state.retiredPartners.map((partner) => partner.partnerId)).toEqual(["adventure-pet"])
   expect(result.state.retiredPartners[0]?.events.map((event) => event.currentNodeId)).toEqual(["3-001"])
   expect(result.state.pendingEvolution).toBeUndefined()
-  expect(result.readyAt).toBeGreaterThan(result.now)
+  expect(result.state.adventureReadyAt).toBe(0)
   await page.reload()
   await expect(pet.locator("#name")).toHaveText("Betamon")
   await expect(pet.locator("#adventure-offer")).toBeHidden()

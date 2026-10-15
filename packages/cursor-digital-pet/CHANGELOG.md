@@ -4,6 +4,10 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+### Changed
+
+- Give each companion its own adventure cooldown, preserve the principal's legacy timer and keep adventure waits advancing in reserve while apple and care timers pause.
+
 ## [0.16.0] - 2026-10-14
 
 ### Changed

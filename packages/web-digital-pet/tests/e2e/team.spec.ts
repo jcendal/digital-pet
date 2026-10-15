@@ -311,7 +311,7 @@ test("regions show increasing difficulty and the corresponding real boss tiers",
   await page.screenshot({ path: testInfo.outputPath("bosses-hard-390.png") })
 })
 
-test("backup v2 exports both companions and restores them on another device", async ({ page, browser }) => {
+test("backup v4 exports both companions and restores them on another device", async ({ page, browser }) => {
   await page.goto("/dex?tab=team")
   await expect(page.locator('[data-team-slot="principal"]')).toBeVisible()
   await openEggPicker(page)
@@ -325,7 +325,7 @@ test("backup v2 exports both companions and restores them on another device", as
   const path = await download.path()
   if (!path) throw new Error("Missing backup")
   const exported = JSON.parse(await readFile(path, "utf8"))
-  expect(exported.version).toBe(3)
+  expect(exported.version).toBe(4)
   expect(exported.state.partnerId).toBe(team.partnerId)
   expect(exported.state.reserve.partnerId).toBe((team.reserve as { partnerId: string }).partnerId)
   const context = await browser.newContext({ locale: "es-ES" })

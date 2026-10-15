@@ -1,8 +1,10 @@
 import { expect, test } from "bun:test"
 import { join } from "node:path"
+import { createSqliteAdventureStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-adventure-store.ts"
 import { createSqliteDigitalPetWriteStore } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-digital-pet-write-store.ts"
 import { runMigrations } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-migrations.ts"
 import { createPartnerHygieneService } from "@jcendal/digital-pet-core/application/use-cases/care-for-partner.ts"
+import { createAdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import { recordUsage } from "@jcendal/digital-pet-core/application/use-cases/record-usage.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { STAGE_GAUGE_THRESHOLDS } from "@jcendal/digital-pet-core/domain/evolution.ts"
@@ -263,6 +265,86 @@ test("team commands reject frozen mode and pending evolution without modifying e
     expect(repository.readTeam()).toEqual(pending)
   } finally {
     await repository.close()
+    await removeTempTestRoot(root)
+  }
+})
+
+test("each companion retains its own adventure cooldown through switches and reopening", async () => {
+  const root = await createTempTestRoot()
+  const options = { appDataRoot: root.appDataRoot }
+  let repository = await createSqliteDigitalPetRepository(options)
+  const service = () => createAdventureService(repository, DIGIMON_CATALOG, () => [])
+  const hour = 3_600_000
+  try {
+    const input = { currentNodeId: "3-001", gauge: 0, isTerminal: false, createdAt: new Date(0).toISOString() }
+    const principal = repository.spawnPartner(input)
+    repository.applyTeamCommand(
+      {
+        ...expectation(repository.readTeam()),
+        kind: "place",
+        slot: "reserve",
+        partner: { ...input, currentNodeId: "3-022" },
+      },
+      0,
+    )
+    await service().act({ kind: "start", id: "principal-trip" }, 0)
+    await service().act({ kind: "stop" }, 0)
+    expect(await service().nextReadyAt()).toBe(2 * hour)
+    expect(repository.applyTeamCommand({ ...expectation(repository.readTeam()), kind: "switch" }, 0).kind).toBe(
+      "applied",
+    )
+    expect(await service().nextReadyAt()).toBe(0)
+    await service().act({ kind: "start", id: "reserve-trip" }, 1000)
+    await service().act({ kind: "pause" }, 1000)
+    expect(await service().nextReadyAt()).toBe(2 * hour + 1000)
+    await repository.close()
+    repository = await createSqliteDigitalPetRepository(options)
+    expect(await service().nextReadyAt()).toBe(2 * hour + 1000)
+    expect(repository.applyTeamCommand({ ...expectation(repository.readTeam()), kind: "switch" }, hour).kind).toBe(
+      "applied",
+    )
+    expect(repository.getActivePartner()?.partnerId).toBe(principal.partnerId)
+    expect(await service().nextReadyAt()).toBe(2 * hour)
+    expect(await service().act({ kind: "start", id: "too-early" }, hour + 500)).toBeUndefined()
+    expect(
+      repository.applyTeamCommand({ ...expectation(repository.readTeam()), kind: "switch" }, hour + 1000).kind,
+    ).toBe("applied")
+    expect(await service().nextReadyAt()).toBe(2 * hour + 1000)
+    expect(repository.applyTeamCommand({ ...expectation(repository.readTeam()), kind: "switch" }, 3 * hour).kind).toBe(
+      "applied",
+    )
+    expect(await service().nextReadyAt()).toBe(2 * hour)
+    expect(await service().act({ kind: "start", id: "ready-after-reserve" }, 3 * hour)).toBeDefined()
+  } finally {
+    await repository.close()
+    await removeTempTestRoot(root)
+  }
+})
+
+test("migration 11 assigns the legacy global cooldown only to the principal and is idempotent", async () => {
+  const root = await createTempTestRoot()
+  const databasePath = join(root.appDataRoot, "legacy-adventure.db")
+  const database = openWritableSqliteDatabase(databasePath)
+  try {
+    const store = createSqliteDigitalPetWriteStore({ databasePath, executor: database.executor, close: () => {} })
+    const input = { currentNodeId: "3-001", gauge: 0, isTerminal: false, createdAt: new Date(0).toISOString() }
+    const principal = store.spawnPartner(input)
+    store.applyTeamCommand({ ...expectation(store.readTeam()), kind: "place", slot: "reserve", partner: input }, 0)
+    database.executor.run("DROP TABLE partner_adventure_schedule")
+    database.executor.run("DELETE FROM schema_migrations WHERE version = 11")
+    database.executor.run(
+      "CREATE TABLE adventure_schedule (schedule_id INTEGER PRIMARY KEY, ready_at INTEGER NOT NULL)",
+    )
+    database.executor.run("INSERT INTO adventure_schedule VALUES (1, 7200000)")
+    const applied = runMigrations(database.executor)
+    expect(applied.at(-1)).toBe(11)
+    expect(database.executor.all("SELECT * FROM partner_adventure_schedule")).toEqual([
+      { partner_id: principal.partnerId, ready_at: 7200000 },
+    ])
+    expect(runMigrations(database.executor)).toEqual(applied)
+    expect(await createSqliteAdventureStore(database.executor, "digital-ocean").nextReadyAt()).toBe(7200000)
+  } finally {
+    database.close()
     await removeTempTestRoot(root)
   }
 })

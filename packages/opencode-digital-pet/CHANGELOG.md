@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Give each companion its own adventure cooldown, preserve the principal's legacy timer and keep adventure waits advancing in reserve while apple and care timers pause.
+
 ## [0.15.0] - 2026-10-14
 
 ### Changed

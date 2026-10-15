@@ -172,8 +172,9 @@ victory, show the notice and reset EXP. A loss resets EXP without adding a win.
 Adventure and evolution-duel wins count per form, survive reserve switches and
 save transfers, and reset on a form change. PvP wins currently do not count.
 Existing pending targets stay fixed. SQLite migration 10 and browser transactions
-prevent duplicate or stale resolution; transfer v3 preserves counters and
-targetless duels while accepting v1/v2 backups.
+prevent duplicate or stale resolution; transfer v4 preserves counters, targetless duels and each pet's adventure timer
+while accepting v1/v2/v3 backups. SQLite migration 11 separates adventure schedules
+by companion, assigning the previous global timer only to the principal.
 
 Jogress, slot/connection unlocks, permanent objectives and same/backward-stage
 changes remain separate from automatic EXP evolution. Garurumon → Orochimon is

@@ -56,7 +56,10 @@ piles. Care actions wait during battles and evolution.
 ## Adventures
 
 Use the compass button in the companion viewer to start an adventure. A new trip
-is available every **2 hours**, including time while the app is closed.
+is available every **2 hours** for each Digimon independently. Both companions'
+adventure waits continue in reserve and while the app is closed. Only apple and
+care timers pause in reserve; switching does not copy one companion's cooldown
+to the other.
 
 Tap passing data and food to collect experience, fight roaming Digimon, and watch
 for regional bosses. Use the pause icon to take a break or the home icon to return.

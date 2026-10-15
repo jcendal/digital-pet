@@ -13,6 +13,21 @@ const state = {
 }
 
 describe("browser save transfer", () => {
+  it("preserves each companion's adventure timer and rejects invalid active or reserve timestamps", () => {
+    const now = Date.now()
+    const partner = { ...state, adventureReadyAt: now + 1_800_000 }
+    const reserve = { ...state, partnerId: "reserve", adventureReadyAt: now + 3_600_000, pausedAt: now }
+    const team = { ...partner, reserve }
+    expect(parsePetTransfer({ version: 4, state: team }).state.adventureReadyAt).toBe(partner.adventureReadyAt)
+    expect(parsePetTransfer({ version: 4, state: team }).state.reserve?.adventureReadyAt).toBe(reserve.adventureReadyAt)
+    for (const adventureReadyAt of [-1, 1.5, "soon", now + 25 * 3_600_000]) {
+      expect(() => parsePetTransfer({ version: 4, state: { ...team, adventureReadyAt } })).toThrow()
+      expect(() =>
+        parsePetTransfer({ version: 4, state: { ...team, reserve: { ...reserve, adventureReadyAt } } }),
+      ).toThrow()
+    }
+  })
+
   it("round-trips a targetless duel with its form victories and rejects invalid counters", () => {
     const duel = {
       ...state,
@@ -58,7 +73,7 @@ describe("browser save transfer", () => {
   })
 
   it("rejects malformed and inconsistent histories before import", () => {
-    expect(() => parsePetTransfer({ version: 4, state })).toThrow()
+    expect(() => parsePetTransfer({ version: 5, state })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, currentNodeId: "1-001" } })).toThrow()
     expect(() => parsePetTransfer({ version: 1, state: { ...state, gauge: -1 } })).toThrow()
     expect(() =>
