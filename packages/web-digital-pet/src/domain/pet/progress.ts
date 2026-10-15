@@ -55,6 +55,7 @@ export type LocalArchivedPartner = {
 }
 
 export type LocalPartnerState = {
+  readonly adventureReadyAt?: number
   readonly combatVictories?: number
   readonly originEggId?: string
   readonly partnerId: string
@@ -281,6 +282,7 @@ export const replaceLocalPartner = (
     ...(settled.reserve ? { reserve: settled.reserve } : {}),
     ...(settled.teamRevision !== undefined ? { teamRevision: settled.teamRevision + 1 } : {}),
     combatVictories: 0,
+    adventureReadyAt: 0,
     events: [{ currentNodeId: nodeId, createdAt }],
     retiredPartners: [
       ...(settled.retiredPartners ?? []),

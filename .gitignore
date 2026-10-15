@@ -10,6 +10,7 @@ test-results/
 playwright-report/
 .turbo/
 *.tsbuildinfo
+__pycache__/
 
 # Editor and OS files
 .vscode/*

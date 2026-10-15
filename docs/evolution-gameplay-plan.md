@@ -45,8 +45,8 @@ The team foundation and browser interface are implemented in the working tree.
 SQLite migration 9 provides principal/reserve membership, revision checks,
 independent care clocks, atomic replacement and active-only token attribution.
 Browser saves now preserve two live companions, resting clocks, paused adventure
-state and stable History generation numbering. Transfer v3 includes the reserve, per-form combat victories and targetless duels;
-v1/v2 backups remain readable, and unsupported live peers reject the request.
+state and stable History generation numbering. Transfer v4 includes the reserve, independent adventure timers, per-form combat victories and targetless duels;
+v1/v2/v3 backups remain readable, and unsupported live peers reject the request.
 
 The web Dex now has Dex, Team and History tabs. The existing companion view
 adds one small circular switch control below the companion name. New Journey opens an egg
@@ -102,7 +102,7 @@ the existence of a prototype or imported route does not mark its gameplay done.
 | --- | --- | --- |
 | Route rules and Dex | Normal/Jogress/special classification, source URLs, 0–3 current unclean-pile masks, combined care/victory alternatives and numeric Dex requirements; unrestricted care labels omitted. | Review origin, permanent objective and fusion pair predicates and retain distinct rules per trigger. Do not build a device emulator or new player-managed stats. |
 | Automatic evolution | Targetless threshold duels, atomic post-win care/victory selection, no-evolution notice and EXP reset, replay protection and compatibility with fixed legacy pending targets. | No outstanding work for the agreed threshold-duel behavior. |
-| Principal and reserve | SQLite migration 9 and transactional team commands; browser Team UI, quick switch, independent rest/care/food/adventure state, active-only token attribution and transfer v3 with v1/v2 compatibility. | Complete the web slot workflows and preserve compatibility with simplified native companions. Full native Team controls are outside the revised scope. |
+| Principal and reserve | SQLite migration 9 and transactional team commands; browser Team UI, quick switch, independent rest/care/food/adventure state, active-only token attribution and transfer v4 with v1/v2/v3 compatibility. | Complete the web slot workflows and preserve compatibility with simplified native companions. Full native Team controls are outside the revised scope. |
 | Recruitment | Existing encounter offer and decline/accept behavior; accepting preserves the browser reserve. | Choose principal/reserve or an empty reserve through a revisioned slot command. Accepting still replaces the principal through `replacement` / `replaceLocalPartner`; the accepted recruitment screen is a design only. |
 | Manual Jogress | Referenced Jogress connections are excluded from normal EXP and shown locked in the Dex. | Pair eligibility, manual fusion use case, confirmation UI, transaction/race protection, reserve consumption, both-parent lineage/history/export and two-parent animation. The fusion screen is a design only. |
 | Combat victories and training | Per-form adventure/evolution wins persist across trips, restarts and reserve switches, reset on form changes and cannot be counted twice. Numeric route requirements are shown in the Dex. | PvP wins currently do not count. No independent effort/training score or ratios. |
@@ -303,8 +303,9 @@ never enter automatic experience selection.
 `Dex → Equipo` shows two slots, each with species, stage and its own normal experience.
 Switching changes which companion receives token, browser-time and adventure
 progress. Food, hygiene, origin, experience and history stay with their owner.
-Reserve clocks pause with their remaining durations; existing poop does not
-disappear. The reserve does not receive token experience or silently train.
+Reserve food and hygiene clocks pause with their remaining durations; existing
+poop does not disappear. Adventure cooldowns continue advancing. The reserve does
+not receive token experience or silently train.
 
 An empty reserve can receive a recruited pet or an unlocked egg. A recruitment
 offer with two pets asks whether to replace the principal or reserve, then names
@@ -314,9 +315,10 @@ Declining changes nothing. Replacing either slot preserves Dex registrations.
 
 Switching is disabled during combat, evolution, an unresolved encounter or another
 pending team operation. A running adventure must be paused before switching;
-each pet keeps its paused adventure. Adventure cooldown remains save-wide,
-preventing slot swaps from bypassing it. An egg in reserve starts its existing
-hatching interactions only when activated.
+each pet keeps its paused adventure and its own cooldown. The adventure cooldown
+continues in reserve, while food and hygiene clocks pause. New companions start
+with their own ready timer; replacing one does not transfer the previous pet's
+wait. An egg in reserve starts its existing hatching interactions only when activated.
 
 The companion view has only a circular thumbnail of the reserve's face and a
 small switch indicator in its area below the companion name. One click switches the pets;
@@ -618,13 +620,17 @@ agrees with the actual boss definitions on every host.
 
 Use versioned migrations for SQLite and browser saves. Validate two distinct owned
 partner IDs, one active ID, at most one reserve, bounded histories/counters,
-known egg/achievement/route IDs and valid provenance. Persist reserve timers as
-remaining durations, not repeatedly shifted timestamps. Save-wide experience
-settings, adventure schedule, discoveries and achievements must not reset on
-switching; pet-specific food/hygiene/pending state belongs to each pet.
+known egg/achievement/route IDs and valid provenance. Reserve food and hygiene
+preserve their remaining time; adventure cooldowns retain absolute deadlines.
+Save-wide experience
+settings, discoveries and achievements must not reset on switching. Adventure
+schedules, food, hygiene and pending state belong to each pet. SQLite migration 11
+assigns the previous global cooldown only to the principal; browser migration
+consumes its legacy global timer once before switching or replacing a save.
 
-The current `web-digital-pet/src/domain/transfer/protocol.ts` uses a v3 envelope
-for team state, counters and targetless duels. Keep v1/v2 import compatibility. Update
+The current `web-digital-pet/src/domain/transfer/protocol.ts` uses a v4 envelope
+for team state, independent adventure timers, counters and targetless duels. Keep
+v1/v2/v3 import compatibility. Update
 backup export/import, pairing negotiation, server-backed reads and host bridges
 to include both pets and save unlocks; older clients must reject unsupported
 team export rather than silently dropping reserve. Re-evaluate the current
@@ -649,7 +655,7 @@ production or edit catalog/build output manually.
 | --- | --- | --- |
 | Route rules | Reviewed rule alternatives for the limited inputs, source snapshots, numeric care/victory requirements and coverage inventory. | Parser fixtures; dangling target/unknown predicate tests; absent requirements omitted. |
 | Automatic evolution | Threshold combat even without a target, atomic post-win route selection, no-evolution notice/EXP reset and legacy compatibility. | Win unlocks a route; win without route; loss; targetless save/transfer; receipt replay and native companion checks. |
-| Team foundation | Migrations, explicit active pointer, two pet states, clocks, transfer v3 and host read/write contracts. | v1/v2/v3 round trips; migration/transaction rollback; stale revisions; no double attribution. |
+| Team foundation | Migrations, explicit active pointer, two pet states, clocks, transfer v4 and host read/write contracts. | v1/v2/v3/v4 round trips; migration/transaction rollback; stale revisions; no double attribution. |
 | Team UI and recruitment | Web Dex Team tab, below-name face switch, replacement selection and egg slot creation. | Narrow/mobile/desktop E2E; keyboard, pending states, history and native-save compatibility. |
 | Combat progression | Per-form adventure/evolution-duel victories and deduplicated outcome receipts. | Pause/offline/reserve tests, retained wins without evolution, form reset and numeric Dex requirement checks. |
 | Achievements and eggs | Permanent boss/exploration rewards, starter family, regional unlocks and egg UI. | Backfill, grant-once, first-form/region mapping, transfer and server-host tests. |
@@ -672,11 +678,14 @@ to have run for unimplemented features.
 
 ## Content boundaries and release gates
 
-The audit currently distinguishes 1,467 referenced normal connections, 230
-Jogress connections, 201 other special connections and 399 unverified legacy
-connections, plus 31 legacy hatch choices. These mechanisms can cover verified
-special requirements after rule enrichment; they do not automatically validate
-or unlock all 830 blocked connections. Unverified connections require evidence.
+The current reviewed connection counts and remaining lower-stage gaps are listed
+in the [evolution reference inventory](data-sources.md#reference-import-and-game-adaptations).
+The importer now reads Pendulum 20th's structured targets and modern guides' full
+detail cards, restoring Lopmon and distinguishing fusion requirements from normal
+EXP routes. This data audit does not implement the remaining special-route
+predicates or unlock every referenced special connection. Unverified legacy
+connections still require evidence, and withdrawn targets remain addressable only
+to finish already pending saves.
 
 Before the remaining special-route gameplay ships, finish reviewed
 pair/attribute/origin definitions and regional reward mapping. Device connection/slot requirements need individual adaptations

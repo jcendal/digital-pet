@@ -10,11 +10,11 @@ import { IntlModule } from "../../shared/i18n.ts"
 import type { ExperienceLevel, LocalArchivedPartner, LocalPetState, LocalReservePartner } from "../pet/progress.ts"
 import { partnerState } from "../pet/team.ts"
 
-export const TRANSFER_VERSION = 3
+export const TRANSFER_VERSION = 4
 export const MAX_TRANSFER_BYTES = 64 * 1024
 export const MAX_BACKUP_BYTES = 4 * 1024 * 1024
 
-export type PetTransfer = { readonly version: 3; readonly state: LocalPetState }
+export type PetTransfer = { readonly version: 4; readonly state: LocalPetState }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -41,7 +41,7 @@ const parseEvents = (value: unknown): LocalPetState["events"] => {
 export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES): PetTransfer => {
   if (
     !isRecord(input) ||
-    (input.version !== 1 && input.version !== 2 && input.version !== TRANSFER_VERSION) ||
+    (input.version !== 1 && input.version !== 2 && input.version !== 3 && input.version !== TRANSFER_VERSION) ||
     !isRecord(input.state)
   )
     throw new Error(IntlModule.translate("protocol.unsupportedSaveFormat"))
@@ -49,6 +49,14 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     throw new Error(IntlModule.translate("protocol.theReceivedSaveIsTooLarge"))
 
   const state = input.state
+  if (
+    state.adventureReadyAt !== undefined &&
+    (typeof state.adventureReadyAt !== "number" ||
+      !Number.isSafeInteger(state.adventureReadyAt) ||
+      state.adventureReadyAt < 0 ||
+      state.adventureReadyAt > Date.now() + 24 * 60 * 60 * 1000)
+  )
+    throw new Error(IntlModule.translate("protocol.theReceivedSaveContainsInvalidPartnerData"))
   if (
     state.combatVictories !== undefined &&
     (!Number.isSafeInteger(state.combatVictories) ||
@@ -243,6 +251,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       lastTickAt: state.lastTickAt as number,
       events,
       ...(state.combatVictories !== undefined ? { combatVictories: state.combatVictories as number } : {}),
+      ...(state.adventureReadyAt !== undefined ? { adventureReadyAt: state.adventureReadyAt as number } : {}),
       ...(isEggFamilyId(state.originEggId) ? { originEggId: state.originEggId } : {}),
       ...(bossVictories ? { bossVictories } : {}),
       ...(pendingEvolution ? { pendingEvolution } : {}),

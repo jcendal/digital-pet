@@ -148,13 +148,46 @@ remain authored game rules, with their adaptations documented explicitly.
 
 ### Reference import and game adaptations
 
-The reviewed snapshot in `digital-pet-core/src/data/evolution-reference.json`
-contains 1,898 connections: 1,467 normal, 230 Jogress and 201 special. It retains
-source URLs, care masks and 44 normal connections with numeric victory conditions.
+The 2026-10-15 reviewed snapshot in `digital-pet-core/src/data/evolution-reference.json`
+contains 2,235 connections: 1,291 normal, 582 Jogress, 360 special and two withdrawn
+connections retained as unverified for pending saves. It retains guide URLs, 834
+individual detail-card URLs, care masks and 93 normal connections with numeric
+victory conditions. Pendulum 20th routes come from its embedded species/target
+dataset; modern guides use their full detail cards rather than icon-only chart
+connectors. Imports fail when a required modern card or previous guide is missing.
 The importer combines the supported devices' confirmed routes; this is not an
-emulator of one device. Ambiguous names and unmatched species are excluded.
+emulator of one device. Stage and official-reference identity disambiguate names;
+unresolved names and unmatched species are excluded. Separate historical IDs for
+the same species retain their routes. Negative slot/album guards describing a
+device's default branch do not invent unlock requirements; positive unlocks,
+collection conditions, DigiXros and mode changes remain special.
 Unverified legacy branches cannot be chosen for new EXP evolutions, but remain
 valid for finishing an already pending target. Species IDs and history stay stable.
+
+The audit adds 337 verified connections and reclassifies 292 previous normal
+connections as special or Jogress. Two inferred Gallantmon X connections from
+NoblePumpkinmon and TigerVespamon are withdrawn from automatic selection. Lopmon
+now evolves normally into Turuiemon. Turuiemon's Antylamon alternative requires
+0–2 unclean piles and at least 12 form victories under the adaptations below;
+Angewomon's HerculesKabuterimon and MetalEtemon connections remain Jogress.
+
+Coverage of the 650 saved catalog IDs (including the generic egg) is:
+
+| Verified outgoing connections | Catalog entries |
+| --- | ---: |
+| At least one normal EXP route | 478 |
+| Only special/Jogress routes | 65 |
+| No verified outgoing route in the imported sources | 107 |
+
+Most entries in the last group are final stages. The following lower-stage gaps
+remain explicit; absence in these device sources does **not** establish that a
+species has no evolution in every Digimon continuity. Do not invent EXP routes
+to fill them without evidence.
+
+| Below stage VI | Species |
+| --- | --- |
+| No verified outgoing route | Moonmon, Sunmon, Tylomon, Fugamon, Rhinomon, Giromon, Tekkamon, Vademon |
+| Only special/Jogress outgoing routes | Minotarumon, Omekamon, Peckmon, Datamon, Garbagemon, Jagamon |
 
 Care uses the current 0–3 unclean piles at post-win target selection. Source
 care-mistake ranges are clamped to that scale; documented care takes precedence
@@ -172,8 +205,9 @@ victory, show the notice and reset EXP. A loss resets EXP without adding a win.
 Adventure and evolution-duel wins count per form, survive reserve switches and
 save transfers, and reset on a form change. PvP wins currently do not count.
 Existing pending targets stay fixed. SQLite migration 10 and browser transactions
-prevent duplicate or stale resolution; transfer v3 preserves counters and
-targetless duels while accepting v1/v2 backups.
+prevent duplicate or stale resolution; transfer v4 preserves counters, targetless duels and each pet's adventure timer
+while accepting v1/v2/v3 backups. SQLite migration 11 separates adventure schedules
+by companion, assigning the previous global timer only to the principal.
 
 Jogress, slot/connection unlocks, permanent objectives and same/backward-stage
 changes remain separate from automatic EXP evolution. Garurumon → Orochimon is
@@ -183,9 +217,20 @@ in the [remaining implementation plan](evolution-gameplay-plan.md).
 
 To regenerate the snapshot, download the guides named in its `sources` map using
 `digital-pet-humulos-<guide>.html` filenames, export `DIGIMON_DATA` as JSON, and run
-from the repository root with BeautifulSoup 4 installed:
+from the repository root with BeautifulSoup 4 and curl installed. Keep downloaded
+HTML, catalog exports and detail caches outside the repository:
 
 ```sh
-python3 scripts/import-evolution-reference.py --html-dir /path/to/html --catalog /path/to/catalog.json
+python3 scripts/download-evolution-details.py --html-dir /path/to/html --catalog /path/to/catalog.json --output /path/to/details
+python3 scripts/import-evolution-reference.py --html-dir /path/to/html --details-dir /path/to/details --catalog /path/to/catalog.json
 npx biome format --write packages/digital-pet-core/src/data/evolution-reference.json
+python3 -m unittest discover -s scripts/tests -p 'test_*.py'
 ```
+
+The importer reads only the local snapshots. By default it compares against the
+existing output, preserving withdrawn targets as unverified for pending saves;
+`--previous` supplies that baseline when writing to another path. Synthetic parser
+tests cover full alternatives, singular care mistakes, target stages, fusion
+conditions and missing evidence. Gameplay uses the bundled JSON without network
+requests. Omnipet was unavailable during this audit; no unavailable response was
+treated as evolution evidence.

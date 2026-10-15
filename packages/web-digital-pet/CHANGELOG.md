@@ -4,6 +4,12 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+### Changed
+
+- Restore Lopmon and other omitted evolution branches from reviewed device detail cards, keep fusion/special routes out of ordinary EXP selection and preserve withdrawn targets for pending saves.
+- Give each companion its own adventure cooldown, preserve the principal's legacy timer and keep adventure waits advancing in reserve while apple and care timers pause.
+- Mark the app and embedded panels as non-translatable by browser services while keeping the built-in language selector. Preserve both adventure timers in v4 backups and transfers, with v1/v2/v3 import compatibility.
+
 ## [0.13.0] - 2026-10-14
 
 ### Changed

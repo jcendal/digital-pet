@@ -8,16 +8,23 @@ import { ACTIVE_PARTNER_SELECT, type PersistedPartnerRow, toPartner } from "./sq
 import { readEvolutionHygiene } from "./sqlite-evolution-care.ts"
 import { spawnSqlitePartner } from "./sqlite-partner-lifecycle.ts"
 
-const readReadyAt = (executor: SqliteExecutor): number => {
+const readReadyAt = (executor: SqliteExecutor, partnerId: string): number => {
   const saved =
-    executor.get<{ ready_at: number }>("SELECT ready_at FROM adventure_schedule WHERE schedule_id = 1")?.ready_at ?? 0
+    executor.get<{ ready_at: number }>("SELECT ready_at FROM partner_adventure_schedule WHERE partner_id = ?", [
+      partnerId,
+    ])?.ready_at ?? 0
   const readyAt = limitAdventureReadyAt(saved, Date.now())
-  if (readyAt !== saved) executor.run("UPDATE adventure_schedule SET ready_at = ? WHERE schedule_id = 1", [readyAt])
+  if (readyAt !== saved)
+    executor.run("UPDATE partner_adventure_schedule SET ready_at = ? WHERE partner_id = ?", [readyAt, partnerId])
   return readyAt
 }
 
 export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: string): AdventureStore => ({
-  nextReadyAt: () => executor.transaction(() => readReadyAt(executor)),
+  nextReadyAt: () =>
+    executor.transaction(() => {
+      const row = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
+      return row ? readReadyAt(executor, row.partner_id) : 0
+    }),
   updateAdventure: (change) =>
     executor.transaction(() => {
       const row = executor.get<PersistedPartnerRow>(ACTIVE_PARTNER_SELECT)
@@ -32,7 +39,7 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
       const next = change({
         partner: toPartner(row),
         adventure,
-        readyAt: readReadyAt(executor),
+        readyAt: readReadyAt(executor, row.partner_id),
         blocked:
           !control ||
           control.frozen === 1 ||
@@ -51,8 +58,8 @@ export const createSqliteAdventureStore = (executor: SqliteExecutor, regionId: s
         )
       if (next.readyAt !== undefined)
         executor.run(
-          "INSERT INTO adventure_schedule (schedule_id, ready_at) VALUES (1, ?) ON CONFLICT(schedule_id) DO UPDATE SET ready_at = excluded.ready_at",
-          [next.readyAt],
+          "INSERT INTO partner_adventure_schedule (partner_id, ready_at) VALUES (?, ?) ON CONFLICT(partner_id) DO UPDATE SET ready_at = excluded.ready_at",
+          [row.partner_id, next.readyAt],
         )
       if (next.bossVictory)
         executor.run(

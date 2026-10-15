@@ -17,6 +17,8 @@ import { dexModel, historyModel } from "./host-models.ts"
 import { navigationMarkup } from "./navigation-markup.ts"
 import { optionsMarkup } from "./options-markup.ts"
 
+const noTranslationMeta = '<meta name="google" content="notranslate"><meta name="googlebot" content="notranslate">'
+
 const nonceFor = (resources: WebResources) =>
   resources.mode === "browser" ? "STATIC-NONCE" : randomBytes(16).toString("hex")
 export const stableStaticNonce = (html: string): string =>
@@ -46,11 +48,11 @@ export const renderPage = (page: "sidebar" | "dex" | "history", web: WebResource
       : html
   return withWorld
     .replace("connect-src 'self'", `connect-src 'self'${web.development ? " ws://localhost:* ws://127.0.0.1:*" : ""}`)
-    .replace("<html", '<html data-save-host="' + web.mode + '"')
+    .replace("<html", '<html translate="no" class="notranslate" data-save-host="' + web.mode + '"')
     .replace('<svg id="artwork"', '<svg id="artwork" data-idle-alignment="xMidYMax"')
     .replace("script-src 'nonce-", "script-src 'self' 'nonce-")
     .replace("style-src 'unsafe-inline'", "style-src 'self' 'unsafe-inline'")
-    .replace("</head>", `${web.entryTags("frame")}</head>`)
+    .replace("</head>", `${noTranslationMeta}${web.entryTags("frame")}</head>`)
     .replace("<body>", `<body data-page="${page}">`)
 }
 
@@ -59,7 +61,7 @@ export const renderShell = (page: "sidebar" | "dex" | "history", web: WebResourc
   const frame = (view: "sidebar" | "dex" | "history") =>
     `<iframe class="web-view${view === page ? " active" : ""}" data-page="${view}" src="${web.views?.[view] ?? `/view/${view}`}" title="${escapeHtml(IntlModule.translate(view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"))}" data-i18n-title="web:${view === "sidebar" ? "pages.partner" : view === "dex" ? "pages.digidex" : "pages.history"}"${view === "sidebar" ? "" : ` id="dex-${view}-panel" role="tabpanel" aria-labelledby="dex-${view}-tab"`}${view === page ? "" : ' aria-hidden="true"'}></iframe>`
   const views = frame("sidebar") + dexMarkup(frame("dex") + frame("history"), page === "history" ? "history" : "dex")
-  return `<!DOCTYPE html><html lang="en" data-save-host="${web.mode}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${web.development ? " ws://localhost:* ws://127.0.0.1:*" : ""}"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="${assetUrl(web, "/favicon.ico")}"><link rel="icon" type="image/png" sizes="16x16" href="${assetUrl(web, "/icons/digital-pet-16.png")}"><link rel="icon" type="image/png" sizes="32x32" href="${assetUrl(web, "/icons/digital-pet-32.png")}"><link rel="apple-touch-icon" sizes="180x180" href="${assetUrl(web, "/icons/digital-pet-180.png")}"><title data-i18n="web:navigationMarkup.digitalPet">${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('${assetUrl(web, "/fonts/Silkscreen-Regular.ttf")}') format('truetype'); font-display: swap; }${PANEL_THEME}</style></head><body><div class="view-stack">${views}${worldMapMarkup(
+  return `<!DOCTYPE html><html lang="en" translate="no" class="notranslate" data-save-host="${web.mode}"><head><meta charset="UTF-8">${noTranslationMeta}<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#594130"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; manifest-src 'self'; frame-src 'self'; worker-src 'self'; font-src 'self'; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-${nonce}'; connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${web.development ? " ws://localhost:* ws://127.0.0.1:*" : ""}"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/x-icon" href="${assetUrl(web, "/favicon.ico")}"><link rel="icon" type="image/png" sizes="16x16" href="${assetUrl(web, "/icons/digital-pet-16.png")}"><link rel="icon" type="image/png" sizes="32x32" href="${assetUrl(web, "/icons/digital-pet-32.png")}"><link rel="apple-touch-icon" sizes="180x180" href="${assetUrl(web, "/icons/digital-pet-180.png")}"><title data-i18n="web:navigationMarkup.digitalPet">${escapeHtml(IntlModule.translate("navigationMarkup.digitalPet"))}</title><style>@font-face { font-family: 'Digital Pet Pixel'; src: url('${assetUrl(web, "/fonts/Silkscreen-Regular.ttf")}') format('truetype'); font-display: swap; }${PANEL_THEME}</style></head><body><div class="view-stack">${views}${worldMapMarkup(
     assetUrl(web, "/maps/file-island.svg"),
     (id) => assetUrl(web, `/regions/${id}/scene.svg`),
     LOCATIONS.filter((place) => web.assets[`/regions/${place.id}/background.png`]).map((place) => place.id),

@@ -6,7 +6,7 @@ for (const [fromId, targetId, kind, careMask, sources] of reference.routes) {
   if (
     typeof fromId !== "string" ||
     typeof targetId !== "string" ||
-    (kind !== "normal" && kind !== "jogress" && kind !== "special") ||
+    (kind !== "normal" && kind !== "jogress" && kind !== "special" && kind !== "unverified") ||
     typeof careMask !== "number" ||
     !Number.isInteger(careMask) ||
     careMask < 0 ||

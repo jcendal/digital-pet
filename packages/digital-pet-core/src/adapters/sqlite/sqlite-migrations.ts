@@ -173,6 +173,19 @@ const MIGRATIONS = [
     )`,
     ],
   },
+  {
+    version: 11,
+    sql: [
+      `CREATE TABLE partner_adventure_schedule (
+        partner_id TEXT PRIMARY KEY REFERENCES partners(partner_id),
+        ready_at INTEGER NOT NULL CHECK (ready_at >= 0)
+      )`,
+      `INSERT INTO partner_adventure_schedule (partner_id, ready_at)
+        SELECT principal_id, max(0, ready_at) FROM partner_team, adventure_schedule
+        WHERE team_id = 1 AND schedule_id = 1 AND principal_id IS NOT NULL`,
+      "DROP TABLE adventure_schedule",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {
