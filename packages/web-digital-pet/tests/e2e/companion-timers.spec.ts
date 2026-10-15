@@ -26,7 +26,9 @@ const saved = (page: Page) =>
     return { state, legacy }
   })
 
-test("adventure waits advance in reserve while apples and piles pause through switches and reload", async ({ page }) => {
+test("adventure waits advance in reserve while apples and piles pause through switches and reload", async ({
+  page,
+}) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   const now = Date.parse("2026-10-15T00:00:00Z")

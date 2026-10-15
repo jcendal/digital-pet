@@ -4,7 +4,7 @@ import { resolveEvolutionBattle } from "../src/domain/evolution.ts"
 import { assertEvolutionBranch, pickEvolutionTarget } from "../src/domain/evolution-battle.ts"
 import { availableEvolutionTargets } from "../src/domain/evolution-options.ts"
 
-test("the entire catalogue is reachable from the egg through explicit branches", () => {
+test("the historical graph remains addressable from the egg for existing saves", () => {
   const reached = new Set(["0-001"])
   const queue = ["0-001"]
   while (queue.length) {

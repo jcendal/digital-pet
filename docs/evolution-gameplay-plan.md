@@ -678,11 +678,14 @@ to have run for unimplemented features.
 
 ## Content boundaries and release gates
 
-The audit currently distinguishes 1,467 referenced normal connections, 230
-Jogress connections, 201 other special connections and 399 unverified legacy
-connections, plus 31 legacy hatch choices. These mechanisms can cover verified
-special requirements after rule enrichment; they do not automatically validate
-or unlock all 830 blocked connections. Unverified connections require evidence.
+The current reviewed connection counts and remaining lower-stage gaps are listed
+in the [evolution reference inventory](data-sources.md#reference-import-and-game-adaptations).
+The importer now reads Pendulum 20th's structured targets and modern guides' full
+detail cards, restoring Lopmon and distinguishing fusion requirements from normal
+EXP routes. This data audit does not implement the remaining special-route
+predicates or unlock every referenced special connection. Unverified legacy
+connections still require evidence, and withdrawn targets remain addressable only
+to finish already pending saves.
 
 Before the remaining special-route gameplay ships, finish reviewed
 pair/attribute/origin definitions and regional reward mapping. Device connection/slot requirements need individual adaptations
