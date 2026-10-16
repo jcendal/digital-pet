@@ -61,6 +61,7 @@ test("targetless victories persist and cannot be replayed onto a later duel", as
       }
     }
     expect(read().victories).toBe(1)
+    expect(repository.getSidebarSnapshot()?.combatVictories).toBe(1)
     openDuel("second")
     expect(repository.getEvolutionBattleId()).not.toBe(expected.battleId)
     expect(repository.completeEvolutionBattle(true, new Date(now + 2).toISOString(), expected).kind).toBe(

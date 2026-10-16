@@ -1,4 +1,5 @@
 import type { EvolutionRoute } from "../domain/evolution-options.ts"
+import { adaptEvolutionVictoryMinimum } from "../domain/evolution-victory-policy.ts"
 import reference from "./evolution-reference.json" with { type: "json" }
 
 export const EVOLUTION_ROUTES = new Map<string, readonly EvolutionRoute[]>()
@@ -32,7 +33,7 @@ for (const [fromId, targetId, kind, careMask, sources] of reference.routes) {
       (max !== null && (max === undefined || !Number.isSafeInteger(max) || max < min))
     )
       throw new Error("Invalid victory condition")
-    return Object.freeze({ careMask: mask, minVictories: min, maxVictories: max ?? null })
+    return Object.freeze({ careMask: mask, minVictories: adaptEvolutionVictoryMinimum(min), maxVictories: max ?? null })
   })
   EVOLUTION_ROUTES.set(
     fromId,

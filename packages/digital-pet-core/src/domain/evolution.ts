@@ -84,7 +84,7 @@ export const applyTokenProgress = (
   }
 
   return {
-    current: state.current,
+    ...state,
     gauge: threshold,
     isTerminal: false,
     pendingEvolutionTargetId: null,

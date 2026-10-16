@@ -30,10 +30,10 @@ test("Turuiemon's Antylamon route keeps care and victories together", () => {
   const current = DIGIMON_CATALOG.byId.get("4-131")
   if (!current) throw new Error("Missing Turuiemon")
   for (const care of [0, 1, 2]) {
-    expect(availableEvolutionTargets(current, care, 11)).not.toContain("5-006")
-    expect(availableEvolutionTargets(current, care, 12)).toContain("5-006")
+    expect(availableEvolutionTargets(current, care, 2)).not.toContain("5-006")
+    expect(availableEvolutionTargets(current, care, 3)).toContain("5-006")
   }
-  expect(availableEvolutionTargets(current, 3, 12)).not.toContain("5-006")
+  expect(availableEvolutionTargets(current, 3, 3)).not.toContain("5-006")
 })
 
 test("Angewomon's Pendulum Color fusions cannot become ordinary EXP evolutions", () => {

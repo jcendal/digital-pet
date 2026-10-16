@@ -207,6 +207,25 @@ const renderPoops = () => {
     button.setAttribute("aria-label", IntlModule.translate("sidebar.cleanPoop", { number: index + 1 }))
   }
 }
+const renderIndicators = () => {
+  const group = byId("pet-indicators")
+  const active = model?.kind === "partner" && typeof model.combatVictories === "number"
+  group.hidden = !active || (state.phase !== "idle" && state.phase !== "feeding")
+  if (group.hidden) return
+  const poops = String(model.hygiene?.poops?.length ?? 0)
+  const victories = model.combatVictories
+  const display = new Intl.NumberFormat(IntlModule.locale, { notation: "compact", maximumFractionDigits: 1 }).format(
+    victories,
+  )
+  group.replaceChildren(
+    window.createCareIndicator("care", IntlModule.translate("dexClient.carePiles", { counts: poops }), poops),
+    window.createCareIndicator(
+      "victories",
+      IntlModule.translate("sidebar.combatVictories", { count: victories }),
+      display,
+    ),
+  )
+}
 const renderSwitch = () => {
   const button = byId("pet-switch")
   if (!button) return
@@ -244,6 +263,7 @@ const render = () => {
   renderEgg()
   renderPet()
   renderPoops()
+  renderIndicators()
   const active = model?.kind === "partner"
   root.classList.toggle("no-partner", !active)
   root.classList.toggle("animating", state.phase !== "idle" && state.phase !== "feeding")

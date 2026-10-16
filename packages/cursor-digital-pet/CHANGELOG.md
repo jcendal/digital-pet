@@ -6,6 +6,10 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ### Changed
 
+- Show the companion's unclean-pile and current-form victory counts alongside the EXP value below the progress bar in the pet viewer, using the saved active partner's combat progress.
+- Adapt device evolution victory minimums to game pacing (12→3, 24→5, 50→7, 200→10) in shared rules and the Dex, preserving care alternatives and existing counters.
+- Show compact pixel care and combat-victory indicators on Dex routes, with full accessible requirement labels.
+- Use locally bundled, species-specific projectiles in shared battles: all 109 PENOG sprites and reviewed assignments for 526 catalog entries; retain the existing fallback where source data is missing.
 - Restore Lopmon and other omitted evolution branches from reviewed device detail cards, keep fusion/special routes out of ordinary EXP selection and preserve withdrawn targets for pending saves.
 - Give each companion its own adventure cooldown, preserve the principal's legacy timer and keep adventure waits advancing in reserve while apple and care timers pause.
 

@@ -29,6 +29,9 @@ wins count, including a successful duel that finds no eligible evolution. The
 Dex displays the numeric victory requirement only on routes that have one, just
 as it displays relevant care counts. This replaces the earlier requirement to
 hide victory thresholds. A separate HUD/training panel is not requested.
+Imported device minimums are adapted once in shared core: 12 → 3, 24 → 5,
+50 → 7 and 200 → 10. Zero and each care alternative retain their meaning. The Dex
+uses the adapted values; existing saved victory counters are not rescaled.
 Whether player-versus-player wins also count is awaiting clarification; the
 current planning assumption is adventure plus evolution-duel wins.
 

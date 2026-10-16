@@ -1,7 +1,7 @@
 import type { PartnerProgression } from "../../domain/partner.ts"
 import type { SqliteExecutor } from "../../ports/sqlite-executor.ts"
 
-export const readCombatProgress = (executor: SqliteExecutor, partnerId: string, nodeId: string) =>
+export const readCombatProgress = (executor: Pick<SqliteExecutor, "get">, partnerId: string, nodeId: string) =>
   executor.get<{ victories: number; battle_id: string | null }>(
     "SELECT victories, battle_id FROM partner_combat_progress WHERE partner_id = ? AND node_id = ?",
     [partnerId, nodeId],

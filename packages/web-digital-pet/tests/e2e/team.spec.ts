@@ -118,6 +118,7 @@ test("new journey chooses an egg, keeps the principal and switches both ways", a
   await expect.poll(async () => (await state(page)).partnerId).toBe(reserve.partnerId)
   await expect(sidebar.locator("#pet-switch")).toBeEnabled()
   await expect(sidebar.locator("#name")).toHaveText(/DIGI(EGG|TAMA)/i)
+  await expect(sidebar.locator("#pet-indicators")).toBeHidden()
   await expect
     .poll(() =>
       sidebar.locator("#artwork").evaluate((svg) => {

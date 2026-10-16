@@ -85,14 +85,15 @@ test("100% fights without a route, reports a winning no-evolution result and ret
   expect(errors).toEqual([])
 })
 
-test("the twelfth win unlocks Meicoomon's evolution in that duel and the Dex shows its numeric requirement", async ({
+test("the third win unlocks Meicoomon's evolution in that duel and the Dex shows its numeric requirement", async ({
   page,
 }, testInfo) => {
-  await openDuel(page, "4-077", 11, false)
+  await openDuel(page, "4-077", 2, false)
   const sidebar = page.frameLocator('iframe[data-page="sidebar"]')
   await expect(sidebar.locator("#name")).toHaveText(/Meicrackmon/i, { timeout: 30_000 })
   await expect(sidebar.locator("#phase")).toHaveText("EVOLUCIONADO")
   await expect(sidebar.locator("#phase")).toHaveText("ACTIVO", { timeout: 10_000 })
+  await expect(sidebar.locator('#pet-indicators [data-indicator="victories"]')).toHaveText("0")
   const result = await saved(page)
   expect(result.currentNodeId).toBe("5-078")
   expect(result.combatVictories).toBe(0)
@@ -103,8 +104,8 @@ test("the twelfth win unlocks Meicoomon's evolution in that duel and the Dex sho
   await expect(dex.locator(".detail-name h2")).toHaveText("Meicoomon")
   await dex.locator("#detail details summary").click()
   const requirement = dex.locator("#detail").getByRole("button", { name: /Meicrackmon/ })
-  await expect(requirement).toContainText("Victorias de combate: 12+")
-  await expect(requirement).not.toContainText("Cacas sin limpiar")
+  await expect(requirement.getByRole("img", { name: "Victorias de combate: 3+", exact: true })).toBeVisible()
+  await expect(requirement.locator('[data-requirement="care"]')).toHaveCount(0)
   await requirement.scrollIntoViewIfNeeded()
   await page.screenshot({ path: testInfo.outputPath("victory-requirement-dex-390.png") })
 })

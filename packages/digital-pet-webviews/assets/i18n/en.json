@@ -192,6 +192,8 @@
   "map.chooseLocation": "Choose a location",
   "map.closeLocations": "Close locations",
   "dexClient.carePiles": "Unclean piles: {counts}",
+  "dexClient.or": "or",
+  "sidebar.combatVictories": "Combat victories in this form: {count}",
   "dexClient.specialEvolutions": "Special evolutions · locked",
   "team.heading": "TEAM",
   "team.principal": "PRINCIPAL",

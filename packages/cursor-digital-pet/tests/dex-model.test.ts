@@ -61,7 +61,7 @@ describe("Cursor Digidex records", () => {
     expect(agumon?.nextIds).toContain("7-041")
     expect(
       agumon?.evolutionRequirements?.find((rule) => rule.targetId === "7-041")?.alternatives[0]?.minVictories,
-    ).toBe(50)
+    ).toBe(7)
     expect(agumon?.specialNextIds).not.toContain("7-041")
     expect(agumon?.evolutionCare?.find((route) => route.targetId === "4-088")?.uncleanPoops).toEqual([3])
     expect(agumon?.previousIds).toContain("2-013")
