@@ -1,0 +1,5782 @@
+{
+  "reviewedAt": "2026-10-16",
+  "modulePriority": [
+    "penog",
+    "penc",
+    "pen20",
+    "dm20",
+    "dmx",
+    "penz",
+    "penprog",
+    "twin",
+    "dmm",
+    "dmog",
+    "dmxw",
+    "dmc",
+    "pengz",
+    "dmgz",
+    "dmrv",
+    "vbe",
+    "vb"
+  ],
+  "assignments": {
+    "1-002": {
+      "speciesId": "botamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/0",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/0"
+    },
+    "1-003": {
+      "speciesId": "chicomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 54,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/201",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/201"
+    },
+    "1-004": {
+      "speciesId": "choromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 84,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/0",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/0"
+    },
+    "1-005": {
+      "speciesId": "cocomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 54,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/185",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/185"
+    },
+    "1-006": {
+      "speciesId": "cotsucomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 57,
+      "device": "silver-black",
+      "target": "digimon/silver-black/191",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/191"
+    },
+    "1-007": {
+      "speciesId": "dodomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-black",
+      "target": "digimon/silver-black/220",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/220"
+    },
+    "1-008": {
+      "speciesId": "fufumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/209",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/209"
+    },
+    "1-012": {
+      "speciesId": "mokumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 92,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/0",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/0"
+    },
+    "1-013": {
+      "speciesId": "nyokimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 78,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/0",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/0"
+    },
+    "1-014": {
+      "speciesId": "bubbmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 54,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/0",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/0"
+    },
+    "1-015": {
+      "speciesId": "petitmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 17,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/167",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/167"
+    },
+    "1-016": {
+      "speciesId": "pitchmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 64,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/0",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/0"
+    },
+    "1-017": {
+      "speciesId": "poyomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/32",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/32"
+    },
+    "1-018": {
+      "speciesId": "punimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/16",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/16"
+    },
+    "1-020": {
+      "speciesId": "puttimon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-2",
+      "target": "digimon/ver-2/0",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-2/0"
+    },
+    "1-021": {
+      "speciesId": "sakumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 24,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/153",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/153"
+    },
+    "1-023": {
+      "speciesId": "yukimibotamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 35,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/0",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/0"
+    },
+    "1-024": {
+      "speciesId": "yuramon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/48",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/48"
+    },
+    "1-025": {
+      "speciesId": "zerimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 54,
+      "device": "silver-black",
+      "target": "digimon/silver-black/179",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/179"
+    },
+    "1-026": {
+      "speciesId": "zurumon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/64",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/64"
+    },
+    "1-027": {
+      "speciesId": "chibickmon",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 37,
+      "device": "xw15",
+      "target": "digimon/xw15/0",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/0"
+    },
+    "1-029": {
+      "speciesId": "jyarimon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-1",
+      "target": "digimon/ver-1/0",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-1/0"
+    },
+    "2-001": {
+      "speciesId": "algomon_lv2",
+      "module": "penz",
+      "set": "dmx",
+      "index": 1,
+      "device": "nso",
+      "target": "digimon/nso/53",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/53"
+    },
+    "2-002": {
+      "speciesId": "babydmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 18,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/168",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/168"
+    },
+    "2-003": {
+      "speciesId": "budmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 79,
+      "device": "silver-black",
+      "target": "digimon/silver-black/215",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/215"
+    },
+    "2-004": {
+      "speciesId": "pukamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 55,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/1"
+    },
+    "2-005": {
+      "speciesId": "petimeramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 53,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/1"
+    },
+    "2-006": {
+      "speciesId": "chibimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 6,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/202",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/202"
+    },
+    "2-007": {
+      "speciesId": "dorimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 23,
+      "device": "silver-black",
+      "target": "digimon/silver-black/221",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/221"
+    },
+    "2-008": {
+      "speciesId": "gummymon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 36,
+      "device": "silver-black",
+      "target": "digimon/silver-black/180",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/180"
+    },
+    "2-010": {
+      "speciesId": "kakkinmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 57,
+      "device": "silver-black",
+      "target": "digimon/silver-black/192",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/192"
+    },
+    "2-011": {
+      "speciesId": "capromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 14,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/1"
+    },
+    "2-012": {
+      "speciesId": "chocomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 36,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/186",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/186"
+    },
+    "2-013": {
+      "speciesId": "koromon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/1",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/1"
+    },
+    "2-014": {
+      "speciesId": "kyokyomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 79,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/210",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/210"
+    },
+    "2-015": {
+      "speciesId": "mochimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 55,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/1",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/1"
+    },
+    "2-016": {
+      "speciesId": "nyaromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 47,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/1"
+    },
+    "2-017": {
+      "speciesId": "pagumon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/65",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/65"
+    },
+    "2-019": {
+      "speciesId": "sakuttomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 24,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/154",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/154"
+    },
+    "2-020": {
+      "speciesId": "tanemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/49",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/49"
+    },
+    "2-021": {
+      "speciesId": "tokomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/33",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/33"
+    },
+    "2-022": {
+      "speciesId": "tokomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 1,
+      "device": "xa",
+      "target": "digimon/xa/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/1"
+    },
+    "2-024": {
+      "speciesId": "tunomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-a",
+      "target": "digimon/ver-a/17",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/17"
+    },
+    "2-026": {
+      "speciesId": "wanyamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 10,
+      "device": "nsp",
+      "target": "digimon/nsp/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/1"
+    },
+    "2-028": {
+      "speciesId": "pyocomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 79,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/1",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/1"
+    },
+    "2-030": {
+      "speciesId": "gigimon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-1",
+      "target": "digimon/ver-1/1",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-1/1"
+    },
+    "2-035": {
+      "speciesId": "pickmon",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 37,
+      "device": "xw15",
+      "target": "digimon/xw15/1",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/1"
+    },
+    "3-001": {
+      "speciesId": "agumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 1,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/2"
+    },
+    "3-003": {
+      "speciesId": "agumonhakase",
+      "module": "twin",
+      "set": "twin",
+      "index": 14,
+      "device": "l",
+      "target": "digimon/l/7",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/twin/entries/digimon/l/7"
+    },
+    "3-004": {
+      "speciesId": "agumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 18,
+      "device": "xa",
+      "target": "digimon/xa/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/6"
+    },
+    "3-005": {
+      "speciesId": "algomon_lv3",
+      "module": "penz",
+      "set": "dmx",
+      "index": 13,
+      "device": "nso",
+      "target": "digimon/nso/56",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/56"
+    },
+    "3-006": {
+      "speciesId": "armadimon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 24,
+      "device": "d-3-white-yellow",
+      "target": "digimon/d-3-white-yellow/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/d-3-white-yellow/2"
+    },
+    "3-007": {
+      "speciesId": "betamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 4,
+      "device": "ver-a",
+      "target": "digimon/ver-a/3",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/3"
+    },
+    "3-008": {
+      "speciesId": "piyomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 1,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/2"
+    },
+    "3-009": {
+      "speciesId": "bulucomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 1,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/2"
+    },
+    "3-010": {
+      "speciesId": "bushiagumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 1,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/143",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/143"
+    },
+    "3-011": {
+      "speciesId": "candmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 17,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/3"
+    },
+    "3-012": {
+      "speciesId": "coronamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 6,
+      "device": "ver-c",
+      "target": "digimon/ver-c/101",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-c/101"
+    },
+    "3-013": {
+      "speciesId": "ganimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 65,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/3"
+    },
+    "3-014": {
+      "speciesId": "picodevimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 71,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/4"
+    },
+    "3-015": {
+      "speciesId": "dorumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 13,
+      "device": "silver-black",
+      "target": "digimon/silver-black/222",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/222"
+    },
+    "3-016": {
+      "speciesId": "dracomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 18,
+      "device": "ver-a",
+      "target": "digimon/ver-a/92",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/92"
+    },
+    "3-017": {
+      "speciesId": "dracomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 17,
+      "device": "xb",
+      "target": "digimon/xb/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/2"
+    },
+    "3-018": {
+      "speciesId": "duskmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/6"
+    },
+    "3-019": {
+      "speciesId": "elecmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 4,
+      "device": "ver-a",
+      "target": "digimon/ver-a/19",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/19"
+    },
+    "3-021": {
+      "speciesId": "floramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 36,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/3"
+    },
+    "3-022": {
+      "speciesId": "gabumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 1,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/3"
+    },
+    "3-023": {
+      "speciesId": "gabumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 37,
+      "device": "xb",
+      "target": "digimon/xb/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/3"
+    },
+    "3-024": {
+      "speciesId": "gaomon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 4,
+      "device": "nsp",
+      "target": "digimon/nsp/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/2"
+    },
+    "3-025": {
+      "speciesId": "tailmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 50,
+      "device": "ver-1-5",
+      "target": "digimon/ver-1-5/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-5/6"
+    },
+    "3-026": {
+      "speciesId": "gazimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 1,
+      "device": "ver-a",
+      "target": "digimon/ver-a/66",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/66"
+    },
+    "3-027": {
+      "speciesId": "ghostmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 17,
+      "device": "nso",
+      "target": "digimon/nso/54",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/54"
+    },
+    "3-028": {
+      "speciesId": "gizamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 4,
+      "device": "ver-a",
+      "target": "digimon/ver-a/67",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/67"
+    },
+    "3-029": {
+      "speciesId": "gomamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 43,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/2"
+    },
+    "3-031": {
+      "speciesId": "gottsumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 57,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/3",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/3"
+    },
+    "3-032": {
+      "speciesId": "guilmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/142",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/142"
+    },
+    "3-033": {
+      "speciesId": "hagurumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 94,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/4"
+    },
+    "3-034": {
+      "speciesId": "hawkmon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/4",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/4"
+    },
+    "3-035": {
+      "speciesId": "herissmon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 10,
+      "device": "xa",
+      "target": "digimon/xa/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/7"
+    },
+    "3-036": {
+      "speciesId": "huckmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 1,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/156",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/156"
+    },
+    "3-037": {
+      "speciesId": "impmon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-2",
+      "target": "digimon/ver-2/2",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-2/2"
+    },
+    "3-039": {
+      "speciesId": "jazamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 14,
+      "device": "holy-wings",
+      "target": "digimon/holy-wings/19",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/holy-wings/19"
+    },
+    "3-042": {
+      "speciesId": "kokuwamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 66,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/3"
+    },
+    "3-044": {
+      "speciesId": "kunemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 4,
+      "device": "ver-a",
+      "target": "digimon/ver-a/35",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/35"
+    },
+    "3-045": {
+      "speciesId": "labramon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 2,
+      "device": "nso",
+      "target": "digimon/nso/55",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/55"
+    },
+    "3-046": {
+      "speciesId": "lalamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 38,
+      "device": "forest-guardian",
+      "target": "digimon/forest-guardian/3",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/forest-guardian/3"
+    },
+    "3-049": {
+      "speciesId": "ludomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "espimon",
+      "target": "digimon/espimon/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/espimon/2"
+    },
+    "3-050": {
+      "speciesId": "lunamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 26,
+      "device": "ver-d",
+      "target": "digimon/ver-d/105",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-d/105"
+    },
+    "3-051": {
+      "speciesId": "monodramon",
+      "module": "pengz",
+      "set": "dmc",
+      "index": 20,
+      "device": "gz",
+      "target": "digimon/gz/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pengz/entries/digimon/gz/8"
+    },
+    "3-052": {
+      "speciesId": "morphomon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 22,
+      "device": "nsp",
+      "target": "digimon/nsp/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/3"
+    },
+    "3-053": {
+      "speciesId": "mushmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 85,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/4"
+    },
+    "3-054": {
+      "speciesId": "otamamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 36,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/4",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/4"
+    },
+    "3-056": {
+      "speciesId": "palmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 36,
+      "device": "ver-4-5",
+      "target": "digimon/ver-4-5/3",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-5/3"
+    },
+    "3-058": {
+      "speciesId": "patamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 1,
+      "device": "ver-a",
+      "target": "digimon/ver-a/34",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/34"
+    },
+    "3-059": {
+      "speciesId": "phascomon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 24,
+      "device": "rampage-of-the-beast",
+      "target": "digimon/rampage-of-the-beast/19",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/rampage-of-the-beast/19"
+    },
+    "3-060": {
+      "speciesId": "pomumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 23,
+      "device": "fairimon-ex",
+      "target": "digimon/fairimon-ex/3",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/fairimon-ex/3"
+    },
+    "3-061": {
+      "speciesId": "renamon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 29,
+      "device": "xa",
+      "target": "digimon/xa/5",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/5"
+    },
+    "3-062": {
+      "speciesId": "ryudamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 23,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/211",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/211"
+    },
+    "3-063": {
+      "speciesId": "plotmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 20,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/4"
+    },
+    "3-065": {
+      "speciesId": "sangomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 3,
+      "device": "infinite-tide",
+      "target": "digimon/infinite-tide/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/infinite-tide/2"
+    },
+    "3-066": {
+      "speciesId": "shoutmon",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 16,
+      "device": "xw15",
+      "target": "digimon/xw15/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/2"
+    },
+    "3-067": {
+      "speciesId": "sistermonblanc",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 10,
+      "device": "xb",
+      "target": "digimon/xb/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/4"
+    },
+    "3-068": {
+      "speciesId": "sunarizamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 10,
+      "device": "nsp",
+      "target": "digimon/nsp/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/4"
+    },
+    "3-070": {
+      "speciesId": "shakomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 40,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/4",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/4"
+    },
+    "3-072": {
+      "speciesId": "bakumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 46,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/2"
+    },
+    "3-073": {
+      "speciesId": "tentomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 56,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/2",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/2"
+    },
+    "3-074": {
+      "speciesId": "terriermon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-2",
+      "target": "digimon/ver-2/5",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-2/5"
+    },
+    "3-076": {
+      "speciesId": "tinkermon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 14,
+      "device": "fairimon-ex",
+      "target": "digimon/fairimon-ex/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/fairimon-ex/2"
+    },
+    "3-077": {
+      "speciesId": "toyagumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 1,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/2",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/2"
+    },
+    "3-078": {
+      "speciesId": "v-mon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 6,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/203",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/203"
+    },
+    "3-079": {
+      "speciesId": "vorvomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 0,
+      "device": "volcanic-beat",
+      "target": "digimon/volcanic-beat/2",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/volcanic-beat/2"
+    },
+    "3-080": {
+      "speciesId": "wormmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 36,
+      "device": "nso",
+      "target": "digimon/nso/57",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/57"
+    },
+    "3-081": {
+      "speciesId": "zubamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 31,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/155",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/155"
+    },
+    "3-082": {
+      "speciesId": "agumon-black",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 0,
+      "device": "dorumon-be",
+      "target": "digimon/dorumon-be/3",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/dorumon-be/3"
+    },
+    "3-083": {
+      "speciesId": "dracumon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 30,
+      "device": "ghost-game-angoramon-be",
+      "target": "digimon/ghost-game-angoramon-be/17",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-angoramon-be/17"
+    },
+    "3-084": {
+      "speciesId": "pulsemon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 41,
+      "device": "a-25th-anniversary-bem",
+      "target": "digimon/a-25th-anniversary-bem/19",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/a-25th-anniversary-bem/19"
+    },
+    "3-085": {
+      "speciesId": "renamon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 52,
+      "device": "ver-7",
+      "target": "digimon/ver-7/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/5"
+    },
+    "4-001": {
+      "speciesId": "agnimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 4,
+      "device": "nsp",
+      "target": "digimon/nsp/92",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/92"
+    },
+    "4-002": {
+      "speciesId": "airdramon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 5,
+      "device": "ver-a",
+      "target": "digimon/ver-a/8",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/8"
+    },
+    "4-004": {
+      "speciesId": "angemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/9"
+    },
+    "4-005": {
+      "speciesId": "ankylomon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 7,
+      "device": "d-3-white-yellow",
+      "target": "digimon/d-3-white-yellow/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/d-3-white-yellow/5"
+    },
+    "4-006": {
+      "speciesId": "hanumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 47,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/5",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/5"
+    },
+    "4-007": {
+      "speciesId": "aquilamon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/5",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/5"
+    },
+    "4-008": {
+      "speciesId": "algomon_lv4",
+      "module": "penz",
+      "set": "dmx",
+      "index": 36,
+      "device": "nso",
+      "target": "digimon/nso/60",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/60"
+    },
+    "4-009": {
+      "speciesId": "arresterdramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/146",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/146"
+    },
+    "4-010": {
+      "speciesId": "baboongamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 32,
+      "device": "nsp",
+      "target": "digimon/nsp/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/6"
+    },
+    "4-011": {
+      "speciesId": "bakemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 26,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/10"
+    },
+    "4-013": {
+      "speciesId": "baohuckmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 12,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/158",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/158"
+    },
+    "4-014": {
+      "speciesId": "birdramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 51,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/6"
+    },
+    "4-015": {
+      "speciesId": "centalmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/37",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/37"
+    },
+    "4-016": {
+      "speciesId": "clockmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 100,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/8"
+    },
+    "4-017": {
+      "speciesId": "coelamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 5,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/8"
+    },
+    "4-018": {
+      "speciesId": "coredramon_b",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 20,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/171",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/171"
+    },
+    "4-019": {
+      "speciesId": "coredramon_g",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 20,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/172",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/172"
+    },
+    "4-020": {
+      "speciesId": "cyclomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/69",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/69"
+    },
+    "4-021": {
+      "speciesId": "damemon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 12,
+      "device": "xa",
+      "target": "digimon/xa/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/14"
+    },
+    "4-023": {
+      "speciesId": "darktyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/68",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/68"
+    },
+    "4-025": {
+      "speciesId": "deltamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 11,
+      "device": "ver-a",
+      "target": "digimon/ver-a/73",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/73"
+    },
+    "4-026": {
+      "speciesId": "revolmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 96,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/6"
+    },
+    "4-027": {
+      "speciesId": "devidramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/173",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/173"
+    },
+    "4-028": {
+      "speciesId": "devimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 25,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/9"
+    },
+    "4-030": {
+      "speciesId": "dobermon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 21,
+      "device": "nso",
+      "target": "digimon/nso/59",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/59"
+    },
+    "4-031": {
+      "speciesId": "dokugumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 26,
+      "device": "ver-3-5",
+      "target": "digimon/ver-3-5/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-5/10"
+    },
+    "4-032": {
+      "speciesId": "rukamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 14,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/6"
+    },
+    "4-033": {
+      "speciesId": "dorugamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 13,
+      "device": "silver-black",
+      "target": "digimon/silver-black/223",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/223"
+    },
+    "4-034": {
+      "speciesId": "drimogemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 11,
+      "device": "ver-a",
+      "target": "digimon/ver-a/41",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/41"
+    },
+    "4-035": {
+      "speciesId": "duskmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/6"
+    },
+    "4-036": {
+      "speciesId": "ebidramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 66,
+      "device": "ver-2-5",
+      "target": "digimon/ver-2-5/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-5/8"
+    },
+    "4-038": {
+      "speciesId": "xv-mon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/204",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/204"
+    },
+    "4-039": {
+      "speciesId": "filmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 24,
+      "device": "loogamon-be",
+      "target": "digimon/loogamon-be/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/loogamon-be/5"
+    },
+    "4-040": {
+      "speciesId": "firamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 26,
+      "device": "ver-c",
+      "target": "digimon/ver-c/102",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-c/102"
+    },
+    "4-041": {
+      "speciesId": "flarelizamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 17,
+      "device": "nso",
+      "target": "digimon/nso/62",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/62"
+    },
+    "4-042": {
+      "speciesId": "flymon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 5,
+      "device": "ver-a",
+      "target": "digimon/ver-a/72",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/72"
+    },
+    "4-043": {
+      "speciesId": "yukidarumon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 6,
+      "device": "ver-a",
+      "target": "digimon/ver-a/23",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/23"
+    },
+    "4-044": {
+      "speciesId": "gaogamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 34,
+      "device": "nsp",
+      "target": "digimon/nsp/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/9"
+    },
+    "4-045": {
+      "speciesId": "galgomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 6,
+      "device": "silver-black",
+      "target": "digimon/silver-black/182",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/182"
+    },
+    "4-046": {
+      "speciesId": "garurumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 3,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/6"
+    },
+    "4-047": {
+      "speciesId": "tailmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 50,
+      "device": "ver-1-5",
+      "target": "digimon/ver-1-5/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-5/6"
+    },
+    "4-049": {
+      "speciesId": "gekomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 59,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/10",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/10"
+    },
+    "4-050": {
+      "speciesId": "geogreymon",
+      "module": "twin",
+      "set": "twin",
+      "index": 12,
+      "device": "r",
+      "target": "digimon/r/9",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/twin/entries/digimon/r/9"
+    },
+    "4-051": {
+      "speciesId": "gesomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 44,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/9"
+    },
+    "4-052": {
+      "speciesId": "ginryumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 23,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/212",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/212"
+    },
+    "4-053": {
+      "speciesId": "golemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 30,
+      "device": "nsp",
+      "target": "digimon/nsp/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/10"
+    },
+    "4-054": {
+      "speciesId": "greymon",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 1,
+      "device": "xw15",
+      "target": "digimon/xw15/20",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/20"
+    },
+    "4-055": {
+      "speciesId": "growmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 31,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/144",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/144"
+    },
+    "4-056": {
+      "speciesId": "growmon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 32,
+      "device": "xb",
+      "target": "digimon/xb/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/8"
+    },
+    "4-057": {
+      "speciesId": "guardromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 38,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/9"
+    },
+    "4-059": {
+      "speciesId": "hudiemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 24,
+      "device": "nsp",
+      "target": "digimon/nsp/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/8"
+    },
+    "4-060": {
+      "speciesId": "ikkakumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 91,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/5",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/5"
+    },
+    "4-062": {
+      "speciesId": "kabuterimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 3,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/5",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/5"
+    },
+    "4-063": {
+      "speciesId": "kiwimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 83,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/8"
+    },
+    "4-064": {
+      "speciesId": "cockatrimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/53",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/53"
+    },
+    "4-065": {
+      "speciesId": "komondomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 33,
+      "device": "angoramon",
+      "target": "digimon/angoramon/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/angoramon/5"
+    },
+    "4-066": {
+      "speciesId": "kuwagamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/9",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/9"
+    },
+    "4-068": {
+      "speciesId": "lavorvomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-black",
+      "target": "digimon/silver-black/198",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/198"
+    },
+    "4-069": {
+      "speciesId": "lekismon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 0,
+      "device": "ver-d",
+      "target": "digimon/ver-d/106",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-d/106"
+    },
+    "4-070": {
+      "speciesId": "leomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/6",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/6"
+    },
+    "4-071": {
+      "speciesId": "leomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 4,
+      "device": "xa",
+      "target": "digimon/xa/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/11"
+    },
+    "4-072": {
+      "speciesId": "wolfmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/4",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/4"
+    },
+    "4-073": {
+      "speciesId": "machmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 23,
+      "device": "nu-metal-empire",
+      "target": "digimon/nu-metal-empire/3",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/nu-metal-empire/3"
+    },
+    "4-074": {
+      "speciesId": "madleomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 19,
+      "device": "silver-black",
+      "target": "digimon/silver-black/132",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/132"
+    },
+    "4-075": {
+      "speciesId": "manbomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 36,
+      "device": "jellymon",
+      "target": "digimon/jellymon/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/jellymon/6"
+    },
+    "4-077": {
+      "speciesId": "meicoomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 13,
+      "device": "ver-e",
+      "target": "digimon/ver-e/126",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-e/126"
+    },
+    "4-078": {
+      "speciesId": "mechanorimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 20,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/10"
+    },
+    "4-079": {
+      "speciesId": "meramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/7"
+    },
+    "4-083": {
+      "speciesId": "mojyamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 11,
+      "device": "ver-a",
+      "target": "digimon/ver-a/57",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/57"
+    },
+    "4-084": {
+      "speciesId": "monochromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 3,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/7"
+    },
+    "4-085": {
+      "speciesId": "nanimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 15,
+      "device": "ver-a",
+      "target": "digimon/ver-a/58",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/58"
+    },
+    "4-087": {
+      "speciesId": "igamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 34,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/8"
+    },
+    "4-088": {
+      "speciesId": "numemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 15,
+      "device": "ver-a",
+      "target": "digimon/ver-a/10",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/10"
+    },
+    "4-090": {
+      "speciesId": "octmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 18,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/10"
+    },
+    "4-091": {
+      "speciesId": "orgemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 6,
+      "device": "ver-a",
+      "target": "digimon/ver-a/38",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/38"
+    },
+    "4-094": {
+      "speciesId": "paledramon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 5,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/4",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/4"
+    },
+    "4-095": {
+      "speciesId": "parasaurmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 31,
+      "device": "hermit-in-the-jungle",
+      "target": "digimon/hermit-in-the-jungle/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/hermit-in-the-jungle/5"
+    },
+    "4-096": {
+      "speciesId": "peckmon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 90,
+      "device": "ver-7",
+      "target": "digimon/ver-7/7",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/7"
+    },
+    "4-099": {
+      "speciesId": "porcupamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-black",
+      "target": "digimon/silver-black/131",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/131"
+    },
+    "4-101": {
+      "speciesId": "raremon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 15,
+      "device": "ver-a",
+      "target": "digimon/ver-a/74",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/74"
+    },
+    "4-102": {
+      "speciesId": "redvegimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 46,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/10"
+    },
+    "4-103": {
+      "speciesId": "reppamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 12,
+      "device": "pulsemon-be",
+      "target": "digimon/pulsemon-be/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/pulsemon-be/6"
+    },
+    "4-104": {
+      "speciesId": "rhinomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 5,
+      "device": "xb",
+      "target": "digimon/xb/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/9"
+    },
+    "4-105": {
+      "speciesId": "gokimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 27,
+      "device": "nsp",
+      "target": "digimon/nsp/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/11"
+    },
+    "4-106": {
+      "speciesId": "sangloupmon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 20,
+      "device": "xa",
+      "target": "digimon/xa/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/13"
+    },
+    "4-107": {
+      "speciesId": "seadramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 5,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/7"
+    },
+    "4-110": {
+      "speciesId": "shadramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 20,
+      "device": "silver-black",
+      "target": "digimon/silver-black/133",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/133"
+    },
+    "4-111": {
+      "speciesId": "shellmon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 5,
+      "device": "ver-7",
+      "target": "digimon/ver-7/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/9"
+    },
+    "4-112": {
+      "speciesId": "karatukinumemon",
+      "module": "dmog",
+      "set": "dmog",
+      "index": 5,
+      "device": "ver-6",
+      "target": "digimon/ver-6/9",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmog/entries/digimon/ver-6/9"
+    },
+    "4-113": {
+      "speciesId": "shoutmonx3",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 6,
+      "device": "xw15",
+      "target": "digimon/xw15/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/5"
+    },
+    "4-114": {
+      "speciesId": "sistermon_ciel",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 32,
+      "device": "xb",
+      "target": "digimon/xb/10",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/10"
+    },
+    "4-115": {
+      "speciesId": "starmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 21,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/8",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/8"
+    },
+    "4-116": {
+      "speciesId": "stingmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 5,
+      "device": "nso",
+      "target": "digimon/nso/64",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/64"
+    },
+    "4-117": {
+      "speciesId": "strikedramon",
+      "module": "pengz",
+      "set": "dmc",
+      "index": 17,
+      "device": "gz",
+      "target": "digimon/gz/18",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pengz/entries/digimon/gz/18"
+    },
+    "4-118": {
+      "speciesId": "sabmarimon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 12,
+      "device": "d-3-white-yellow",
+      "target": "digimon/d-3-white-yellow/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/d-3-white-yellow/9"
+    },
+    "4-119": {
+      "speciesId": "scumon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 15,
+      "device": "ver-a",
+      "target": "digimon/ver-a/42",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/42"
+    },
+    "4-120": {
+      "speciesId": "sunflowmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 6,
+      "device": "silver-black",
+      "target": "digimon/silver-black/217",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/217"
+    },
+    "4-121": {
+      "speciesId": "tankmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 10,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/7"
+    },
+    "4-122": {
+      "speciesId": "targetmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 23,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/159",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/159"
+    },
+    "4-123": {
+      "speciesId": "thunderballmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 10,
+      "device": "ver-5-5",
+      "target": "digimon/ver-5-5/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-5/7"
+    },
+    "4-124": {
+      "speciesId": "tialudomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 40,
+      "device": "silver-black",
+      "target": "digimon/silver-black/194",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/194"
+    },
+    "4-125": {
+      "speciesId": "tobiumon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 24,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/4",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/4"
+    },
+    "4-126": {
+      "speciesId": "tobucatmon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 33,
+      "device": "xa",
+      "target": "digimon/xa/44",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/44"
+    },
+    "4-127": {
+      "speciesId": "togemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 82,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/7",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/7"
+    },
+    "4-129": {
+      "speciesId": "tortamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 24,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/6",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/6"
+    },
+    "4-130": {
+      "speciesId": "troopmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 26,
+      "device": "silver-black",
+      "target": "digimon/silver-black/134",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/134"
+    },
+    "4-131": {
+      "speciesId": "turuiemon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 26,
+      "device": "ver-6",
+      "target": "digimon/ver-6/13",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-6/13"
+    },
+    "4-132": {
+      "speciesId": "tuskmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 6,
+      "device": "ver-a",
+      "target": "digimon/ver-a/71",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/71"
+    },
+    "4-135": {
+      "speciesId": "tyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/5",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/5"
+    },
+    "4-136": {
+      "speciesId": "tyranomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 8,
+      "device": "xa",
+      "target": "digimon/xa/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/12"
+    },
+    "4-137": {
+      "speciesId": "yunimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/36",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/36"
+    },
+    "4-138": {
+      "speciesId": "v-dramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 86,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/5",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/5"
+    },
+    "4-139": {
+      "speciesId": "vegimon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 15,
+      "device": "ver-a",
+      "target": "digimon/ver-a/26",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/26"
+    },
+    "4-140": {
+      "speciesId": "velgrmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 33,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/11"
+    },
+    "4-141": {
+      "speciesId": "whamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 9,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/12"
+    },
+    "4-142": {
+      "speciesId": "witchmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 34,
+      "device": "nso",
+      "target": "digimon/nso/58",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/58"
+    },
+    "4-143": {
+      "speciesId": "wizarmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 76,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/8",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/8"
+    },
+    "4-145": {
+      "speciesId": "woodmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 52,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/9",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/9"
+    },
+    "4-146": {
+      "speciesId": "zubaeagermon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 31,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/157",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/157"
+    },
+    "4-147": {
+      "speciesId": "bulkmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 41,
+      "device": "a-25th-anniversary-bem",
+      "target": "digimon/a-25th-anniversary-bem/20",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/a-25th-anniversary-bem/20"
+    },
+    "4-148": {
+      "speciesId": "fugamon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 11,
+      "device": "ver-7",
+      "target": "digimon/ver-7/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/11"
+    },
+    "4-149": {
+      "speciesId": "hyougamon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 22,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/5",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/5"
+    },
+    "4-150": {
+      "speciesId": "pidmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 0,
+      "device": "holy-wings",
+      "target": "digimon/holy-wings/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/holy-wings/6"
+    },
+    "4-151": {
+      "speciesId": "rhinomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "true-shadow-howl",
+      "target": "digimon/true-shadow-howl/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/true-shadow-howl/9"
+    },
+    "4-152": {
+      "speciesId": "saberdramon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 24,
+      "device": "dynasty-of-the-evil",
+      "target": "digimon/dynasty-of-the-evil/3",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/dynasty-of-the-evil/3"
+    },
+    "5-001": {
+      "speciesId": "earov-dramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 99,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/11"
+    },
+    "5-002": {
+      "speciesId": "aldamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 30,
+      "device": "nsp",
+      "target": "digimon/nsp/96",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/96"
+    },
+    "5-003": {
+      "speciesId": "andromon",
+      "module": "penog",
+      "set": "penog",
+      "index": 12,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/12"
+    },
+    "5-004": {
+      "speciesId": "angewomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 76,
+      "device": "ver-1-5",
+      "target": "digimon/ver-1-5/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-5/12"
+    },
+    "5-006": {
+      "speciesId": "andiramon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 28,
+      "device": "ver-6",
+      "target": "digimon/ver-6/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-6/21"
+    },
+    "5-007": {
+      "speciesId": "algomon-ultimate",
+      "module": "penz",
+      "set": "dmx",
+      "index": 24,
+      "device": "nso",
+      "target": "digimon/nso/73",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/73"
+    },
+    "5-008": {
+      "speciesId": "archnemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 36,
+      "device": "nsp",
+      "target": "digimon/nsp/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/18"
+    },
+    "5-009": {
+      "speciesId": "astamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 32,
+      "device": "silver-black",
+      "target": "digimon/silver-black/135",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/135"
+    },
+    "5-010": {
+      "speciesId": "asuramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/12"
+    },
+    "5-011": {
+      "speciesId": "baalmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 81,
+      "device": "silver-black",
+      "target": "digimon/silver-black/136",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/136"
+    },
+    "5-012": {
+      "speciesId": "beowolfmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/8"
+    },
+    "5-013": {
+      "speciesId": "bigmamemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 107,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/14"
+    },
+    "5-014": {
+      "speciesId": "blossomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 41,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/13"
+    },
+    "5-015": {
+      "speciesId": "valvemon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 21,
+      "device": "gabumon-ex",
+      "target": "digimon/gabumon-ex/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/gabumon-ex/9"
+    },
+    "5-016": {
+      "speciesId": "vritramon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 30,
+      "device": "nsp",
+      "target": "digimon/nsp/94",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/94"
+    },
+    "5-017": {
+      "speciesId": "cannonbeemon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 13,
+      "device": "forest-guardian",
+      "target": "digimon/forest-guardian/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/forest-guardian/11"
+    },
+    "5-018": {
+      "speciesId": "cerberumon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 8,
+      "device": "nso",
+      "target": "digimon/nso/66",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/66"
+    },
+    "5-019": {
+      "speciesId": "cerberumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 25,
+      "device": "xa",
+      "target": "digimon/xa/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/19"
+    },
+    "5-020": {
+      "speciesId": "jyureimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 88,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/15"
+    },
+    "5-021": {
+      "speciesId": "chohakkaimon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 33,
+      "device": "ver-6",
+      "target": "digimon/ver-6/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-6/16"
+    },
+    "5-022": {
+      "speciesId": "crescemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 12,
+      "device": "ver-d",
+      "target": "digimon/ver-d/107",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-d/107"
+    },
+    "5-023": {
+      "speciesId": "yatagaramon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 13,
+      "device": "ver-7",
+      "target": "digimon/ver-7/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/15"
+    },
+    "5-024": {
+      "speciesId": "cryspaledramon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/9"
+    },
+    "5-025": {
+      "speciesId": "cyberdramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 12,
+      "device": "ver-5-5",
+      "target": "digimon/ver-5-5/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-5/12"
+    },
+    "5-028": {
+      "speciesId": "nanomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 7,
+      "device": "ver-a",
+      "target": "digimon/ver-a/76",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/76"
+    },
+    "5-029": {
+      "speciesId": "delumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 75,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/14"
+    },
+    "5-030": {
+      "speciesId": "digitamamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 13,
+      "device": "ver-a",
+      "target": "digimon/ver-a/61",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/61"
+    },
+    "5-031": {
+      "speciesId": "dinobeemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 32,
+      "device": "nso",
+      "target": "digimon/nso/89",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/89"
+    },
+    "5-032": {
+      "speciesId": "hangyomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 22,
+      "device": "ver-2-5",
+      "target": "digimon/ver-2-5/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-5/14"
+    },
+    "5-033": {
+      "speciesId": "donedevimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 41,
+      "device": "nso",
+      "target": "digimon/nso/74",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/74"
+    },
+    "5-034": {
+      "speciesId": "doruguremon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 31,
+      "device": "ver-a",
+      "target": "digimon/ver-a/121",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/121"
+    },
+    "5-035": {
+      "speciesId": "dagomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 45,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/16"
+    },
+    "5-036": {
+      "speciesId": "duramon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 12,
+      "device": "ver-a",
+      "target": "digimon/ver-a/84",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/84"
+    },
+    "5-038": {
+      "speciesId": "eosmon_lv5",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 6,
+      "device": "forest-guardian",
+      "target": "digimon/forest-guardian/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/forest-guardian/21"
+    },
+    "5-039": {
+      "speciesId": "etemon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 8,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/162",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/162"
+    },
+    "5-040": {
+      "speciesId": "ex-tyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 13,
+      "device": "ver-a",
+      "target": "digimon/ver-a/77",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/77"
+    },
+    "5-041": {
+      "speciesId": "flaremon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 6,
+      "device": "ver-c",
+      "target": "digimon/ver-c/103",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-c/103"
+    },
+    "5-042": {
+      "speciesId": "gerbemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 15,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/16"
+    },
+    "5-043": {
+      "speciesId": "garudamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 37,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/12"
+    },
+    "5-044": {
+      "speciesId": "garudamon_x",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/13",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/13"
+    },
+    "5-045": {
+      "speciesId": "giromon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 7,
+      "device": "ver-a",
+      "target": "digimon/ver-a/44",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/44"
+    },
+    "5-046": {
+      "speciesId": "gogmamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 24,
+      "device": "nsp",
+      "target": "digimon/nsp/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/13"
+    },
+    "5-047": {
+      "speciesId": "grademon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 12,
+      "device": "dorumon-be",
+      "target": "digimon/dorumon-be/20",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/dorumon-be/20"
+    },
+    "5-048": {
+      "speciesId": "groundramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 13,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/175",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/175"
+    },
+    "5-049": {
+      "speciesId": "gusokumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 24,
+      "device": "infinite-tide",
+      "target": "digimon/infinite-tide/7",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/infinite-tide/7"
+    },
+    "5-050": {
+      "speciesId": "hippogriffomon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 4,
+      "device": "ghost-game-angoramon-be",
+      "target": "digimon/ghost-game-angoramon-be/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-angoramon-be/9"
+    },
+    "5-051": {
+      "speciesId": "hisyaryumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/213",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/213"
+    },
+    "5-052": {
+      "speciesId": "jyagamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 62,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/12",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/12"
+    },
+    "5-053": {
+      "speciesId": "kaiserleomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 11,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/9"
+    },
+    "5-054": {
+      "speciesId": "jazarichmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 14,
+      "device": "holy-wings",
+      "target": "digimon/holy-wings/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/holy-wings/21"
+    },
+    "5-055": {
+      "speciesId": "jewelbeemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 33,
+      "device": "nsp",
+      "target": "digimon/nsp/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/14"
+    },
+    "5-056": {
+      "speciesId": "garummon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/9"
+    },
+    "5-057": {
+      "speciesId": "chimairamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 17,
+      "device": "nso",
+      "target": "digimon/nso/65",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/65"
+    },
+    "5-058": {
+      "speciesId": "knightmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 102,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/13"
+    },
+    "5-059": {
+      "speciesId": "ladydevimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 49,
+      "device": "ver-3-5",
+      "target": "digimon/ver-3-5/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-5/15"
+    },
+    "5-061": {
+      "speciesId": "lavogaritamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 72,
+      "device": "silver-black",
+      "target": "digimon/silver-black/199",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/199"
+    },
+    "5-062": {
+      "speciesId": "lilamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 8,
+      "device": "silver-black",
+      "target": "digimon/silver-black/218",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/218"
+    },
+    "5-063": {
+      "speciesId": "lilimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 41,
+      "device": "ver-4-5",
+      "target": "digimon/ver-4-5/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-5/13"
+    },
+    "5-064": {
+      "speciesId": "lilimon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 30,
+      "device": "xb",
+      "target": "digimon/xb/18",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/18"
+    },
+    "5-065": {
+      "speciesId": "loaderleomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 24,
+      "device": "nu-metal-empire",
+      "target": "digimon/nu-metal-empire/7",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/nu-metal-empire/7"
+    },
+    "5-066": {
+      "speciesId": "locomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 32,
+      "device": "nu-metal-empire",
+      "target": "digimon/nu-metal-empire/10",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/nu-metal-empire/10"
+    },
+    "5-067": {
+      "speciesId": "rucemonfalldownmode",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 13,
+      "device": "xa",
+      "target": "digimon/xa/21",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/21"
+    },
+    "5-068": {
+      "speciesId": "machgaogamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 4,
+      "device": "nsp",
+      "target": "digimon/nsp/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/16"
+    },
+    "5-069": {
+      "speciesId": "holyangemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 97,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/15"
+    },
+    "5-070": {
+      "speciesId": "mamemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 7,
+      "device": "ver-a",
+      "target": "digimon/ver-a/12",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/12"
+    },
+    "5-072": {
+      "speciesId": "mametyramon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 30,
+      "device": "mad-black-roar",
+      "target": "digimon/mad-black-roar/10",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/mad-black-roar/10"
+    },
+    "5-073": {
+      "speciesId": "mammon",
+      "module": "penog",
+      "set": "penog",
+      "index": 91,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/11"
+    },
+    "5-075": {
+      "speciesId": "manticoremon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 26,
+      "device": "espimon",
+      "target": "digimon/espimon/12",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/espimon/12"
+    },
+    "5-076": {
+      "speciesId": "marinchimairamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 8,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/8"
+    },
+    "5-077": {
+      "speciesId": "marindevimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 18,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/15"
+    },
+    "5-078": {
+      "speciesId": "meicrackmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-e",
+      "target": "digimon/ver-e/127",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-e/127"
+    },
+    "5-079": {
+      "speciesId": "meicrackmon_v",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 25,
+      "device": "silver-black",
+      "target": "digimon/silver-black/207",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/207"
+    },
+    "5-080": {
+      "speciesId": "megadramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 108,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/15"
+    },
+    "5-081": {
+      "speciesId": "atlurkabuterimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 63,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/11",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/11"
+    },
+    "5-082": {
+      "speciesId": "megaseadramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 56,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/13"
+    },
+    "5-085": {
+      "speciesId": "mermaimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "infinite-tide",
+      "target": "digimon/infinite-tide/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/infinite-tide/9"
+    },
+    "5-086": {
+      "speciesId": "metalgreymon",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 24,
+      "device": "xw15",
+      "target": "digimon/xw15/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/21"
+    },
+    "5-087": {
+      "speciesId": "metalgreymon-v",
+      "module": "penog",
+      "set": "penog",
+      "index": 2,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/11"
+    },
+    "5-088": {
+      "speciesId": "metalgreymon-web",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 2,
+      "device": "ver-a",
+      "target": "digimon/ver-a/11",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/11"
+    },
+    "5-090": {
+      "speciesId": "metalgreymon_va_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 3,
+      "device": "xa",
+      "target": "digimon/xa/20",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/20"
+    },
+    "5-091": {
+      "speciesId": "metalmamemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 13,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/14"
+    },
+    "5-093": {
+      "speciesId": "metaltyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 12,
+      "device": "ver-a",
+      "target": "digimon/ver-a/75",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/75"
+    },
+    "5-094": {
+      "speciesId": "metaltyranomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 6,
+      "device": "xa",
+      "target": "digimon/xa/23",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/23"
+    },
+    "5-095": {
+      "speciesId": "monzaemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 8,
+      "device": "ver-a",
+      "target": "digimon/ver-a/13",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/13"
+    },
+    "5-097": {
+      "speciesId": "mummymon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 48,
+      "device": "nso",
+      "target": "digimon/nso/70",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/70"
+    },
+    "5-098": {
+      "speciesId": "vamdemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 49,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/15"
+    },
+    "5-100": {
+      "speciesId": "neodevimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 41,
+      "device": "nso",
+      "target": "digimon/nso/68",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/68"
+    },
+    "5-101": {
+      "speciesId": "okuwamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 58,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/15"
+    },
+    "5-104": {
+      "speciesId": "orochimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 1,
+      "device": "nsp",
+      "target": "digimon/nsp/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/17"
+    },
+    "5-105": {
+      "speciesId": "paildramon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 37,
+      "device": "nso",
+      "target": "digimon/nso/87",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/87"
+    },
+    "5-106": {
+      "speciesId": "parrotmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 31,
+      "device": "gabumon-ex",
+      "target": "digimon/gabumon-ex/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/gabumon-ex/8"
+    },
+    "5-107": {
+      "speciesId": "fantomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 48,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/16"
+    },
+    "5-108": {
+      "speciesId": "piranimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 30,
+      "device": "infinite-tide",
+      "target": "digimon/infinite-tide/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/infinite-tide/11"
+    },
+    "5-109": {
+      "speciesId": "picklemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 7,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/14",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/14"
+    },
+    "5-110": {
+      "speciesId": "pumpmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 72,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/14"
+    },
+    "5-111": {
+      "speciesId": "raijiludomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "espimon",
+      "target": "digimon/espimon/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/espimon/8"
+    },
+    "5-112": {
+      "speciesId": "rapidmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 98,
+      "device": "silver-black",
+      "target": "digimon/silver-black/183",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/183"
+    },
+    "5-113": {
+      "speciesId": "rebellimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 23,
+      "device": "nu-metal-empire",
+      "target": "digimon/nu-metal-empire/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/nu-metal-empire/11"
+    },
+    "5-114": {
+      "speciesId": "raihimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 14,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/8"
+    },
+    "5-115": {
+      "speciesId": "rizegreymon",
+      "module": "twin",
+      "set": "twin",
+      "index": 19,
+      "device": "r",
+      "target": "digimon/r/17",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/twin/entries/digimon/r/17"
+    },
+    "5-117": {
+      "speciesId": "saviorhuckmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 5,
+      "device": "ver-a",
+      "target": "digimon/ver-a/88",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/88"
+    },
+    "5-118": {
+      "speciesId": "anomalocarimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 22,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/14",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/14"
+    },
+    "5-119": {
+      "speciesId": "anomalocarimon-x",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 30,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/10",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/10"
+    },
+    "5-120": {
+      "speciesId": "shakkoumon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 4,
+      "device": "d-3-white-yellow",
+      "target": "digimon/d-3-white-yellow/13",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/d-3-white-yellow/13"
+    },
+    "5-121": {
+      "speciesId": "tonosamagekomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 28,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/16",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/16"
+    },
+    "5-122": {
+      "speciesId": "shoutmonx5",
+      "module": "dmxw",
+      "set": "dmc",
+      "index": 24,
+      "device": "xw15",
+      "target": "digimon/xw15/12",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmxw/entries/digimon/xw15/12"
+    },
+    "5-123": {
+      "speciesId": "silphymon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 8,
+      "device": "nsp",
+      "target": "digimon/nsp/85",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/85"
+    },
+    "5-124": {
+      "speciesId": "sirenmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 38,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/11"
+    },
+    "5-125": {
+      "speciesId": "skullbaluchimon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 11,
+      "device": "xa",
+      "target": "digimon/xa/22",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/22"
+    },
+    "5-126": {
+      "speciesId": "skullgreymon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 10,
+      "device": "ver-a",
+      "target": "digimon/ver-a/27",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/27"
+    },
+    "5-127": {
+      "speciesId": "deathmeramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 6,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/13"
+    },
+    "5-128": {
+      "speciesId": "stiffilmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 24,
+      "device": "loogamon-be",
+      "target": "digimon/loogamon-be/9",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/loogamon-be/9"
+    },
+    "5-129": {
+      "speciesId": "tekkamon",
+      "module": "dmog",
+      "set": "dmog",
+      "index": 7,
+      "device": "ver-6",
+      "target": "digimon/ver-6/12",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmog/entries/digimon/ver-6/12"
+    },
+    "5-130": {
+      "speciesId": "toropiamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 26,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/21"
+    },
+    "5-131": {
+      "speciesId": "triceramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 24,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/13",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/13"
+    },
+    "5-133": {
+      "speciesId": "vademon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 14,
+      "device": "ver-a",
+      "target": "digimon/ver-a/29",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/29"
+    },
+    "5-134": {
+      "speciesId": "velgrmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 33,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/11"
+    },
+    "5-135": {
+      "speciesId": "megalogrowmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 60,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/148",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/148"
+    },
+    "5-136": {
+      "speciesId": "megalogrowmon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 30,
+      "device": "xb",
+      "target": "digimon/xb/15",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/15"
+    },
+    "5-137": {
+      "speciesId": "warumonzaemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 103,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/16"
+    },
+    "5-138": {
+      "speciesId": "waruseadramon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 14,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/11",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/11"
+    },
+    "5-139": {
+      "speciesId": "weregarrumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 25,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/12"
+    },
+    "5-140": {
+      "speciesId": "weregarurumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 3,
+      "device": "xb",
+      "target": "digimon/xb/16",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/16"
+    },
+    "5-141": {
+      "speciesId": "whamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 9,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/12",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/12"
+    },
+    "5-142": {
+      "speciesId": "wingdramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 23,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/174",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/174"
+    },
+    "5-143": {
+      "speciesId": "zudomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 16,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/11",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/11"
+    },
+    "5-144": {
+      "speciesId": "boutmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 43,
+      "device": "a-25th-anniversary-bem",
+      "target": "digimon/a-25th-anniversary-bem/21",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/a-25th-anniversary-bem/21"
+    },
+    "5-145": {
+      "speciesId": "darksuperstarmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 11,
+      "device": "agnimon-ex",
+      "target": "digimon/agnimon-ex/12",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/agnimon-ex/12"
+    },
+    "5-146": {
+      "speciesId": "doruguremon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 31,
+      "device": "ver-a",
+      "target": "digimon/ver-a/121",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/121"
+    },
+    "5-147": {
+      "speciesId": "pandamon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 20,
+      "device": "ver-6",
+      "target": "digimon/ver-6/17",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-6/17"
+    },
+    "5-148": {
+      "speciesId": "scorpiomon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 69,
+      "device": "ver-2",
+      "target": "digimon/ver-2/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-2/15"
+    },
+    "5-149": {
+      "speciesId": "superstarmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "agnimon-ex",
+      "target": "digimon/agnimon-ex/10",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/agnimon-ex/10"
+    },
+    "6-001": {
+      "speciesId": "ageisdramon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 10,
+      "device": "ver-2",
+      "target": "digimon/ver-2/27",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-2/27"
+    },
+    "6-002": {
+      "speciesId": "alphamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 13,
+      "device": "silver-black",
+      "target": "digimon/silver-black/226",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/226"
+    },
+    "6-003": {
+      "speciesId": "ancientbeatmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 57,
+      "device": "nsp",
+      "target": "digimon/nsp/20",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/20"
+    },
+    "6-004": {
+      "speciesId": "ancientgarurumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/14"
+    },
+    "6-005": {
+      "speciesId": "ancientgreymon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 33,
+      "device": "agnimon-ex",
+      "target": "digimon/agnimon-ex/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/agnimon-ex/14"
+    },
+    "6-006": {
+      "speciesId": "ancientirismon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 14,
+      "device": "fairimon-ex",
+      "target": "digimon/fairimon-ex/13",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/fairimon-ex/13"
+    },
+    "6-007": {
+      "speciesId": "ancientmegatheriumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 5,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/16"
+    },
+    "6-008": {
+      "speciesId": "ancientmermaimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 8,
+      "device": "jellymon",
+      "target": "digimon/jellymon/12",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/jellymon/12"
+    },
+    "6-009": {
+      "speciesId": "ancientsphinkmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 27,
+      "device": "nso",
+      "target": "digimon/nso/75",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/75"
+    },
+    "6-010": {
+      "speciesId": "ancienttroiamon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 23,
+      "device": "fairimon-ex",
+      "target": "digimon/fairimon-ex/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/fairimon-ex/15"
+    },
+    "6-011": {
+      "speciesId": "ancientvolcamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 17,
+      "device": "nsp",
+      "target": "digimon/nsp/25",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/25"
+    },
+    "6-012": {
+      "speciesId": "ancientwisetmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 29,
+      "device": "blitzmon-ex",
+      "target": "digimon/blitzmon-ex/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blitzmon-ex/15"
+    },
+    "6-013": {
+      "speciesId": "anubimon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 53,
+      "device": "ver-3",
+      "target": "digimon/ver-3/23",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-3/23"
+    },
+    "6-014": {
+      "speciesId": "apoclymon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 13,
+      "device": "nsp",
+      "target": "digimon/nsp/77",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/77"
+    },
+    "6-015": {
+      "speciesId": "apollomon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 16,
+      "device": "rampage-of-the-beast",
+      "target": "digimon/rampage-of-the-beast/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/rampage-of-the-beast/14"
+    },
+    "6-016": {
+      "speciesId": "algomon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 30,
+      "device": "nso",
+      "target": "digimon/nso/67",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/67"
+    },
+    "6-017": {
+      "speciesId": "armagemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 22,
+      "device": "nso",
+      "target": "digimon/nso/78",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/78"
+    },
+    "6-018": {
+      "speciesId": "qinglongmon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/17",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/17"
+    },
+    "6-020": {
+      "speciesId": "baihumon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 14,
+      "device": "nsp",
+      "target": "digimon/nsp/22",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/22"
+    },
+    "6-021": {
+      "speciesId": "bancholeomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 12,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/166",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/166"
+    },
+    "6-022": {
+      "speciesId": "banchomamemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 37,
+      "device": "ver-a",
+      "target": "digimon/ver-a/15",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/15"
+    },
+    "6-024": {
+      "speciesId": "beelstarmon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 21,
+      "device": "xb",
+      "target": "digimon/xb/27",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/27"
+    },
+    "6-025": {
+      "speciesId": "beelzebumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 47,
+      "device": "silver-black",
+      "target": "digimon/silver-black/139",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/139"
+    },
+    "6-026": {
+      "speciesId": "belphemonragemode",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 17,
+      "device": "silver-black",
+      "target": "digimon/silver-black/138",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/138"
+    },
+    "6-028": {
+      "speciesId": "blitzgreymon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 41,
+      "device": "ver-a",
+      "target": "digimon/ver-a/14",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/14"
+    },
+    "6-029": {
+      "speciesId": "boltmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 27,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/18"
+    },
+    "6-030": {
+      "speciesId": "breakdramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/177",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/177"
+    },
+    "6-031": {
+      "speciesId": "bryweludramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 16,
+      "device": "silver-black",
+      "target": "digimon/silver-black/196",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/196"
+    },
+    "6-033": {
+      "speciesId": "cherubimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/190",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/190"
+    },
+    "6-037": {
+      "speciesId": "demon",
+      "module": "penog",
+      "set": "penog",
+      "index": 77,
+      "device": "ver-3-5",
+      "target": "digimon/ver-3-5/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-5/19"
+    },
+    "6-038": {
+      "speciesId": "cresgarurumon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 12,
+      "device": "ver-a",
+      "target": "digimon/ver-a/31",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/31"
+    },
+    "6-039": {
+      "speciesId": "darkdramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/178",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/178"
+    },
+    "6-041": {
+      "speciesId": "dianamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 42,
+      "device": "ver-d",
+      "target": "digimon/ver-d/108",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-d/108"
+    },
+    "6-042": {
+      "speciesId": "dinorexmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 24,
+      "device": "titan-of-dust",
+      "target": "digimon/titan-of-dust/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/titan-of-dust/14"
+    },
+    "6-043": {
+      "speciesId": "dinotigermon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 29,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/15"
+    },
+    "6-044": {
+      "speciesId": "durandamon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 31,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/163",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/163"
+    },
+    "6-045": {
+      "speciesId": "dynasmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "chackmon-ex",
+      "target": "digimon/chackmon-ex/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/chackmon-ex/16"
+    },
+    "6-047": {
+      "speciesId": "xuanwumon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/19",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/19"
+    },
+    "6-048": {
+      "speciesId": "kaisergreymon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 31,
+      "device": "nsp",
+      "target": "digimon/nsp/98",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/98"
+    },
+    "6-050": {
+      "speciesId": "huanglongmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 13,
+      "device": "nsp",
+      "target": "digimon/nsp/79",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/79"
+    },
+    "6-051": {
+      "speciesId": "gaioumon",
+      "module": "dmc",
+      "set": "dmc",
+      "index": 31,
+      "device": "ver-5",
+      "target": "digimon/ver-5/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmc/entries/digimon/ver-5/16"
+    },
+    "6-052": {
+      "speciesId": "dukemon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/151",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/151"
+    },
+    "6-053": {
+      "speciesId": "dukemon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 32,
+      "device": "xa",
+      "target": "digimon/xa/40",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/40"
+    },
+    "6-054": {
+      "speciesId": "gankoomon",
+      "module": "dmc",
+      "set": "dmc",
+      "index": 6,
+      "device": "ver-4",
+      "target": "digimon/ver-4/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmc/entries/digimon/ver-4/16"
+    },
+    "6-055": {
+      "speciesId": "deathmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 33,
+      "device": "nso",
+      "target": "digimon/nso/71",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/71"
+    },
+    "6-056": {
+      "speciesId": "gigaseadramon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 10,
+      "device": "ghost-game-jellymon-be",
+      "target": "digimon/ghost-game-jellymon-be/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-jellymon-be/15"
+    },
+    "6-059": {
+      "speciesId": "grandiskuwagamon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 30,
+      "device": "blitzmon-ex",
+      "target": "digimon/blitzmon-ex/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blitzmon-ex/14"
+    },
+    "6-060": {
+      "speciesId": "granddracumon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 22,
+      "device": "ghost-game-angoramon-be",
+      "target": "digimon/ghost-game-angoramon-be/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/ghost-game-angoramon-be/16"
+    },
+    "6-061": {
+      "speciesId": "grankuwagamon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 67,
+      "device": "ver-1",
+      "target": "digimon/ver-1/25",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-1/25"
+    },
+    "6-062": {
+      "speciesId": "grandlocomon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 10,
+      "device": "nu-metal-empire",
+      "target": "digimon/nu-metal-empire/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/nu-metal-empire/14"
+    },
+    "6-063": {
+      "speciesId": "griffomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 20,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/18"
+    },
+    "6-064": {
+      "speciesId": "gundramon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 23,
+      "device": "dorumon-be",
+      "target": "digimon/dorumon-be/18",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/dorumon-be/18"
+    },
+    "6-065": {
+      "speciesId": "heavyleomon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 23,
+      "device": "rampage-of-the-beast",
+      "target": "digimon/rampage-of-the-beast/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/rampage-of-the-beast/16"
+    },
+    "6-066": {
+      "speciesId": "heraklekabuterimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/17",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/17"
+    },
+    "6-067": {
+      "speciesId": "hexeblaumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 22,
+      "device": "blizzard-fang",
+      "target": "digimon/blizzard-fang/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blizzard-fang/14"
+    },
+    "6-068": {
+      "speciesId": "hiandromon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 30,
+      "device": "ver-5",
+      "target": "digimon/ver-5/23",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-5/23"
+    },
+    "6-069": {
+      "speciesId": "jesmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 35,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/164",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/164"
+    },
+    "6-071": {
+      "speciesId": "justimon_blitzarm",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 6,
+      "device": "monodramon-gp",
+      "target": "digimon/monodramon-gp/6",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/monodramon-gp/6"
+    },
+    "6-073": {
+      "speciesId": "kingetemon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 28,
+      "device": "ver-a",
+      "target": "digimon/ver-a/47",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/47"
+    },
+    "6-074": {
+      "speciesId": "duftmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 12,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/152",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/152"
+    },
+    "6-076": {
+      "speciesId": "lilithmon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-2",
+      "target": "digimon/ver-2/20",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-2/20"
+    },
+    "6-077": {
+      "speciesId": "lordknightmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "fairimon-ex",
+      "target": "digimon/fairimon-ex/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/fairimon-ex/16"
+    },
+    "6-078": {
+      "speciesId": "lotusmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 40,
+      "device": "silver-black",
+      "target": "digimon/silver-black/219",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/219"
+    },
+    "6-079": {
+      "speciesId": "lucemonsatanmode",
+      "module": "dmm",
+      "set": "dmm",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/17",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmm/entries/digimon/ver-3/17"
+    },
+    "6-080": {
+      "speciesId": "mugendramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/19"
+    },
+    "6-081": {
+      "speciesId": "holydramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-1-5",
+      "target": "digimon/ver-1-5/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-5/17"
+    },
+    "6-083": {
+      "speciesId": "magnagarurumon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 13,
+      "device": "wolfmon-ex",
+      "target": "digimon/wolfmon-ex/13",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/wolfmon-ex/13"
+    },
+    "6-084": {
+      "speciesId": "magnamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 5,
+      "device": "d-3-white-yellow",
+      "target": "digimon/d-3-white-yellow/19",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/d-3-white-yellow/19"
+    },
+    "6-085": {
+      "speciesId": "belialvamdemon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 14,
+      "device": "xa",
+      "target": "digimon/xa/35",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/35"
+    },
+    "6-086": {
+      "speciesId": "marinangemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 8,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/17"
+    },
+    "6-087": {
+      "speciesId": "saintgalgomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 81,
+      "device": "silver-black",
+      "target": "digimon/silver-black/184",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/184"
+    },
+    "6-088": {
+      "speciesId": "megidramon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 17,
+      "device": "nso",
+      "target": "digimon/nso/76",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/76"
+    },
+    "6-089": {
+      "speciesId": "megidramon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 14,
+      "device": "xb",
+      "target": "digimon/xb/28",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/28"
+    },
+    "6-090": {
+      "speciesId": "metaletemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 42,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/19",
+      "evidence": "official",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/19"
+    },
+    "6-091": {
+      "speciesId": "metalgarurumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 16,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/18"
+    },
+    "6-092": {
+      "speciesId": "metalgarurumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 30,
+      "device": "xb",
+      "target": "digimon/xb/26",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/26"
+    },
+    "6-093": {
+      "speciesId": "metallicdramon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 12,
+      "device": "holy-wings",
+      "target": "digimon/holy-wings/22",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/holy-wings/22"
+    },
+    "6-095": {
+      "speciesId": "metalseadramon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/18"
+    },
+    "6-096": {
+      "speciesId": "miragegaogamon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 21,
+      "device": "nsp",
+      "target": "digimon/nsp/23",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/23"
+    },
+    "6-097": {
+      "speciesId": "murmukusmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 4,
+      "device": "blitzmon-ex",
+      "target": "digimon/blitzmon-ex/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/blitzmon-ex/16"
+    },
+    "6-098": {
+      "speciesId": "nidhoggmon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 30,
+      "device": "nsp",
+      "target": "digimon/nsp/24",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/24"
+    },
+    "6-099": {
+      "speciesId": "noblepumpmon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 77,
+      "device": "ver-3",
+      "target": "digimon/ver-3/24",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-3/24"
+    },
+    "6-100": {
+      "speciesId": "ofanimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 5,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/128",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/128"
+    },
+    "6-104": {
+      "speciesId": "ouryumon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 12,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/214",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/214"
+    },
+    "6-105": {
+      "speciesId": "hououmon",
+      "module": "penog",
+      "set": "penog",
+      "index": 84,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/17"
+    },
+    "6-107": {
+      "speciesId": "piemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 77,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/19"
+    },
+    "6-108": {
+      "speciesId": "platinumnumemon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 15,
+      "device": "xa",
+      "target": "digimon/xa/37",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/37"
+    },
+    "6-109": {
+      "speciesId": "plesiomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-2-5",
+      "target": "digimon/ver-2-5/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-5/18"
+    },
+    "6-112": {
+      "speciesId": "pukumon",
+      "module": "penog",
+      "set": "penog",
+      "index": 47,
+      "device": "ver-2-0",
+      "target": "digimon/ver-2-0/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-0/19"
+    },
+    "6-113": {
+      "speciesId": "pinochimon",
+      "module": "penog",
+      "set": "penog",
+      "index": 87,
+      "device": "ver-4-0",
+      "target": "digimon/ver-4-0/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-0/19"
+    },
+    "6-114": {
+      "speciesId": "rafflesimon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 42,
+      "device": "ver-4",
+      "target": "digimon/ver-4/24",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-4/24"
+    },
+    "6-115": {
+      "speciesId": "raguelmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 47,
+      "device": "silver-black",
+      "target": "digimon/silver-black/208",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/208"
+    },
+    "6-117": {
+      "speciesId": "rasenmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 33,
+      "device": "loogamon-be",
+      "target": "digimon/loogamon-be/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/loogamon-be/14"
+    },
+    "6-118": {
+      "speciesId": "rasenmon_f",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 30,
+      "device": "loogamon-be",
+      "target": "digimon/loogamon-be/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/loogamon-be/15"
+    },
+    "6-119": {
+      "speciesId": "rasielmon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 13,
+      "device": "ver-e",
+      "target": "digimon/ver-e/128",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-e/128"
+    },
+    "6-120": {
+      "speciesId": "ravmon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 32,
+      "device": "ver-7",
+      "target": "digimon/ver-7/23",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-7/23"
+    },
+    "6-121": {
+      "speciesId": "regalecusmon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 12,
+      "device": "infinite-tide",
+      "target": "digimon/infinite-tide/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/infinite-tide/15"
+    },
+    "6-122": {
+      "speciesId": "raihimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 14,
+      "device": "louwemon-ex",
+      "target": "digimon/louwemon-ex/8",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/louwemon-ex/8"
+    },
+    "6-123": {
+      "speciesId": "rosemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 20,
+      "device": "ver-4-5",
+      "target": "digimon/ver-4-5/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-4-5/18"
+    },
+    "6-125": {
+      "speciesId": "rusttyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/130",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/130"
+    },
+    "6-126": {
+      "speciesId": "saberleomon",
+      "module": "penog",
+      "set": "penog",
+      "index": 25,
+      "device": "ver-1-0",
+      "target": "digimon/ver-1-0/18",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-1-0/18"
+    },
+    "6-127": {
+      "speciesId": "sakuyamon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 36,
+      "device": "xa",
+      "target": "digimon/xa/31",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/31"
+    },
+    "6-128": {
+      "speciesId": "seraphimon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 21,
+      "device": "silver-blue",
+      "target": "digimon/silver-blue/127",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-blue/127"
+    },
+    "6-129": {
+      "speciesId": "shinegreymon",
+      "module": "twin",
+      "set": "twin",
+      "index": 23,
+      "device": "r",
+      "target": "digimon/r/24",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/twin/entries/digimon/r/24"
+    },
+    "6-130": {
+      "speciesId": "skullmammon",
+      "module": "penog",
+      "set": "penog",
+      "index": 11,
+      "device": "ver-3-0",
+      "target": "digimon/ver-3-0/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-3-0/17"
+    },
+    "6-133": {
+      "speciesId": "slayerdramon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 31,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/176",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/176"
+    },
+    "6-134": {
+      "speciesId": "susanoomon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 19,
+      "device": "nsp",
+      "target": "digimon/nsp/80",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/80"
+    },
+    "6-135": {
+      "speciesId": "tigervespamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 14,
+      "device": "forest-guardian",
+      "target": "digimon/forest-guardian/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/forest-guardian/15"
+    },
+    "6-136": {
+      "speciesId": "titamon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 12,
+      "device": "ver-a",
+      "target": "digimon/ver-a/63",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/63"
+    },
+    "6-137": {
+      "speciesId": "ulforcevdramon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 106,
+      "device": "ver-4",
+      "target": "digimon/ver-4/23",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-4/23"
+    },
+    "6-138": {
+      "speciesId": "ultimatebrakimon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 31,
+      "device": "gammamon",
+      "target": "digimon/gammamon/12",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/gammamon/12"
+    },
+    "6-139": {
+      "speciesId": "valkyrimon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 26,
+      "device": "nsp",
+      "target": "digimon/nsp/86",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/86"
+    },
+    "6-140": {
+      "speciesId": "valdurmon",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 22,
+      "device": "xa",
+      "target": "digimon/xa/34",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/34"
+    },
+    "6-141": {
+      "speciesId": "venomvamdemon",
+      "module": "penog",
+      "set": "penog",
+      "index": 29,
+      "device": "ver-5-5",
+      "target": "digimon/ver-5-5/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-5/19"
+    },
+    "6-142": {
+      "speciesId": "volcanicdramon",
+      "module": "vb",
+      "set": "vb-small",
+      "index": 4,
+      "device": "volcanic-beat",
+      "target": "digimon/volcanic-beat/15",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vb/entries/digimon/volcanic-beat/15"
+    },
+    "6-143": {
+      "speciesId": "wargreymon",
+      "module": "penog",
+      "set": "penog",
+      "index": 33,
+      "device": "ver-5-0",
+      "target": "digimon/ver-5-0/17",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-5-0/17"
+    },
+    "6-144": {
+      "speciesId": "wargreymon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 25,
+      "device": "xa",
+      "target": "digimon/xa/30",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/30"
+    },
+    "6-145": {
+      "speciesId": "zhuqiaomon",
+      "module": "penprog",
+      "set": "penprog",
+      "index": 0,
+      "device": "ver-3",
+      "target": "digimon/ver-3/22",
+      "evidence": "reference",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penprog/entries/digimon/ver-3/22"
+    },
+    "6-146": {
+      "speciesId": "vikemon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 28,
+      "device": "ver-2",
+      "target": "digimon/ver-2/23",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-2/23"
+    },
+    "6-147": {
+      "speciesId": "shinmonzaemon",
+      "module": "dmc",
+      "set": "dmc",
+      "index": 8,
+      "device": "ver-1",
+      "target": "digimon/ver-1/16",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmc/entries/digimon/ver-1/16"
+    },
+    "6-148": {
+      "speciesId": "kazuchimon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 41,
+      "device": "a-25th-anniversary-bem",
+      "target": "digimon/a-25th-anniversary-bem/22",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/a-25th-anniversary-bem/22"
+    },
+    "6-149": {
+      "speciesId": "bancholilimon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 12,
+      "device": "forest-guardian",
+      "target": "digimon/forest-guardian/22",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/forest-guardian/22"
+    },
+    "6-150": {
+      "speciesId": "dorugoramon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 4,
+      "device": "dorumon-be",
+      "target": "digimon/dorumon-be/13",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/dorumon-be/13"
+    },
+    "7-001": {
+      "speciesId": "alphamon:ouryuken",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 13,
+      "device": "silver-black",
+      "target": "digimon/silver-black/235",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/235"
+    },
+    "7-002": {
+      "speciesId": "armagemon",
+      "module": "penz",
+      "set": "dmx",
+      "index": 22,
+      "device": "nso",
+      "target": "digimon/nso/78",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/78"
+    },
+    "7-004": {
+      "speciesId": "beelzebumon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 6,
+      "device": "xa",
+      "target": "digimon/xa/32",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/32"
+    },
+    "7-005": {
+      "speciesId": "beelzebumonblastmode",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 35,
+      "device": "silver-black",
+      "target": "digimon/silver-black/233",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/233"
+    },
+    "7-007": {
+      "speciesId": "voltobautamon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 116,
+      "device": "ver-3",
+      "target": "digimon/ver-3/26",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-3/26"
+    },
+    "7-008": {
+      "speciesId": "chaosmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 97,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/238",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/238"
+    },
+    "7-009": {
+      "speciesId": "craniummon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 12,
+      "device": "xb",
+      "target": "digimon/xb/25",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/25"
+    },
+    "7-012": {
+      "speciesId": "diablomon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 43,
+      "device": "xa",
+      "target": "digimon/xa/39",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/39"
+    },
+    "7-014": {
+      "speciesId": "examon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 12,
+      "device": "dukemon-color",
+      "target": "digimon/dukemon-color/239",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/dukemon-color/239"
+    },
+    "7-016": {
+      "speciesId": "dukemon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 32,
+      "device": "xa",
+      "target": "digimon/xa/40",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/40"
+    },
+    "7-018": {
+      "speciesId": "gracenovamon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 10,
+      "device": "rampage-of-the-beast",
+      "target": "digimon/rampage-of-the-beast/17",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/rampage-of-the-beast/17"
+    },
+    "7-019": {
+      "speciesId": "imperialdramonfightermode",
+      "module": "penz",
+      "set": "dmx",
+      "index": 13,
+      "device": "nso",
+      "target": "digimon/nso/88",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/88"
+    },
+    "7-020": {
+      "speciesId": "imperialdramonpaladinmode",
+      "module": "penz",
+      "set": "dmx",
+      "index": 12,
+      "device": "nsp",
+      "target": "digimon/nsp/82",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/82"
+    },
+    "7-021": {
+      "speciesId": "jesmon_x",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 35,
+      "device": "beelzebumon-color",
+      "target": "digimon/beelzebumon-color/165",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/beelzebumon-color/165"
+    },
+    "7-022": {
+      "speciesId": "sleipmon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 34,
+      "device": "xa",
+      "target": "digimon/xa/29",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/29"
+    },
+    "7-026": {
+      "speciesId": "lordknightmon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 5,
+      "device": "xb",
+      "target": "digimon/xb/43",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xb/43"
+    },
+    "7-029": {
+      "speciesId": "mastemon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 104,
+      "device": "ver-1",
+      "target": "digimon/ver-1/27",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-1/27"
+    },
+    "7-030": {
+      "speciesId": "minervamon_x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 31,
+      "device": "xa",
+      "target": "digimon/xa/42",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/42"
+    },
+    "7-031": {
+      "speciesId": "ogudomon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 14,
+      "device": "silver-black",
+      "target": "digimon/silver-black/228",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/228"
+    },
+    "7-032": {
+      "speciesId": "omegamon",
+      "module": "penog",
+      "set": "penog",
+      "index": 31,
+      "device": "ver-zero",
+      "target": "digimon/ver-zero/19",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-zero/19"
+    },
+    "7-033": {
+      "speciesId": "omegamon-alter-s",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 16,
+      "device": "ver-a",
+      "target": "digimon/ver-a/129",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/129"
+    },
+    "7-034": {
+      "speciesId": "omegamon-x",
+      "module": "dmx",
+      "set": "dmx",
+      "index": 39,
+      "device": "xa",
+      "target": "digimon/xa/38",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dmx/entries/digimon/xa/38"
+    },
+    "7-035": {
+      "speciesId": "ordinemon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 52,
+      "device": "silver-black",
+      "target": "digimon/silver-black/229",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/229"
+    },
+    "7-036": {
+      "speciesId": "rafflesimon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 42,
+      "device": "ver-4",
+      "target": "digimon/ver-4/24",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-4/24"
+    },
+    "7-037": {
+      "speciesId": "ragnaloardmon",
+      "module": "pen20",
+      "set": "pen20",
+      "index": 98,
+      "device": "silver-black",
+      "target": "digimon/silver-black/234",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/pen20/entries/digimon/silver-black/234"
+    },
+    "7-038": {
+      "speciesId": "rasenmon",
+      "module": "vbe",
+      "set": "vb-small",
+      "index": 33,
+      "device": "loogamon-be",
+      "target": "digimon/loogamon-be/14",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/vbe/entries/digimon/loogamon-be/14"
+    },
+    "7-039": {
+      "speciesId": "rusttyranomon",
+      "module": "dm20",
+      "set": "dm20",
+      "index": 3,
+      "device": "ver-a",
+      "target": "digimon/ver-a/130",
+      "evidence": "capture",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/dm20/entries/digimon/ver-a/130"
+    },
+    "7-041": {
+      "speciesId": "agumon_kizuna",
+      "module": "penz",
+      "set": "dmx",
+      "index": 56,
+      "device": "nsp",
+      "target": "digimon/nsp/99",
+      "evidence": "observation",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nsp/99"
+    },
+    "7-045": {
+      "speciesId": "chaosdramon",
+      "module": "penc",
+      "set": "dmc",
+      "index": 30,
+      "device": "ver-5",
+      "target": "digimon/ver-5/27",
+      "evidence": "rom_dump",
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penc/entries/digimon/ver-5/27"
+    }
+  },
+  "unavailable": [
+    {
+      "nodeId": "0-001",
+      "speciesId": null
+    },
+    {
+      "nodeId": "1-001",
+      "speciesId": "algomon_lv1"
+    },
+    {
+      "nodeId": "1-009",
+      "speciesId": "keemon"
+    },
+    {
+      "nodeId": "1-010",
+      "speciesId": "ketomon"
+    },
+    {
+      "nodeId": "1-011",
+      "speciesId": "kuramon"
+    },
+    {
+      "nodeId": "1-019",
+      "speciesId": "pururumon"
+    },
+    {
+      "nodeId": "1-022",
+      "speciesId": "tsubumon"
+    },
+    {
+      "nodeId": "1-028",
+      "speciesId": "dokimon"
+    },
+    {
+      "nodeId": "1-030",
+      "speciesId": "relemon"
+    },
+    {
+      "nodeId": "1-031",
+      "speciesId": "sunamon"
+    },
+    {
+      "nodeId": "2-009",
+      "speciesId": "hopmon"
+    },
+    {
+      "nodeId": "2-018",
+      "speciesId": "poromon"
+    },
+    {
+      "nodeId": "2-023",
+      "speciesId": "tsumemon"
+    },
+    {
+      "nodeId": "2-025",
+      "speciesId": "upamon"
+    },
+    {
+      "nodeId": "2-027",
+      "speciesId": "yarmon"
+    },
+    {
+      "nodeId": "2-029",
+      "speciesId": "bibimon"
+    },
+    {
+      "nodeId": "2-031",
+      "speciesId": "goromon"
+    },
+    {
+      "nodeId": "2-032",
+      "speciesId": "hiyarimon"
+    },
+    {
+      "nodeId": "2-033",
+      "speciesId": "minomon"
+    },
+    {
+      "nodeId": "2-034",
+      "speciesId": "moonmon"
+    },
+    {
+      "nodeId": "2-036",
+      "speciesId": "pokomon"
+    },
+    {
+      "nodeId": "2-037",
+      "speciesId": "sunmon"
+    },
+    {
+      "nodeId": "3-002",
+      "speciesId": "agumon_b_x"
+    },
+    {
+      "nodeId": "3-020",
+      "speciesId": "falcomon"
+    },
+    {
+      "nodeId": "3-030",
+      "speciesId": "gomamon_x"
+    },
+    {
+      "nodeId": "3-038",
+      "speciesId": "impmon_x"
+    },
+    {
+      "nodeId": "3-040",
+      "speciesId": "junkmon"
+    },
+    {
+      "nodeId": "3-041",
+      "speciesId": "keramon_x"
+    },
+    {
+      "nodeId": "3-043",
+      "speciesId": "kokuwamon_x"
+    },
+    {
+      "nodeId": "3-047",
+      "speciesId": "lopmon"
+    },
+    {
+      "nodeId": "3-048",
+      "speciesId": "lopmon_x"
+    },
+    {
+      "nodeId": "3-055",
+      "speciesId": "otamamon_x"
+    },
+    {
+      "nodeId": "3-057",
+      "speciesId": "palmon_x"
+    },
+    {
+      "nodeId": "3-064",
+      "speciesId": "plotmon_x"
+    },
+    {
+      "nodeId": "3-069",
+      "speciesId": "swimmon"
+    },
+    {
+      "nodeId": "3-071",
+      "speciesId": "shakomon_x"
+    },
+    {
+      "nodeId": "3-075",
+      "speciesId": "terriermon_x"
+    },
+    {
+      "nodeId": "4-003",
+      "speciesId": "allomon_x"
+    },
+    {
+      "nodeId": "4-012",
+      "speciesId": "baluchimon"
+    },
+    {
+      "nodeId": "4-022",
+      "speciesId": "darcmon"
+    },
+    {
+      "nodeId": "4-024",
+      "speciesId": "darktyranomon_x"
+    },
+    {
+      "nodeId": "4-029",
+      "speciesId": "diatrymon"
+    },
+    {
+      "nodeId": "4-037",
+      "speciesId": "eosmon_lv4"
+    },
+    {
+      "nodeId": "4-048",
+      "speciesId": "tailmon_x"
+    },
+    {
+      "nodeId": "4-058",
+      "speciesId": "hookmon"
+    },
+    {
+      "nodeId": "4-061",
+      "speciesId": "jazardmon"
+    },
+    {
+      "nodeId": "4-067",
+      "speciesId": "kuwagamon_x"
+    },
+    {
+      "nodeId": "4-076",
+      "speciesId": "mantaraymon_x"
+    },
+    {
+      "nodeId": "4-080",
+      "speciesId": "meramon_x"
+    },
+    {
+      "nodeId": "4-081",
+      "speciesId": "mimicmon"
+    },
+    {
+      "nodeId": "4-082",
+      "speciesId": "minotaurmon"
+    },
+    {
+      "nodeId": "4-086",
+      "speciesId": "nefertimon_x"
+    },
+    {
+      "nodeId": "4-089",
+      "speciesId": "numemon_x"
+    },
+    {
+      "nodeId": "4-092",
+      "speciesId": "orgemon_x"
+    },
+    {
+      "nodeId": "4-093",
+      "speciesId": "omekamon"
+    },
+    {
+      "nodeId": "4-097",
+      "speciesId": "pegasmon_x"
+    },
+    {
+      "nodeId": "4-098",
+      "speciesId": "petermon"
+    },
+    {
+      "nodeId": "4-100",
+      "speciesId": "pteranomon_x"
+    },
+    {
+      "nodeId": "4-108",
+      "speciesId": "seadramon_x"
+    },
+    {
+      "nodeId": "4-109",
+      "speciesId": "siesamon_x"
+    },
+    {
+      "nodeId": "4-128",
+      "speciesId": "togemon_x"
+    },
+    {
+      "nodeId": "4-133",
+      "speciesId": "tylomon"
+    },
+    {
+      "nodeId": "4-134",
+      "speciesId": "tylomon_x"
+    },
+    {
+      "nodeId": "4-144",
+      "speciesId": "wizarmon_x"
+    },
+    {
+      "nodeId": "5-005",
+      "speciesId": "angewomon_x"
+    },
+    {
+      "nodeId": "5-026",
+      "speciesId": "cyberdramon_x"
+    },
+    {
+      "nodeId": "5-027",
+      "speciesId": "darkknightmon"
+    },
+    {
+      "nodeId": "5-037",
+      "speciesId": "entmon"
+    },
+    {
+      "nodeId": "5-060",
+      "speciesId": "ladydevimon_x"
+    },
+    {
+      "nodeId": "5-071",
+      "speciesId": "mamemon_x"
+    },
+    {
+      "nodeId": "5-074",
+      "speciesId": "mammon_x"
+    },
+    {
+      "nodeId": "5-083",
+      "speciesId": "megaseadramon_x"
+    },
+    {
+      "nodeId": "5-084",
+      "speciesId": "mephismon_x"
+    },
+    {
+      "nodeId": "5-089",
+      "speciesId": "metalgreymon_vi_x"
+    },
+    {
+      "nodeId": "5-092",
+      "speciesId": "metalfantomon"
+    },
+    {
+      "nodeId": "5-096",
+      "speciesId": "monzaemon_x"
+    },
+    {
+      "nodeId": "5-099",
+      "speciesId": "vamdemon_x"
+    },
+    {
+      "nodeId": "5-102",
+      "speciesId": "okuwamon_x"
+    },
+    {
+      "nodeId": "5-103",
+      "speciesId": "omegashoutmon_x"
+    },
+    {
+      "nodeId": "5-116",
+      "speciesId": "rizegreymon_x"
+    },
+    {
+      "nodeId": "5-132",
+      "speciesId": "triceramon_x"
+    },
+    {
+      "nodeId": "6-019",
+      "speciesId": "bagramon"
+    },
+    {
+      "nodeId": "6-023",
+      "speciesId": "barbamon"
+    },
+    {
+      "nodeId": "6-027",
+      "speciesId": "blackwargreymon_x"
+    },
+    {
+      "nodeId": "6-032",
+      "speciesId": "chaosdramon-x"
+    },
+    {
+      "nodeId": "6-034",
+      "speciesId": "cherubimon_x"
+    },
+    {
+      "nodeId": "6-035",
+      "speciesId": "cherubimondark_x"
+    },
+    {
+      "nodeId": "6-036",
+      "speciesId": "craniummon"
+    },
+    {
+      "nodeId": "6-040",
+      "speciesId": "darkknightmon_x"
+    },
+    {
+      "nodeId": "6-046",
+      "speciesId": "ebemon_x"
+    },
+    {
+      "nodeId": "6-049",
+      "speciesId": "eosmon_lv6"
+    },
+    {
+      "nodeId": "6-057",
+      "speciesId": "goddramon"
+    },
+    {
+      "nodeId": "6-058",
+      "speciesId": "goddramon_x"
+    },
+    {
+      "nodeId": "6-070",
+      "speciesId": "justimon_x"
+    },
+    {
+      "nodeId": "6-072",
+      "speciesId": "sleipmon"
+    },
+    {
+      "nodeId": "6-075",
+      "speciesId": "leviamon"
+    },
+    {
+      "nodeId": "6-082",
+      "speciesId": "holydramon_x"
+    },
+    {
+      "nodeId": "6-094",
+      "speciesId": "metalpiranimon"
+    },
+    {
+      "nodeId": "6-101",
+      "speciesId": "ofanimon_x"
+    },
+    {
+      "nodeId": "6-102",
+      "speciesId": "ofanimonfdm_x"
+    },
+    {
+      "nodeId": "6-103",
+      "speciesId": "ornismon"
+    },
+    {
+      "nodeId": "6-106",
+      "speciesId": "hououmon_x"
+    },
+    {
+      "nodeId": "6-110",
+      "speciesId": "plesiomon_x"
+    },
+    {
+      "nodeId": "6-111",
+      "speciesId": "princemamemon_x"
+    },
+    {
+      "nodeId": "6-116",
+      "speciesId": "rapidmon_x"
+    },
+    {
+      "nodeId": "6-124",
+      "speciesId": "rosemon_x"
+    },
+    {
+      "nodeId": "6-131",
+      "speciesId": "skullmammon_x"
+    },
+    {
+      "nodeId": "6-132",
+      "speciesId": "slashangemon"
+    },
+    {
+      "nodeId": "7-003",
+      "speciesId": "barbamon_x"
+    },
+    {
+      "nodeId": "7-006",
+      "speciesId": "belphemon_x"
+    },
+    {
+      "nodeId": "7-010",
+      "speciesId": "demon_x"
+    },
+    {
+      "nodeId": "7-011",
+      "speciesId": "darknessbagramon"
+    },
+    {
+      "nodeId": "7-013",
+      "speciesId": "dynasmon_x"
+    },
+    {
+      "nodeId": "7-015",
+      "speciesId": "examon_x"
+    },
+    {
+      "nodeId": "7-017",
+      "speciesId": "gankoomon_x"
+    },
+    {
+      "nodeId": "7-023",
+      "speciesId": "duftmon_x"
+    },
+    {
+      "nodeId": "7-024",
+      "speciesId": "leviamon_x"
+    },
+    {
+      "nodeId": "7-025",
+      "speciesId": "lilithmon_x"
+    },
+    {
+      "nodeId": "7-027",
+      "speciesId": "lucemon_x"
+    },
+    {
+      "nodeId": "7-028",
+      "speciesId": "magnamon_x"
+    },
+    {
+      "nodeId": "7-040",
+      "speciesId": "ulforcevdramon_x"
+    },
+    {
+      "nodeId": "7-042",
+      "speciesId": "gabumon_kizuna"
+    },
+    {
+      "nodeId": "7-043",
+      "speciesId": "jesmongx"
+    },
+    {
+      "nodeId": "7-044",
+      "speciesId": "ogudomon_x"
+    }
+  ]
+}

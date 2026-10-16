@@ -49,12 +49,15 @@ class PreviewElement {
   setAttribute(key: string, value: string) {
     this.attributes[key] = value
   }
-  replaceChildren() {
+  replaceChildren(...nodes: PreviewElement[]) {
     this.children.length = 0
+    this.append(...nodes)
   }
-  append(node: PreviewElement) {
-    node.parent = this
-    this.children.push(node)
+  append(...nodes: PreviewElement[]) {
+    for (const node of nodes) {
+      node.parent = this
+      this.children.push(node)
+    }
   }
   querySelectorAll() {
     return this.children
@@ -121,6 +124,26 @@ const sidebarPreview = (idleAlignment?: string) => {
 }
 
 describe("sidebar render", () => {
+  test("pet indicators use current-form victories, update after cleaning and hide during battle or on eggs", () => {
+    const { element, send } = sidebarPreview()
+    const payload = { ...toSidebarWebviewPayload(partnerCard), combatVictories: 4 }
+    send({ ...payload, hygiene: { partnerId: "pet", poops: [10, 20], mood: "neutral", canClean: true } })
+    const indicators = element("pet-indicators")
+    expect(indicators.hidden).toBe(false)
+    expect(indicators.children.map((node) => node.attributes["aria-label"])).toEqual([
+      "Unclean piles: 2",
+      "Combat victories in this form: 4",
+    ])
+    send({ ...payload, hygiene: { partnerId: "pet", poops: [], mood: "happy", canClean: true } })
+    expect(indicators.children[0]?.attributes["aria-label"]).toBe("Unclean piles: 0")
+    expect(indicators.children[1]?.attributes["aria-label"]).toBe("Combat victories in this form: 4")
+    send({ type: "presentation-state", state: { phase: "battle" } })
+    expect(indicators.hidden).toBe(true)
+    send({ type: "presentation-state", state: { phase: "idle" } })
+    expect(indicators.hidden).toBe(false)
+    send(toSidebarWebviewPayload({ ...partnerCard, stageNumber: 0 }))
+    expect(indicators.hidden).toBe(true)
+  })
   test("adventure landscape follows elapsed travel time across repeated updates, pause and combat", () => {
     const { element, send } = sidebarPreview()
     const update = (running: boolean, elapsedMs: number) =>

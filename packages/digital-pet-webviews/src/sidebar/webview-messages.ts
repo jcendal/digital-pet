@@ -44,6 +44,7 @@ export type SidebarWebviewPayload =
       readonly urlLabel: string
       readonly frozen: boolean
       readonly canPet?: boolean
+      readonly combatVictories?: number
       readonly hygiene?: HygieneView
       readonly egg?: EggPettingView
     }

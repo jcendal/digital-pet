@@ -19,7 +19,11 @@ export const buildSidebarPresentation = (
   const reader = { getSidebarSnapshot: () => snapshot }
   const inputs = getSidebarCardInputs(reader, DIGIMON_CATALOG)
   const model = buildSidebarCardModel(inputs, settings)
-  const payload = toSidebarWebviewPayload(model)
+  const basePayload = toSidebarWebviewPayload(model)
+  const payload =
+    model.kind === "partner" && model.stageNumber > 0 && !model.isSetOverride
+      ? { ...basePayload, combatVictories: snapshot?.combatVictories ?? 0 }
+      : basePayload
   const partner = model.kind === "partner" ? { sprite: model.sprite, isDigitama: model.stageNumber === 0 } : undefined
   return { payload, partner }
 }

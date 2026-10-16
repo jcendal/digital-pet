@@ -177,6 +177,31 @@
   display: block;
   font-size: var(--type-small);
 }
+.route .route-alternatives {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+.route .route-conditions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.route .route-or {
+  color: inherit;
+  opacity: 0.75;
+}
+.route .route-requirement {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  white-space: nowrap;
+}
+.route-conditions .route-requirement {
+  margin-top: 0;
+}
 .record-extra {
   margin-top: 12px;
 }

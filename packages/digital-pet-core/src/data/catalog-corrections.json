@@ -1,0 +1,16 @@
+{
+  "records": {
+    "5-033": {
+      "name_jp": "DoneDevimon",
+      "stage": 6,
+      "url": "https://digimon.net/reference_en/detail.php?directory_name=donedevimon"
+    }
+  },
+  "canonicalIds": { "5-146": "5-034" },
+  "aliases": {
+    "5-023": ["Yatagaramon (2006)"],
+    "5-065": ["Loader Liomon", "LoaderLiomon"],
+    "7-041": ["Agumon -Yuki no Kizuna-"],
+    "7-042": ["Gabumon -Yujo no Kizuna-"]
+  }
+}

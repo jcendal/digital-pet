@@ -4,6 +4,7 @@ import { planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 
 import { EVOLUTION_BATTLE_HITS_TO_WIN } from "../src/constants/evolution-battle.ts"
 import { IntlModule } from "../src/i18n.ts"
+import { attackArtworkForSprite } from "../src/sequences/attack-artwork.ts"
 import {
   buildBattleIntroTextLines,
   buildBattleScorePips,
@@ -49,8 +50,8 @@ describe("evolution battle artwork", () => {
   test("Given a fireball shot When rendering Then the flame uses block-style sprite art", () => {
     const artwork = renderEvolutionBattleArtwork(
       MONSTER_FRAME_CATALOG,
-      "agumon",
-      "gabumon",
+      "unknown-player",
+      "unknown-opponent",
       defaultBattleScene({ shooter: "player", progress: 0.5 }),
       80,
     )
@@ -78,8 +79,12 @@ describe("evolution battle artwork", () => {
       80,
     )
 
-    expect(playerShot).toContain("▄█▀▀█")
-    expect(opponentShot).toContain("█▀▀█▄")
+    const right = attackArtworkForSprite("agumon", "right")
+    const left = attackArtworkForSprite("gabumon", "left")
+    if (!right || !left) throw new Error("Missing reviewed Agumon/Gabumon projectile")
+    expect(right).not.toEqual(left)
+    for (const row of right) expect(playerShot).toContain(row)
+    for (const row of left) expect(opponentShot).toContain(row)
     expect(playerShot).not.toEqual(opponentShot)
   })
 

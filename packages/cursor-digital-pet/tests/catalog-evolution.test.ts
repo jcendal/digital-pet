@@ -53,7 +53,7 @@ describe("catalog and evolution", () => {
     expect(evolved).toEqual({
       current: controlledTarget,
       gauge: 0,
-      isTerminal: true,
+      isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
     })

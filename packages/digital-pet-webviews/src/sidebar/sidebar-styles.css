@@ -177,6 +177,12 @@ body {
 #gauge {
   font-size: 12px;
 }
+.progress-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .pet-actions {
   display: flex;
   justify-content: flex-end;
@@ -599,6 +605,22 @@ body {
     inset 0 0 0 2px var(--lcd),
     inset 0 0 0 3px var(--lcd-edge);
   cursor: pointer;
+}
+#pet-indicators {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1;
+}
+#pet-indicators[hidden] {
+  display: none;
+}
+#pet-indicators svg {
+  width: 16px;
+  height: 16px;
 }
 #pet-switch .switch-portrait {
   display: block;

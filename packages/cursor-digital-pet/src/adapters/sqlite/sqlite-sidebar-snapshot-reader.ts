@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs"
+import { readCombatProgress } from "@jcendal/digital-pet-core/adapters/sqlite/sqlite-combat-progress.ts"
 
 import {
   readSqliteActivePartner,
@@ -45,6 +46,9 @@ export const readSidebarSnapshotFromExecutor = (executor: Pick<SqliteExecutor, "
   const partner = toPartner(partnerRow)
   return {
     partnerId: partner.partnerId,
+    ...(executor.get("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'partner_combat_progress'")
+      ? { combatVictories: readCombatProgress(executor, partner.partnerId, partner.currentNodeId).victories }
+      : {}),
     currentNodeId: partner.currentNodeId,
     gauge: partner.gauge,
     isTerminal: partner.isTerminal,

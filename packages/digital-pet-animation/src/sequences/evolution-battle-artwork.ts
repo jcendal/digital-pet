@@ -18,6 +18,7 @@ import {
 import { catalogs, IntlModule } from "../i18n.ts"
 import { mirrorMonsterFrame } from "../idle/monster-artwork-mirror.ts"
 import { sleep } from "../utils/sleep.ts"
+import { attackArtworkForSprite } from "./attack-artwork.ts"
 
 /** FIGlet-style BATTLE banner. */
 export const BATTLE_FIGLET_LINES = Object.freeze(catalogs.en["battle.intro"].split("\n"))
@@ -134,11 +135,12 @@ export const buildBattleScoreRow = (
 
 const mirrorFireballLine = (line: string): string => Array.from(line).reverse().join("")
 
-const fireballLinesForShooter = (shooter: EvolutionBattleShooter): readonly string[] =>
-  shooter === "opponent" ? FIREBALL_LINES.map(mirrorFireballLine) : FIREBALL_LINES
+const fireballLinesForShooter = (shooter: EvolutionBattleShooter, sprite: string): readonly string[] =>
+  attackArtworkForSprite(sprite, shooter === "player" ? "right" : "left") ??
+  (shooter === "opponent" ? FIREBALL_LINES.map(mirrorFireballLine) : FIREBALL_LINES)
 
-const fireballColumn = (shooter: EvolutionBattleShooter, progress: number): number => {
-  const travel = BATTLE_GAP_COLUMNS - FIREBALL_COLUMNS
+const fireballColumn = (shooter: EvolutionBattleShooter, progress: number, width: number): number => {
+  const travel = BATTLE_GAP_COLUMNS - width
   const clamped = Math.max(0, Math.min(1, progress))
   if (shooter === "player") return Math.round(clamped * travel)
   return Math.round((1 - clamped) * travel)
@@ -149,11 +151,17 @@ const impactColumn = (shooter: EvolutionBattleShooter): number => {
   return 0
 }
 
-const renderFireballInGap = (gapRows: string[], shooter: EvolutionBattleShooter, progress: number): void => {
-  const startColumn = fireballColumn(shooter, progress)
-  const fireballLines = fireballLinesForShooter(shooter)
-  for (let rowIndex = 0; rowIndex < FIREBALL_ROWS; rowIndex += 1) {
-    const gapRow = FIREBALL_START_ROW + rowIndex
+const renderFireballInGap = (
+  gapRows: string[],
+  shooter: EvolutionBattleShooter,
+  progress: number,
+  sprite: string,
+): void => {
+  const fireballLines = fireballLinesForShooter(shooter, sprite)
+  const startColumn = fireballColumn(shooter, progress, fireballLines[0]?.length ?? FIREBALL_COLUMNS)
+  const startRow = Math.floor((MONSTER_FRAME_ROWS - fireballLines.length) / 2)
+  for (let rowIndex = 0; rowIndex < fireballLines.length; rowIndex += 1) {
+    const gapRow = startRow + rowIndex
     const fireballLine = fireballLines[rowIndex] ?? ""
     gapRows[gapRow] = overlayAt(gapRows[gapRow] ?? "", fireballLine, startColumn)
   }
@@ -228,7 +236,12 @@ export const renderEvolutionBattleArtwork = (
   renderHudInGap(gapRows, scene)
 
   if (scene.shooter !== null) {
-    renderFireballInGap(gapRows, scene.shooter, scene.progress)
+    renderFireballInGap(
+      gapRows,
+      scene.shooter,
+      scene.progress,
+      scene.shooter === "player" ? playerSprite : opponentSprite,
+    )
   }
   if (scene.lastResult === "hit" && scene.shooter !== null) {
     renderImpactInGap(gapRows, scene.shooter)

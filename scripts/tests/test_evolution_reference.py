@@ -54,6 +54,39 @@ class EvolutionReferenceTests(unittest.TestCase):
         self.assertIn(["lop", "turu", "normal", 15, ["pen20"]], result["routes"])
         self.assertEqual(result["requirements"]["turu:anty"], [[7, 12, None]])
 
+    def test_tag_battle_partner_is_jogress_even_when_another_card_says_jogress(self):
+        result = self.generate(
+            [node("a", "First", 6), node("b", "Second", 7)],
+            guide_html={"dm20": "", "dmc": ""},
+            details=[("dm20", "first", card("First", "VI", evolution("Second", "Tag Battle 5 times with Third"))),
+                     ("dmc", "first", card("First", "VI", evolution("Second", "Jogress with Third")))],
+        )
+        self.assertEqual(result["routes"], [["a", "b", "jogress", 0, ["dm20", "dmc"]]])
+
+    def test_reviewed_aliases_restore_incoming_and_outgoing_routes_without_merging_variants(self):
+        result = self.generate(
+            [node("a", "First", 4), node("5-065", "LoaderLeomon", 5), node("5-023", "Crowmon", 5), node("other", "Yatagaramon", 5), node("c", "Last", 6)],
+            guide_html={"penz": ""},
+            details=[("penz", "first", card("First", "IV", evolution("Loader Liomon", "0-1 Care Mistakes") + evolution("Yatagaramon (2006)", "0-2 Care Mistakes"))),
+                     ("penz", "loader", card("Loader Liomon", "V", evolution("Last", "No requirements"))),
+                     ("penz", "crow", card("Yatagaramon (2006)", "V", evolution("Last", "No requirements")))],
+        )
+        self.assertIn(["a", "5-065", "normal", 3, ["penz"]], result["routes"])
+        self.assertIn(["a", "5-023", "normal", 7, ["penz"]], result["routes"])
+        for source in ["5-065", "5-023"]:
+            self.assertIn([source, "c", "normal", 15, ["penz"]], result["routes"])
+        self.assertFalse(any(route[0] == "other" or route[1] == "other" for route in result["routes"]))
+
+    def test_done_devimon_identity_is_corrected_before_name_and_stage_matching(self):
+        done = {**node("5-033", "DoneDevimon", 5, "official/neodevimon"), "name_jp": "NeoDevimon"}
+        result = self.generate(
+            [node("5-100", "NeoDevimon", 5), done, node("later", "Next", 6)],
+            guide_html={"penz": ""},
+            details=[("penz", "neo", card("Neo Devimon", "V", evolution("Done Devimon", "0-2 Care Mistakes", "done"))),
+                     ("penz", "done", card("Done Devimon", "VI", ""))],
+        )
+        self.assertEqual(result["routes"], [["5-100", "5-033", "normal", 7, ["penz"]]])
+
     def test_singular_care_and_normal_or_jogress_keep_complete_alternatives(self):
         result = self.generate(
             [node("a", "First", 4), node("b", "Second", 5), node("c", "Third", 5)],

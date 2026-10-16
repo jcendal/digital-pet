@@ -192,6 +192,8 @@
   "map.chooseLocation": "장소 선택",
   "map.closeLocations": "장소 선택 닫기",
   "dexClient.carePiles": "치우지 않은 배설물: {counts}",
+  "dexClient.or": "또는",
+  "sidebar.combatVictories": "현재 형태의 전투 승리: {count}회",
   "dexClient.specialEvolutions": "특수 진화 · 잠김",
   "team.heading": "팀",
   "team.principal": "주 동료",

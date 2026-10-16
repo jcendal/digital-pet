@@ -192,6 +192,8 @@
   "map.chooseLocation": "Escolle unha localización",
   "map.closeLocations": "Pechar localizacións",
   "dexClient.carePiles": "Merdas sen limpar: {counts}",
+  "dexClient.or": "ou",
+  "sidebar.combatVictories": "Vitorias de combate nesta forma: {count}",
   "dexClient.specialEvolutions": "Evolucións especiais · bloqueadas",
   "team.heading": "EQUIPO",
   "team.principal": "PRINCIPAL",

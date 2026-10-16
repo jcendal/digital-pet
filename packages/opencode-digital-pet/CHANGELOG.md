@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Repair DoneDevimon's identity, missing LoaderLeomon/Crowmon branches and eight pair-only routes without adding species or changing saved IDs.
+- Count duplicate DORUguremon IDs once in automatic evolution selection, preserve legacy pending duels, and let final forms keep earning EXP and fighting threshold duels.
+
+### Changed
+
+- Adapt device evolution victory minimums to game pacing (12→3, 24→5, 50→7, 200→10) in shared rules and the Dex, preserving care alternatives and existing counters.
+- Use locally bundled, species-specific projectiles in shared battles: all 109 PENOG sprites and reviewed assignments for 526 catalog entries; retain the existing fallback where source data is missing.
+
 ## [0.15.1] - 2026-10-15
 
 ### Changed

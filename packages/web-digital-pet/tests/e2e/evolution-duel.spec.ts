@@ -16,7 +16,7 @@ const saved = (page: Page) =>
     return state
   })
 
-const openDuel = async (page: Page, nodeId: string, victories: number, dirty: boolean) => {
+const openDuel = async (page: Page, nodeId: string, victories: number, dirty: boolean, isTerminal = false) => {
   await page.addInitScript(() => {
     Math.random = () => 0
   })
@@ -25,7 +25,7 @@ const openDuel = async (page: Page, nodeId: string, victories: number, dirty: bo
   await page.goto("/")
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toBeEmpty()
   await page.evaluate(
-    async ({ nodeId, victories, dirty }) => {
+    async ({ nodeId, victories, dirty, isTerminal }) => {
       const database = await new Promise<IDBDatabase>((resolve) => {
         const open = indexedDB.open("web-digital-pet", 1)
         open.onsuccess = () => resolve(open.result)
@@ -41,7 +41,7 @@ const openDuel = async (page: Page, nodeId: string, victories: number, dirty: bo
             createdAt: new Date(now).toISOString(),
             lastTickAt: now,
             gauge: 75_000_000,
-            isTerminal: false,
+            isTerminal,
             events: [{ currentNodeId: nodeId, createdAt: new Date(now).toISOString() }],
             hygiene: {
               poops: dirty ? [now - 3, now - 2, now - 1] : [],
@@ -55,11 +55,25 @@ const openDuel = async (page: Page, nodeId: string, victories: number, dirty: bo
       })
       database.close()
     },
-    { nodeId, victories, dirty },
+    { nodeId, victories, dirty, isTerminal },
   )
   await page.reload()
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#phase")).toHaveText("COMBATE")
 }
+
+test("a legacy final form with no outgoing connections still fights and retains a win after reload", async ({
+  page,
+}) => {
+  await openDuel(page, "4-133", 2, false, true)
+  const sidebar = page.frameLocator('iframe[data-page="sidebar"]')
+  await expect(sidebar.locator("#evolution-notice")).toHaveText("No hay evoluciones disponibles.", { timeout: 30_000 })
+  await expect(sidebar.locator("#evolution-notice")).toBeVisible({ timeout: 30_000 })
+  await expect(sidebar.locator("#phase")).toHaveText("ACTIVO", { timeout: 10_000 })
+  expect(await saved(page)).toMatchObject({ currentNodeId: "4-133", gauge: 0, combatVictories: 3, isTerminal: false })
+  await page.reload()
+  await expect(sidebar.locator('#pet-indicators [data-indicator="victories"]')).toHaveText("3")
+  expect(await saved(page)).toMatchObject({ currentNodeId: "4-133", gauge: 0, combatVictories: 3, isTerminal: false })
+})
 
 test("100% fights without a route, reports a winning no-evolution result and retains one victory after reload", async ({
   page,
@@ -85,14 +99,15 @@ test("100% fights without a route, reports a winning no-evolution result and ret
   expect(errors).toEqual([])
 })
 
-test("the twelfth win unlocks Meicoomon's evolution in that duel and the Dex shows its numeric requirement", async ({
+test("the third win unlocks Meicoomon's evolution in that duel and the Dex shows its numeric requirement", async ({
   page,
 }, testInfo) => {
-  await openDuel(page, "4-077", 11, false)
+  await openDuel(page, "4-077", 2, false)
   const sidebar = page.frameLocator('iframe[data-page="sidebar"]')
   await expect(sidebar.locator("#name")).toHaveText(/Meicrackmon/i, { timeout: 30_000 })
   await expect(sidebar.locator("#phase")).toHaveText("EVOLUCIONADO")
   await expect(sidebar.locator("#phase")).toHaveText("ACTIVO", { timeout: 10_000 })
+  await expect(sidebar.locator('#pet-indicators [data-indicator="victories"]')).toHaveText("0")
   const result = await saved(page)
   expect(result.currentNodeId).toBe("5-078")
   expect(result.combatVictories).toBe(0)
@@ -103,8 +118,8 @@ test("the twelfth win unlocks Meicoomon's evolution in that duel and the Dex sho
   await expect(dex.locator(".detail-name h2")).toHaveText("Meicoomon")
   await dex.locator("#detail details summary").click()
   const requirement = dex.locator("#detail").getByRole("button", { name: /Meicrackmon/ })
-  await expect(requirement).toContainText("Victorias de combate: 12+")
-  await expect(requirement).not.toContainText("Cacas sin limpiar")
+  await expect(requirement.getByRole("img", { name: "Victorias de combate: 3+", exact: true })).toBeVisible()
+  await expect(requirement.locator('[data-requirement="care"]')).toHaveCount(0)
   await requirement.scrollIntoViewIfNeeded()
   await page.screenshot({ path: testInfo.outputPath("victory-requirement-dex-390.png") })
 })

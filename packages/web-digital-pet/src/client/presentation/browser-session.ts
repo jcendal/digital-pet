@@ -35,6 +35,7 @@ export const sidebar = async (requestedWidth: number) => {
   const battle = await readPendingBattle()
   const snapshot: SidebarSnapshot = {
     currentNodeId: state.currentNodeId,
+    combatVictories: state.combatVictories ?? 0,
     gauge: state.gauge,
     isTerminal: state.isTerminal,
     frozen: false,
