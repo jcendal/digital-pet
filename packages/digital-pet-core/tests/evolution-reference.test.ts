@@ -4,6 +4,12 @@ import { applyTokenProgress, resolveEvolutionBattle, STAGE_GAUGE_THRESHOLDS } fr
 import { assertEvolutionBranch } from "../src/domain/evolution-battle.ts"
 import { availableEvolutionTargets } from "../src/domain/evolution-options.ts"
 
+const catalogNode = (id: string) => {
+  const node = DIGIMON_CATALOG.byId.get(id)
+  if (!node) throw new Error(`Missing catalog node ${id}`)
+  return node
+}
+
 test("Lopmon can evolve to Turuiemon after winning with any current care count", () => {
   const current = DIGIMON_CATALOG.byId.get("3-047")
   if (!current) throw new Error("Missing Lopmon")
@@ -23,6 +29,54 @@ test("Lopmon can evolve to Turuiemon after winning with any current care count",
     )
     expect(pending.battleOpponentNodeId).not.toBeNull()
     expect(resolveEvolutionBattle(pending, true, DIGIMON_CATALOG.byId, care, () => 0).current.id).toBe("4-131")
+  }
+})
+
+test("reviewed identities keep existing IDs and restore missing alias branches", () => {
+  expect(DIGIMON_CATALOG.nodes).toHaveLength(650)
+  expect(DIGIMON_CATALOG.byId.get("5-033")).toMatchObject({
+    nameEn: "DoneDevimon",
+    nameJp: "DoneDevimon",
+    stage: 6,
+    url: "https://digimon.net/reference_en/detail.php?directory_name=donedevimon",
+  })
+  for (const [from, target, care] of [
+    ["5-100", "5-033", 2],
+    ["4-082", "5-065", 1],
+    ["4-096", "5-023", 2],
+    ["4-007", "5-023", 2],
+    ["5-023", "6-120", 2],
+  ] as const) {
+    expect(availableEvolutionTargets(catalogNode(from), care, 10)).toContain(target)
+  }
+  expect(availableEvolutionTargets(catalogNode("4-082"), 2, 10)).not.toContain("5-065")
+  expect(catalogNode("5-033").evolutionRoutes!.filter((r) => r.kind === "normal")).toEqual([])
+})
+
+test("named tag-battle partners cannot be bypassed through automatic EXP", () => {
+  for (const [from, target] of [
+    ["6-133", "7-014"],
+    ["6-030", "7-014"],
+    ["6-028", "7-033"],
+    ["6-038", "7-033"],
+    ["6-001", "7-039"],
+    ["6-080", "7-039"],
+    ["6-015", "7-018"],
+    ["6-041", "7-018"],
+  ] as const) {
+    const current = catalogNode(from)
+    expect(current.evolutionRoutes?.find((r) => r.targetId === target)?.kind).toBe("jogress")
+    for (const care of [0, 1, 2, 3]) expect(availableEvolutionTargets(current, care, 1_000_000)).not.toContain(target)
+  }
+})
+
+test("duplicate DORUguremon save IDs count once in the automatic selection pool", () => {
+  for (const id of ["4-033", "4-109", "4-128"]) {
+    const current = catalogNode(id)
+    expect(current.nextEvolutions).toContain("5-146")
+    const choices = availableEvolutionTargets(current, 0, 10)
+    expect(choices).toContain("5-034")
+    expect(choices).not.toContain("5-146")
   }
 })
 

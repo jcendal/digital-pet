@@ -1,6 +1,11 @@
 import { IntlModule } from "../i18n.ts"
 import type { DigimonNode } from "./digimon-node.ts"
-import { assertEvolutionBranch, pickEvolutionTarget, pickRandomSameStageOpponent } from "./evolution-battle.ts"
+import {
+  assertEvolutionBranch,
+  isEvolutionBattleOpponent,
+  pickEvolutionTarget,
+  pickRandomSameStageOpponent,
+} from "./evolution-battle.ts"
 import { availableEvolutionTargets } from "./evolution-options.ts"
 import { DIGIMON_STAGES, type DigimonStage } from "./stage.ts"
 
@@ -61,10 +66,6 @@ export const applyTokenProgress = (
   const threshold = thresholds[state.current.stage]
   const gauge = state.gauge + tokenDelta
   if (gauge < threshold) return { ...state, gauge }
-  if (state.current.nextEvolutions.length === 0) {
-    return { ...state, gauge: 0, isTerminal: true, pendingEvolutionTargetId: null, battleOpponentNodeId: null }
-  }
-
   if (state.current.stage === 0) {
     const targetId = pickEvolutionTarget(state.current, selector, uncleanPoops)
     const target = digimonById.get(targetId)
@@ -72,7 +73,7 @@ export const applyTokenProgress = (
     return {
       current: target,
       gauge: 0,
-      isTerminal: target.nextEvolutions.length === 0,
+      isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
     }
@@ -107,7 +108,7 @@ export const resolveEvolutionBattle = (
 
   if (targetId !== null) assertEvolutionBranch(state.current, targetId)
   const opponent = digimonById.get(opponentId)
-  if (!opponent || opponent.stage !== state.current.stage)
+  if (!isEvolutionBattleOpponent(state.current, opponent))
     throw new Error(IntlModule.translate("errors.invalidEvolutionOpponent"))
 
   if (!won) {
@@ -130,7 +131,7 @@ export const resolveEvolutionBattle = (
   return {
     current,
     gauge: 0,
-    isTerminal: current.nextEvolutions.length === 0,
+    isTerminal: false,
     pendingEvolutionTargetId: null,
     battleOpponentNodeId: null,
     combatVictories: current.id === state.current.id ? victories : 0,

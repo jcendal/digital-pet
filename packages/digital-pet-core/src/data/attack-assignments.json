@@ -2731,14 +2731,14 @@
       "source": "https://digimon-db.omnipet.app.br/api/gathering/penog/entries/digimon/ver-2-5/14"
     },
     "5-033": {
-      "speciesId": "neodevimon",
+      "speciesId": "donedevimon",
       "module": "penz",
       "set": "dmx",
       "index": 41,
       "device": "nso",
-      "target": "digimon/nso/68",
+      "target": "digimon/nso/74",
       "evidence": "observation",
-      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/68"
+      "source": "https://digimon-db.omnipet.app.br/api/gathering/penz/entries/digimon/nso/74"
     },
     "5-034": {
       "speciesId": "doruguremon",

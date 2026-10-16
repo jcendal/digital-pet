@@ -69,6 +69,8 @@ def artwork(file):
 def generate(input_dir, cache, download=False):
     species = json.loads((input_dir / "species.json").read_text())
     catalog = json.loads((input_dir / "catalog.json").read_text())
+    corrections = json.loads((ROOT / "packages/digital-pet-core/src/data/catalog-corrections.json").read_text())
+    catalog = [{**node, **corrections["records"].get(node["id"], {})} for node in catalog]
     banks, candidates = {}, {}
     for module in MODULES:
         data = json.loads((input_dir / f"{module}.json").read_text())

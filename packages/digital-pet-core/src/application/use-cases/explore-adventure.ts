@@ -50,7 +50,7 @@ export const createAdventureService = (
           replacement: {
             currentNodeId: companion.id,
             gauge: 0,
-            isTerminal: companion.nextEvolutions.length === 0,
+            isTerminal: false,
             createdAt: new Date(now).toISOString(),
           },
         }

@@ -99,7 +99,7 @@ describe("record usage application use case", () => {
       {
         currentNodeId: targetNode.id,
         gauge: 0,
-        isTerminal: true,
+        isTerminal: false,
         pendingEvolutionTargetId: null,
         battleOpponentNodeId: null,
       },
@@ -331,7 +331,7 @@ describe("record usage application use case", () => {
       {
         currentNodeId: targetNode.id,
         gauge: 0,
-        isTerminal: true,
+        isTerminal: false,
         pendingEvolutionTargetId: null,
         battleOpponentNodeId: null,
       },

@@ -2,6 +2,7 @@ import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { eggNodeForOrigin, isEggFamilyId } from "@jcendal/digital-pet-core/data/egg-families.ts"
 import { adventureBusy, parseAdventure } from "@jcendal/digital-pet-core/domain/adventure.ts"
 import type { BossVictory } from "@jcendal/digital-pet-core/domain/boss-victory.ts"
+import { isEvolutionBattleOpponent } from "@jcendal/digital-pet-core/domain/evolution-battle.ts"
 import type { FoodState } from "@jcendal/digital-pet-core/domain/feeding.ts"
 import { parseHygiene } from "@jcendal/digital-pet-core/domain/hygiene.ts"
 import { isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
@@ -144,7 +145,7 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
       (current.stage === 0
         ? pending.opponentNodeId !== null || pending.targetNodeId === null
         : !validNodeId(pending.opponentNodeId) ||
-          DIGIMON_CATALOG.byId.get(pending.opponentNodeId)?.stage !== current.stage)
+          !isEvolutionBattleOpponent(current, DIGIMON_CATALOG.byId.get(pending.opponentNodeId)))
     )
       throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidPendingEvolution"))
     pendingEvolution = {

@@ -1,7 +1,7 @@
 import type { MonsterFrameCatalog } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
 import { type BattleOutcome, planCombat } from "@jcendal/digital-pet-core/domain/combat.ts"
 import type { DigimonCatalog } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
-import { assertEvolutionBranch } from "@jcendal/digital-pet-core/domain/evolution-battle.ts"
+import { assertEvolutionBranch, isEvolutionBattleOpponent } from "@jcendal/digital-pet-core/domain/evolution-battle.ts"
 import { IntlModule } from "../i18n.ts"
 import { renderPositionedArtwork } from "../render/positioned-artwork.ts"
 import { runDefeatAnimation } from "../sequences/defeat-artwork.ts"
@@ -34,7 +34,7 @@ export const presentEvolution = async (
   let outcome: BattleOutcome = "player"
   if (opponentNodeId !== null) {
     const opponent = dependencies.digimonCatalog.byId.get(opponentNodeId)
-    if (!opponent || opponent.stage !== player.stage)
+    if (!opponent || !isEvolutionBattleOpponent(player, opponent))
       throw new Error(IntlModule.translate("evolutionPresentation.invalidEvolutionOpponent"))
     const plan = planCombat(player.combatStats, opponent.combatStats, dependencies.random)
     outcome = plan.outcome

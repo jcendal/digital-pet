@@ -186,6 +186,13 @@ const MIGRATIONS = [
       "DROP TABLE adventure_schedule",
     ],
   },
+  {
+    version: 12,
+    sql: [
+      // Living final forms also earn EXP and fight threshold duels; history remains untouched.
+      "UPDATE partners SET is_terminal = 0 WHERE retired_at IS NULL AND is_terminal = 1",
+    ],
+  },
 ] as const satisfies readonly Migration[]
 
 type MigrationRow = {

@@ -97,6 +97,10 @@ export const advanceLocalPet = (
   if (!catalogNode)
     throw new Error(IntlModule.translate("progress.unknownBrowserPartner", { currentNodeId: initial.currentNodeId }))
   const current = eggNodeForOrigin(catalogNode, initial.originEggId)
+  // Old final forms stopped accruing EXP. Resume from now without awarding dormant time.
+  if (initial.isTerminal && current.stage > 0) initial = { ...initial, isTerminal: false, lastTickAt: now }
+  if (initial.reserve?.isTerminal && DIGIMON_CATALOG.byId.get(initial.reserve.currentNodeId)?.stage !== 0)
+    initial = { ...initial, reserve: { ...initial.reserve, isTerminal: false, lastTickAt: initial.reserve.pausedAt } }
   const hygiene = advanceHygiene(initial.hygiene, current.stage === 0, now)
   if (hygiene !== initial.hygiene) {
     const { hygiene: _old, ...rest } = initial
@@ -182,7 +186,7 @@ export const completeLocalEvolution = (
   const resolved =
     pending.opponentNodeId === null
       ? target
-        ? { current: target, isTerminal: target.nextEvolutions.length === 0, combatVictories: 0 }
+        ? { current: target, isTerminal: false, combatVictories: 0 }
         : (() => {
             throw new Error("Missing hatch target")
           })()
