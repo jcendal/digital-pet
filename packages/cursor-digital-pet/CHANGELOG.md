@@ -4,6 +4,8 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-21
+
 - Repair DoneDevimon's identity, missing LoaderLeomon/Crowmon branches and eight pair-only routes without adding species or changing saved IDs.
 - Count duplicate DORUguremon IDs once in automatic evolution selection, preserve legacy pending duels, and let final forms keep earning EXP and fighting threshold duels.
 
