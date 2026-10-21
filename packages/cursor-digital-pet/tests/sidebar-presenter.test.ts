@@ -13,6 +13,7 @@ describe("sidebar presenter", () => {
   test("builds partner payload and animation identity for an active partner", () => {
     const presentation = buildSidebarPresentation({
       currentNodeId: "3-001",
+      combatVictories: 4,
       gauge: 10,
       isTerminal: false,
       frozen: false,
@@ -23,6 +24,8 @@ describe("sidebar presenter", () => {
     })
 
     expect(presentation.payload.kind).toBe("partner")
+    if (presentation.payload.kind !== "partner") throw new Error("Expected partner")
+    expect(presentation.payload.combatVictories).toBe(4)
     expect(presentation.partner).toEqual({ sprite: "agumon", isDigitama: false })
   })
 

@@ -1,5 +1,6 @@
 export type SidebarSnapshot = {
   readonly partnerId?: string
+  readonly combatVictories?: number
   readonly currentNodeId: string
   readonly gauge: number
   readonly isTerminal: boolean

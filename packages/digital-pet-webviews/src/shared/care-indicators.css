@@ -1,0 +1,13 @@
+.care-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.care-indicator svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}

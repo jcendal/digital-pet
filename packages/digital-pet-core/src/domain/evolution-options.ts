@@ -2,6 +2,7 @@ import type { DigimonNode } from "./digimon-node.ts"
 
 export type EvolutionRoute = {
   readonly targetId: string
+  readonly canonicalTargetId?: string
   readonly kind: "normal" | "jogress" | "special" | "unverified"
   readonly careMask: number
   readonly sources: readonly string[]
@@ -22,18 +23,22 @@ export const availableEvolutionTargets = (
     throw new Error("Evolution care must be an integer from 0 to 3")
   if (!Number.isSafeInteger(combatVictories) || combatVictories < 0) throw new Error("Invalid combat victories")
   if (!current.evolutionRoutes) return current.nextEvolutions
-  return current.evolutionRoutes
-    .filter(
-      (route) =>
-        route.kind === "normal" &&
-        (route.requirements
-          ? route.requirements.some(
-              (rule) =>
-                (rule.careMask & (1 << uncleanPoops)) !== 0 &&
-                combatVictories >= rule.minVictories &&
-                (rule.maxVictories === null || combatVictories <= rule.maxVictories),
-            )
-          : (route.careMask & (1 << uncleanPoops)) !== 0),
-    )
-    .map((route) => route.targetId)
+  return [
+    ...new Set(
+      current.evolutionRoutes
+        .filter(
+          (route) =>
+            route.kind === "normal" &&
+            (route.requirements
+              ? route.requirements.some(
+                  (rule) =>
+                    (rule.careMask & (1 << uncleanPoops)) !== 0 &&
+                    combatVictories >= rule.minVictories &&
+                    (rule.maxVictories === null || combatVictories <= rule.maxVictories),
+                )
+              : (route.careMask & (1 << uncleanPoops)) !== 0),
+        )
+        .map((route) => route.canonicalTargetId ?? route.targetId),
+    ),
+  ]
 }

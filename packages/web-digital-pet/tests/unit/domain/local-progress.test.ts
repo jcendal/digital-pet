@@ -21,6 +21,35 @@ const initial: LocalPetState = {
 }
 
 describe("browser pet progression", () => {
+  it("resumes legacy final forms and reserve without awarding EXP for dormant or resting time", () => {
+    const now = initial.lastTickAt + 100 * EXPERIENCE_INTERVAL_MS
+    const terminal = {
+      ...initial,
+      currentNodeId: "4-133",
+      isTerminal: true,
+      combatVictories: 3,
+      events: [{ ...initial.events[0]!, currentNodeId: "4-133" }],
+    }
+    const recovered = advanceLocalPet(
+      {
+        ...terminal,
+        reserve: { ...terminal, partnerId: "resting", pausedAt: initial.lastTickAt + EXPERIENCE_INTERVAL_MS },
+      },
+      now,
+    )
+    expect(recovered).toMatchObject({ isTerminal: false, gauge: 0, lastTickAt: now, combatVictories: 3 })
+    expect(recovered.reserve).toMatchObject({
+      isTerminal: false,
+      lastTickAt: recovered.reserve!.pausedAt,
+      combatVictories: 3,
+    })
+    const ready = advanceLocalPet({ ...recovered, gauge: experienceThresholds()[4] }, now, () => 0)
+    expect(ready.pendingEvolution?.opponentNodeId).toBeString()
+    const won = completeLocalEvolution(ready, pendingEvolutionKey(ready)!, true, now)
+    expect(won).toMatchObject({ currentNodeId: "4-133", gauge: 0, combatVictories: 4, isTerminal: false })
+    expect(won.pendingEvolution).toBeUndefined()
+    expect(advanceLocalPet(won, now + EXPERIENCE_INTERVAL_MS).gauge).toBe(experienceThresholds()[4] * 0.02)
+  })
   it("awards 2% per two hours for every experience setting, retaining partial intervals", () => {
     expect(EXPERIENCE_INTERVAL_MS).toBe(2 * 60 * 60 * 1000)
     for (const experienceLevel of ["low", "normal", "high"] as const) {

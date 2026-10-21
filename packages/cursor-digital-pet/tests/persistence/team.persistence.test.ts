@@ -19,6 +19,62 @@ const expectation = (team: PartnerTeam) => ({
   expectedReserveId: team.reserve?.partnerId ?? null,
 })
 
+test("migration 12 resumes living final forms in both slots without changing history, EXP or pending targets", async () => {
+  const root = await createTempTestRoot()
+  const databasePath = join(root.appDataRoot, "legacy-final.db")
+  const database = openWritableSqliteDatabase(databasePath)
+  try {
+    const store = createSqliteDigitalPetWriteStore({ databasePath, executor: database.executor, close: () => {} })
+    store.spawnPartner({ currentNodeId: "4-133", gauge: 123, isTerminal: true, createdAt: new Date(0).toISOString() })
+    store.applyTeamCommand(
+      {
+        ...expectation(store.readTeam()),
+        kind: "place",
+        slot: "reserve",
+        partner: { currentNodeId: "5-133", gauge: 456, isTerminal: true, createdAt: new Date(0).toISOString() },
+      },
+      0,
+    )
+    database.executor.run(
+      "INSERT INTO partners (partner_id, generation, current_node_id, gauge, is_terminal, created_at, retired_at) VALUES ('retired-final', 3, '7-011', 0, 1, '2026-10-01', '2026-10-02')",
+    )
+    const events = database.executor.all("SELECT * FROM partner_events ORDER BY event_id")
+    const before = store.readTeam()
+    database.executor.run("DELETE FROM schema_migrations WHERE version = 12")
+    const versions = runMigrations(database.executor)
+    expect(versions.at(-1)).toBe(12)
+    expect(store.readTeam()).toEqual({
+      ...before,
+      principal: { ...before.principal!, isTerminal: false },
+      reserve: { ...before.reserve!, isTerminal: false },
+    })
+    expect(database.executor.get("SELECT is_terminal FROM partners WHERE partner_id = 'retired-final'")).toEqual({
+      is_terminal: 1,
+    })
+    expect(database.executor.all("SELECT * FROM partner_events ORDER BY event_id")).toEqual(events)
+    expect(runMigrations(database.executor)).toEqual(versions)
+    recordUsage({
+      ledger: store,
+      usage: {
+        receiptKey: "resumed",
+        eventId: "resumed",
+        tokenDelta: STAGE_GAUGE_THRESHOLDS[4],
+        createdAt: new Date(1000).toISOString(),
+      },
+      digimonById: DIGIMON_CATALOG.byId,
+      catalogNodes: DIGIMON_CATALOG.nodes,
+      thresholds: STAGE_GAUGE_THRESHOLDS,
+      selector: () => 0,
+    })
+    expect(store.getActivePartner()?.battleOpponentNodeId).not.toBeNull()
+    expect(store.completeEvolutionBattle(true, new Date(2000).toISOString()).kind).toBe("won_without_evolution")
+    expect(store.getActivePartner()).toMatchObject({ currentNodeId: "4-133", gauge: 0, isTerminal: false })
+  } finally {
+    database.close()
+    await removeTempTestRoot(root)
+  }
+})
+
 test("two owned companions survive reopen and only the selected principal earns token receipts", async () => {
   const root = await createTempTestRoot()
   const options = { appDataRoot: root.appDataRoot }
@@ -337,7 +393,7 @@ test("migration 11 assigns the legacy global cooldown only to the principal and 
     )
     database.executor.run("INSERT INTO adventure_schedule VALUES (1, 7200000)")
     const applied = runMigrations(database.executor)
-    expect(applied.at(-1)).toBe(11)
+    expect(applied.at(-1)).toBe(12)
     expect(database.executor.all("SELECT * FROM partner_adventure_schedule")).toEqual([
       { partner_id: principal.partnerId, ready_at: 7200000 },
     ])

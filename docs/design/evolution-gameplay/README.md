@@ -8,7 +8,8 @@ superseded interactive preview has been removed.
 
 ## Implemented interface
 
-These are actual Chromium captures of the implemented interface on 2026-10-14.
+These are actual Chromium captures of the implemented interface from 2026-10-14
+and 2026-10-16.
 The pet retains its existing layout with a circular reserve portrait below the
 name. Team is second in Dex / Team / History, with actions at the bottom. Egg
 selection lives in New Journey. Regional stars remain the public boss-win signal.
@@ -16,6 +17,7 @@ selection lives in New Journey. Regional stars remain the public boss-win signal
 | View | Evidence |
 | --- | --- |
 | Quick switch below the name | [Reserve portrait](../../../assets/design/evolution-gameplay/regional-eggs/companion-switch-face-390.png), [reserve egg](../../../assets/design/evolution-gameplay/regional-eggs/companion-switch-390.png) |
+| Care and victories alongside EXP | [390 px](../../../assets/design/attack-projectiles/pet-indicators-390.png), [320 px](../../../assets/design/attack-projectiles/pet-indicators-320.png) |
 | Dex Team tab with bottom actions | [390 px](../../../assets/design/evolution-gameplay/regional-eggs/team-390.png), [320 px](../../../assets/design/evolution-gameplay/regional-eggs/team-320.png), [desktop](../../../assets/design/evolution-gameplay/regional-eggs/team-desktop.png) |
 | New Journey egg carousel | [390 px](../../../assets/design/evolution-gameplay/regional-eggs/egg-carousel-390.png) |
 | Region navigation | [Next / All Regions](../../../assets/design/evolution-gameplay/refined/regions-navigation-390.png) |
@@ -38,14 +40,15 @@ artwork, not regional membership or hatch rules.
 
 ## Threshold evolution duels
 
-These actual Safari captures from 2026-10-15 show the implemented result notice
-and numeric route requirement. Chromium verifies the same flow. A winning duel
-with no eligible route keeps the companion, retains the victory and resets EXP.
-Meicoomon's twelfth winning duel can unlock Meicrackmon in the same transaction.
+A winning duel with no eligible route keeps the companion, retains the victory
+and resets EXP. Meicoomon's third win can unlock Meicrackmon in that same duel.
+Chromium and Safari cover both cases, including legacy final forms. The notice
+capture dates from 2026-10-15; current requirement captures use the revised
+victory thresholds and pixel indicators.
 
 [Win without an eligible evolution](../../../assets/design/evolution-gameplay/evolution-duels/no-evolution-390.png)
 
-[Numeric combat requirement in the Dex](../../../assets/design/evolution-gameplay/evolution-duels/victory-requirement-dex-390.png)
+[Care and combat requirements in the Dex](../../../assets/design/attack-projectiles/care-and-combat-indicators-390.png)
 
 ## Pending interface references
 

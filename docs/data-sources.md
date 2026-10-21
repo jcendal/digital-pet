@@ -7,8 +7,8 @@ as the preferred source for species information, device data and attack/sprite
 resources on 2026-10-14. Its public [API documentation](https://digimon-db.omnipet.app.br/docs)
 and [OpenAPI schema](https://digimon-db.omnipet.app.br/openapi.json) were inspected,
 along with Agumon's JSON record, its DM20 detail and the module gathering page.
-The Digitama artwork export below is integrated locally. Attack rendering and
-bulk species imports remain separate work.
+The Digitama and attack artwork exports below are integrated locally. Other bulk
+species/rule imports remain separate work.
 
 | Resource | Verified public read endpoint |
 | --- | --- |
@@ -80,6 +80,69 @@ documented as a special frame; it is not automatically the projectile.
   no requirement or confirmation that a route is valid. Keep source attribution
   from Omnipet's [Sources & Tools](https://digimon-db.omnipet.app.br/sources).
 
+## Imported attack projectiles and Dex indicators
+
+On 2026-10-16, the [PENOG protocol page](https://digimon-db.omnipet.app.br/protocols/penog)
+lists **109** projectiles numbered **0–108**. All are bundled under
+`digital-pet-animation/assets/attacks/`, along with the other device projectiles
+needed by reviewed species assignments: **265** local PNGs in total. Each manifest
+entry records its bank, zero-based index, source URL, original PNG checksum,
+dimensions and derived LCD artwork. Original files retain their alpha and colour;
+classic 24×24 exports become 8×8 LCD pixels, while colour-device projectiles are
+adapted to that canvas with nearest-neighbour sampling and white highlights.
+
+Assignments use the resolved `/api/gathering/{module}` records, not the generic
+one-based `atk_main` values or a guessed protocol Shot mapping. For example,
+Agumon's resolved PENOG sprite is **1**, Ikkakumon's is **91**; neither is the raw
+Shot field. Device/version and evidence kind are retained for every chosen
+assignment. Preference is explicit in the generated `modulePriority` array: the
+original Pendulum first, followed by the other classic devices and then bracelets.
+Evidenced assignments take precedence over assumed/unknown entries. The first
+available evidenced device/version in the preferred module supplies the main attack;
+this does not assert a universal projectile across all versions or add strong-shot
+damage rules to this game's combat.
+
+All 649 non-egg catalog identities match species records through official
+reference identity or unambiguous names, with stages used for duplicate identities.
+**526 of the 650 entries** have an available resolved assignment and sprite.
+The other **124**, including the generic egg, are listed in `unavailable` in
+`digital-pet-core/src/data/attack-assignments.json`. They keep the existing flame
+fallback; missing source data is not filled with another species' supposed attack.
+The shared combat renderer selects the firing species' projectile, mirrors the
+opponent's shot and preserves the existing travel, hit and recovery behavior in
+the web app, Cursor and OpenCode. Rendering makes no network requests.
+
+To refresh, cache complete paginated `/api/digimon?limit=216&offset=...` results
+as one `species.json` array and export `DIGIMON_DATA` to `catalog.json` under an
+external input directory. Save each module named in the importer's `MODULES`
+tuple from `/api/gathering/{module}` as `{module}.json` in that directory. Then,
+with Pillow and curl installed, run:
+
+```sh
+python3 scripts/import-attack-artwork.py --input /path/to/input --cache /path/to/png-cache --download
+npx biome format --write packages/digital-pet-core/src/data/attack-assignments.json packages/digital-pet-animation/assets/attacks/catalog.json
+python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+```
+
+Omit `--download` for a fully offline regeneration. The exporter owns its generated
+attack directory and removes obsolete exported PNGs. Review assignment changes
+and evidence kinds before updating the bundled snapshot.
+
+In the shared web/extension Dex, a pixel pile and a training-style dumbbell label
+the exact care and combat-victory values on a route. Values such as `0/1` still
+mean either count; they are not a progress meter. Tooltips and accessible labels
+retain the full localized requirement. Unrestricted care stays hidden and
+separate condition alternatives remain separate groups. These icons change
+presentation only; combat victories and care rules are unchanged.
+
+The pet viewer reuses these same icons for current values: unclean piles and
+combat victories in the principal's current form. They sit to the right of the EXP value
+below the progress bar, update after cleaning or switching, and are hidden for eggs,
+debug overrides and combat/evolution presentation. The browser reads the selected
+companion's own saved counter; Cursor's sidebar snapshot reads the active
+partner/form combat row, with legacy snapshots defaulting to zero. Displayed
+counts are not route requirements and do not use the `+` suffix.
+
 ## Imported Digitama designs
 
 On 2026-10-14, `/api/digitamas` returned **44** designs named Digitama 1–44,
@@ -148,8 +211,8 @@ remain authored game rules, with their adaptations documented explicitly.
 
 ### Reference import and game adaptations
 
-The 2026-10-15 reviewed snapshot in `digital-pet-core/src/data/evolution-reference.json`
-contains 2,235 connections: 1,291 normal, 582 Jogress, 360 special and two withdrawn
+The 2026-10-16 reviewed snapshot in `digital-pet-core/src/data/evolution-reference.json`
+contains 2,249 connections: 1,284 normal, 594 Jogress, 359 special and 12 withdrawn
 connections retained as unverified for pending saves. It retains guide URLs, 834
 individual detail-card URLs, care masks and 93 normal connections with numeric
 victory conditions. Pendulum 20th routes come from its embedded species/target
@@ -164,20 +227,19 @@ collection conditions, DigiXros and mode changes remain special.
 Unverified legacy branches cannot be chosen for new EXP evolutions, but remain
 valid for finishing an already pending target. Species IDs and history stay stable.
 
-The audit adds 337 verified connections and reclassifies 292 previous normal
-connections as special or Jogress. Two inferred Gallantmon X connections from
+Two inferred Gallantmon X connections from
 NoblePumpkinmon and TigerVespamon are withdrawn from automatic selection. Lopmon
 now evolves normally into Turuiemon. Turuiemon's Antylamon alternative requires
-0–2 unclean piles and at least 12 form victories under the adaptations below;
+0–2 unclean piles and at least 3 form victories under the adaptations below;
 Angewomon's HerculesKabuterimon and MetalEtemon connections remain Jogress.
 
 Coverage of the 650 saved catalog IDs (including the generic egg) is:
 
 | Verified outgoing connections | Catalog entries |
 | --- | ---: |
-| At least one normal EXP route | 478 |
-| Only special/Jogress routes | 65 |
-| No verified outgoing route in the imported sources | 107 |
+| At least one normal EXP route | 471 |
+| Only special/Jogress routes | 71 |
+| No verified outgoing route in the imported sources | 108 |
 
 Most entries in the last group are final stages. The following lower-stage gaps
 remain explicit; absence in these device sources does **not** establish that a
@@ -187,13 +249,37 @@ to fill them without evidence.
 | Below stage VI | Species |
 | --- | --- |
 | No verified outgoing route | Moonmon, Sunmon, Tylomon, Fugamon, Rhinomon, Giromon, Tekkamon, Vademon |
-| Only special/Jogress outgoing routes | Minotarumon, Omekamon, Peckmon, Datamon, Garbagemon, Jagamon |
+| Only special/Jogress outgoing routes | Omekamon, Datamon, Garbagemon, Jagamon |
+
+Some gaps have known destinations absent from this catalog: Fugamon's
+Karatenmon; Rhinomon's Z'dGarurumon and MetalGarurumon (Black); Giromon's
+Raijinmon/Raidenmon in VBE and Reapermon in DMC; and Vademon's Ebemon in DMC.
+These require a separate catalog expansion, not an invented link to a similar
+species. Ebemon X, for example, is not a substitute for Ebemon. Moonmon, Sunmon,
+Tylomon and Tekkamon still need complete reviewed evidence for a next form.
+
+Reviewed `catalog-corrections.json` metadata corrects DoneDevimon to stage VI and
+its own official identity while retaining ID `5-033`; generated raw catalog data
+is preserved. It also supplies explicit LoaderLiomon and Yatagaramon (2006)
+aliases to the importer and downloader. Regeneration restores 14 connections,
+including Minotarumon → LoaderLeomon and Peckmon/Crowmon → Ravemon, and withdraws
+ten connections caused by the former NeoDevimon identity mixup. Eight named
+partner/tag-battle routes to Examon, Omnimon Alter-S, RustTyrannomon and
+GraceNovamon are Jogress. These remain unavailable through automatic EXP.
+The reviewed canonical map keeps both DORUguremon save IDs addressable but counts
+them as one option when selecting a new automatic target. DoneDevimon's projectile
+assignment was regenerated against its corrected identity as well.
 
 Care uses the current 0–3 unclean piles at post-win target selection. Source
 care-mistake ranges are clamped to that scale; documented care takes precedence
 over alternatives that omit it. Unrestricted care labels are omitted in the Dex.
-Humulos fixed battle windows such as 12–15 victories are adapted to a minimum of
-12 within the current form. Care and victories within one alternative both have
+The generated snapshot retains original device victory minimums. At catalog load,
+the shared `evolution-victory-policy.ts` adapts them to game pacing: **12 → 3,
+24 → 5, 50 → 7 and 200 → 10**. Zero stays zero, including alternatives that permit
+no prior victories for particular care counts. Thus a source window such as
+12–15 victories becomes a game minimum of 3 within the current form. Gameplay
+and the Dex consume the same adapted routes; saved counters are not rescaled,
+and fixed legacy pending targets stay fixed. Care and victories within one alternative both have
 to hold; separate alternatives remain OR groups. An unrestricted alternative
 covering a care category does not invent a victory requirement for that category.
 Device timing, level and effort are adapted to EXP, without separate training or
@@ -201,7 +287,11 @@ win-ratio systems.
 
 Non-egg threshold duels start at 100% without selecting a target. A win adds a
 victory before evaluating routes. With no eligible result, keep the species and
-victory, show the notice and reset EXP. A loss resets EXP without adding a win.
+victory, show the notice and reset EXP. A loss resets EXP without adding a win. Final forms also earn EXP and enter these
+duels even with no outgoing connections; resolving a duel does not set the final
+flag. SQLite migration 12 resumes living principal/reserve companions previously
+marked final without altering retired history. Browser legacy saves resume their
+clocks from now, with reserve time kept paused and no dormant EXP bonus.
 Adventure and evolution-duel wins count per form, survive reserve switches and
 save transfers, and reset on a form change. PvP wins currently do not count.
 Existing pending targets stay fixed. SQLite migration 10 and browser transactions
@@ -216,7 +306,7 @@ choice. Manual fusion and the remaining objective/origin adaptations are tracked
 in the [remaining implementation plan](evolution-gameplay-plan.md).
 
 To regenerate the snapshot, download the guides named in its `sources` map using
-`digital-pet-humulos-<guide>.html` filenames, export `DIGIMON_DATA` as JSON, and run
+`digital-pet-humulos-<guide>.html` filenames, export `REVIEWED_DIGIMON_DATA` from `data/reviewed-digimon-data.ts` as JSON, and run
 from the repository root with BeautifulSoup 4 and curl installed. Keep downloaded
 HTML, catalog exports and detail caches outside the repository:
 
@@ -232,5 +322,5 @@ existing output, preserving withdrawn targets as unverified for pending saves;
 `--previous` supplies that baseline when writing to another path. Synthetic parser
 tests cover full alternatives, singular care mistakes, target stages, fusion
 conditions and missing evidence. Gameplay uses the bundled JSON without network
-requests. Omnipet was unavailable during this audit; no unavailable response was
-treated as evolution evidence.
+requests. The source review also compared 17 resolved Omnipet module snapshots;
+additional candidate connections remain a review queue, not automatic unlocks.

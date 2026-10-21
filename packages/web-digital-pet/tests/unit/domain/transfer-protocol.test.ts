@@ -13,6 +13,27 @@ const state = {
 }
 
 describe("browser save transfer", () => {
+  it("accepts already pending DoneDevimon duels after correcting its stage in either position", () => {
+    for (const [currentNodeId, opponentNodeId, targetNodeId] of [
+      ["5-033", "5-001", "6-028"],
+      ["5-100", "5-033", "5-033"],
+    ] as const) {
+      const pending = {
+        ...state,
+        currentNodeId: currentNodeId,
+        gauge: 125_000_000,
+        events: [{ createdAt: state.createdAt, currentNodeId: currentNodeId }],
+        pendingEvolution: { targetNodeId: targetNodeId, opponentNodeId: opponentNodeId, readyAt: state.lastTickAt },
+      }
+      expect(parsePetTransfer({ version: 4, state: pending }).state).toEqual(pending)
+      expect(() =>
+        parsePetTransfer({
+          version: 4,
+          state: { ...pending, pendingEvolution: { ...pending.pendingEvolution, opponentNodeId: "4-001" } },
+        }),
+      ).toThrow()
+    }
+  })
   it("preserves each companion's adventure timer and rejects invalid active or reserve timestamps", () => {
     const now = Date.now()
     const partner = { ...state, adventureReadyAt: now + 1_800_000 }

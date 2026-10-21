@@ -49,6 +49,11 @@ const selectEntry = (id, focus = false) => {
     button?.scrollIntoView({ block: "nearest" })
   }
 }
+const requirementIndicator = (kind, label, value) => {
+  const indicator = window.createCareIndicator(kind, label, value, "route-requirement")
+  indicator.dataset.requirement = kind
+  return indicator
+}
 const routeGroup = (label, ids, care = [], rules = []) => {
   const section = element("section", "routes")
   section.append(element("h3", "route-label", label))
@@ -61,32 +66,51 @@ const routeGroup = (label, ids, care = [], rules = []) => {
     button.append(element("span", "", id))
     const conditions = rules.find((route) => route.targetId === id)?.alternatives
     if (conditions?.length) {
-      const alternatives = conditions
-        .map((rule) => {
-          const requirements = []
-          if (rule.uncleanPoops.length && rule.uncleanPoops.length < 4)
-            requirements.push(IntlModule.translate("dexClient.carePiles", { counts: rule.uncleanPoops.join("/") }))
-          if (rule.maxVictories !== null)
-            requirements.push(
+      const alternatives = element("span", "route-alternatives")
+      for (const rule of conditions) {
+        const requirements = element("span", "route-conditions")
+        if (rule.uncleanPoops.length && rule.uncleanPoops.length < 4)
+          requirements.append(
+            requirementIndicator(
+              "care",
+              IntlModule.translate("dexClient.carePiles", { counts: rule.uncleanPoops.join("/") }),
+              rule.uncleanPoops.join("/"),
+            ),
+          )
+        if (rule.maxVictories !== null)
+          requirements.append(
+            requirementIndicator(
+              "victories",
               IntlModule.translate("dexClient.victoryRequirementRange", {
                 minimum: rule.minVictories,
                 maximum: rule.maxVictories,
               }),
-            )
-          else if (rule.minVictories > 0)
-            requirements.push(IntlModule.translate("dexClient.victoryRequirementMinimum", { count: rule.minVictories }))
-          return requirements.join(" · ")
-        })
-        .filter(Boolean)
-      button.append(element("span", "micro", alternatives.join(" / ")))
+              `${rule.minVictories}–${rule.maxVictories}`,
+            ),
+          )
+        else if (rule.minVictories > 0)
+          requirements.append(
+            requirementIndicator(
+              "victories",
+              IntlModule.translate("dexClient.victoryRequirementMinimum", { count: rule.minVictories }),
+              `${rule.minVictories}+`,
+            ),
+          )
+        if (requirements.childElementCount) {
+          if (alternatives.childElementCount)
+            alternatives.append(element("span", "route-or", IntlModule.translate("dexClient.or")))
+          alternatives.append(requirements)
+        }
+      }
+      button.append(alternatives)
     } else {
       const requirement = care.find((route) => route.targetId === id)
       if (requirement && requirement.uncleanPoops.length > 0 && requirement.uncleanPoops.length < 4)
         button.append(
-          element(
-            "span",
-            "micro",
+          requirementIndicator(
+            "care",
             IntlModule.translate("dexClient.carePiles", { counts: requirement.uncleanPoops.join("/") }),
+            requirement.uncleanPoops.join("/"),
           ),
         )
     }

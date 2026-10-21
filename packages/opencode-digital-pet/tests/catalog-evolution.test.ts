@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { type DigimonNode, loadDigimonCatalog, parseDigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { DIGIMON_DATA } from "@jcendal/digital-pet-core/data/digimon-data.ts"
+import { REVIEWED_DIGIMON_DATA } from "@jcendal/digital-pet-core/data/reviewed-digimon-data.ts"
 import type { DigimonNode as DomainDigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
 import {
   applyTokenProgress,
@@ -134,11 +134,11 @@ describe("catalog and evolution", () => {
     expect(catalog.nodes.some((node) => node.nextEvolutions.includes("7-046"))).toBeFalse()
   })
 
-  test("Given the canonical raw catalog When normalized nodes load Then every URL remains equal in record order", async () => {
+  test("Given reviewed catalog identities When normalized nodes load Then corrected URLs retain the original record order", async () => {
     const catalog = await loadDigimonCatalog()
 
     expect(catalog.nodes.map((node) => ({ id: node.id, url: node.url }))).toEqual(
-      DIGIMON_DATA.map((record) => ({ id: record.id, url: record.url })),
+      REVIEWED_DIGIMON_DATA.map((record) => ({ id: record.id, url: record.url })),
     )
   })
 
@@ -198,7 +198,7 @@ describe("catalog and evolution", () => {
     expect(evolved).toEqual({
       current: controlledTarget,
       gauge: 0,
-      isTerminal: true,
+      isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
     })
@@ -235,7 +235,7 @@ describe("catalog and evolution", () => {
     ).toEqual({
       current: controlledTarget,
       gauge: 0,
-      isTerminal: true,
+      isTerminal: false,
       pendingEvolutionTargetId: null,
       battleOpponentNodeId: null,
     })

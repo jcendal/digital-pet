@@ -19,6 +19,9 @@ from bs4 import BeautifulSoup
 def download_details(html_dir, catalog, output):
     normalize = lambda name: re.sub(r"[^a-z0-9]", "", name.lower())
     names = {normalize(node[key]) for node in catalog for key in ("name_en", "name_jp")}
+    corrections = json.loads((Path(__file__).resolve().parents[1] / "packages/digital-pet-core/src/data/catalog-corrections.json").read_text())
+    ids = {node["id"] for node in catalog}
+    names.update(normalize(name) for node_id, aliases in corrections["aliases"].items() if node_id in ids for name in aliases)
     jobs = {}
     for file in sorted(html_dir.glob("digital-pet-humulos-*.html")):
         guide = file.stem.removeprefix("digital-pet-humulos-")

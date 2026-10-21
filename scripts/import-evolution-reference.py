@@ -6,6 +6,7 @@ Requires BeautifulSoup 4. Run from the repository root with --html-dir and
 import argparse
 import json
 import re
+from datetime import date
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -21,6 +22,8 @@ args = parser.parse_args()
 previous_file = args.previous or args.output
 previous = json.loads(previous_file.read_text()) if previous_file.exists() else None
 catalog = json.loads(args.catalog.read_text())
+corrections = json.loads((Path(__file__).resolve().parents[1] / "packages/digital-pet-core/src/data/catalog-corrections.json").read_text())
+catalog = [{**node, **corrections["records"].get(node["id"], {})} for node in catalog]
 by_id = {node["id"]: node for node in catalog}
 normalize = lambda text: re.sub(r"[^a-z0-9]", "", text.lower())
 aliases = {}
@@ -28,8 +31,10 @@ for node in catalog:
     for name in [node["name_en"], node["name_jp"]]:
         aliases.setdefault(normalize(name), set()).add(node["id"])
 
-aliases["agumonyukinokizuna"] = {"7-041"}
-aliases["gabumonyujonokizuna"] = {"7-042"}
+for node_id, names in corrections["aliases"].items():
+    if node_id in by_id:
+        for name in names:
+            aliases.setdefault(normalize(name), set()).add(node_id)
 
 def matches(name, stage=None):
     suffix = re.search(r"\((Baby I|Baby II|Child|Adult|Perfect|Ultimate)\)", name)
@@ -87,7 +92,7 @@ def alternatives(condition):
 
 
 def route_kind(condition):
-    if re.search(r"Jogress", condition, re.I):
+    if re.search(r"Jogress|Tag\s+Battles?\s+\d+\s+times?\s+with\b", condition, re.I):
         return "jogress"
     if re.search(r"Slot\s*\d|unlocked|\bclear(?:ed)?\b|Defeat|Battle against|Mode Change|DigiXros|Album|Event Battle", condition, re.I):
         return "special"
@@ -272,5 +277,5 @@ if previous:
             # Keep it addressable, without advertising or selecting it again.
             routes.append([source, target, "unverified", 0, evidence])
     routes.sort(key=lambda row: (row[0], row[1]))
-args.output.write_text(json.dumps({"reviewedAt": "2026-10-15", "sources": sources, "detailSources": detail_sources, "routes": routes, "requirements": requirements}, indent=2) + "\n")
+args.output.write_text(json.dumps({"reviewedAt": date.today().isoformat(), "sources": sources, "detailSources": detail_sources, "routes": routes, "requirements": requirements}, indent=2) + "\n")
 print(f"Generated {len(routes)} referenced routes ({sum(row[2] == 'normal' for row in routes)} normal)")

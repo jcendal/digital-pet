@@ -11,6 +11,13 @@ export const assertEvolutionBranch = (current: DigimonNode, targetId: string): v
     throw new Error(`Evolution ${current.id} -> ${targetId} is outside its branches`)
 }
 
+/** Already-saved duels can involve DoneDevimon's former stage-V placement, in either position. */
+export const isEvolutionBattleOpponent = (current: DigimonNode, opponent: DigimonNode | undefined): boolean =>
+  opponent !== undefined &&
+  (opponent.stage === current.stage ||
+    (current.id === "5-033" && current.stage === 6 && opponent.stage === 5) ||
+    (opponent.id === "5-033" && opponent.stage === 6 && current.stage === 5))
+
 export const pickEvolutionTarget = (
   current: DigimonNode,
   selector: EvolutionSelector,

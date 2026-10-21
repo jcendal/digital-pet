@@ -53,7 +53,7 @@ export const presentPendingEvolution = async (
               {
                 currentNodeId: node.id,
                 gauge: !committedNodeId && node.id === player.id ? state.gauge : 0,
-                isTerminal: node.nextEvolutions.length === 0,
+                isTerminal: false,
                 frozen: false,
                 isSetOverride: false,
                 trainerTotalTokens: 0,
