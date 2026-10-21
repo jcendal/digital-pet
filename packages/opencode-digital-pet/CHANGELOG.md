@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-21
+
 - Repair DoneDevimon's identity, missing LoaderLeomon/Crowmon branches and eight pair-only routes without adding species or changing saved IDs.
 - Count duplicate DORUguremon IDs once in automatic evolution selection, preserve legacy pending duels, and let final forms keep earning EXP and fighting threshold duels.
 
