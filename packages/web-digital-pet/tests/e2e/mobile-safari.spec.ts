@@ -26,15 +26,18 @@ test.describe("iOS presentation", () => {
     ]) {
       await page.setViewportSize(viewport)
       await page.locator("#battle-button").click()
+      if ((await page.locator("#social-code-battle").getAttribute("open")) === null)
+        await page.locator("#social-code-battle summary").click()
       await expect(page.locator("#battle-target")).toBeVisible()
-      const bounds = await page.locator("#battle-dialog").boundingBox()
-      const body = await page.locator("#battle-dialog .dialog-body").boundingBox()
+      const bounds = await page.locator("#social-view").boundingBox()
+      const body = await page.locator(".social-scroll").boundingBox()
       expect(bounds?.height).toBeGreaterThan(viewport.height * 0.65)
-      expect(body?.height).toBeGreaterThan(140)
+      expect(body?.height).toBeGreaterThan(100)
       expect(bounds?.y).toBeGreaterThanOrEqual(0)
       expect((bounds?.y ?? 0) + (bounds?.height ?? 0)).toBeLessThanOrEqual(viewport.height)
       await page.evaluate(() => {
         document.getElementById("battle-incoming")!.hidden = false
+        ;(document.getElementById("battle-dialog") as HTMLDialogElement).showModal()
       })
       await page.locator("#battle-accept").scrollIntoViewIfNeeded()
       await expect(page.locator("#battle-accept")).toBeInViewport()
@@ -87,6 +90,7 @@ test("restoring a cached page and a signaling failure recover both transports", 
   await page.clock.install()
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
   await page.locator("#battle-button").click()
+  await page.locator("#social-code-battle summary").click()
   const own = await page.locator("#battle-own-code").textContent()
   await page.locator("#battle-target").fill(own === "000001" ? "000002" : "000001")
   await page.locator("#battle-request").click()
@@ -94,7 +98,6 @@ test("restoring a cached page and a signaling failure recover both transports", 
   await page.clock.runFor(20_000)
   await expect(page.locator("#battle-status")).toContainText("Could not reach the other player")
   await expect(page.locator("#battle-request")).toBeEnabled()
-  await page.locator("#battle-dialog .dialog-close").click()
   const battle = registrations.filter((id) => id.includes("battle")).at(-1)
   await page.evaluate((peer) => {
     const mock = window as unknown as { testPeerEvent: (value: unknown) => void }

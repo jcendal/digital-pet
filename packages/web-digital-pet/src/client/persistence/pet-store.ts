@@ -6,7 +6,7 @@ import type { TeamCommand, TeamCommandOutcome } from "@jcendal/digital-pet-core/
 import { DEFAULT_WORLD_VISIT, isWorldVisit } from "@jcendal/digital-pet-fields/application/world.ts"
 import { discoveredEggFamilies } from "@jcendal/digital-pet-fields/data/egg-discoveries.ts"
 import type { WorldVisit } from "@jcendal/digital-pet-fields/domain/world.ts"
-import { rewardBattleWinner } from "../../domain/battle/reward.ts"
+import { rewardArenaWinner } from "../../domain/battle/arena.ts"
 import { type AgreedBattle, type PendingBattle, parsePendingBattle } from "../../domain/battle/saved-battle.ts"
 import {
   advanceLocalPet,
@@ -23,8 +23,8 @@ import {
 } from "../../domain/pet/progress.ts"
 import { applyLocalTeamCommand } from "../../domain/pet/team.ts"
 import { IntlModule } from "../../shared/i18n.ts"
+import { assertNoExchange, completed, openDatabase, resultOf, TRADE_LOCK_KEY } from "./database.ts"
 
-const DB_NAME = "web-digital-pet"
 const STORE_NAME = "pet"
 const STATE_KEY = "current"
 const DEVICE_KEY = "device-code"
@@ -39,6 +39,7 @@ const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 const readStoredPartner = async (store: IDBObjectStore): Promise<LocalPetState | undefined> => {
   const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
   if (!state) return undefined
+  if (await resultOf(store.get(TRADE_LOCK_KEY))) return state
   const legacy = await resultOf<number | undefined>(store.get(LEGACY_ADVENTURE_READY_KEY))
   const readyAt = limitAdventureReadyAt(state.adventureReadyAt ?? legacy ?? 0, Date.now())
   const next = state.adventureReadyAt === readyAt ? state : { ...state, adventureReadyAt: readyAt }
@@ -82,7 +83,7 @@ export const applyBrowserTeamCommand = async (
       command,
       crypto.randomUUID(),
       now,
-      Boolean(pending || adventureBusy(adventure)),
+      Boolean(pending || (await resultOf(store.get(TRADE_LOCK_KEY))) || adventureBusy(adventure)),
     )
     if (changed.outcome.kind === "applied") {
       let next = changed.state
@@ -145,7 +146,7 @@ export const browserAdventureStore: AdventureStore = {
       const state = await readStoredPartner(store)
       const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
       const battle = await resultOf(store.get(PENDING_BATTLE_KEY))
-      if (!state) {
+      if (!state || (await resultOf(store.get(TRADE_LOCK_KEY)))) {
         await done
         return undefined
       }
@@ -245,6 +246,7 @@ export const settleBattle = async (
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
+    await assertNoExchange(store)
     const key = `battle:${battle.battleId}`
     const receipt = await resultOf(store.get(key))
     const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
@@ -335,7 +337,7 @@ export const finishPendingBattle = async (battleId: string): Promise<{ readonly 
     const opponent = pending.localSide === "player" ? pending.receiver : pending.challenger
     const next =
       state && won && !pending.rewarded && pending.rewardTarget && receipt?.completedAt === undefined
-        ? rewardBattleWinner(state, pending.rewardTarget, opponent.nodeId, Date.now())
+        ? rewardArenaWinner(state, pending.rewardTarget, opponent.nodeId, Date.now())
         : state
     const rewarded = pending.rewarded || Boolean(state && next !== state)
     if (next !== state) store.put(next, STATE_KEY)
@@ -347,29 +349,6 @@ export const finishPendingBattle = async (battleId: string): Promise<{ readonly 
     database.close()
   }
 }
-
-const openDatabase = (): Promise<IDBDatabase> =>
-  new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-    request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME)
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
-    request.onblocked = () => reject(new Error(IntlModule.translate("petStore.browserPetStorageIsBlocked")))
-  })
-
-const completed = (transaction: IDBTransaction): Promise<void> =>
-  new Promise((resolve, reject) => {
-    transaction.oncomplete = () => resolve()
-    transaction.onerror = () => reject(transaction.error)
-    transaction.onabort = () =>
-      reject(transaction.error ?? new Error(IntlModule.translate("petStore.browserPetStorageWasInterrupted")))
-  })
-
-const resultOf = <T>(request: IDBRequest<T>): Promise<T> =>
-  new Promise((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
-  })
 
 const initialState = (now: number): LocalPetState => {
   const createdAt = new Date(now).toISOString()
@@ -393,7 +372,8 @@ export const readLocalState = async (): Promise<LocalPetState> => {
     const store = transaction.objectStore(STORE_NAME)
     const stored = await readStoredPartner(store)
     const now = Date.now()
-    const state = stored ? advanceLocalPet(stored, now) : initialState(now)
+    const locked = await resultOf(store.get(TRADE_LOCK_KEY))
+    const state = stored ? (locked ? stored : advanceLocalPet(stored, now)) : initialState(now)
     if (state !== stored) store.put(state, STATE_KEY)
     await done
     return state
@@ -451,6 +431,7 @@ export const replaceLocalState = async (incoming: LocalPetState): Promise<void> 
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
+    await assertNoExchange(store)
     const previous = await readStoredPartner(store)
     if (previous) store.put(previous, BACKUP_KEY)
     store.put(incoming, STATE_KEY)
@@ -468,6 +449,7 @@ export const restorePreviousSave = async (): Promise<boolean> => {
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
+    await assertNoExchange(store)
     const previous = (await resultOf(store.get(BACKUP_KEY))) as LocalPetState | undefined
     if (!previous) {
       await done
@@ -495,6 +477,7 @@ const changeLocalState = async (
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
+    await assertNoExchange(store)
     const stored = await readStoredPartner(store)
     const state = advanceLocalPet(stored ?? initialState(Date.now()), Date.now())
     if (care) {
@@ -548,6 +531,7 @@ export const petEgg = async (partnerId: string, interactionId: string, active: (
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
+    await assertNoExchange(store)
     const receiptKey = `egg:${interactionId}`
     const receipt = await resultOf(store.get(receiptKey))
     const battle = await resultOf(store.get(PENDING_BATTLE_KEY))

@@ -1,3 +1,4 @@
+import { IntlModule } from "../../shared/i18n.ts"
 import { initBrowserInstallation } from "../features/installation/controller.ts"
 import { initBrowserMusic } from "../features/music/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
@@ -14,6 +15,8 @@ import { initBrowserTeam } from "../features/team/controller.ts"
   const mapButton = document.getElementById("map-button")
   const dexView = document.getElementById("dex-view")
   const dexTabs = Array.from(document.querySelectorAll("[data-dex-page]"))
+  const socialView = document.getElementById("social-view")
+  const socialTabs = Array.from(document.querySelectorAll("[data-social-tab]"))
   const pageFromPath = (path) => {
     const url = new URL(path, location.origin)
     const tab = url.searchParams.get("tab")
@@ -30,21 +33,52 @@ import { initBrowserTeam } from "../features/team/controller.ts"
     mapView.hidden = true
     mapButton.removeAttribute("aria-current")
     const page = pageFromPath(path)
-    dexView.hidden = page === "sidebar"
+    const hash = new URL(path, location.origin).hash.slice(1).split("?")[0]
+    const social = ["combat", "friends", "activity", "profile", "invite"].includes(hash)
+    const socialPage = ["friends", "activity", "profile"].includes(hash) ? hash : "arena"
+    if (socialView.hidden || socialView.dataset.page !== socialPage)
+      socialView.querySelector(".social-scroll").scrollTop = 0
+    socialView.dataset.page = socialPage
+    socialView.hidden = !social
+    document.getElementById("social-tabs").hidden = socialPage === "profile"
+    for (const panel of socialView.querySelectorAll(".social-scroll > section"))
+      panel.hidden = panel.id !== `social-${socialPage}`
+    for (const tab of socialTabs) {
+      const selected = tab.dataset.socialTab === socialPage
+      tab.setAttribute("aria-selected", String(selected))
+      tab.tabIndex = selected ? 0 : -1
+    }
+    document.getElementById("social-page-name").textContent = IntlModule.translate(
+      socialPage === "profile" ? "social.profile" : "social.combat",
+    )
+    const footer = document.getElementById("social-footer-label")
+    footer.dataset.i18n = socialPage === "profile" ? "web:social.profileFooter" : "web:social.connectionFooter"
+    footer.textContent = IntlModule.translate(
+      socialPage === "profile" ? "social.profileFooter" : "social.connectionFooter",
+    )
+    document.getElementById("battle-button").toggleAttribute("aria-current", social && socialPage !== "profile")
+    if (social && socialPage !== "profile")
+      document.getElementById("battle-button").setAttribute("aria-current", "page")
+    document.getElementById("more-button").toggleAttribute("aria-current", social && socialPage === "profile")
+    if (social && socialPage === "profile") document.getElementById("more-button").setAttribute("aria-current", "page")
+    dexView.hidden = social || page === "sidebar"
     for (const tab of dexTabs) {
       const selected = tab.dataset.dexPage === page
       tab.setAttribute("aria-selected", String(selected))
       tab.tabIndex = selected ? 0 : -1
     }
     for (const frame of frames) {
-      const active = frame.dataset.page === page
+      const active = !social && frame.dataset.page === page
       frame.classList.toggle("active", active)
       if (active) frame.removeAttribute("aria-hidden")
       else frame.setAttribute("aria-hidden", "true")
     }
     document.getElementById("dex-team-panel").hidden = page !== "team"
     for (const link of links) {
-      if (link.dataset.page === page || (link.dataset.page === "dex" && ["history", "team"].includes(page)))
+      if (
+        !social &&
+        (link.dataset.page === page || (link.dataset.page === "dex" && ["history", "team"].includes(page)))
+      )
         link.setAttribute("aria-current", "page")
       else link.removeAttribute("aria-current")
     }
@@ -67,6 +101,23 @@ import { initBrowserTeam } from "../features/team/controller.ts"
     history.pushState(null, "", path)
     show(path, preserveSelection)
   }
+  for (const [index, tab] of socialTabs.entries()) {
+    const pathFor = (item) => `/#${item.dataset.socialTab === "arena" ? "combat" : item.dataset.socialTab}`
+    tab.addEventListener("click", () => navigate(pathFor(tab)))
+    tab.addEventListener("keydown", (event) => {
+      let next = index
+      if (event.key === "ArrowRight") next = (index + 1) % socialTabs.length
+      else if (event.key === "ArrowLeft") next = (index + socialTabs.length - 1) % socialTabs.length
+      else if (event.key === "Home") next = 0
+      else if (event.key === "End") next = socialTabs.length - 1
+      else return
+      event.preventDefault()
+      navigate(pathFor(socialTabs[next]))
+      socialTabs[next].focus()
+    })
+  }
+  document.getElementById("battle-button").addEventListener("click", () => navigate("/#combat"))
+  document.getElementById("profile-button").addEventListener("click", () => navigate("/#profile"))
   for (const [index, tab] of dexTabs.entries()) {
     const pathFor = (page) => (page === "team" ? "/dex?tab=team" : `/${page}`)
     tab.addEventListener("click", () => navigate(pathFor(tab.dataset.dexPage), true))
@@ -118,12 +169,16 @@ import { initBrowserTeam } from "../features/team/controller.ts"
   })
   window.addEventListener("digital-pet:navigate", (event) => {
     const path = event.detail
-    if (typeof path === "string" && /^\/(?:dex(?:\?(?:selected=[0-7]-[0-9]{3}|tab=team))?|history)?$/.test(path))
+    if (
+      typeof path === "string" &&
+      /^\/(?:dex(?:\?(?:selected=[0-7]-[0-9]{3}|tab=team))?|history|#(?:combat|friends|activity|profile))?$/.test(path)
+    )
       navigate(path)
   })
   import("../features/world/controller.ts").then((module) => module.initBrowserWorld()).catch(() => {})
-  window.addEventListener("popstate", () => show(location.pathname + location.search))
-  show(location.pathname + location.search)
+  window.addEventListener("hashchange", () => show(location.pathname + location.search + location.hash))
+  window.addEventListener("popstate", () => show(location.pathname + location.search + location.hash))
+  show(location.pathname + location.search + location.hash)
   initBrowserTeam().catch((error) => {
     document.getElementById("team-status").textContent = String(error)
   })

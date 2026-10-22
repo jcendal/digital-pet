@@ -75,6 +75,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   let pendingBackup: PetTransfer | null = null
   let pairing: BrowserPairingControls | undefined
   let battles: BrowserPairingControls | undefined
+  let social: BrowserPairingControls | undefined
   let available: boolean | null = null
   let source = resolveSaveSource(
     localStorage.getItem(SOURCE_PREFERENCE_KEY),
@@ -143,6 +144,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     pendingBackup = null
     pairing?.setBrowserEnabled(source === "browser")
     battles?.setBrowserEnabled(source === "browser")
+    social?.setBrowserEnabled(source === "browser")
     await refreshSettings()
     refreshBrowserViews()
   }
@@ -190,6 +192,12 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   for (const radio of [computer, browser])
     radio.addEventListener("change", () => {
+      if (social?.busy) {
+        computer.checked = source === "sqlite"
+        browser.checked = source === "browser"
+        status.textContent = IntlModule.translate("social.busy")
+        return
+      }
       source = radio.value === "browser" ? "browser" : "sqlite"
       localStorage.setItem(SOURCE_PREFERENCE_KEY, source)
       void updateSource()
@@ -249,7 +257,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   byId("backup-accept").addEventListener("click", async () => {
     if (source !== "browser" || !pendingBackup) return
-    if (pairing?.busy || battles?.busy) {
+    if (pairing?.busy || battles?.busy || social?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
@@ -265,7 +273,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   backupRestore.addEventListener("click", async () => {
     if (source !== "browser") return
-    if (pairing?.busy || battles?.busy) {
+    if (pairing?.busy || battles?.busy || social?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
@@ -289,7 +297,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     })
   slider.addEventListener("change", async () => {
     if (source !== "browser") return
-    if (pairing?.busy || battles?.busy) {
+    if (pairing?.busy || battles?.busy || social?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       await refreshSettings()
       return
@@ -302,10 +310,10 @@ export const initBrowserOptions = async (): Promise<void> => {
       status.textContent = String(error)
     }
   })
-  registerTeamBusyGuard(() => Boolean(pairing?.busy || battles?.busy))
+  registerTeamBusyGuard(() => Boolean(pairing?.busy || battles?.busy || social?.busy))
   byId("new-partner").addEventListener("click", () => {
     if (source !== "browser") return
-    if (pairing?.busy || battles?.busy) {
+    if (pairing?.busy || battles?.busy || social?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
@@ -317,7 +325,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   })
   try {
     const module = await import("../pairing/controller.ts")
-    pairing = await module.initBrowserPairing(() => Boolean(battles?.busy))
+    pairing = await module.initBrowserPairing(() => Boolean(battles?.busy || social?.busy))
     pairing.setBrowserEnabled(source === "browser")
   } catch (error) {
     byId("pair-summary").textContent = IntlModule.translate("controller.devicePairingUnavailable", {
@@ -326,7 +334,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   }
   try {
     const module = await import("../battle/controller.ts")
-    battles = await module.initBrowserBattles(() => Boolean(pairing?.busy))
+    battles = await module.initBrowserBattles(() => Boolean(pairing?.busy || social?.busy))
     battles.setBrowserEnabled(source === "browser")
   } catch (error) {
     byId("battle-status").textContent = IntlModule.translate("controller.playerBattlesUnavailable", {
@@ -334,5 +342,12 @@ export const initBrowserOptions = async (): Promise<void> => {
     })
     byId<HTMLButtonElement>("battle-button").disabled = true
     byId("battle-button").title = IntlModule.translate("controller.playerBattlesUnavailableReloadToTryAgain")
+  }
+  try {
+    const module = await import("../social/controller.ts")
+    social = await module.initBrowserSocial(() => Boolean(pairing?.busy || battles?.busy))
+    social.setBrowserEnabled(source === "browser")
+  } catch {
+    byId("social-status").textContent = IntlModule.translate("social.offline")
   }
 }

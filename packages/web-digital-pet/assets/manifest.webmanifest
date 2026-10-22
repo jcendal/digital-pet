@@ -2,7 +2,7 @@
   "id": "/",
   "name": "Digital Pet",
   "short_name": "Digital Pet",
-  "description": "Your Digital Pet partner, Digidex, and generation history.",
+  "description": "Raise your pixel companion, explore File Island and discover Digimon. Play in your browser or install the app.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -34,5 +34,52 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["games", "entertainment"]
+  "categories": ["games", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/screenshots/digidex.jpg",
+      "sizes": "430x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Discover and track Digimon in your Digidex."
+    },
+    {
+      "src": "/screenshots/partner-desktop.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Your pixel companion, at home in your browser."
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My companion",
+      "short_name": "Companion",
+      "url": "/",
+      "description": "Return to your current companion.",
+      "icons": [
+        {
+          "src": "/icons/digital-pet-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Digidex",
+      "short_name": "Digidex",
+      "url": "/dex",
+      "description": "Explore the Digimon catalog and your team.",
+      "icons": [
+        {
+          "src": "/icons/digital-pet-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

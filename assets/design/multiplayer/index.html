@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
+    <title>Digital Monster · Propuesta multijugador</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./prototype.browser.js" defer></script>
+  </head>
+  <body>
+    <p class="prototype-label">PROPUESTA INTERACTIVA · DATOS DE EJEMPLO</p>
+    <div class="app">
+      <main class="device">
+        <header class="masthead"><span class="brand">DIGITAL MONSTER</span><h1 id="page-name">COMBATE</h1></header>
+        <div class="screen">
+          <div class="dex-tabs" role="tablist" aria-label="Combate">
+            <button id="tab-arena" type="button" role="tab" aria-controls="arena" aria-selected="false">ARENA</button>
+            <button id="tab-friends" type="button" role="tab" aria-controls="friends" aria-selected="true">AMIGOS</button>
+            <button id="tab-activity" type="button" role="tab" aria-controls="activity" aria-selected="false">ACTIVIDAD <span id="activity-count">4</span></button>
+          </div>
+          <div class="panels">
+            <section id="friends" role="tabpanel" aria-labelledby="tab-friends">
+              <div class="identity-strip"><div><span class="eyebrow"><span data-own-alias>jcendal</span> · TU CÓDIGO</span><p class="account-code" data-own-code>K7MD-9QXR-4NWA-6TBY</p></div><button type="button" class="small-button" data-copy>Copiar</button></div>
+              <div class="section-title friends-toolbar"><h2>AMIGOS <span id="friend-count">03</span></h2><button class="small-button" type="button" id="add-friend" aria-label="Añadir amigo" aria-expanded="false" aria-controls="add-friend-form">+ Añadir</button></div>
+              <form id="add-friend-form" class="inline-form" hidden>
+                <label for="friend-code">CÓDIGO DE TU AMIGO</label>
+                <div class="input-row"><input id="friend-code" placeholder="XXXX-XXXX-XXXX-XXXX" required autocomplete="off" maxlength="19" spellcheck="false" autocapitalize="characters"><button class="primary" type="submit">Añadir</button></div>
+                <p class="hint">Ambos debéis tener la app abierta. Verás su alias al conectar.</p>
+                <p id="friend-feedback" class="hint" role="status"></p>
+              </form>
+              <div id="friend-list"></div>
+              <p class="hint end-note">Para conectar, ambos debéis tener la app abierta. Los pendientes se guardan en este navegador.</p>
+            </section>
+            <section id="arena" role="tabpanel" aria-labelledby="tab-arena" hidden>
+              <div class="section-title"><h2>LISTO PARA COMBATIR</h2><span class="status">■ EN LÍNEA</span></div>
+              <div class="fighter-hero"><div class="monster" data-monster="agumon"></div><p>AGUMON</p><span class="eyebrow">ROOKIE · TU COMPAÑERO</span><button type="button" class="small-button" id="choose-fighter">Cambiar compañero</button></div>
+              <div class="section-title"><h3>RETAR A UN AMIGO</h3><span class="eyebrow">1 EN LÍNEA</span></div>
+              <div class="arena-friend"><div><p>SBUGALLO</p><span class="eyebrow">GREYMON · CHAMPION</span></div><button class="primary" type="button" data-challenge="sbugallo">Retar</button></div>
+              <details class="code-battle"><summary>COMBATE POR CÓDIGO</summary><p class="hint">Para combatir sin añadir como amigo. Ambos debéis estar conectados.</p><span class="eyebrow">TU CÓDIGO TEMPORAL</span><div class="input-row"><output>323262</output><button type="button" class="small-button" id="copy-battle">Copiar</button></div><label for="battle-code">CÓDIGO DEL OTRO JUGADOR</label><form id="quick-battle" class="input-row"><input id="battle-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required><button type="submit" class="primary">Retar</button></form></details>
+              <details class="battle-rules"><summary>REGLAS Y EXPERIENCIA</summary><p class="hint">Una victoria da un 20% de EXP contra la misma etapa; la mitad por cada etapa inferior del rival y el doble por cada etapa superior. Un empate no da EXP. La etapa final puede combatir sin ganar EXP.</p></details>
+            </section>
+            <section id="activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
+              <div class="section-title"><h2 id="activity-heading">PENDIENTES</h2><span class="eyebrow" id="pending-count">03 EN TOTAL</span></div>
+              <section class="pending-group" data-inbox-group="requests" aria-labelledby="requests-heading"><div class="pending-group-heading"><h3 id="requests-heading">SOLICITUDES DE AMISTAD</h3><span class="group-count">02</span></div><article class="activity-item" id="incoming-friend"><span class="eyebrow">RECIBIDA · AHORA</span><h3>LAURA</h3><p class="hint">W3HP-6NTA-9FRC-2KXD quiere añadirte.</p><div class="actions"><button type="button" class="primary" id="accept-friend">Aceptar</button><button type="button" id="decline-friend">Rechazar</button></div></article><div id="outgoing-requests"></div><p class="hint group-empty" hidden>No tienes solicitudes pendientes.</p></section>
+              <section class="pending-group" data-inbox-group="gifts" aria-labelledby="gifts-heading"><div class="pending-group-heading"><h3 id="gifts-heading">REGALOS</h3><span class="group-count">01</span></div><article class="activity-item" id="incoming-gift"><span class="eyebrow">HACE 12 MIN</span><h3>UNA RACIÓN DE SBUGALLO</h3><p class="hint">Recibida mientras estabais conectados.</p><button type="button" id="collect-gift">Recoger regalo</button></article><p class="hint group-empty" hidden>No tienes regalos por recoger.</p></section>
+              <section class="pending-group" data-inbox-group="trades" aria-labelledby="trades-heading"><div class="pending-group-heading"><h3 id="trades-heading">INTERCAMBIOS</h3><span class="group-count">01</span></div><article class="activity-item" id="incoming-trade"><span class="eyebrow">HACE 25 MIN</span><h3>PROPUESTA DE MARTA</h3><p class="hint">Ofrece a Gabumon. Recibida cuando estaba conectada; debéis reconectar para confirmar.</p><button type="button" id="review-trade">Ver propuesta</button></article><p class="hint group-empty" hidden>No tienes intercambios pendientes.</p></section>
+              <div class="section-title history-title"><h3>MOVIMIENTOS</h3><span class="eyebrow">HOY</span></div>
+              <div id="activity-log"><div class="log-row"><span>VICTORIA CONTRA SBUGALLO</span><span class="hint">Agumon · +20% EXP</span></div><div class="log-row"><span>AMISTAD ACEPTADA</span><span class="hint">Marta · 10:42</span></div></div>
+            </section>
+            <section id="profile" aria-labelledby="profile-heading" hidden>
+              <div class="section-title"><h2 id="profile-heading">TU PERFIL</h2><span class="eyebrow">JUGADOR</span></div>
+              <div class="profile-portrait"><div id="profile-avatar" class="profile-avatar monster" data-monster="agumon"></div><p class="eyebrow" id="profile-avatar-name">COMPAÑERO ACTUAL · AGUMON</p></div>
+              <form id="profile-form"><label for="alias">ALIAS</label><input id="alias" value="jcendal" minlength="3" maxlength="16" pattern="[a-zA-Z0-9]{3,16}" autocomplete="nickname" required><p class="hint">Tu nombre visible. No tiene que ser único y cambiarlo no cambia tu código.</p><button class="primary full" type="submit">Guardar alias</button><p id="profile-feedback" class="hint" role="status"></p></form>
+              <div class="profile-code"><span class="eyebrow">TU CÓDIGO PERMANENTE</span><p class="account-code" data-own-code>K7MD-9QXR-4NWA-6TBY</p><div class="profile-share-actions"><button type="button" data-copy>Copiar código</button><button type="button" id="copy-invitation">Copiar invitación</button></div><p class="hint">Comparte tu código o un enlace para que puedan enviarte una solicitud.</p><p class="hint">Siempre es el mismo en este navegador. No cambia al editar tu alias.</p><p class="hint identity-storage-note">Si borras los datos del navegador o usas otro dispositivo, tendrás otra identidad.</p></div>
+              <button type="button" class="profile-friends-button" data-view="friends"><span>VER MIS AMIGOS</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 11h12V8h-3V5h3v3h3v3h3v2h-3v3h-3v3h-3v-3h3v-3H3z"/></svg></button>
+            </section>
+            <section id="context" hidden><div class="section-title"><h2 id="context-title">COMPAÑERO</h2></div><div class="fighter-hero"><div class="monster" data-monster="agumon"></div><p>AGUMON</p><span class="eyebrow">ROOKIE · COMPAÑERO ACTUAL</span></div><p class="hint">Esta propuesta se centra en Combate y Perfil.</p><button type="button" class="full" data-view="friends">Ir a Combate</button></section>
+            <section id="journey" hidden aria-labelledby="journey-title"><div class="section-title"><h2 id="journey-title">HISTORIAL</h2><span class="eyebrow">INTERCAMBIO</span></div><div id="journey-content"></div></section>
+          </div>
+          <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+        </div>
+        <footer class="footer"><span id="footer-label">VPET · CONEXIÓN ENTRE JUGADORES</span><span class="case-dots" aria-hidden="true">▪▪▪</span></footer>
+      </main>
+      <nav class="web-nav" aria-label="Navegación principal">
+        <button type="button" data-context="COMPAÑERO" aria-label="Compañero"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h4v3h8V3h4v15h-3v3H7v-3H4z"/><path fill="var(--case)" d="M7 9h3v3H7zm7 0h3v3h-3zM8 15h8v2H8z"/></svg><span>COMPAÑERO</span></button>
+        <button type="button" data-context="DIGIDEX" aria-label="Dex"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 5v15M3 4h5l4 2 4-2h5v14h-5l-4 2-4-2H3zM6 8h3M6 12h3m6-4h3m-3 4h3"/></svg><span>DEX</span></button>
+        <button type="button" data-context="MAPA" aria-label="Mapa"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M2 5l6-2 8 2 6-2v16l-6 2-8-2-6 2zM8 3v16M16 5v16"/></svg><span>MAPA</span></button>
+        <button type="button" id="combat-nav" data-view="friends" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><g stroke="currentColor" stroke-width="2"><path fill="var(--case)" d="M21 3h-4L4 16l4 4L21 7zM3 3h4l13 13-4 4L3 7z"/><path d="m3 14 7 7m4 0 7-7M5 19l-3 3m17-3 3 3"/></g></svg><span>COMBATE</span></button>
+        <div class="nav-more"><button type="button" id="more-button" aria-controls="more-menu" aria-expanded="false"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 10h4v4H2zm8 0h4v4h-4zm8 0h4v4h-4z"/></svg><span>MORE</span></button><div class="more-menu" id="more-menu" hidden><button type="button" data-view="profile"><svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9 3h6v6H9zM6 12h12v3h3v6H3v-6h3z"/></svg><span>PERFIL</span></button><button type="button" id="options-context"><svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9 2h6v3h3v3h4v8h-4v3h-3v3H9v-3H6v-3H2V8h4V5h3z"/><path fill="var(--case)" d="M9 9h6v6H9z"/></svg><span>OPCIONES</span></button></div></div>
+      </nav>
+      <dialog id="action-dialog" aria-labelledby="dialog-title"><header class="dialog-head"><div><p class="eyebrow" id="dialog-eyebrow">AMIGOS</p><h2 id="dialog-title">INTERCAMBIO</h2></div><button type="button" id="dialog-close" aria-label="Cerrar">×</button></header><div id="dialog-content"></div></dialog>
+    </div>
+    <p class="prototype-note">Las respuestas del otro jugador se simulan. Ninguna acción modifica tu partida.</p>
+  </body>
+</html>
