@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-29
+
+### Changed
+
+- feat: add LCD and Color themes with web integration
+
+
 ## [0.15.0] - 2026-10-29
 
 ### Changed
