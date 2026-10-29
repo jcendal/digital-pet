@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-29
+
+### Changed
+
+- feat: add LCD and Color themes with web integration
+
+
 ## [0.18.0] - 2026-10-29
 
 ### Changed
