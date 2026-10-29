@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>City pixel landscape</title>
+  <rect width="160" height="160" fill="#c4e0ed"/>
+  <path d="M0 42h18v82H0z M22 58h24v66H22z M52 74h14v50H52z M96 64h16v60H96z M120 28h20v96h-20z M146 50h14v74h-14z" fill="#a0b8c4"/>
+  <path d="M4 48h8v4H4z M4 62h8v4H4z M28 64h12v4H28z M126 34h8v4h-8z M126 48h8v4h-8z M150 56h6v4h-6z" fill="#f7f1d9"/>
+  <path d="M62 78h36v8H62z M66 86h28v38H66z" fill="#a0b8c4"/>
+  <path d="M62 80h36v2H62z M66 90h28v2H66z M68 94h4v30h-4z M88 94h4v30h-4z" fill="#718b9e"/>
+  <path d="M74 124v-22h2v-4h8v4h2v22z M68 84h24v2H68z" fill="#c4e0ed"/>
+  <path d="M0 84h10v-8h26v8h14v40H0z M110 84V72h14v-8h18v8h18v52h-50z" fill="#718b9e"/>
+  <path d="M14 60h8v24h-8z M30 50h8v26h-8z M134 42h8v22h-8z" fill="#718b9e"/>
+  <path d="M14 56h8v4h-8z M30 46h8v4h-8z M134 38h8v4h-8z" fill="#586d83"/>
+  <path d="M12 48h8v-4h12v-4h12v-4h10v4H46v4H34v4H22v4H12z M136 30h8v-6h10v-4h6v4h-4v4h-10v6h-10z" fill="#f7f1d9"/>
+  <path d="M4 92h32v12h-8v-4H4z M10 104h6v10h14v-10h6v16H10z M124 88h36v6h-36v14h-6V88z M140 96h6v14h14v6h-20z" fill="#586d83"/>
+  <path d="M20 108h6v2h-6z M130 98h6v2h-6z M42 88h2v32h-2z M42 94h6v2h-6z M42 102h6v2h-6z M42 110h6v2h-6z" fill="#f7f1d9"/>
+  <rect y="124" width="160" height="36" fill="#a0b8c4"/>
+  <path d="M0 124h160v2H0z M0 136h24v2H0z M136 136h24v2h-24z M8 146h24v8H8z M130 146h22v8h-22z" fill="#718b9e"/>
+  <path d="M12 148h2v4h-2z M18 148h2v4h-2z M24 148h2v4h-2z M134 148h2v4h-2z M140 148h2v4h-2z M146 148h2v4h-2z" fill="#a0b8c4"/>
+</svg>

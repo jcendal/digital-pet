@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Mangrove Region pixel landscape</title>
+  <rect width="160" height="160" fill="#b6dbd4"/>
+  <defs><g id="mangrove-tree"><path fill="#508e75" d="M0 22V10h8V2h18V0h16v8h12v16h-8v8H8V22z"/><path fill="#4e7263" d="M24 28h8v36h6V54h4v14h8v4H36v-4h-4v8h-4V64h-4v6h-6v4H6v-4h10v-6h8z"/><path fill="#81b39a" d="M10 10h18v2H10zM36 16h12v2H36z"/></g></defs>
+  <path fill="#81b39a" d="M0 24h18v8h18v-6h20v10h20v-8h20v6h22V20h24v8h18v90H0z"/>
+  <rect y="94" width="160" height="66" fill="#508e75"/>
+  <path fill="#85bdba" d="M0 108h26v2H0zM56 98h30v2H56zM110 112h38v2h-38zM18 148h22v2H18zM104 152h32v2h-32z"/>
+  <use href="#mangrove-tree" x="0" y="38"/><use href="#mangrove-tree" x="108" y="36"/>
+  <path fill="#4e7263" d="M72 102V54h4v-8h4v12h4v44h8v8h8v4H88v-4h-8v-6h-4v8H64v4H52v-4h10v-4h10z"/>
+  <path fill="#508e75" d="M58 46V34h8v-8h20v8h12v14h-8v8H66V46z"/>
+  <path fill="#81b39a" d="M64 36h16v2H64zM0 130h26v-4h26v4h42v-4h30v4h36v14H0z"/>
+  <path fill="#85bdba" d="M0 130h26v-4h26v4h42v-4h30v4h36v2h-38v-4H96v4H50v-4H28v4H0z"/>
+</svg>

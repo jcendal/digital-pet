@@ -451,5 +451,10 @@
   "social.challengeContext": "Arena · Battle",
   "social.arenaTeam": "Arena · Team",
   "social.arenaFighter": "Your Arena fighter",
-  "social.noArenaEligible": "No Digimon available for Arena. Eggs and busy companions cannot battle."
+  "social.noArenaEligible": "No Digimon available for Arena. Eggs and busy companions cannot battle.",
+  "theme.label": "Theme",
+  "theme.description": "Choose the appearance of this device.",
+  "theme.color": "Color",
+  "theme.saveError": "Could not save the theme.",
+  "theme.lcd": "LCD"
 }

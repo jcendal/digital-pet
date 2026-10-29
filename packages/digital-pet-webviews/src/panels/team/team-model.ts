@@ -25,6 +25,7 @@ export const buildTeamPanelModel = (
     return {
       partnerId: partner.partnerId,
       nodeId: node.id,
+      originEggId,
       name: settings.language === "en" ? node.nameEn : node.nameJp,
       stage: getStageLabel(node.stage, settings.stageLabels[settings.language]),
       stageKey: getStageTranslationKey(node.stage, settings.stageLabels[settings.language]),

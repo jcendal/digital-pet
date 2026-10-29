@@ -1,10 +1,12 @@
 import { LOCATIONS } from "@jcendal/digital-pet-fields/data/regions.ts"
 import { IntlModule } from "../../shared/i18n.ts"
+import { initVisualTheme } from "../features/theme/controller.ts"
 import { webAsset } from "../platform/assets.ts"
 import { browserSaveSelected } from "../platform/save-source.ts"
 import "./styles.css"
 
 function initWebBridge(page, locationIds) {
+  initVisualTheme()
   const key = "digital-pet:" + page
   let width = 40
   let busy = false

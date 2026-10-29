@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 176" shape-rendering="crispEdges">
+  <title>File Island inspired Color atlas</title>
+  <defs>
+    <g id="tree"><path fill="#61956a" d="M3 0h4v2h2v2h2v4H9v2H2V8H0V4h2V2h1z"/><path fill="#a5ca86" d="M3 2h3v2H3z"/><path fill="#5e6e64" d="M4 10h2v3H4z"/></g>
+    <g id="pine"><path fill="#61956a" d="M4 0h2v2h2v2H6v2h4v2H8v2h4v2H0v-2h4V8H2V6h4V4H4V2H2z"/><path fill="#5e6e64" d="M5 12h2v2H5z"/></g>
+    <g id="rock"><path fill="#899fa6" d="M2 0h5v2h2v4H0V2h2z"/><path fill="#eef0d5" d="M2 1h4v2H2z"/></g>
+    <g id="house"><path fill="#76899a" d="M4 0h6v2h2v2h2v2H0V4h2V2h2z"/><path fill="#f2e5c6" d="M2 6h10v8H2z"/><path fill="#8d7965" d="M6 8h3v6H6zm-3 0h2v2H3zm7 0h1v2h-1z"/></g>
+    <g id="wave" fill="#cee9ed"><path d="M0 1h3V0h4v1h3v1H7v1H3V2H0z"/></g>
+    <g id="grass" fill="#88ac72"><path d="M0 1h1v2h1V0h1v3h1V1h1v3H0z"/></g>
+  </defs>
+  <path fill="#83bfd3" d="M0 0h160v176H0z"/>
+  <g opacity=".7"><use href="#wave" x="6" y="24"/><use href="#wave" x="134" y="15"/><use href="#wave" x="144" y="112"/><use href="#wave" x="5" y="88"/><use href="#wave" x="10" y="155"/><use href="#wave" x="46" y="164"/><use href="#wave" x="105" y="161"/><use href="#wave" x="138" y="163"/><use href="#wave" x="6" y="120"/><use href="#wave" x="136" y="54"/></g>
+  <!-- Stepped coast, shallow shelf and inland relief. -->
+  <path fill="#d6cb96" d="M54 10h34v4h16v6h12v10h8v12h-4v12h-8v10h12v8h12v-4h12v10h4v16h-8v8h-12v12h-8v14h-12v10h-10v12H90v10H70v-4H56v-8H40v-8H26v-12H16v-12H10V92h4V68h4V48h6V30h12V20h18z"/>
+  <path fill="#eef0d5" d="M54 12h34v4h16v6h10v10h8v10h-4v14h-8v10h12v8h14v-4h10v10h4v12h-8v8h-12v12h-8v14h-12v10h-10v12H88v8H70v-4H56v-8H40v-8H28v-12H18v-12H12V92h4V68h4V48h6V32h12V22h16z"/>
+  <path fill="#b1c995" d="M54 18h30v4h16v6h10v12h-4v14h-4v14h14v12h18v-4h8v12h-6v8h-12v12h-8v12h-14v12h-8v12H84v6H72v-4H60v-8H42v-8H32v-12H22v-12H18V94h4V70h4V50h6V36h14V26h8z"/>
+  <path fill="#a5ca86" d="M28 32h20v16h-4v12H28zm62 0h18v16h-6v22h14v22h-12v16H88V92H74V78h10V60h6zM36 104h26v10h16v-6h16v20H82v18H60v-8H42v-8H32v-12h4z"/>
+  <!-- Infinity Mountain anchors the island. -->
+  <path fill="#9aabac" d="M50 64h4V52h6V42h6V32h8V22h6v10h6v10h6v12h6v12h6v10H48z"/>
+  <path fill="#6e858c" d="M72 34h4v10h4v8h6v12h6v10H60V62h4V50h4V40h4z"/>
+  <path fill="#f5fbff" d="M74 22h6v10h6v8h-8v-4h-4v6h-8V32h8z"/>
+  <path fill="#c2d0cf" d="M66 42h4v12h-4v10h-6v10h-6V62h6V52h6z"/>
+  <!-- Trails connect the nursery, fields, factory and eastern plateau. -->
+  <g fill="none" stroke="#e4d9b0" stroke-width="2"><path d="M32 42v14H30v22h12v12h18v6h24v8h18v14H82v22M60 96V80h16V60M84 96V82h50M30 78v26h4v18M104 96v-8h12V42"/></g>
+  <!-- Industrial coast. -->
+  <g fill="#667b89"><path d="M24 28h4v8h4v-6h4v6h4v10H22V36h2zM27 23h3v3h-3zm5-3h4v3h-4z"/></g>
+  <path fill="#d4e9de" d="M25 38h3v3h-3zm6 0h3v3h-3zm6 0h2v3h-2z"/>
+  <!-- Northern barrens and eastern castle. -->
+  <g><use href="#rock" x="55" y="20"/><use href="#rock" x="84" y="16"/><use href="#rock" x="90" y="25"/><use href="#rock" x="57" y="28"/></g>
+  <path fill="#77728e" d="M112 29h3v3h3v-3h3v3h3v-3h3v15h-15zm4-6h7v2h-7z"/>
+  <path fill="#efe3c7" d="M114 35h2v3h-2zm9 0h2v3h-2zm-5 4h3v5h-3z"/>
+  <!-- Gear Savannah. -->
+  <path fill="#a18b59" d="M37 66h3v-3h5v3h3v5h-3v3h-5v-3h-3z"/><path fill="#ddd09b" d="M40 67h5v4h-5z"/>
+  <g><use href="#grass" x="24" y="65"/><use href="#grass" x="21" y="87"/><use href="#grass" x="38" y="79"/><use href="#grass" x="47" y="72"/></g>
+  <!-- Forest and nursery. -->
+  <g><use href="#pine" x="46" y="51"/><use href="#pine" x="87" y="50"/><use href="#tree" x="86" y="65"/><use href="#tree" x="62" y="66"/><use href="#tree" x="48" y="74"/><use href="#tree" x="104" y="49"/></g>
+  <g><use href="#house" x="46" y="86"/><use href="#house" x="64" y="85"/><use href="#house" x="56" y="102"/></g>
+  <!-- Sandy pyramid outcrop and fossil plateau. -->
+  <path fill="#d2b885" d="M124 75h4v4h4v4h4v4h4v4h-12v-4h-4z"/><path fill="#9b795d" d="M128 77h14v3h-3v3h-3v3h-2v-3h-3v-3h-3z"/>
+  <g><use href="#rock" x="105" y="76"/><use href="#rock" x="110" y="112"/><use href="#rock" x="93" y="117"/><use href="#rock" x="100" y="88"/></g>
+  <path fill="#f5e9c9" d="M91 97h2v4h8v-4h2v2h2v4h-4v2h-8v-2h-4v-4h2z"/>
+  <!-- Dragon Eye Lake, waterfall and southern rainforest. -->
+  <path fill="#d6cb96" d="M25 110h14v4h6v12h-6v5H25v-4h-5v-12h5z"/><path fill="#83bfd3" d="M27 114h10v3h4v7h-5v3h-9v-4h-3v-6h3z"/>
+  <path fill="#83bfd3" d="M38 112v-10h2V88h2V78h2v-6h3v8h-3v10h-2v14h-2v8z"/>
+  <g><use href="#tree" x="51" y="119"/><use href="#tree" x="64" y="127"/><use href="#tree" x="76" y="119"/><use href="#tree" x="87" y="128"/><use href="#tree" x="59" y="138"/><use href="#tree" x="89" y="141"/><use href="#tree" x="74" y="148"/></g>
+  <!-- Coela Beach's sandy cape, telephone booths and an offshore shoal. -->
+  <path fill="#f0dfb2" d="M100 136h10v3h16v3h8v6h-6v4h-16v-3h-12zM139 133h6v3h4v6h-8v-3h-2z"/>
+  <path fill="#557f95" d="M114 138h4v8h-4zM120 138h4v8h-4zM126 138h4v8h-4z"/>
+  <path fill="#c8eef0" d="M115 140h2v4h-2zM121 140h2v4h-2zM127 140h2v4h-2z"/>
+  <g><use href="#wave" x="117" y="155"/><use href="#wave" x="141" y="149"/><use href="#wave" x="3" y="47"/></g>
+</svg>

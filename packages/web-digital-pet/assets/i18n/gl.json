@@ -451,5 +451,10 @@
   "social.challengeContext": "Arena · Combate",
   "social.arenaTeam": "Arena · Equipo",
   "social.arenaFighter": "O teu loitador de Arena",
-  "social.noArenaEligible": "Non hai Digimon dispoñibles para Arena. Os ovos e compañeiros ocupados non poden combater."
+  "social.noArenaEligible": "Non hai Digimon dispoñibles para Arena. Os ovos e compañeiros ocupados non poden combater.",
+  "theme.label": "Tema",
+  "theme.description": "Escolle o aspecto deste dispositivo.",
+  "theme.color": "Cor",
+  "theme.saveError": "Non se puido gardar o tema.",
+  "theme.lcd": "LCD"
 }

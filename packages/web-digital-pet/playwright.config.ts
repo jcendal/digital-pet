@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test"
+import { themeContextOptions } from "./tests/e2e/helpers/theme.ts"
 
 const safari = process.env.PLAYWRIGHT_WEBKIT === "1"
 
@@ -9,6 +10,7 @@ export default defineConfig({
   timeout: 45_000,
   reporter: process.env.CI ? [["list"], ["github"]] : "list",
   use: {
+    ...themeContextOptions,
     ...(safari ? devices["iPhone 13"] : {}),
     baseURL: "http://127.0.0.1:4175",
     browserName: safari ? "webkit" : "chromium",

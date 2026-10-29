@@ -8,5 +8,5 @@ export const companionPortrait = (nodeId: string | null): string => {
   const node = nodeId ? DIGIMON_CATALOG.byId.get(nodeId) : undefined
   const frame = node ? MONSTER_FRAME_CATALOG.get(node.sprite, "walk_1") : undefined
   const art = frame ? artworkToCenteredPixelArt(frame.content, 20) : undefined
-  return `<svg class="social-portrait" viewBox="${escapeHtml(art?.viewBox ?? "0 0 24 24")}" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="${escapeHtml(art?.path ?? "M9 3h6v6H9zM6 12h12v3h3v6H3v-6h3z")}"/></svg>`
+  return `<svg class="social-portrait" data-monster-id="${escapeHtml(nodeId ?? "")}" viewBox="${escapeHtml(art?.viewBox ?? "0 0 24 24")}" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="${escapeHtml(art?.path ?? "M9 3h6v6H9zM6 12h12v3h3v6H3v-6h3z")}"/></svg>`
 }

@@ -1,0 +1,27 @@
+{
+  "generatedBy": "scripts/import-color-sprites.py",
+  "repository": "sbugallo/opencode-vpet",
+  "revision": "ce7b62995b69f0ead1c264626407ad401d6209a6",
+  "sourceChecksums": {
+    "digimon-data.ts": "65ba8c2515443310d1bf923e766b6f7c4b3548db5c6bb21581a73fc9f94f5a27",
+    "monster-color-frames.ts": "661db9aaea9027f17a5ddb34ace30fa44bd2ee04a25c4990ffa39e0ffbdee7f0"
+  },
+  "format": "base64-rle-count-index-v1",
+  "width": 16,
+  "height": 16,
+  "identities": 650,
+  "sprites": 639,
+  "poses": 7658,
+  "dataSha256": "f421941dd97432a434f766f8c4e417ed04f89d458027e103c856d698cf3ab74b",
+  "dataBytes": 2798919,
+  "remainingIntegration": [
+    "regional-origin-eggs",
+    "color-attack-assignments",
+    "effects-and-scenery",
+    "host-theme-selection"
+  ],
+  "poseSubstitutions": {
+    "injured_1": "sick",
+    "injured_2": "refuse"
+  }
+}

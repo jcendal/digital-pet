@@ -1,4 +1,5 @@
 import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
+import type { ArtworkSnapshot } from "@jcendal/digital-pet-animation/themes/artwork-snapshot.ts"
 import { buildSidebarPresentation } from "@jcendal/digital-pet-webviews/sidebar/sidebar-presenter.ts"
 import { battleNode } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
@@ -55,8 +56,8 @@ export const createBattleViewer = (battle: PendingBattle) => {
       send({ ...presentation.payload, opponentName: remote.nameEn })
       send({ type: "presentation-state", state: { phase: "battle", fromNodeId: local.id, opponentNodeId: remote.id } })
     },
-    frame(artwork: string, hud?: BattleFrameHud): void {
-      send({ type: "animation-frame", artwork, ...(hud ? { hud } : {}) })
+    frame(artwork: string, hud?: BattleFrameHud, visual?: ArtworkSnapshot): void {
+      send({ type: "animation-frame", artwork, visual, ...(hud ? { hud } : {}) })
     },
     finish(): void {
       send({ type: "presentation-state", state: { phase: "idle" } })

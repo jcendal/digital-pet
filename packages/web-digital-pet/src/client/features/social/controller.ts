@@ -38,6 +38,7 @@ import {
 } from "../../persistence/social-store.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
+import { paintExchangeColors, themedExchangeArtwork } from "../theme/controller.ts"
 import { SocialSession } from "./session.ts"
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T
@@ -317,13 +318,14 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     let previous = performance.now()
     let lastPhase = ""
     const draw = () => {
-      const frame = renderExchangeScene(art, elapsed, reduced)
+      const frame = renderExchangeScene(themedExchangeArtwork(art, local?.id ?? "", remote?.id ?? ""), elapsed, reduced)
       const scene = el("social-exchange-scene")
       scene.dataset.phase = frame.phase
       scene.dataset.revealed = String(frame.revealed)
       scene.querySelector(".social-exchange-welcome")?.setAttribute("aria-hidden", String(!frame.revealed))
       for (const layer of ["outgoing", "incoming", "trail", "sparks"] as const)
         el(`social-exchange-${layer}`).setAttribute("d", exchangePixelPath(frame[layer]))
+      paintExchangeColors(scene.querySelector<SVGElement>(".social-exchange-artwork")!, frame)
       const phase = elapsed < 700 && !reduced ? "exchangeTitle" : frame.phase
       if (phase !== lastPhase) {
         el("social-exchange-status").textContent = t(phase)

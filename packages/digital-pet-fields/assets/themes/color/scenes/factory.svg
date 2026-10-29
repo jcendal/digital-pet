@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Factorial Town pixel landscape</title>
+  <rect width="160" height="160" fill="#c6d8dc"/>
+  <path fill="#a8b4b9" d="M0 48h22v76H0zM30 60h20v64H30zM110 52h18v72h-18zM136 36h24v88h-24z"/>
+  <path fill="#f1e7c8" d="M12 28h14v-6h18v-6h16v4H46v6H28v6H12zM116 20h12v-6h18v-6h14v4h-12v6h-18v6h-14z"/>
+  <path fill="#667383" d="M18 34h8v40h-8zM116 26h8v48h-8zM14 32h16v4H14zM112 24h16v4h-16z"/>
+  <path fill="#788d99" d="M8 76h36V64h12v10h12V62h12v12h12V62h12v12h14V64h12v12h22v48H8z"/>
+  <path fill="#b7b1a0" d="M14 84h24v12H14zM52 84h24v12H52zM90 84h24v12H90zM128 84h18v12h-18z"/>
+  <path fill="#667383" d="M24 84h2v12h-2zM62 84h2v12h-2zM100 84h2v12h-2zM136 84h2v12h-2zM14 100h32v6H22v14h-8zM114 104h32v6h-26v14h-6zM66 108h28v16H66z"/>
+  <path fill="#f1e7c8" d="M74 112h12v2H74zM32 108h2v12h-2zM38 108h2v12h-2zM128 114h8v2h-8z"/>
+  <rect y="124" width="160" height="36" fill="#a8b4b9"/>
+  <path fill="#788d99" d="M0 124h160v2H0zM0 146h160v2H0zM20 150h18v8H20zM122 150h18v8h-18z"/>
+  <path fill="#b7b1a0" d="M24 152h2v4h-2zM30 152h2v4h-2zM126 152h2v4h-2zM132 152h2v4h-2z"/>
+</svg>

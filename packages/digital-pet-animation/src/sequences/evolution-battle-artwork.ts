@@ -17,6 +17,7 @@ import {
 } from "../constants/presentation-timing.ts"
 import { catalogs, IntlModule } from "../i18n.ts"
 import { mirrorMonsterFrame } from "../idle/monster-artwork-mirror.ts"
+import type { ArtworkSnapshot } from "../themes/artwork-snapshot.ts"
 import { sleep } from "../utils/sleep.ts"
 import { attackArtworkForSprite } from "./attack-artwork.ts"
 
@@ -54,7 +55,7 @@ export type BattleFrameHud = {
   readonly captionRow: number
 }
 
-export type BattleFrameListener = (artwork: string, hud?: BattleFrameHud) => Promise<void>
+export type BattleFrameListener = (artwork: string, hud?: BattleFrameHud, visual?: ArtworkSnapshot) => Promise<void>
 
 export type EvolutionBattleShot = BattleShot
 
@@ -268,22 +269,26 @@ const postScene = async (
   onFrame: BattleFrameListener,
 ): Promise<void> => {
   const battleWidth = MONSTER_FRAME_COLUMNS * 2 + BATTLE_GAP_COLUMNS
-  await onFrame(renderEvolutionBattleArtwork(catalog, playerSprite, opponentSprite, scene, viewportWidth), {
-    playerHits: scene.playerHits,
-    opponentHits: scene.opponentHits,
-    hitsToWin: EVOLUTION_BATTLE_HITS_TO_WIN,
-    caption:
-      scene.outcomeLabel ??
-      (scene.lastResult === null
-        ? null
-        : scene.lastResult === "hit"
-          ? IntlModule.translate("evolutionBattleArtwork.hit")
-          : IntlModule.translate("evolutionBattleArtwork.miss")),
-    gapStartColumn: Math.max(Math.floor((viewportWidth - battleWidth) / 2), 0) + MONSTER_FRAME_COLUMNS,
-    gapColumns: BATTLE_GAP_COLUMNS,
-    scoreRow: 0,
-    captionRow: MONSTER_FRAME_ROWS - 1,
-  })
+  await onFrame(
+    renderEvolutionBattleArtwork(catalog, playerSprite, opponentSprite, scene, viewportWidth),
+    {
+      playerHits: scene.playerHits,
+      opponentHits: scene.opponentHits,
+      hitsToWin: EVOLUTION_BATTLE_HITS_TO_WIN,
+      caption:
+        scene.outcomeLabel ??
+        (scene.lastResult === null
+          ? null
+          : scene.lastResult === "hit"
+            ? IntlModule.translate("evolutionBattleArtwork.hit")
+            : IntlModule.translate("evolutionBattleArtwork.miss")),
+      gapStartColumn: Math.max(Math.floor((viewportWidth - battleWidth) / 2), 0) + MONSTER_FRAME_COLUMNS,
+      gapColumns: BATTLE_GAP_COLUMNS,
+      scoreRow: 0,
+      captionRow: MONSTER_FRAME_ROWS - 1,
+    },
+    { kind: "battle", player: playerSprite, opponent: opponentSprite, width: viewportWidth, scene },
+  )
 }
 
 const animateBattleIntro = async (viewportWidth: number, onFrame: BattleFrameListener): Promise<void> => {

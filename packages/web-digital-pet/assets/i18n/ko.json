@@ -451,5 +451,10 @@
   "social.challengeContext": "아레나 · 배틀",
   "social.arenaTeam": "아레나 · 팀",
   "social.arenaFighter": "내 아레나 디지몬",
-  "social.noArenaEligible": "아레나에 참가할 디지몬이 없습니다. 알과 다른 활동 중인 파트너는 배틀할 수 없습니다."
+  "social.noArenaEligible": "아레나에 참가할 디지몬이 없습니다. 알과 다른 활동 중인 파트너는 배틀할 수 없습니다.",
+  "theme.label": "테마",
+  "theme.description": "이 기기의 모습을 선택하세요.",
+  "theme.color": "컬러",
+  "theme.saveError": "테마를 저장할 수 없습니다.",
+  "theme.lcd": "LCD"
 }

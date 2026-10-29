@@ -1,17 +1,19 @@
 import { expect, test } from "@playwright/test"
 import { chooseAlias, linkSocialPeers, readPet, readSocialState, seedSocialPet } from "./helpers/social-peers.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 test("real social storage and transport: invitation, friendship, renaming, ration and settled exchange", async ({
   browser,
 }, info) => {
   test.setTimeout(120000)
   const a = await browser.newContext({
+    ...themeContextOptions,
     locale: "es-ES",
     ...(process.env.PLAYWRIGHT_CAPTURE_EXCHANGE === "1"
       ? { recordVideo: { dir: info.outputPath("video"), size: { width: 390, height: 844 } } }
       : {}),
   })
-  const b = await browser.newContext({ locale: "es-ES" })
+  const b = await browser.newContext({ ...themeContextOptions, locale: "es-ES" })
   const alice = await a.newPage()
   const bob = await b.newPage()
   const errors: string[] = []
@@ -206,8 +208,8 @@ test("offline invitation retains one retryable request after reload and validate
 })
 
 test("inline friend lookup verifies the connected identity before sending a request", async ({ browser }, info) => {
-  const a = await browser.newContext({ locale: "es-ES", viewport: { width: 320, height: 740 } })
-  const b = await browser.newContext({ locale: "es-ES" })
+  const a = await browser.newContext({ ...themeContextOptions, locale: "es-ES", viewport: { width: 320, height: 740 } })
+  const b = await browser.newContext({ ...themeContextOptions, locale: "es-ES" })
   const alice = await a.newPage()
   const bob = await b.newPage()
   await linkSocialPeers([alice, bob])

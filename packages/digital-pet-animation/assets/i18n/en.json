@@ -8,5 +8,7 @@
   "evolutionPresentation.unknownEvolutionParticipant": "Unknown evolution participant",
   "evolutionPresentation.invalidEvolutionOpponent": "Invalid evolution opponent",
   "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "Only an egg can evolve without a battle",
-  "battle.intro": "██████╗  █████╗ ████████╗████████╗██╗     ███████╗\n██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝\n██████╔╝███████║   ██║      ██║   ██║     █████╗  \n██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  \n██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗\n╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝"
+  "battle.intro": "██████╗  █████╗ ████████╗████████╗██╗     ███████╗\n██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝\n██████╔╝███████║   ██║      ██║   ██║     █████╗  \n██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  \n██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗\n╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝",
+  "themes.lcd": "LCD",
+  "themes.color": "Color"
 }

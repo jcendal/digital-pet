@@ -8,5 +8,7 @@
   "evolutionPresentation.unknownEvolutionParticipant": "Participante da evolución descoñecido",
   "evolutionPresentation.invalidEvolutionOpponent": "O rival da evolución non é válido",
   "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "Só un ovo pode evolucionar sen combater",
-  "battle.intro": "COMBATE"
+  "battle.intro": "COMBATE",
+  "themes.lcd": "LCD",
+  "themes.color": "Cor"
 }

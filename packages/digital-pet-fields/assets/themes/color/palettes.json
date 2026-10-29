@@ -1,0 +1,235 @@
+{
+  "scenes": {
+    "lake": {
+      "#b8c79a": "#bde5f4",
+      "#c5cfaa": "#eff7ed",
+      "#a3b384": "#84af91",
+      "#94a477": "#5b8c6e",
+      "#afbe91": "#70b8d1",
+      "#899a6b": "#637b83"
+    },
+    "beach": {
+      "#b8c79a": "#b9e5f4",
+      "#c5cfaa": "#fff5d9",
+      "#a3b384": "#7fae84",
+      "#94a477": "#578971",
+      "#afbe91": "#76c3cf",
+      "#899a6b": "#b5925d",
+      "#8b9d70": "#b5925d"
+    },
+    "village": {
+      "#b8c79a": "#badfec",
+      "#c5cfaa": "#faf1d0",
+      "#a3b384": "#91b37b",
+      "#94a477": "#5d926a",
+      "#afbe91": "#d0bd86",
+      "#899a6b": "#6c7954"
+    },
+    "savannah": {
+      "#b8c79a": "#c9e6ed",
+      "#c5cfaa": "#fff2c3",
+      "#a3b384": "#c9b67d",
+      "#94a477": "#a38e59",
+      "#afbe91": "#dcd09b",
+      "#899a6b": "#7a8052"
+    },
+    "swamp": {
+      "#b8c79a": "#b9d9cc",
+      "#c5cfaa": "#e1e7b7",
+      "#a3b384": "#8fba98",
+      "#94a477": "#628f7c",
+      "#afbe91": "#a0c2a5",
+      "#899a6b": "#547963"
+    },
+    "forest": {
+      "#b8c79a": "#bcdfde",
+      "#c5cfaa": "#eff1d1",
+      "#a3b384": "#86b68d",
+      "#94a477": "#4b8d68",
+      "#afbe91": "#b0ca92",
+      "#899a6b": "#3c7057"
+    },
+    "jungle": {
+      "#b8c79a": "#b3dcda",
+      "#c5cfaa": "#e7edc7",
+      "#a3b384": "#78ae82",
+      "#94a477": "#408a64",
+      "#afbe91": "#9fc587",
+      "#899a6b": "#336954"
+    },
+    "mangrove": {
+      "#b8c79a": "#b6dbd4",
+      "#c5cfaa": "#edf1cd",
+      "#a3b384": "#81b39a",
+      "#94a477": "#508e75",
+      "#afbe91": "#85bdba",
+      "#899a6b": "#4e7263"
+    },
+    "ice": {
+      "#b8c79a": "#c2e2f1",
+      "#c5cfaa": "#fcffff",
+      "#a3b384": "#a0c7dd",
+      "#94a477": "#709cb9",
+      "#afbe91": "#d3e9ed",
+      "#899a6b": "#617eaa"
+    },
+    "panorama": {
+      "#b8c79a": "#bfdef0",
+      "#c5cfaa": "#fbf4dd",
+      "#a3b384": "#a4b5ad",
+      "#94a477": "#788e91",
+      "#afbe91": "#c6c6a2",
+      "#899a6b": "#697e7b"
+    },
+    "city": {
+      "#b8c79a": "#c4e0ed",
+      "#c5cfaa": "#f7f1d9",
+      "#a3b384": "#a0b8c4",
+      "#94a477": "#718b9e",
+      "#afbe91": "#b9c9c9",
+      "#899a6b": "#586d83"
+    },
+    "factory": {
+      "#b8c79a": "#c6d8dc",
+      "#c5cfaa": "#f1e7c8",
+      "#a3b384": "#a8b4b9",
+      "#94a477": "#788d99",
+      "#afbe91": "#b7b1a0",
+      "#899a6b": "#667383"
+    },
+    "dino": {
+      "#b8c79a": "#d6e3ca",
+      "#c5cfaa": "#fff1c3",
+      "#a3b384": "#b1b67a",
+      "#94a477": "#8d945c",
+      "#afbe91": "#d3c48e",
+      "#899a6b": "#787b4d"
+    },
+    "canyon": {
+      "#b8c79a": "#c9dfec",
+      "#c5cfaa": "#fff0cc",
+      "#a3b384": "#c6a382",
+      "#94a477": "#a67b62",
+      "#afbe91": "#e2c69b",
+      "#899a6b": "#835d52"
+    },
+    "wasteland": {
+      "#b8c79a": "#d4d8dd",
+      "#c5cfaa": "#eee4cc",
+      "#a3b384": "#b7a597",
+      "#94a477": "#928375",
+      "#afbe91": "#c7b8a0",
+      "#899a6b": "#746d67"
+    },
+    "cemetery": {
+      "#b8c79a": "#bdc6d4",
+      "#c5cfaa": "#dce0d7",
+      "#a3b384": "#9babb1",
+      "#94a477": "#788592",
+      "#afbe91": "#b2b7ac",
+      "#899a6b": "#626e80"
+    },
+    "castle": {
+      "#b8c79a": "#b9bfd6",
+      "#c5cfaa": "#e5dfe5",
+      "#a3b384": "#aaa3bf",
+      "#94a477": "#817f9e",
+      "#afbe91": "#bfb4c0",
+      "#899a6b": "#676680"
+    },
+    "terminal": {
+      "#b8c79a": "#b9cddd",
+      "#c5cfaa": "#e3eef2",
+      "#a3b384": "#8faabb",
+      "#94a477": "#668b9f",
+      "#afbe91": "#abc5c9",
+      "#899a6b": "#506879"
+    },
+    "pyramid": {
+      "#b8c79a": "#d2d3e1",
+      "#c5cfaa": "#f1e9d2",
+      "#a3b384": "#b0a3c1",
+      "#94a477": "#8c7e9d",
+      "#afbe91": "#c9b5b7",
+      "#899a6b": "#6b617f"
+    },
+    "toys": {
+      "#b8c79a": "#c7e1ed",
+      "#c5cfaa": "#fff0d6",
+      "#a3b384": "#c1a8cc",
+      "#94a477": "#888ebb",
+      "#afbe91": "#dcd2ad",
+      "#899a6b": "#8d7499"
+    }
+  },
+  "map": {
+    "#afbe93": "#83bfd3",
+    "#a3b487": "#cee9ed",
+    "#8fa276": "#d6cb96",
+    "#7d9060": "#61956a",
+    "#a4b586": "#a5ca86",
+    "#65784e": "#5e6e64",
+    "#89986e": "#899fa6",
+    "#c5cfa9": "#eef0d5",
+    "#899b6e": "#88ac72",
+    "#bac79c": "#b1c995",
+    "#73875a": "#657c66",
+    "#d0d8b7": "#e4d9b0",
+    "#aab98e": "#b7c89b"
+  },
+  "mapRegions": {
+    "infinityMountain": {
+      "marker": "Infinity Mountain anchors the island.",
+      "colors": {
+        "#8fa276": "#9aabac",
+        "#73875a": "#6e858c",
+        "#d0d8b7": "#f5fbff",
+        "#aab98e": "#c2d0cf"
+      }
+    },
+    "industrialCoast": {
+      "marker": "Industrial coast.",
+      "colors": {
+        "#65784e": "#667b89",
+        "#a4b586": "#d4e9de"
+      }
+    },
+    "easternCastle": {
+      "marker": "Northern barrens and eastern castle.",
+      "colors": {
+        "#65784e": "#77728e",
+        "#c5cfa9": "#efe3c7"
+      }
+    },
+    "gearSavannah": {
+      "marker": "Gear Savannah.",
+      "colors": {
+        "#899b6e": "#a18b59",
+        "#bac79c": "#ddd09b"
+      }
+    },
+    "fossilPlateau": {
+      "marker": "Sandy pyramid outcrop and fossil plateau.",
+      "colors": {
+        "#a4b586": "#d2b885",
+        "#65784e": "#9b795d",
+        "#73875a": "#f5e9c9"
+      }
+    },
+    "coelaBeach": {
+      "marker": "Coela Beach's sandy cape, telephone booths and an offshore shoal.",
+      "colors": {
+        "#c5cfa9": "#f0dfb2",
+        "#73875a": "#557f95",
+        "#d0d8b7": "#c8eef0"
+      }
+    }
+  },
+  "mapSymbols": {
+    "house": {
+      "#65784e": "#76899a",
+      "#c5cfa9": "#f2e5c6",
+      "#89986e": "#8d7965"
+    }
+  }
+}

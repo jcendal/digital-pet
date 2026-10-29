@@ -16,6 +16,11 @@ export const optionsMarkup = /* html */ `
         ${["en", "ko", "es", "gl"].map((locale) => `<option value="${locale}">${escapeHtml(languageIntl.translate(`language.${locale}`))}</option>`).join("")}
       </select>
     </section>
+    <section class="options-section theme-section">
+      <label class="section-heading" for="theme-select" data-i18n="web:theme.label">${escapeHtml(IntlModule.translate("theme.label"))}</label>
+      <p class="section-description" data-i18n="web:theme.description">${escapeHtml(IntlModule.translate("theme.description"))}</p>
+      <select id="theme-select"><option value="lcd" data-i18n="web:theme.lcd">LCD</option><option value="color" data-i18n="web:theme.color">${escapeHtml(IntlModule.translate("theme.color"))}</option></select>
+    </section>
     <fieldset id="new-partner-options"><legend class="sr-only" data-i18n="web:optionsMarkup.browserCompanionOptions">${escapeHtml(IntlModule.translate("optionsMarkup.browserCompanionOptions"))}</legend>
       <section class="new-partner-section"><div class="action-heading">${eggIcon}<div><h3 data-i18n="web:optionsMarkup.aNewJourney">${escapeHtml(IntlModule.translate("optionsMarkup.aNewJourney"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.startFreshKeepYourPastCompanions">${escapeHtml(IntlModule.translate("optionsMarkup.startFreshKeepYourPastCompanions"))}</p></div></div>
         <button id="new-partner" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.startANewEgg">${escapeHtml(IntlModule.translate("optionsMarkup.startANewEgg"))}</span><span aria-hidden="true">+</span></button>

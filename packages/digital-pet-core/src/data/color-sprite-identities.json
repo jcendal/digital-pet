@@ -1,0 +1,3265 @@
+{
+  "generatedBy": "scripts/import-color-sprites.py",
+  "repository": "sbugallo/opencode-vpet",
+  "revision": "ce7b62995b69f0ead1c264626407ad401d6209a6",
+  "sourceChecksums": {
+    "digimon-data.ts": "65ba8c2515443310d1bf923e766b6f7c4b3548db5c6bb21581a73fc9f94f5a27",
+    "monster-color-frames.ts": "661db9aaea9027f17a5ddb34ace30fa44bd2ee04a25c4990ffa39e0ffbdee7f0"
+  },
+  "nodes": {
+    "0-001": {
+      "sprite": "digitama-virus-busters",
+      "upstreamId": "D-007",
+      "method": "explicit",
+      "reason": "Authored generic color egg for legacy saves without an origin. Regional origins remain separate assets and hatch rules are unchanged."
+    },
+    "1-001": {
+      "sprite": "argomon-baby-1",
+      "upstreamId": "BI-001",
+      "method": "official-reference"
+    },
+    "1-002": {
+      "sprite": "botamon",
+      "upstreamId": "BI-004",
+      "method": "official-reference"
+    },
+    "1-003": {
+      "sprite": "chibomon",
+      "upstreamId": "BI-007",
+      "method": "official-reference"
+    },
+    "1-004": {
+      "sprite": "choromon",
+      "upstreamId": "BI-008",
+      "method": "official-reference"
+    },
+    "1-005": {
+      "sprite": "conomon",
+      "upstreamId": "BI-009",
+      "method": "official-reference"
+    },
+    "1-006": {
+      "sprite": "cotsucomon",
+      "upstreamId": "BI-010",
+      "method": "official-reference"
+    },
+    "1-007": {
+      "sprite": "dodomon",
+      "upstreamId": "BI-012",
+      "method": "official-reference"
+    },
+    "1-008": {
+      "sprite": "fufumon",
+      "upstreamId": "BI-014",
+      "method": "official-reference"
+    },
+    "1-009": {
+      "sprite": "keemon",
+      "upstreamId": "BI-018",
+      "method": "official-reference"
+    },
+    "1-010": {
+      "sprite": "ketomon",
+      "upstreamId": "BI-019",
+      "method": "official-reference"
+    },
+    "1-011": {
+      "sprite": "kuramon",
+      "upstreamId": "BI-020",
+      "method": "official-reference"
+    },
+    "1-012": {
+      "sprite": "mokumon",
+      "upstreamId": "BI-022",
+      "method": "official-reference"
+    },
+    "1-013": {
+      "sprite": "nyokimon",
+      "upstreamId": "BI-023",
+      "method": "official-reference"
+    },
+    "1-014": {
+      "sprite": "pabumon",
+      "upstreamId": "BI-005",
+      "method": "official-reference"
+    },
+    "1-015": {
+      "sprite": "petitmon",
+      "upstreamId": "BI-026",
+      "method": "official-reference"
+    },
+    "1-016": {
+      "sprite": "pichimon",
+      "upstreamId": "BI-028",
+      "method": "official-reference"
+    },
+    "1-017": {
+      "sprite": "poyomon",
+      "upstreamId": "BI-030",
+      "method": "official-reference"
+    },
+    "1-018": {
+      "sprite": "punimon",
+      "upstreamId": "BI-031",
+      "method": "official-reference"
+    },
+    "1-019": {
+      "sprite": "pururumon",
+      "upstreamId": "BI-033",
+      "method": "official-reference"
+    },
+    "1-020": {
+      "sprite": "puttimon",
+      "upstreamId": "BI-035",
+      "method": "official-reference"
+    },
+    "1-021": {
+      "sprite": "sakumon",
+      "upstreamId": "BI-040",
+      "method": "official-reference"
+    },
+    "1-022": {
+      "sprite": "tsubumon",
+      "upstreamId": "BI-043",
+      "method": "official-reference"
+    },
+    "1-023": {
+      "sprite": "yukimibotamon",
+      "upstreamId": "BI-045",
+      "method": "official-reference"
+    },
+    "1-024": {
+      "sprite": "yuramon",
+      "upstreamId": "BI-046",
+      "method": "official-reference"
+    },
+    "1-025": {
+      "sprite": "zerimon",
+      "upstreamId": "BI-047",
+      "method": "official-reference"
+    },
+    "1-026": {
+      "sprite": "zurumon",
+      "upstreamId": "BI-048",
+      "method": "official-reference"
+    },
+    "1-027": {
+      "sprite": "chibickmon",
+      "upstreamId": "BI-006",
+      "method": "official-reference"
+    },
+    "1-028": {
+      "sprite": "dokimon",
+      "upstreamId": "BI-013",
+      "method": "official-reference"
+    },
+    "1-029": {
+      "sprite": "jyarimon",
+      "upstreamId": "BI-017",
+      "method": "official-reference"
+    },
+    "1-030": {
+      "sprite": "relemon",
+      "upstreamId": "BI-039",
+      "method": "official-reference"
+    },
+    "1-031": {
+      "sprite": "sandmon",
+      "upstreamId": "BI-041",
+      "method": "official-reference"
+    },
+    "2-001": {
+      "sprite": "argomon-baby-2",
+      "upstreamId": "BII-001",
+      "method": "official-reference"
+    },
+    "2-002": {
+      "sprite": "bebydomon",
+      "upstreamId": "BII-003",
+      "method": "official-reference"
+    },
+    "2-003": {
+      "sprite": "budmon",
+      "upstreamId": "BII-006",
+      "method": "official-reference"
+    },
+    "2-004": {
+      "sprite": "bukamon",
+      "upstreamId": "BII-040",
+      "method": "official-reference"
+    },
+    "2-005": {
+      "sprite": "demimeramon",
+      "upstreamId": "BII-035",
+      "method": "official-reference"
+    },
+    "2-006": {
+      "sprite": "demiveemon",
+      "upstreamId": "BII-009",
+      "method": "official-reference"
+    },
+    "2-007": {
+      "sprite": "dorimon",
+      "upstreamId": "BII-013",
+      "method": "official-reference"
+    },
+    "2-008": {
+      "sprite": "gummymon",
+      "upstreamId": "BII-017",
+      "method": "official-reference"
+    },
+    "2-009": {
+      "sprite": "hopmon",
+      "upstreamId": "BII-020",
+      "method": "official-reference"
+    },
+    "2-010": {
+      "sprite": "kakkinmon",
+      "upstreamId": "BII-021",
+      "method": "official-reference"
+    },
+    "2-011": {
+      "sprite": "kapurimon",
+      "upstreamId": "BII-007",
+      "method": "official-reference"
+    },
+    "2-012": {
+      "sprite": "kokomon",
+      "upstreamId": "BII-011",
+      "method": "official-reference"
+    },
+    "2-013": {
+      "sprite": "koromon",
+      "upstreamId": "BII-022",
+      "method": "official-reference"
+    },
+    "2-014": {
+      "sprite": "kyokyomon",
+      "upstreamId": "BII-025",
+      "method": "official-reference"
+    },
+    "2-015": {
+      "sprite": "motimon",
+      "upstreamId": "BII-027",
+      "method": "official-reference"
+    },
+    "2-016": {
+      "sprite": "nyaromon",
+      "upstreamId": "BII-032",
+      "method": "official-reference"
+    },
+    "2-017": {
+      "sprite": "pagumon",
+      "upstreamId": "BII-034",
+      "method": "official-reference"
+    },
+    "2-018": {
+      "sprite": "poromon",
+      "upstreamId": "BII-039",
+      "method": "official-reference"
+    },
+    "2-019": {
+      "sprite": "sakuttomon",
+      "upstreamId": "BII-045",
+      "method": "official-reference"
+    },
+    "2-020": {
+      "sprite": "tanemon",
+      "upstreamId": "BII-047",
+      "method": "official-reference"
+    },
+    "2-021": {
+      "sprite": "tokomon",
+      "upstreamId": "BII-048",
+      "method": "official-reference"
+    },
+    "2-022": {
+      "sprite": "tokomon-x",
+      "upstreamId": "BII-049",
+      "method": "official-reference"
+    },
+    "2-023": {
+      "sprite": "tsumemon",
+      "upstreamId": "BII-050",
+      "method": "official-reference"
+    },
+    "2-024": {
+      "sprite": "tsunomon",
+      "upstreamId": "BII-051",
+      "method": "official-reference"
+    },
+    "2-025": {
+      "sprite": "upamon",
+      "upstreamId": "BII-052",
+      "method": "official-reference"
+    },
+    "2-026": {
+      "sprite": "wanyamon",
+      "upstreamId": "BII-053",
+      "method": "official-reference"
+    },
+    "2-027": {
+      "sprite": "yaamon",
+      "upstreamId": "BII-055",
+      "method": "official-reference"
+    },
+    "2-028": {
+      "sprite": "yokomon",
+      "upstreamId": "BII-044",
+      "method": "official-reference"
+    },
+    "2-029": {
+      "sprite": "bibimon",
+      "upstreamId": "BII-004",
+      "method": "official-reference"
+    },
+    "2-030": {
+      "sprite": "gigimon",
+      "upstreamId": "BII-015",
+      "method": "official-reference"
+    },
+    "2-031": {
+      "sprite": "tumblemon",
+      "upstreamId": "BII-016",
+      "method": "official-reference"
+    },
+    "2-032": {
+      "sprite": "hiyarimon",
+      "upstreamId": "BII-019",
+      "method": "official-reference"
+    },
+    "2-033": {
+      "sprite": "minomon",
+      "upstreamId": "BII-026",
+      "method": "official-reference"
+    },
+    "2-034": {
+      "sprite": "moonmon",
+      "upstreamId": "BII-030",
+      "method": "official-reference"
+    },
+    "2-035": {
+      "sprite": "pickmon",
+      "upstreamId": "BII-036",
+      "method": "official-reference"
+    },
+    "2-036": {
+      "sprite": "viximon",
+      "upstreamId": "BII-038",
+      "method": "official-reference"
+    },
+    "2-037": {
+      "sprite": "sunmon",
+      "upstreamId": "BII-046",
+      "method": "official-reference"
+    },
+    "3-001": {
+      "sprite": "agumon",
+      "upstreamId": "C-003",
+      "method": "official-reference"
+    },
+    "3-002": {
+      "sprite": "agumon-black-x",
+      "upstreamId": "C-006",
+      "method": "official-reference"
+    },
+    "3-003": {
+      "sprite": "agumon-expert",
+      "upstreamId": "C-008",
+      "method": "official-reference"
+    },
+    "3-004": {
+      "sprite": "agumon-x",
+      "upstreamId": "C-007",
+      "method": "official-reference"
+    },
+    "3-005": {
+      "sprite": "argomon-child",
+      "upstreamId": "C-009",
+      "method": "official-reference"
+    },
+    "3-006": {
+      "sprite": "armadillomon",
+      "upstreamId": "C-013",
+      "method": "official-reference"
+    },
+    "3-007": {
+      "sprite": "betamon",
+      "upstreamId": "C-017",
+      "method": "official-reference"
+    },
+    "3-008": {
+      "sprite": "biyomon",
+      "upstreamId": "C-111",
+      "method": "official-reference"
+    },
+    "3-009": {
+      "sprite": "bulucomon",
+      "upstreamId": "C-019",
+      "method": "official-reference"
+    },
+    "3-010": {
+      "sprite": "bushiagumon",
+      "upstreamId": "C-020",
+      "method": "official-reference"
+    },
+    "3-011": {
+      "sprite": "candlemon",
+      "upstreamId": "C-021",
+      "method": "official-reference"
+    },
+    "3-012": {
+      "sprite": "coronamon",
+      "upstreamId": "C-025",
+      "method": "official-reference"
+    },
+    "3-013": {
+      "sprite": "crabmon",
+      "upstreamId": "C-043",
+      "method": "official-reference"
+    },
+    "3-014": {
+      "sprite": "demidevimon",
+      "upstreamId": "C-109",
+      "method": "official-reference"
+    },
+    "3-015": {
+      "sprite": "dorumon",
+      "upstreamId": "C-027",
+      "method": "official-reference"
+    },
+    "3-016": {
+      "sprite": "dracomon",
+      "upstreamId": "C-028",
+      "method": "official-reference"
+    },
+    "3-017": {
+      "sprite": "dracomon-x",
+      "upstreamId": "C-029",
+      "method": "official-reference"
+    },
+    "3-018": {
+      "sprite": "duskmon",
+      "upstreamId": "H-011",
+      "method": "official-reference"
+    },
+    "3-019": {
+      "sprite": "elecmon",
+      "upstreamId": "C-032",
+      "method": "official-reference"
+    },
+    "3-020": {
+      "sprite": "falcomon",
+      "upstreamId": "C-035",
+      "method": "official-reference"
+    },
+    "3-021": {
+      "sprite": "floramon",
+      "upstreamId": "C-036",
+      "method": "official-reference"
+    },
+    "3-022": {
+      "sprite": "gabumon",
+      "upstreamId": "C-039",
+      "method": "official-reference"
+    },
+    "3-023": {
+      "sprite": "gabumon-x",
+      "upstreamId": "C-041",
+      "method": "official-reference"
+    },
+    "3-024": {
+      "sprite": "gaomon",
+      "upstreamId": "C-044",
+      "method": "official-reference"
+    },
+    "3-025": {
+      "sprite": "gatomon",
+      "upstreamId": "A-200",
+      "method": "official-reference"
+    },
+    "3-026": {
+      "sprite": "gazimon",
+      "upstreamId": "C-047",
+      "method": "official-reference"
+    },
+    "3-027": {
+      "sprite": "ghostmon",
+      "upstreamId": "C-049",
+      "method": "official-reference"
+    },
+    "3-028": {
+      "sprite": "gizamon",
+      "upstreamId": "C-050",
+      "method": "official-reference"
+    },
+    "3-029": {
+      "sprite": "gomamon",
+      "upstreamId": "C-052",
+      "method": "official-reference"
+    },
+    "3-030": {
+      "sprite": "gomamon-x",
+      "upstreamId": "C-053",
+      "method": "official-reference"
+    },
+    "3-031": {
+      "sprite": "gotsumon",
+      "upstreamId": "C-054",
+      "method": "official-reference"
+    },
+    "3-032": {
+      "sprite": "guilmon",
+      "upstreamId": "C-056",
+      "method": "official-reference"
+    },
+    "3-033": {
+      "sprite": "hagurumon",
+      "upstreamId": "C-059",
+      "method": "official-reference"
+    },
+    "3-034": {
+      "sprite": "hawkmon",
+      "upstreamId": "C-062",
+      "method": "official-reference"
+    },
+    "3-035": {
+      "sprite": "herissmon",
+      "upstreamId": "C-063",
+      "method": "official-reference"
+    },
+    "3-036": {
+      "sprite": "huckmon",
+      "upstreamId": "C-064",
+      "method": "official-reference"
+    },
+    "3-037": {
+      "sprite": "impmon",
+      "upstreamId": "C-066",
+      "method": "official-reference"
+    },
+    "3-038": {
+      "sprite": "impmon-x",
+      "upstreamId": "C-067",
+      "method": "official-reference"
+    },
+    "3-039": {
+      "sprite": "jazamon",
+      "upstreamId": "C-068",
+      "method": "official-reference"
+    },
+    "3-040": {
+      "sprite": "junkmon",
+      "upstreamId": "C-070",
+      "method": "official-reference"
+    },
+    "3-041": {
+      "sprite": "keramon-x",
+      "upstreamId": "C-074",
+      "method": "official-reference"
+    },
+    "3-042": {
+      "sprite": "kokuwamon",
+      "upstreamId": "C-078",
+      "method": "official-reference"
+    },
+    "3-043": {
+      "sprite": "kokuwamon-x",
+      "upstreamId": "C-079",
+      "method": "official-reference"
+    },
+    "3-044": {
+      "sprite": "kunemon",
+      "upstreamId": "C-082",
+      "method": "official-reference"
+    },
+    "3-045": {
+      "sprite": "labramon",
+      "upstreamId": "C-083",
+      "method": "official-reference"
+    },
+    "3-046": {
+      "sprite": "lalamon",
+      "upstreamId": "C-084",
+      "method": "official-reference"
+    },
+    "3-047": {
+      "sprite": "lopmon",
+      "upstreamId": "C-087",
+      "method": "official-reference"
+    },
+    "3-048": {
+      "sprite": "lopmon-x",
+      "upstreamId": "C-088",
+      "method": "official-reference"
+    },
+    "3-049": {
+      "sprite": "ludomon",
+      "upstreamId": "C-090",
+      "method": "official-reference"
+    },
+    "3-050": {
+      "sprite": "lunamon",
+      "upstreamId": "C-091",
+      "method": "official-reference"
+    },
+    "3-051": {
+      "sprite": "monodramon",
+      "upstreamId": "C-094",
+      "method": "official-reference"
+    },
+    "3-052": {
+      "sprite": "morphomon",
+      "upstreamId": "C-095",
+      "method": "official-reference"
+    },
+    "3-053": {
+      "sprite": "mushroomon",
+      "upstreamId": "C-097",
+      "method": "official-reference"
+    },
+    "3-054": {
+      "sprite": "otamamon",
+      "upstreamId": "C-099",
+      "method": "official-reference"
+    },
+    "3-055": {
+      "sprite": "otamamon-x",
+      "upstreamId": "C-101",
+      "method": "official-reference"
+    },
+    "3-056": {
+      "sprite": "palmon",
+      "upstreamId": "C-102",
+      "method": "official-reference"
+    },
+    "3-057": {
+      "sprite": "palmon-x",
+      "upstreamId": "C-103",
+      "method": "official-reference"
+    },
+    "3-058": {
+      "sprite": "patamon",
+      "upstreamId": "C-104",
+      "method": "official-reference"
+    },
+    "3-059": {
+      "sprite": "phascomon",
+      "upstreamId": "C-108",
+      "method": "official-reference"
+    },
+    "3-060": {
+      "sprite": "pomumon",
+      "upstreamId": "C-114",
+      "method": "official-reference"
+    },
+    "3-061": {
+      "sprite": "renamon-x",
+      "upstreamId": "C-119",
+      "method": "official-reference"
+    },
+    "3-062": {
+      "sprite": "ryudamon",
+      "upstreamId": "C-120",
+      "method": "official-reference"
+    },
+    "3-063": {
+      "sprite": "salamon",
+      "upstreamId": "C-112",
+      "method": "official-reference"
+    },
+    "3-064": {
+      "sprite": "salamon-x",
+      "upstreamId": "C-113",
+      "method": "official-reference"
+    },
+    "3-065": {
+      "sprite": "sangomon",
+      "upstreamId": "C-121",
+      "method": "official-reference"
+    },
+    "3-066": {
+      "sprite": "shoutmon",
+      "upstreamId": "C-125",
+      "method": "official-reference"
+    },
+    "3-067": {
+      "sprite": "sistermon-blanc",
+      "upstreamId": "C-126",
+      "method": "official-reference"
+    },
+    "3-068": {
+      "sprite": "sunarizamon",
+      "upstreamId": "C-131",
+      "method": "official-reference"
+    },
+    "3-069": {
+      "sprite": "swimmon",
+      "upstreamId": "C-132",
+      "method": "official-reference"
+    },
+    "3-070": {
+      "sprite": "syakomon",
+      "upstreamId": "C-122",
+      "method": "official-reference"
+    },
+    "3-071": {
+      "sprite": "syakomon-x",
+      "upstreamId": "C-123",
+      "method": "official-reference"
+    },
+    "3-072": {
+      "sprite": "tapirmon",
+      "upstreamId": "C-014",
+      "method": "official-reference"
+    },
+    "3-073": {
+      "sprite": "tentomon",
+      "upstreamId": "C-134",
+      "method": "official-reference"
+    },
+    "3-074": {
+      "sprite": "terriermon",
+      "upstreamId": "C-135",
+      "method": "official-reference"
+    },
+    "3-075": {
+      "sprite": "terriermon-x",
+      "upstreamId": "C-137",
+      "method": "official-reference"
+    },
+    "3-076": {
+      "sprite": "tinkermon",
+      "upstreamId": "C-138",
+      "method": "official-reference"
+    },
+    "3-077": {
+      "sprite": "toyagumon",
+      "upstreamId": "C-139",
+      "method": "official-reference"
+    },
+    "3-078": {
+      "sprite": "veemon",
+      "upstreamId": "C-144",
+      "method": "official-reference"
+    },
+    "3-079": {
+      "sprite": "vorvomon",
+      "upstreamId": "C-145",
+      "method": "official-reference"
+    },
+    "3-080": {
+      "sprite": "wormmon",
+      "upstreamId": "C-147",
+      "method": "official-reference"
+    },
+    "3-081": {
+      "sprite": "zubamon",
+      "upstreamId": "C-150",
+      "method": "official-reference"
+    },
+    "3-082": {
+      "sprite": "agumon-black",
+      "upstreamId": "C-005",
+      "method": "official-reference"
+    },
+    "3-083": {
+      "sprite": "dracmon",
+      "upstreamId": "C-030",
+      "method": "official-reference"
+    },
+    "3-084": {
+      "sprite": "pulsemon",
+      "upstreamId": "C-117",
+      "method": "official-reference"
+    },
+    "3-085": {
+      "sprite": "renamon",
+      "upstreamId": "C-118",
+      "method": "official-reference"
+    },
+    "4-001": {
+      "sprite": "agunimon",
+      "upstreamId": "H-001",
+      "method": "official-reference"
+    },
+    "4-002": {
+      "sprite": "airdramon",
+      "upstreamId": "A-004",
+      "method": "official-reference"
+    },
+    "4-003": {
+      "sprite": "allomon-x",
+      "upstreamId": "A-007",
+      "method": "official-reference"
+    },
+    "4-004": {
+      "sprite": "angemon",
+      "upstreamId": "A-008",
+      "method": "official-reference"
+    },
+    "4-005": {
+      "sprite": "ankylomon",
+      "upstreamId": "A-009",
+      "method": "official-reference"
+    },
+    "4-006": {
+      "sprite": "apemon",
+      "upstreamId": "A-097",
+      "method": "official-reference"
+    },
+    "4-007": {
+      "sprite": "aquilamon",
+      "upstreamId": "A-010",
+      "method": "official-reference"
+    },
+    "4-008": {
+      "sprite": "argomon-adult",
+      "upstreamId": "A-006",
+      "method": "official-reference"
+    },
+    "4-009": {
+      "sprite": "arresterdramon",
+      "upstreamId": "A-011",
+      "method": "official-reference"
+    },
+    "4-010": {
+      "sprite": "baboongamon",
+      "upstreamId": "A-012",
+      "method": "official-reference"
+    },
+    "4-011": {
+      "sprite": "bakemon",
+      "upstreamId": "A-013",
+      "method": "official-reference"
+    },
+    "4-012": {
+      "sprite": "baluchimon",
+      "upstreamId": "A-014",
+      "method": "official-reference"
+    },
+    "4-013": {
+      "sprite": "baohuckmon",
+      "upstreamId": "A-015",
+      "method": "official-reference"
+    },
+    "4-014": {
+      "sprite": "birdramon",
+      "upstreamId": "A-017",
+      "method": "official-reference"
+    },
+    "4-015": {
+      "sprite": "centarumon",
+      "upstreamId": "A-026",
+      "method": "official-reference"
+    },
+    "4-016": {
+      "sprite": "clockmon",
+      "upstreamId": "A-029",
+      "method": "official-reference"
+    },
+    "4-017": {
+      "sprite": "coelamon",
+      "upstreamId": "A-031",
+      "method": "official-reference"
+    },
+    "4-018": {
+      "sprite": "coredramon-blue",
+      "upstreamId": "A-032",
+      "method": "official-reference"
+    },
+    "4-019": {
+      "sprite": "coredramon-green",
+      "upstreamId": "A-033",
+      "method": "official-reference"
+    },
+    "4-020": {
+      "sprite": "cyclonemon",
+      "upstreamId": "A-034",
+      "method": "official-reference"
+    },
+    "4-021": {
+      "sprite": "damemon",
+      "upstreamId": "A-035",
+      "method": "official-reference"
+    },
+    "4-022": {
+      "sprite": "darcmon",
+      "upstreamId": "A-036",
+      "method": "official-reference"
+    },
+    "4-023": {
+      "sprite": "darktyrannomon",
+      "upstreamId": "A-039",
+      "method": "official-reference"
+    },
+    "4-024": {
+      "sprite": "darktyrannomon-x",
+      "upstreamId": "A-040",
+      "method": "official-reference"
+    },
+    "4-025": {
+      "sprite": "deltamon",
+      "upstreamId": "A-043",
+      "method": "official-reference"
+    },
+    "4-026": {
+      "sprite": "deputymon",
+      "upstreamId": "A-169",
+      "method": "official-reference"
+    },
+    "4-027": {
+      "sprite": "devidramon",
+      "upstreamId": "A-044",
+      "method": "official-reference"
+    },
+    "4-028": {
+      "sprite": "devimon",
+      "upstreamId": "A-045",
+      "method": "official-reference"
+    },
+    "4-029": {
+      "sprite": "diatrymon",
+      "upstreamId": "A-046",
+      "method": "official-reference"
+    },
+    "4-030": {
+      "sprite": "dobermon",
+      "upstreamId": "A-049",
+      "method": "official-reference"
+    },
+    "4-031": {
+      "sprite": "dokugumon",
+      "upstreamId": "A-051",
+      "method": "official-reference"
+    },
+    "4-032": {
+      "sprite": "dolphmon",
+      "upstreamId": "A-171",
+      "method": "official-reference"
+    },
+    "4-033": {
+      "sprite": "dorugamon",
+      "upstreamId": "A-052",
+      "method": "official-reference"
+    },
+    "4-034": {
+      "sprite": "drimogemon",
+      "upstreamId": "A-054",
+      "method": "official-reference"
+    },
+    "4-035": {
+      "sprite": "duskmon",
+      "upstreamId": "H-011",
+      "method": "official-reference"
+    },
+    "4-036": {
+      "sprite": "ebidramon",
+      "upstreamId": "A-055",
+      "method": "official-reference"
+    },
+    "4-037": {
+      "sprite": "eosmon-adult",
+      "upstreamId": "A-056",
+      "method": "official-reference"
+    },
+    "4-038": {
+      "sprite": "exveemon",
+      "upstreamId": "A-233",
+      "method": "official-reference"
+    },
+    "4-039": {
+      "sprite": "filmon",
+      "upstreamId": "A-060",
+      "method": "official-reference"
+    },
+    "4-040": {
+      "sprite": "firamon",
+      "upstreamId": "A-061",
+      "method": "official-reference"
+    },
+    "4-041": {
+      "sprite": "flarerizamon",
+      "upstreamId": "A-062",
+      "method": "official-reference"
+    },
+    "4-042": {
+      "sprite": "flymon",
+      "upstreamId": "A-063",
+      "method": "official-reference"
+    },
+    "4-043": {
+      "sprite": "frigimon",
+      "upstreamId": "A-236",
+      "method": "official-reference"
+    },
+    "4-044": {
+      "sprite": "gaogamon",
+      "upstreamId": "A-068",
+      "method": "official-reference"
+    },
+    "4-045": {
+      "sprite": "gargomon",
+      "upstreamId": "A-066",
+      "method": "official-reference"
+    },
+    "4-046": {
+      "sprite": "garurumon",
+      "upstreamId": "A-070",
+      "method": "official-reference"
+    },
+    "4-047": {
+      "sprite": "gatomon",
+      "upstreamId": "A-200",
+      "method": "official-reference"
+    },
+    "4-048": {
+      "sprite": "gatomon-x",
+      "upstreamId": "A-201",
+      "method": "official-reference"
+    },
+    "4-049": {
+      "sprite": "gekomon",
+      "upstreamId": "A-074",
+      "method": "official-reference"
+    },
+    "4-050": {
+      "sprite": "geogreymon",
+      "upstreamId": "A-075",
+      "method": "official-reference"
+    },
+    "4-051": {
+      "sprite": "gesomon",
+      "upstreamId": "A-077",
+      "method": "official-reference"
+    },
+    "4-052": {
+      "sprite": "ginryumon",
+      "upstreamId": "A-079",
+      "method": "official-reference"
+    },
+    "4-053": {
+      "sprite": "golemon",
+      "upstreamId": "A-083",
+      "method": "official-reference"
+    },
+    "4-054": {
+      "sprite": "greymon-vaccine",
+      "upstreamId": "A-086",
+      "method": "explicit",
+      "reason": "Preserve classic Greymon. The legacy reference directory now selects the distinct 2010 variant upstream."
+    },
+    "4-055": {
+      "sprite": "growlmon",
+      "upstreamId": "A-089",
+      "method": "official-reference"
+    },
+    "4-056": {
+      "sprite": "growlmon-x",
+      "upstreamId": "A-091",
+      "method": "official-reference"
+    },
+    "4-057": {
+      "sprite": "guardromon",
+      "upstreamId": "A-093",
+      "method": "official-reference"
+    },
+    "4-058": {
+      "sprite": "hookmon",
+      "upstreamId": "A-099",
+      "method": "official-reference"
+    },
+    "4-059": {
+      "sprite": "hudiemon",
+      "upstreamId": "A-100",
+      "method": "official-reference"
+    },
+    "4-060": {
+      "sprite": "ikkakumon",
+      "upstreamId": "A-105",
+      "method": "official-reference"
+    },
+    "4-061": {
+      "sprite": "jazardmon",
+      "upstreamId": "A-106",
+      "method": "official-reference"
+    },
+    "4-062": {
+      "sprite": "kabuterimon",
+      "upstreamId": "A-108",
+      "method": "official-reference"
+    },
+    "4-063": {
+      "sprite": "kiwimon",
+      "upstreamId": "A-112",
+      "method": "official-reference"
+    },
+    "4-064": {
+      "sprite": "kokatorimon",
+      "upstreamId": "A-030",
+      "method": "official-reference"
+    },
+    "4-065": {
+      "sprite": "komondomon",
+      "upstreamId": "A-116",
+      "method": "official-reference"
+    },
+    "4-066": {
+      "sprite": "kuwagamon",
+      "upstreamId": "A-118",
+      "method": "official-reference"
+    },
+    "4-067": {
+      "sprite": "kuwagamon-x",
+      "upstreamId": "A-119",
+      "method": "official-reference"
+    },
+    "4-068": {
+      "sprite": "lavorvomon",
+      "upstreamId": "A-121",
+      "method": "official-reference"
+    },
+    "4-069": {
+      "sprite": "lekismon",
+      "upstreamId": "A-122",
+      "method": "official-reference"
+    },
+    "4-070": {
+      "sprite": "leomon",
+      "upstreamId": "A-123",
+      "method": "official-reference"
+    },
+    "4-071": {
+      "sprite": "leomon-x",
+      "upstreamId": "A-124",
+      "method": "official-reference"
+    },
+    "4-072": {
+      "sprite": "lobomon",
+      "upstreamId": "H-029",
+      "method": "official-reference"
+    },
+    "4-073": {
+      "sprite": "machmon",
+      "upstreamId": "A-128",
+      "method": "official-reference"
+    },
+    "4-074": {
+      "sprite": "madleomon",
+      "upstreamId": "A-129",
+      "method": "official-reference"
+    },
+    "4-075": {
+      "sprite": "manbomon",
+      "upstreamId": "AR-029",
+      "method": "official-reference"
+    },
+    "4-076": {
+      "sprite": "mantaraymon-x",
+      "upstreamId": "A-132",
+      "method": "official-reference"
+    },
+    "4-077": {
+      "sprite": "meicoomon",
+      "upstreamId": "A-134",
+      "method": "official-reference"
+    },
+    "4-078": {
+      "sprite": "mekanorimon",
+      "upstreamId": "A-133",
+      "method": "official-reference"
+    },
+    "4-079": {
+      "sprite": "meramon",
+      "upstreamId": "A-135",
+      "method": "official-reference"
+    },
+    "4-080": {
+      "sprite": "meramon-x",
+      "upstreamId": "A-136",
+      "method": "official-reference"
+    },
+    "4-081": {
+      "sprite": "mimicmon",
+      "upstreamId": "A-138",
+      "method": "official-reference"
+    },
+    "4-082": {
+      "sprite": "minotarumon",
+      "upstreamId": "A-139",
+      "method": "official-reference"
+    },
+    "4-083": {
+      "sprite": "mojyamon",
+      "upstreamId": "A-140",
+      "method": "official-reference"
+    },
+    "4-084": {
+      "sprite": "monochromon",
+      "upstreamId": "A-141",
+      "method": "official-reference"
+    },
+    "4-085": {
+      "sprite": "nanimon",
+      "upstreamId": "A-145",
+      "method": "official-reference"
+    },
+    "4-086": {
+      "sprite": "nefertimon-x",
+      "upstreamId": "A-146",
+      "method": "official-reference"
+    },
+    "4-087": {
+      "sprite": "ninjamon",
+      "upstreamId": "A-104",
+      "method": "official-reference"
+    },
+    "4-088": {
+      "sprite": "numemon",
+      "upstreamId": "A-148",
+      "method": "official-reference"
+    },
+    "4-089": {
+      "sprite": "numemon-x",
+      "upstreamId": "A-149",
+      "method": "official-reference"
+    },
+    "4-090": {
+      "sprite": "octomon",
+      "upstreamId": "A-150",
+      "method": "official-reference"
+    },
+    "4-091": {
+      "sprite": "ogremon",
+      "upstreamId": "A-152",
+      "method": "official-reference"
+    },
+    "4-092": {
+      "sprite": "ogremon-x",
+      "upstreamId": "A-153",
+      "method": "official-reference"
+    },
+    "4-093": {
+      "sprite": "omekamon",
+      "upstreamId": "A-151",
+      "method": "official-reference"
+    },
+    "4-094": {
+      "sprite": "paledramon",
+      "upstreamId": "A-154",
+      "method": "official-reference"
+    },
+    "4-095": {
+      "sprite": "parasaurmon",
+      "upstreamId": "A-155",
+      "method": "official-reference"
+    },
+    "4-096": {
+      "sprite": "peckmon",
+      "upstreamId": "A-156",
+      "method": "official-reference"
+    },
+    "4-097": {
+      "sprite": "pegasusmon-x",
+      "upstreamId": "A-157",
+      "method": "official-reference"
+    },
+    "4-098": {
+      "sprite": "petermon",
+      "upstreamId": "A-158",
+      "method": "official-reference"
+    },
+    "4-099": {
+      "sprite": "porcupamon",
+      "upstreamId": "A-161",
+      "method": "official-reference"
+    },
+    "4-100": {
+      "sprite": "pteramon-x",
+      "upstreamId": "A-162",
+      "method": "official-reference"
+    },
+    "4-101": {
+      "sprite": "raremon",
+      "upstreamId": "A-166",
+      "method": "official-reference"
+    },
+    "4-102": {
+      "sprite": "redvegiemon",
+      "upstreamId": "A-167",
+      "method": "official-reference"
+    },
+    "4-103": {
+      "sprite": "reppamon",
+      "upstreamId": "A-168",
+      "method": "official-reference"
+    },
+    "4-104": {
+      "sprite": "rhinomon-x",
+      "upstreamId": "A-170",
+      "method": "official-reference"
+    },
+    "4-105": {
+      "sprite": "roachmon",
+      "upstreamId": "A-081",
+      "method": "official-reference"
+    },
+    "4-106": {
+      "sprite": "sangloupmon",
+      "upstreamId": "A-174",
+      "method": "official-reference"
+    },
+    "4-107": {
+      "sprite": "seadramon",
+      "upstreamId": "A-176",
+      "method": "official-reference"
+    },
+    "4-108": {
+      "sprite": "seadramon-x",
+      "upstreamId": "A-177",
+      "method": "official-reference"
+    },
+    "4-109": {
+      "sprite": "seasarmon-x",
+      "upstreamId": "A-187",
+      "method": "official-reference"
+    },
+    "4-110": {
+      "sprite": "shadramon",
+      "upstreamId": "AR-057",
+      "method": "official-reference"
+    },
+    "4-111": {
+      "sprite": "shellmon",
+      "upstreamId": "A-179",
+      "method": "official-reference"
+    },
+    "4-112": {
+      "sprite": "shellnumemon",
+      "upstreamId": "A-109",
+      "method": "official-reference"
+    },
+    "4-113": {
+      "sprite": "shoutmon-x3",
+      "upstreamId": "A-184",
+      "method": "official-reference"
+    },
+    "4-114": {
+      "sprite": "sistermon-ciel",
+      "upstreamId": "A-188",
+      "method": "official-reference"
+    },
+    "4-115": {
+      "sprite": "starmon",
+      "upstreamId": "A-195",
+      "method": "official-reference"
+    },
+    "4-116": {
+      "sprite": "stingmon",
+      "upstreamId": "A-196",
+      "method": "official-reference"
+    },
+    "4-117": {
+      "sprite": "strikedramon",
+      "upstreamId": "A-197",
+      "method": "official-reference"
+    },
+    "4-118": {
+      "sprite": "submarimon",
+      "upstreamId": "AR-050",
+      "method": "official-reference"
+    },
+    "4-119": {
+      "sprite": "sukamon",
+      "upstreamId": "A-175",
+      "method": "official-reference"
+    },
+    "4-120": {
+      "sprite": "sunflowmon",
+      "upstreamId": "A-198",
+      "method": "official-reference"
+    },
+    "4-121": {
+      "sprite": "tankmon",
+      "upstreamId": "A-202",
+      "method": "official-reference"
+    },
+    "4-122": {
+      "sprite": "targetmon",
+      "upstreamId": "A-203",
+      "method": "official-reference"
+    },
+    "4-123": {
+      "sprite": "thundermon",
+      "upstreamId": "A-205",
+      "method": "official-reference"
+    },
+    "4-124": {
+      "sprite": "tialudomon",
+      "upstreamId": "A-207",
+      "method": "official-reference"
+    },
+    "4-125": {
+      "sprite": "tobiumon",
+      "upstreamId": "A-208",
+      "method": "official-reference"
+    },
+    "4-126": {
+      "sprite": "tobucatmon",
+      "upstreamId": "A-209",
+      "method": "official-reference"
+    },
+    "4-127": {
+      "sprite": "togemon",
+      "upstreamId": "A-210",
+      "method": "official-reference"
+    },
+    "4-128": {
+      "sprite": "togemon-x",
+      "upstreamId": "A-211",
+      "method": "official-reference"
+    },
+    "4-129": {
+      "sprite": "tortomon",
+      "upstreamId": "A-212",
+      "method": "official-reference"
+    },
+    "4-130": {
+      "sprite": "troopmon",
+      "upstreamId": "A-214",
+      "method": "official-reference"
+    },
+    "4-131": {
+      "sprite": "turuiemon",
+      "upstreamId": "A-216",
+      "method": "official-reference"
+    },
+    "4-132": {
+      "sprite": "tuskmon",
+      "upstreamId": "A-217",
+      "method": "official-reference"
+    },
+    "4-133": {
+      "sprite": "tylomon",
+      "upstreamId": "AR-065",
+      "method": "official-reference"
+    },
+    "4-134": {
+      "sprite": "tylomon-x",
+      "upstreamId": "A-218",
+      "method": "official-reference"
+    },
+    "4-135": {
+      "sprite": "tyrannomon",
+      "upstreamId": "A-219",
+      "method": "official-reference"
+    },
+    "4-136": {
+      "sprite": "tyrannomon-x",
+      "upstreamId": "A-220",
+      "method": "official-reference"
+    },
+    "4-137": {
+      "sprite": "unimon",
+      "upstreamId": "A-237",
+      "method": "official-reference"
+    },
+    "4-138": {
+      "sprite": "veedramon",
+      "upstreamId": "A-221",
+      "method": "official-reference"
+    },
+    "4-139": {
+      "sprite": "vegiemon",
+      "upstreamId": "A-222",
+      "method": "official-reference"
+    },
+    "4-140": {
+      "sprite": "velgrmon",
+      "upstreamId": "H-027",
+      "method": "official-reference"
+    },
+    "4-141": {
+      "sprite": "whamon-champion",
+      "upstreamId": "A-226",
+      "method": "explicit",
+      "reason": "Use the Adult Whamon artwork for the existing Adult save identity; the shared legacy reference selects Perfect upstream."
+    },
+    "4-142": {
+      "sprite": "witchmon",
+      "upstreamId": "A-227",
+      "method": "official-reference"
+    },
+    "4-143": {
+      "sprite": "wizardmon",
+      "upstreamId": "A-228",
+      "method": "official-reference"
+    },
+    "4-144": {
+      "sprite": "wizardmon-x",
+      "upstreamId": "A-229",
+      "method": "official-reference"
+    },
+    "4-145": {
+      "sprite": "woodmon",
+      "upstreamId": "A-231",
+      "method": "official-reference"
+    },
+    "4-146": {
+      "sprite": "zubaeagermon",
+      "upstreamId": "A-239",
+      "method": "official-reference"
+    },
+    "4-147": {
+      "sprite": "bulkmon",
+      "upstreamId": "A-024",
+      "method": "official-reference"
+    },
+    "4-148": {
+      "sprite": "fugamon",
+      "upstreamId": "A-064",
+      "method": "official-reference"
+    },
+    "4-149": {
+      "sprite": "hyogamon",
+      "upstreamId": "A-101",
+      "method": "official-reference"
+    },
+    "4-150": {
+      "sprite": "piddomon",
+      "upstreamId": "A-159",
+      "method": "official-reference"
+    },
+    "4-151": {
+      "sprite": "rhinomon",
+      "upstreamId": "AR-048",
+      "method": "official-reference"
+    },
+    "4-152": {
+      "sprite": "saberdramon",
+      "upstreamId": "A-172",
+      "method": "official-reference"
+    },
+    "5-001": {
+      "sprite": "aeroveedramon",
+      "upstreamId": "P-064",
+      "method": "official-reference"
+    },
+    "5-002": {
+      "sprite": "aldamon",
+      "upstreamId": "H-002",
+      "method": "official-reference"
+    },
+    "5-003": {
+      "sprite": "andromon",
+      "upstreamId": "P-007",
+      "method": "official-reference"
+    },
+    "5-004": {
+      "sprite": "angewomon",
+      "upstreamId": "P-008",
+      "method": "official-reference"
+    },
+    "5-005": {
+      "sprite": "angewomon-x",
+      "upstreamId": "P-009",
+      "method": "official-reference"
+    },
+    "5-006": {
+      "sprite": "antylamon-deva",
+      "upstreamId": "P-005",
+      "method": "official-reference"
+    },
+    "5-007": {
+      "sprite": "argomon-perfect",
+      "upstreamId": "P-004",
+      "method": "official-reference"
+    },
+    "5-008": {
+      "sprite": "archnemon",
+      "upstreamId": "P-012",
+      "method": "official-reference"
+    },
+    "5-009": {
+      "sprite": "astamon",
+      "upstreamId": "P-014",
+      "method": "official-reference"
+    },
+    "5-010": {
+      "sprite": "asuramon",
+      "upstreamId": "P-015",
+      "method": "official-reference"
+    },
+    "5-011": {
+      "sprite": "baalmon",
+      "upstreamId": "P-019",
+      "method": "official-reference"
+    },
+    "5-012": {
+      "sprite": "beowolfmon",
+      "upstreamId": "H-004",
+      "method": "official-reference"
+    },
+    "5-013": {
+      "sprite": "bigmamemon",
+      "upstreamId": "P-022",
+      "method": "official-reference"
+    },
+    "5-014": {
+      "sprite": "blossomon",
+      "upstreamId": "P-028",
+      "method": "official-reference"
+    },
+    "5-015": {
+      "sprite": "bulbmon",
+      "upstreamId": "P-218",
+      "method": "official-reference"
+    },
+    "5-016": {
+      "sprite": "burninggreymon",
+      "upstreamId": "H-028",
+      "method": "official-reference"
+    },
+    "5-017": {
+      "sprite": "cannonbeemon",
+      "upstreamId": "P-033",
+      "method": "official-reference"
+    },
+    "5-018": {
+      "sprite": "cerberusmon",
+      "upstreamId": "P-039",
+      "method": "official-reference"
+    },
+    "5-019": {
+      "sprite": "cerberumon-x",
+      "upstreamId": "P-041",
+      "method": "official-reference"
+    },
+    "5-020": {
+      "sprite": "cherrymon",
+      "upstreamId": "P-100",
+      "method": "official-reference"
+    },
+    "5-021": {
+      "sprite": "chohakkaimon",
+      "upstreamId": "P-044",
+      "method": "official-reference"
+    },
+    "5-022": {
+      "sprite": "crescemon",
+      "upstreamId": "P-046",
+      "method": "official-reference"
+    },
+    "5-023": {
+      "sprite": "crowmon",
+      "upstreamId": "P-236",
+      "method": "official-reference"
+    },
+    "5-024": {
+      "sprite": "cryspaledramon",
+      "upstreamId": "P-047",
+      "method": "official-reference"
+    },
+    "5-025": {
+      "sprite": "cyberdramon",
+      "upstreamId": "P-048",
+      "method": "official-reference"
+    },
+    "5-026": {
+      "sprite": "cyberdramon-x",
+      "upstreamId": "P-049",
+      "method": "official-reference"
+    },
+    "5-027": {
+      "sprite": "darkknightmon",
+      "upstreamId": "P-051",
+      "method": "official-reference"
+    },
+    "5-028": {
+      "sprite": "datamon",
+      "upstreamId": "P-159",
+      "method": "official-reference"
+    },
+    "5-029": {
+      "sprite": "deramon",
+      "upstreamId": "P-056",
+      "method": "official-reference"
+    },
+    "5-030": {
+      "sprite": "digitamamon",
+      "upstreamId": "P-058",
+      "method": "official-reference"
+    },
+    "5-031": {
+      "sprite": "dinobeemon",
+      "upstreamId": "P-059",
+      "method": "official-reference"
+    },
+    "5-032": {
+      "sprite": "divermon",
+      "upstreamId": "P-088",
+      "method": "official-reference"
+    },
+    "5-033": {
+      "sprite": "donedevimon",
+      "upstreamId": "U-088",
+      "method": "official-reference"
+    },
+    "5-034": {
+      "sprite": "dorugreymon",
+      "upstreamId": "P-061",
+      "method": "official-reference"
+    },
+    "5-035": {
+      "sprite": "dragomon",
+      "upstreamId": "P-050",
+      "method": "official-reference"
+    },
+    "5-036": {
+      "sprite": "duramon",
+      "upstreamId": "P-063",
+      "method": "official-reference"
+    },
+    "5-037": {
+      "sprite": "entmon",
+      "upstreamId": "P-065",
+      "method": "official-reference"
+    },
+    "5-038": {
+      "sprite": "eosmon-perfect",
+      "upstreamId": "P-066",
+      "method": "official-reference"
+    },
+    "5-039": {
+      "sprite": "etemon",
+      "upstreamId": "P-067",
+      "method": "official-reference"
+    },
+    "5-040": {
+      "sprite": "extyrannomon",
+      "upstreamId": "P-068",
+      "method": "official-reference"
+    },
+    "5-041": {
+      "sprite": "flaremon",
+      "upstreamId": "P-070",
+      "method": "official-reference"
+    },
+    "5-042": {
+      "sprite": "garbagemon",
+      "upstreamId": "P-074",
+      "method": "official-reference"
+    },
+    "5-043": {
+      "sprite": "garudamon",
+      "upstreamId": "P-072",
+      "method": "official-reference"
+    },
+    "5-044": {
+      "sprite": "garudamon-x",
+      "upstreamId": "P-073",
+      "method": "official-reference"
+    },
+    "5-045": {
+      "sprite": "giromon",
+      "upstreamId": "P-077",
+      "method": "official-reference"
+    },
+    "5-046": {
+      "sprite": "gogmamon",
+      "upstreamId": "P-078",
+      "method": "official-reference"
+    },
+    "5-047": {
+      "sprite": "grademon",
+      "upstreamId": "P-080",
+      "method": "official-reference"
+    },
+    "5-048": {
+      "sprite": "groundramon",
+      "upstreamId": "P-085",
+      "method": "official-reference"
+    },
+    "5-049": {
+      "sprite": "gusokumon",
+      "upstreamId": "P-086",
+      "method": "official-reference"
+    },
+    "5-050": {
+      "sprite": "hippogryphonmon",
+      "upstreamId": "P-090",
+      "method": "official-reference"
+    },
+    "5-051": {
+      "sprite": "hisyaryumon",
+      "upstreamId": "P-091",
+      "method": "official-reference"
+    },
+    "5-052": {
+      "sprite": "jagamon",
+      "upstreamId": "P-099",
+      "method": "official-reference"
+    },
+    "5-053": {
+      "sprite": "jagerloweemon",
+      "upstreamId": "H-018",
+      "method": "official-reference"
+    },
+    "5-054": {
+      "sprite": "jazarichmon",
+      "upstreamId": "P-096",
+      "method": "official-reference"
+    },
+    "5-055": {
+      "sprite": "jewelbeemon",
+      "upstreamId": "P-097",
+      "method": "official-reference"
+    },
+    "5-056": {
+      "sprite": "kendogarurumon",
+      "upstreamId": "H-013",
+      "method": "official-reference"
+    },
+    "5-057": {
+      "sprite": "kimeramon",
+      "upstreamId": "P-043",
+      "method": "official-reference"
+    },
+    "5-058": {
+      "sprite": "knightmon",
+      "upstreamId": "P-103",
+      "method": "official-reference"
+    },
+    "5-059": {
+      "sprite": "ladydevimon",
+      "upstreamId": "P-106",
+      "method": "official-reference"
+    },
+    "5-060": {
+      "sprite": "ladydevimon-x",
+      "upstreamId": "P-107",
+      "method": "official-reference"
+    },
+    "5-061": {
+      "sprite": "lavogaritamon",
+      "upstreamId": "P-110",
+      "method": "official-reference"
+    },
+    "5-062": {
+      "sprite": "lilamon",
+      "upstreamId": "P-111",
+      "method": "official-reference"
+    },
+    "5-063": {
+      "sprite": "lillymon",
+      "upstreamId": "P-112",
+      "method": "official-reference"
+    },
+    "5-064": {
+      "sprite": "lillymon-x",
+      "upstreamId": "P-113",
+      "method": "official-reference"
+    },
+    "5-065": {
+      "sprite": "loaderleomon",
+      "upstreamId": "P-114",
+      "method": "official-reference"
+    },
+    "5-066": {
+      "sprite": "locomon",
+      "upstreamId": "P-115",
+      "method": "official-reference"
+    },
+    "5-067": {
+      "sprite": "lucemon-chaos-mode",
+      "upstreamId": "P-185",
+      "method": "official-reference"
+    },
+    "5-068": {
+      "sprite": "machgaogamon",
+      "upstreamId": "P-118",
+      "method": "official-reference"
+    },
+    "5-069": {
+      "sprite": "mangaangemon",
+      "upstreamId": "P-092",
+      "method": "official-reference"
+    },
+    "5-070": {
+      "sprite": "mamemon",
+      "upstreamId": "P-121",
+      "method": "official-reference"
+    },
+    "5-071": {
+      "sprite": "mamemon-x",
+      "upstreamId": "P-122",
+      "method": "official-reference"
+    },
+    "5-072": {
+      "sprite": "mametyramon",
+      "upstreamId": "P-123",
+      "method": "official-reference"
+    },
+    "5-073": {
+      "sprite": "mammothmon",
+      "upstreamId": "P-124",
+      "method": "official-reference"
+    },
+    "5-074": {
+      "sprite": "mammothmon-x",
+      "upstreamId": "P-125",
+      "method": "official-reference"
+    },
+    "5-075": {
+      "sprite": "manticoremon",
+      "upstreamId": "P-126",
+      "method": "official-reference"
+    },
+    "5-076": {
+      "sprite": "marinechimairamon",
+      "upstreamId": "P-128",
+      "method": "official-reference"
+    },
+    "5-077": {
+      "sprite": "marinedevimon",
+      "upstreamId": "P-129",
+      "method": "official-reference"
+    },
+    "5-078": {
+      "sprite": "maycrackmon",
+      "upstreamId": "P-138",
+      "method": "official-reference"
+    },
+    "5-079": {
+      "sprite": "maycrackmon-vicious-mode",
+      "upstreamId": "P-139",
+      "method": "official-reference"
+    },
+    "5-080": {
+      "sprite": "megadramon",
+      "upstreamId": "P-132",
+      "method": "official-reference"
+    },
+    "5-081": {
+      "sprite": "megakabuterimon-red",
+      "upstreamId": "P-016",
+      "method": "official-reference"
+    },
+    "5-082": {
+      "sprite": "megaseadramon",
+      "upstreamId": "P-136",
+      "method": "official-reference"
+    },
+    "5-083": {
+      "sprite": "megaseadramon-x",
+      "upstreamId": "P-137",
+      "method": "official-reference"
+    },
+    "5-084": {
+      "sprite": "mephistomon-x",
+      "upstreamId": "P-141",
+      "method": "official-reference"
+    },
+    "5-085": {
+      "sprite": "mermaimon",
+      "upstreamId": "P-142",
+      "method": "official-reference"
+    },
+    "5-086": {
+      "sprite": "metalgreymon-vaccine",
+      "upstreamId": "P-144",
+      "method": "explicit",
+      "reason": "Preserve the existing Vaccine artwork shared with 5-087; the legacy reference directory has no exact upstream counterpart."
+    },
+    "5-087": {
+      "sprite": "metalgreymon-vaccine",
+      "upstreamId": "P-144",
+      "method": "official-reference"
+    },
+    "5-088": {
+      "sprite": "metalgreymon-virus",
+      "upstreamId": "P-145",
+      "method": "official-reference"
+    },
+    "5-089": {
+      "sprite": "metalgreymon-virus-x",
+      "upstreamId": "P-148",
+      "method": "official-reference"
+    },
+    "5-090": {
+      "sprite": "metalgreymon-x",
+      "upstreamId": "P-147",
+      "method": "official-reference"
+    },
+    "5-091": {
+      "sprite": "metalmamemon",
+      "upstreamId": "P-150",
+      "method": "official-reference"
+    },
+    "5-092": {
+      "sprite": "metalphantomon",
+      "upstreamId": "P-143",
+      "method": "official-reference"
+    },
+    "5-093": {
+      "sprite": "metaltyrannomon",
+      "upstreamId": "P-152",
+      "method": "official-reference"
+    },
+    "5-094": {
+      "sprite": "metaltyrannomon-x",
+      "upstreamId": "P-153",
+      "method": "official-reference"
+    },
+    "5-095": {
+      "sprite": "monzaemon",
+      "upstreamId": "P-156",
+      "method": "official-reference"
+    },
+    "5-096": {
+      "sprite": "monzaemon-x",
+      "upstreamId": "P-157",
+      "method": "official-reference"
+    },
+    "5-097": {
+      "sprite": "mummymon",
+      "upstreamId": "P-158",
+      "method": "official-reference"
+    },
+    "5-098": {
+      "sprite": "myotismon",
+      "upstreamId": "P-219",
+      "method": "official-reference"
+    },
+    "5-099": {
+      "sprite": "myotismon-x",
+      "upstreamId": "P-220",
+      "method": "official-reference"
+    },
+    "5-100": {
+      "sprite": "neodevimon",
+      "upstreamId": "P-160",
+      "method": "official-reference"
+    },
+    "5-101": {
+      "sprite": "okuwamon",
+      "upstreamId": "P-162",
+      "method": "official-reference"
+    },
+    "5-102": {
+      "sprite": "okuwamon-x",
+      "upstreamId": "P-163",
+      "method": "official-reference"
+    },
+    "5-103": {
+      "sprite": "omnishoutmon-x",
+      "upstreamId": "P-166",
+      "method": "official-reference"
+    },
+    "5-104": {
+      "sprite": "orochimon",
+      "upstreamId": "P-167",
+      "method": "official-reference"
+    },
+    "5-105": {
+      "sprite": "paildramon",
+      "upstreamId": "P-168",
+      "method": "official-reference"
+    },
+    "5-106": {
+      "sprite": "parrotmon",
+      "upstreamId": "P-173",
+      "method": "official-reference"
+    },
+    "5-107": {
+      "sprite": "phantomon",
+      "upstreamId": "P-069",
+      "method": "official-reference"
+    },
+    "5-108": {
+      "sprite": "piranimon",
+      "upstreamId": "P-175",
+      "method": "official-reference"
+    },
+    "5-109": {
+      "sprite": "piximon",
+      "upstreamId": "P-174",
+      "method": "official-reference"
+    },
+    "5-110": {
+      "sprite": "pumpkinmon",
+      "upstreamId": "P-177",
+      "method": "official-reference"
+    },
+    "5-111": {
+      "sprite": "raijiludomon",
+      "upstreamId": "P-178",
+      "method": "official-reference"
+    },
+    "5-112": {
+      "sprite": "rapidmon",
+      "upstreamId": "P-179",
+      "method": "official-reference"
+    },
+    "5-113": {
+      "sprite": "rebellimon",
+      "upstreamId": "P-180",
+      "method": "official-reference"
+    },
+    "5-114": {
+      "sprite": "rhihimon",
+      "upstreamId": "H-022",
+      "method": "official-reference"
+    },
+    "5-115": {
+      "sprite": "rizegreymon",
+      "upstreamId": "P-182",
+      "method": "official-reference"
+    },
+    "5-116": {
+      "sprite": "rizegreymon-x",
+      "upstreamId": "P-183",
+      "method": "official-reference"
+    },
+    "5-117": {
+      "sprite": "saviorhuckmon",
+      "upstreamId": "P-189",
+      "method": "official-reference"
+    },
+    "5-118": {
+      "sprite": "scorpiomon",
+      "upstreamId": "P-010",
+      "method": "official-reference"
+    },
+    "5-119": {
+      "sprite": "scorpiomon-x",
+      "upstreamId": "P-011",
+      "method": "official-reference"
+    },
+    "5-120": {
+      "sprite": "shakkoumon",
+      "upstreamId": "P-191",
+      "method": "official-reference"
+    },
+    "5-121": {
+      "sprite": "shogungekomon",
+      "upstreamId": "P-211",
+      "method": "official-reference"
+    },
+    "5-122": {
+      "sprite": "shoutmon-x5",
+      "upstreamId": "P-195",
+      "method": "official-reference"
+    },
+    "5-123": {
+      "sprite": "silphymon",
+      "upstreamId": "P-196",
+      "method": "official-reference"
+    },
+    "5-124": {
+      "sprite": "sirenmon",
+      "upstreamId": "P-198",
+      "method": "official-reference"
+    },
+    "5-125": {
+      "sprite": "skullbaluchimon",
+      "upstreamId": "P-199",
+      "method": "official-reference"
+    },
+    "5-126": {
+      "sprite": "skullgreymon",
+      "upstreamId": "P-200",
+      "method": "official-reference"
+    },
+    "5-127": {
+      "sprite": "skullmeramon",
+      "upstreamId": "P-055",
+      "method": "official-reference"
+    },
+    "5-128": {
+      "sprite": "stefilmon",
+      "upstreamId": "P-204",
+      "method": "official-reference"
+    },
+    "5-129": {
+      "sprite": "tekkamon",
+      "upstreamId": "P-208",
+      "method": "official-reference"
+    },
+    "5-130": {
+      "sprite": "toropiamon",
+      "upstreamId": "P-212",
+      "method": "official-reference"
+    },
+    "5-131": {
+      "sprite": "triceramon",
+      "upstreamId": "P-213",
+      "method": "official-reference"
+    },
+    "5-132": {
+      "sprite": "triceramon-x",
+      "upstreamId": "P-214",
+      "method": "official-reference"
+    },
+    "5-133": {
+      "sprite": "vademon",
+      "upstreamId": "P-216",
+      "method": "official-reference"
+    },
+    "5-134": {
+      "sprite": "velgrmon",
+      "upstreamId": "H-027",
+      "method": "official-reference"
+    },
+    "5-135": {
+      "sprite": "wargrowlmon",
+      "upstreamId": "P-134",
+      "method": "official-reference"
+    },
+    "5-136": {
+      "sprite": "wargrowlmon-x",
+      "upstreamId": "P-135",
+      "method": "official-reference"
+    },
+    "5-137": {
+      "sprite": "warumonzaemon",
+      "upstreamId": "P-227",
+      "method": "official-reference"
+    },
+    "5-138": {
+      "sprite": "waruseadramon",
+      "upstreamId": "P-228",
+      "method": "official-reference"
+    },
+    "5-139": {
+      "sprite": "weregarurumon",
+      "upstreamId": "P-229",
+      "method": "official-reference"
+    },
+    "5-140": {
+      "sprite": "weregarurumon-x",
+      "upstreamId": "P-231",
+      "method": "official-reference"
+    },
+    "5-141": {
+      "sprite": "whamon-perfect",
+      "upstreamId": "P-232",
+      "method": "official-reference"
+    },
+    "5-142": {
+      "sprite": "wingdramon",
+      "upstreamId": "P-233",
+      "method": "official-reference"
+    },
+    "5-143": {
+      "sprite": "zudomon",
+      "upstreamId": "P-239",
+      "method": "official-reference"
+    },
+    "5-144": {
+      "sprite": "boutmon",
+      "upstreamId": "P-030",
+      "method": "official-reference"
+    },
+    "5-145": {
+      "sprite": "darksuperstarmon",
+      "upstreamId": "P-052",
+      "method": "official-reference"
+    },
+    "5-146": {
+      "sprite": "dorugreymon",
+      "upstreamId": "P-061",
+      "method": "official-reference"
+    },
+    "5-147": {
+      "sprite": "pandamon",
+      "upstreamId": "P-170",
+      "method": "official-reference"
+    },
+    "5-148": {
+      "sprite": "skullscorpiomon",
+      "upstreamId": "P-190",
+      "method": "official-reference"
+    },
+    "5-149": {
+      "sprite": "superstarmon",
+      "upstreamId": "P-205",
+      "method": "official-reference"
+    },
+    "6-001": {
+      "sprite": "aegisdramon",
+      "upstreamId": "U-004",
+      "method": "official-reference"
+    },
+    "6-002": {
+      "sprite": "alphamon",
+      "upstreamId": "U-006",
+      "method": "official-reference"
+    },
+    "6-003": {
+      "sprite": "ancientbeetlemon",
+      "upstreamId": "U-009",
+      "method": "official-reference"
+    },
+    "6-004": {
+      "sprite": "ancientgarurumon",
+      "upstreamId": "U-010",
+      "method": "official-reference"
+    },
+    "6-005": {
+      "sprite": "ancientgreymon",
+      "upstreamId": "U-011",
+      "method": "official-reference"
+    },
+    "6-006": {
+      "sprite": "ancientkazemon",
+      "upstreamId": "U-012",
+      "method": "official-reference"
+    },
+    "6-007": {
+      "sprite": "ancientmegatheriumon",
+      "upstreamId": "U-013",
+      "method": "official-reference"
+    },
+    "6-008": {
+      "sprite": "ancientmermaimon",
+      "upstreamId": "U-014",
+      "method": "official-reference"
+    },
+    "6-009": {
+      "sprite": "ancientsphinxmon",
+      "upstreamId": "U-015",
+      "method": "official-reference"
+    },
+    "6-010": {
+      "sprite": "ancienttroymon",
+      "upstreamId": "U-016",
+      "method": "official-reference"
+    },
+    "6-011": {
+      "sprite": "ancientvolcanomon",
+      "upstreamId": "U-017",
+      "method": "official-reference"
+    },
+    "6-012": {
+      "sprite": "ancientwisemon",
+      "upstreamId": "U-018",
+      "method": "official-reference"
+    },
+    "6-013": {
+      "sprite": "anubismon",
+      "upstreamId": "U-019",
+      "method": "official-reference"
+    },
+    "6-014": {
+      "sprite": "apocalymon",
+      "upstreamId": "U-020",
+      "method": "official-reference"
+    },
+    "6-015": {
+      "sprite": "apollomon",
+      "upstreamId": "U-021",
+      "method": "official-reference"
+    },
+    "6-016": {
+      "sprite": "argomon-ultimate",
+      "upstreamId": "U-005",
+      "method": "official-reference"
+    },
+    "6-017": {
+      "sprite": "armageddemon",
+      "upstreamId": "SU-003",
+      "method": "official-reference"
+    },
+    "6-018": {
+      "sprite": "azulongmon",
+      "upstreamId": "U-211",
+      "method": "official-reference"
+    },
+    "6-019": {
+      "sprite": "bagramon",
+      "upstreamId": "U-027",
+      "method": "official-reference"
+    },
+    "6-020": {
+      "sprite": "baihumon",
+      "upstreamId": "U-028",
+      "method": "official-reference"
+    },
+    "6-021": {
+      "sprite": "bancholeomon",
+      "upstreamId": "U-030",
+      "method": "official-reference"
+    },
+    "6-022": {
+      "sprite": "banchomamemon",
+      "upstreamId": "U-032",
+      "method": "official-reference"
+    },
+    "6-023": {
+      "sprite": "barbamon",
+      "upstreamId": "U-034",
+      "method": "official-reference"
+    },
+    "6-024": {
+      "sprite": "beelstarmon-x",
+      "upstreamId": "U-036",
+      "method": "official-reference"
+    },
+    "6-025": {
+      "sprite": "beelzemon",
+      "upstreamId": "U-037",
+      "method": "official-reference"
+    },
+    "6-026": {
+      "sprite": "belphemon-rage-mode",
+      "upstreamId": "U-040",
+      "method": "official-reference"
+    },
+    "6-027": {
+      "sprite": "blackwargreymon-x",
+      "upstreamId": "U-045",
+      "method": "official-reference"
+    },
+    "6-028": {
+      "sprite": "blitzgreymon",
+      "upstreamId": "U-047",
+      "method": "official-reference"
+    },
+    "6-029": {
+      "sprite": "boltmon",
+      "upstreamId": "U-049",
+      "method": "official-reference"
+    },
+    "6-030": {
+      "sprite": "breakdramon",
+      "upstreamId": "U-050",
+      "method": "official-reference"
+    },
+    "6-031": {
+      "sprite": "bryweludramon",
+      "upstreamId": "U-052",
+      "method": "official-reference"
+    },
+    "6-032": {
+      "sprite": "chaosdramon-x",
+      "upstreamId": "U-058",
+      "method": "official-reference"
+    },
+    "6-033": {
+      "sprite": "cherubimon-virtue",
+      "upstreamId": "U-060",
+      "method": "official-reference"
+    },
+    "6-034": {
+      "sprite": "cherubimon-virtue-x",
+      "upstreamId": "U-062",
+      "method": "official-reference"
+    },
+    "6-035": {
+      "sprite": "cherubimon-vice-x",
+      "upstreamId": "U-063",
+      "method": "official-reference"
+    },
+    "6-036": {
+      "sprite": "craniamon",
+      "upstreamId": "U-067",
+      "method": "official-reference"
+    },
+    "6-037": {
+      "sprite": "demon",
+      "upstreamId": "U-078",
+      "method": "official-reference"
+    },
+    "6-038": {
+      "sprite": "cresgarurumon",
+      "upstreamId": "U-068",
+      "method": "official-reference"
+    },
+    "6-039": {
+      "sprite": "darkdramon",
+      "upstreamId": "U-072",
+      "method": "official-reference"
+    },
+    "6-040": {
+      "sprite": "darkknightmon-x",
+      "upstreamId": "U-073",
+      "method": "official-reference"
+    },
+    "6-041": {
+      "sprite": "dianamon",
+      "upstreamId": "U-081",
+      "method": "official-reference"
+    },
+    "6-042": {
+      "sprite": "dinorexmon",
+      "upstreamId": "U-085",
+      "method": "official-reference"
+    },
+    "6-043": {
+      "sprite": "dinotigermon",
+      "upstreamId": "U-086",
+      "method": "official-reference"
+    },
+    "6-044": {
+      "sprite": "durandamon",
+      "upstreamId": "U-093",
+      "method": "official-reference"
+    },
+    "6-045": {
+      "sprite": "dynasmon",
+      "upstreamId": "U-094",
+      "method": "official-reference"
+    },
+    "6-046": {
+      "sprite": "ebemon-x",
+      "upstreamId": "U-096",
+      "method": "official-reference"
+    },
+    "6-047": {
+      "sprite": "ebonwumon",
+      "upstreamId": "U-284",
+      "method": "official-reference"
+    },
+    "6-048": {
+      "sprite": "emperorgreymon",
+      "upstreamId": "H-017",
+      "method": "official-reference"
+    },
+    "6-049": {
+      "sprite": "eosmon-ultimate",
+      "upstreamId": "U-099",
+      "method": "official-reference"
+    },
+    "6-050": {
+      "sprite": "fanglongmon",
+      "upstreamId": "U-129",
+      "method": "official-reference"
+    },
+    "6-051": {
+      "sprite": "gaiomon",
+      "upstreamId": "U-105",
+      "method": "official-reference"
+    },
+    "6-052": {
+      "sprite": "gallantmon",
+      "upstreamId": "U-091",
+      "method": "official-reference"
+    },
+    "6-053": {
+      "sprite": "gallantmon-x",
+      "upstreamId": "SU-015",
+      "method": "official-reference"
+    },
+    "6-054": {
+      "sprite": "gankoomon",
+      "upstreamId": "U-107",
+      "method": "official-reference"
+    },
+    "6-055": {
+      "sprite": "ghoulmon",
+      "upstreamId": "U-076",
+      "method": "official-reference"
+    },
+    "6-056": {
+      "sprite": "gigaseadramon",
+      "upstreamId": "U-108",
+      "method": "official-reference"
+    },
+    "6-057": {
+      "sprite": "goldramon",
+      "upstreamId": "U-109",
+      "method": "official-reference"
+    },
+    "6-058": {
+      "sprite": "goldramon-x",
+      "upstreamId": "U-110",
+      "method": "official-reference"
+    },
+    "6-059": {
+      "sprite": "grandiskuwagamon",
+      "upstreamId": "U-113",
+      "method": "official-reference"
+    },
+    "6-060": {
+      "sprite": "grandracmon",
+      "upstreamId": "U-112",
+      "method": "official-reference"
+    },
+    "6-061": {
+      "sprite": "grankuwagamon",
+      "upstreamId": "U-115",
+      "method": "official-reference"
+    },
+    "6-062": {
+      "sprite": "groundlocomon",
+      "upstreamId": "U-114",
+      "method": "official-reference"
+    },
+    "6-063": {
+      "sprite": "griphonmon",
+      "upstreamId": "U-116",
+      "method": "official-reference"
+    },
+    "6-064": {
+      "sprite": "gundramon",
+      "upstreamId": "U-118",
+      "method": "official-reference"
+    },
+    "6-065": {
+      "sprite": "heavyleomon",
+      "upstreamId": "U-119",
+      "method": "official-reference"
+    },
+    "6-066": {
+      "sprite": "herculeskabuterimon",
+      "upstreamId": "U-121",
+      "method": "official-reference"
+    },
+    "6-067": {
+      "sprite": "hexeblaumon",
+      "upstreamId": "U-123",
+      "method": "official-reference"
+    },
+    "6-068": {
+      "sprite": "hiandromon",
+      "upstreamId": "U-124",
+      "method": "official-reference"
+    },
+    "6-069": {
+      "sprite": "jesmon",
+      "upstreamId": "U-136",
+      "method": "official-reference"
+    },
+    "6-070": {
+      "sprite": "justimon-x",
+      "upstreamId": "U-144",
+      "method": "official-reference"
+    },
+    "6-071": {
+      "sprite": "justimon-blitz-arm",
+      "upstreamId": "U-143",
+      "method": "official-reference"
+    },
+    "6-072": {
+      "sprite": "kentaurosmon",
+      "upstreamId": "U-257",
+      "method": "official-reference"
+    },
+    "6-073": {
+      "sprite": "kingetemon",
+      "upstreamId": "U-148",
+      "method": "official-reference"
+    },
+    "6-074": {
+      "sprite": "leopardmon",
+      "upstreamId": "U-090",
+      "method": "official-reference"
+    },
+    "6-075": {
+      "sprite": "leviamon",
+      "upstreamId": "U-151",
+      "method": "official-reference"
+    },
+    "6-076": {
+      "sprite": "lilithmon",
+      "upstreamId": "U-152",
+      "method": "official-reference"
+    },
+    "6-077": {
+      "sprite": "lordknightmon",
+      "upstreamId": "U-153",
+      "method": "official-reference"
+    },
+    "6-078": {
+      "sprite": "lotosmon",
+      "upstreamId": "U-154",
+      "method": "official-reference"
+    },
+    "6-079": {
+      "sprite": "lucemon-satan-mode",
+      "upstreamId": "U-157",
+      "method": "official-reference"
+    },
+    "6-080": {
+      "sprite": "machinedramon",
+      "upstreamId": "U-180",
+      "method": "official-reference"
+    },
+    "6-081": {
+      "sprite": "magnadramon",
+      "upstreamId": "U-125",
+      "method": "official-reference"
+    },
+    "6-082": {
+      "sprite": "magnadramon-x",
+      "upstreamId": "U-126",
+      "method": "official-reference"
+    },
+    "6-083": {
+      "sprite": "magnagarurumon",
+      "upstreamId": "H-019",
+      "method": "official-reference"
+    },
+    "6-084": {
+      "sprite": "magnamon",
+      "upstreamId": "AR-027",
+      "method": "official-reference"
+    },
+    "6-085": {
+      "sprite": "malomyotismon",
+      "upstreamId": "U-039",
+      "method": "official-reference"
+    },
+    "6-086": {
+      "sprite": "marineangemon",
+      "upstreamId": "U-159",
+      "method": "official-reference"
+    },
+    "6-087": {
+      "sprite": "megagargomon",
+      "upstreamId": "U-233",
+      "method": "official-reference"
+    },
+    "6-088": {
+      "sprite": "megidramon",
+      "upstreamId": "U-163",
+      "method": "official-reference"
+    },
+    "6-089": {
+      "sprite": "megidramon-x",
+      "upstreamId": "U-164",
+      "method": "official-reference"
+    },
+    "6-090": {
+      "sprite": "metaletemon",
+      "upstreamId": "U-167",
+      "method": "official-reference"
+    },
+    "6-091": {
+      "sprite": "metalgarurumon",
+      "upstreamId": "U-168",
+      "method": "official-reference"
+    },
+    "6-092": {
+      "sprite": "metalgarurumon-x",
+      "upstreamId": "U-170",
+      "method": "official-reference"
+    },
+    "6-093": {
+      "sprite": "metallicdramon",
+      "upstreamId": "U-171",
+      "method": "official-reference"
+    },
+    "6-094": {
+      "sprite": "metalpiranimon",
+      "upstreamId": "U-172",
+      "method": "official-reference"
+    },
+    "6-095": {
+      "sprite": "metalseadramon",
+      "upstreamId": "U-173",
+      "method": "official-reference"
+    },
+    "6-096": {
+      "sprite": "miragegaogamon",
+      "upstreamId": "U-176",
+      "method": "official-reference"
+    },
+    "6-097": {
+      "sprite": "murmukusmon",
+      "upstreamId": "U-181",
+      "method": "official-reference"
+    },
+    "6-098": {
+      "sprite": "nidhoggmon",
+      "upstreamId": "U-185",
+      "method": "official-reference"
+    },
+    "6-099": {
+      "sprite": "noblepumpkinmon",
+      "upstreamId": "U-186",
+      "method": "official-reference"
+    },
+    "6-100": {
+      "sprite": "ophanimon",
+      "upstreamId": "U-187",
+      "method": "official-reference"
+    },
+    "6-101": {
+      "sprite": "ophanimon-x",
+      "upstreamId": "U-188",
+      "method": "official-reference"
+    },
+    "6-102": {
+      "sprite": "ophanimon-falldown-mode-x",
+      "upstreamId": "U-190",
+      "method": "official-reference"
+    },
+    "6-103": {
+      "sprite": "ornismon",
+      "upstreamId": "U-196",
+      "method": "official-reference"
+    },
+    "6-104": {
+      "sprite": "ouryumon",
+      "upstreamId": "U-197",
+      "method": "official-reference"
+    },
+    "6-105": {
+      "sprite": "phoenixmon",
+      "upstreamId": "U-127",
+      "method": "official-reference"
+    },
+    "6-106": {
+      "sprite": "phoenixmon-x",
+      "upstreamId": "U-128",
+      "method": "official-reference"
+    },
+    "6-107": {
+      "sprite": "piedmon",
+      "upstreamId": "U-200",
+      "method": "official-reference"
+    },
+    "6-108": {
+      "sprite": "platinumnumemon",
+      "upstreamId": "U-203",
+      "method": "official-reference"
+    },
+    "6-109": {
+      "sprite": "plesiomon",
+      "upstreamId": "U-204",
+      "method": "official-reference"
+    },
+    "6-110": {
+      "sprite": "plesiomon-x",
+      "upstreamId": "U-205",
+      "method": "official-reference"
+    },
+    "6-111": {
+      "sprite": "princemamemon-x",
+      "upstreamId": "U-208",
+      "method": "official-reference"
+    },
+    "6-112": {
+      "sprite": "pukumon",
+      "upstreamId": "U-210",
+      "method": "official-reference"
+    },
+    "6-113": {
+      "sprite": "puppetmon",
+      "upstreamId": "U-202",
+      "method": "official-reference"
+    },
+    "6-114": {
+      "sprite": "rafflesimon",
+      "upstreamId": "U-216",
+      "method": "official-reference"
+    },
+    "6-115": {
+      "sprite": "raguelmon",
+      "upstreamId": "U-218",
+      "method": "official-reference"
+    },
+    "6-116": {
+      "sprite": "rapidmon-x",
+      "upstreamId": "U-221",
+      "method": "official-reference"
+    },
+    "6-117": {
+      "sprite": "rasenmon",
+      "upstreamId": "U-222",
+      "method": "official-reference"
+    },
+    "6-118": {
+      "sprite": "rasenmon-fury-mode",
+      "upstreamId": "U-223",
+      "method": "official-reference"
+    },
+    "6-119": {
+      "sprite": "rasielmon",
+      "upstreamId": "U-224",
+      "method": "official-reference"
+    },
+    "6-120": {
+      "sprite": "ravemon",
+      "upstreamId": "U-225",
+      "method": "official-reference"
+    },
+    "6-121": {
+      "sprite": "regalecusmon",
+      "upstreamId": "U-227",
+      "method": "official-reference"
+    },
+    "6-122": {
+      "sprite": "rhihimon",
+      "upstreamId": "H-022",
+      "method": "official-reference"
+    },
+    "6-123": {
+      "sprite": "rosemon",
+      "upstreamId": "U-228",
+      "method": "official-reference"
+    },
+    "6-124": {
+      "sprite": "rosemon-x",
+      "upstreamId": "U-229",
+      "method": "official-reference"
+    },
+    "6-125": {
+      "sprite": "rusttyrannomon",
+      "upstreamId": "SU-040",
+      "method": "official-reference"
+    },
+    "6-126": {
+      "sprite": "saberleomon",
+      "upstreamId": "U-232",
+      "method": "official-reference"
+    },
+    "6-127": {
+      "sprite": "sakuyamon-x",
+      "upstreamId": "U-236",
+      "method": "official-reference"
+    },
+    "6-128": {
+      "sprite": "seraphimon",
+      "upstreamId": "U-238",
+      "method": "official-reference"
+    },
+    "6-129": {
+      "sprite": "shinegreymon",
+      "upstreamId": "U-241",
+      "method": "official-reference"
+    },
+    "6-130": {
+      "sprite": "skullmammothmon",
+      "upstreamId": "U-253",
+      "method": "official-reference"
+    },
+    "6-131": {
+      "sprite": "skullmammothmon-x",
+      "upstreamId": "U-254",
+      "method": "official-reference"
+    },
+    "6-132": {
+      "sprite": "slashangemon",
+      "upstreamId": "U-255",
+      "method": "official-reference"
+    },
+    "6-133": {
+      "sprite": "slayerdramon",
+      "upstreamId": "U-256",
+      "method": "official-reference"
+    },
+    "6-134": {
+      "sprite": "susanomon",
+      "upstreamId": "U-261",
+      "method": "official-reference"
+    },
+    "6-135": {
+      "sprite": "tigervespamon",
+      "upstreamId": "U-265",
+      "method": "official-reference"
+    },
+    "6-136": {
+      "sprite": "titamon",
+      "upstreamId": "U-266",
+      "method": "official-reference"
+    },
+    "6-137": {
+      "sprite": "ulforceveedramon",
+      "upstreamId": "U-270",
+      "method": "official-reference"
+    },
+    "6-138": {
+      "sprite": "ultimatebrachiomon",
+      "upstreamId": "U-271",
+      "method": "official-reference"
+    },
+    "6-139": {
+      "sprite": "valkyrimon",
+      "upstreamId": "U-274",
+      "method": "official-reference"
+    },
+    "6-140": {
+      "sprite": "varodurumon",
+      "upstreamId": "U-273",
+      "method": "official-reference"
+    },
+    "6-141": {
+      "sprite": "venommyotismon",
+      "upstreamId": "U-275",
+      "method": "official-reference"
+    },
+    "6-142": {
+      "sprite": "volcanicdramon",
+      "upstreamId": "U-279",
+      "method": "official-reference"
+    },
+    "6-143": {
+      "sprite": "wargreymon",
+      "upstreamId": "U-281",
+      "method": "official-reference"
+    },
+    "6-144": {
+      "sprite": "wargreymon-x",
+      "upstreamId": "U-282",
+      "method": "official-reference"
+    },
+    "6-145": {
+      "sprite": "zhuqiaomon",
+      "upstreamId": "U-290",
+      "method": "official-reference"
+    },
+    "6-146": {
+      "sprite": "vikemon",
+      "upstreamId": "U-278",
+      "method": "official-reference"
+    },
+    "6-147": {
+      "sprite": "shinmonzaemon",
+      "upstreamId": "U-244",
+      "method": "official-reference"
+    },
+    "6-148": {
+      "sprite": "kazuchimon",
+      "upstreamId": "U-146",
+      "method": "official-reference"
+    },
+    "6-149": {
+      "sprite": "bancholillymon",
+      "upstreamId": "U-031",
+      "method": "official-reference"
+    },
+    "6-150": {
+      "sprite": "dorugoramon",
+      "upstreamId": "U-089",
+      "method": "official-reference"
+    },
+    "7-001": {
+      "sprite": "alphamon-ouryuken",
+      "upstreamId": "SU-002",
+      "method": "official-reference"
+    },
+    "7-002": {
+      "sprite": "armageddemon",
+      "upstreamId": "SU-003",
+      "method": "official-reference"
+    },
+    "7-003": {
+      "sprite": "barbamon-x",
+      "upstreamId": "SU-004",
+      "method": "official-reference"
+    },
+    "7-004": {
+      "sprite": "beelzemon-x",
+      "upstreamId": "SU-005",
+      "method": "official-reference"
+    },
+    "7-005": {
+      "sprite": "beelzebumonblastmode",
+      "upstreamId": "SU-006",
+      "method": "official-reference"
+    },
+    "7-006": {
+      "sprite": "belphemon-x",
+      "upstreamId": "SU-007",
+      "method": "official-reference"
+    },
+    "7-007": {
+      "sprite": "boltboutamon",
+      "upstreamId": "SU-043",
+      "method": "official-reference"
+    },
+    "7-008": {
+      "sprite": "chaosmon",
+      "upstreamId": "SU-009",
+      "method": "official-reference"
+    },
+    "7-009": {
+      "sprite": "craniamon-x",
+      "upstreamId": "SU-010",
+      "method": "official-reference"
+    },
+    "7-010": {
+      "sprite": "demon_x",
+      "upstreamId": "SU-012",
+      "method": "official-reference"
+    },
+    "7-011": {
+      "sprite": "darknessbagramon",
+      "upstreamId": "SU-011",
+      "method": "official-reference"
+    },
+    "7-012": {
+      "sprite": "diaboromon_x",
+      "upstreamId": "SU-013",
+      "method": "official-reference"
+    },
+    "7-013": {
+      "sprite": "dynasmon-x",
+      "upstreamId": "SU-016",
+      "method": "official-reference"
+    },
+    "7-014": {
+      "sprite": "examon",
+      "upstreamId": "SU-017",
+      "method": "official-reference"
+    },
+    "7-015": {
+      "sprite": "examon-x",
+      "upstreamId": "SU-018",
+      "method": "official-reference"
+    },
+    "7-016": {
+      "sprite": "gallantmon-x",
+      "upstreamId": "SU-015",
+      "method": "official-reference"
+    },
+    "7-017": {
+      "sprite": "gankoomon-x",
+      "upstreamId": "SU-020",
+      "method": "official-reference"
+    },
+    "7-018": {
+      "sprite": "gracenovamon",
+      "upstreamId": "SU-021",
+      "method": "official-reference"
+    },
+    "7-019": {
+      "sprite": "imperialdramon-fighter-mode",
+      "upstreamId": "SU-022",
+      "method": "official-reference"
+    },
+    "7-020": {
+      "sprite": "imperialdramon-paladin-mode",
+      "upstreamId": "SU-023",
+      "method": "official-reference"
+    },
+    "7-021": {
+      "sprite": "jesmon-x",
+      "upstreamId": "SU-024",
+      "method": "official-reference"
+    },
+    "7-022": {
+      "sprite": "kentaurosmon-x",
+      "upstreamId": "SU-041",
+      "method": "official-reference"
+    },
+    "7-023": {
+      "sprite": "leopardmon-x",
+      "upstreamId": "SU-014",
+      "method": "official-reference"
+    },
+    "7-024": {
+      "sprite": "leviamon-x",
+      "upstreamId": "SU-026",
+      "method": "official-reference"
+    },
+    "7-025": {
+      "sprite": "lilithmon-x",
+      "upstreamId": "SU-027",
+      "method": "official-reference"
+    },
+    "7-026": {
+      "sprite": "lordknightmon-x",
+      "upstreamId": "SU-028",
+      "method": "official-reference"
+    },
+    "7-027": {
+      "sprite": "lucemon-x",
+      "upstreamId": "SU-029",
+      "method": "official-reference"
+    },
+    "7-028": {
+      "sprite": "mangamon-x",
+      "upstreamId": "SU-030",
+      "method": "official-reference"
+    },
+    "7-029": {
+      "sprite": "mastemon",
+      "upstreamId": "SU-031",
+      "method": "official-reference"
+    },
+    "7-030": {
+      "sprite": "minervamon-x",
+      "upstreamId": "SU-032",
+      "method": "official-reference"
+    },
+    "7-031": {
+      "sprite": "ogudomon",
+      "upstreamId": "SU-033",
+      "method": "official-reference"
+    },
+    "7-032": {
+      "sprite": "omnimon",
+      "upstreamId": "SU-035",
+      "method": "official-reference"
+    },
+    "7-033": {
+      "sprite": "omnimon-alter-s",
+      "upstreamId": "SU-036",
+      "method": "official-reference"
+    },
+    "7-034": {
+      "sprite": "omnimon-x",
+      "upstreamId": "SU-037",
+      "method": "official-reference"
+    },
+    "7-035": {
+      "sprite": "ordinemon",
+      "upstreamId": "SU-038",
+      "method": "official-reference"
+    },
+    "7-036": {
+      "sprite": "rafflesimon",
+      "upstreamId": "U-216",
+      "method": "official-reference"
+    },
+    "7-037": {
+      "sprite": "ragnaloardmon",
+      "upstreamId": "SU-039",
+      "method": "official-reference"
+    },
+    "7-038": {
+      "sprite": "rasenmon",
+      "upstreamId": "U-222",
+      "method": "official-reference"
+    },
+    "7-039": {
+      "sprite": "rusttyrannomon",
+      "upstreamId": "SU-040",
+      "method": "official-reference"
+    },
+    "7-040": {
+      "sprite": "ulforceveedramon-x",
+      "upstreamId": "SU-042",
+      "method": "official-reference"
+    },
+    "7-041": {
+      "sprite": "agumon-kizuna",
+      "upstreamId": "SU-001",
+      "method": "official-reference"
+    },
+    "7-042": {
+      "sprite": "gabumon-kizuna",
+      "upstreamId": "SU-019",
+      "method": "official-reference"
+    },
+    "7-043": {
+      "sprite": "jesmon-gx",
+      "upstreamId": "SU-025",
+      "method": "official-reference"
+    },
+    "7-044": {
+      "sprite": "ogudomon-x",
+      "upstreamId": "SU-034",
+      "method": "official-reference"
+    },
+    "7-045": {
+      "sprite": "chaosdramon",
+      "upstreamId": "SU-008",
+      "method": "official-reference"
+    }
+  }
+}

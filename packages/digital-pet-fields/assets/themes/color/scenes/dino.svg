@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Dino pixel landscape</title>
+  <rect width="160" height="160" fill="#d6e3ca"/>
+  <path d="M12 28h8v-4h20v4h8v6H12z M100 16h8v-4h20v4h12v6h-40z" fill="#fff1c3"/>
+  <path d="M0 66h12V54h16V44h18v10h10v12h14v58H0z M114 124V70h10V52h14V42h12v18h10v64z" fill="#b1b67a"/>
+  <path d="M0 82h14V70h18v-8h12v14h12v48H0z M130 124V82h12V70h18v54z" fill="#8d945c"/>
+  <path d="M4 94h24v2H4z M10 108h28v2H10z M140 90h20v2h-20z M136 104h24v2h-24z" fill="#787b4d"/>
+  <g transform="translate(12 0)">
+    <path d="M20 94v-8h10v-6h16v-4h24v4h24v6h16v4h12v4h10v4h8v4h10v4h10v4h-16v-4h-12v-4h-12v-4h-14v-4H94v-4H70v-4H48v4H34v6z" fill="#fff1c3"/>
+    <path d="M48 88v6h-4v14h4v6h8v4h-4v4H42v-8h-4V96h4v-8z M64 86v8h-4v18h4v8h-6v-4h-4V96h4V86z M78 88v8h-4v18h4v8h-6v-6h-4V96h4v-8z M92 90v10h-4v14h4v6h-6v-4h-4v-16h4V90z M104 94v8h-4v10h4v6h-6v-4h-4v-12h4v-8z" fill="#fff1c3"/>
+    <path d="M12 96h6v-8h12v4h8v8h-4v8H20v-4H8v-6h4z M12 112h20v-6h4v10h-4v4H16v-4h-4z" fill="#fff1c3"/>
+    <path d="M24 94h6v6h-6z M12 100h4v4h-4z M20 108h2v4h-2z M26 108h2v4h-2z M32 106h2v4h-2z" fill="#787b4d"/>
+    <path d="M54 114h6v8h10v2H58v-4h-4z M88 114h6v8h12v2H92v-4h-4z" fill="#fff1c3"/>
+  </g>
+  <rect y="124" width="160" height="36" fill="#b1b67a"/>
+  <path d="M0 124h38v2H0z M120 124h40v2h-40z M8 148v-18h2v8h4v-6h4v4h-4v6h-4v6z M140 146v-16h2v6h4v-4h4v4h-4v6h-4v4z" fill="#787b4d"/>
+  <path d="M24 150h12v2H24z M116 140h10v2h-10z M48 136h6v2h-6z" fill="#8d945c"/>
+</svg>

@@ -8,6 +8,7 @@ import {
 } from "@jcendal/digital-pet-core/config/types.ts"
 
 const expectedDefaults = {
+  theme: "lcd",
   language: "jp",
   notifications: true,
   stageLabels: {

@@ -4,6 +4,7 @@ import { catalogs as webviews } from "@jcendal/digital-pet-webviews/i18n"
 import { expect, test } from "@playwright/test"
 import { catalogs as web } from "../../src/shared/i18n.ts"
 import { openHistory, openOptions } from "./helpers/navigation.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 const savedIdentity = (page: import("@playwright/test").Page) =>
   page.evaluate(
@@ -33,7 +34,11 @@ for (const [browserLocale, locale] of [
   ["fr-FR", "en"],
 ] as const) {
   test(`browser ${browserLocale} selects ${locale} across shell and panels`, async ({ browser }, testInfo) => {
-    const context = await browser.newContext({ locale: browserLocale, viewport: { width: 320, height: 800 } })
+    const context = await browser.newContext({
+      ...themeContextOptions,
+      locale: browserLocale,
+      viewport: { width: 320, height: 800 },
+    })
     const page = await context.newPage()
     const errors: string[] = []
     page.on("pageerror", (error) => errors.push(error.message))
@@ -96,7 +101,7 @@ for (const [browserLocale, locale] of [
 test("explicit language overrides the browser and survives offline reloads without changing the save", async ({
   browser,
 }) => {
-  const context = await browser.newContext({ locale: "es-ES" })
+  const context = await browser.newContext({ ...themeContextOptions, locale: "es-ES" })
   // Initialize once: subsequent changes must come from the selector, not this script.
   await context.addInitScript((key) => {
     if (!localStorage.getItem("i18n-test-initialized")) {
