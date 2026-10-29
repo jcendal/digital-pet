@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-29
+
+### Changed
+
+- Feat/multiplayer product design
+
+
 ## [0.17.0] - 2026-10-21
 
 - Repair DoneDevimon's identity, missing LoaderLeomon/Crowmon branches and eight pair-only routes without adding species or changing saved IDs.
