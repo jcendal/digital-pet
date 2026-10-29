@@ -3,8 +3,8 @@
 See the [implementation plan](../../evolution-gameplay-plan.md) for the remaining
 work and [data sources](../../data-sources.md) for imported artwork and rule
 adaptations. Captures below use isolated browser test saves and do not modify a
-real player's save. Historical screenshots remain under `assets/design/`; the
-superseded interactive preview has been removed.
+real player's save. Only the screenshots referenced below are retained under
+`assets/design/`; superseded captures and the interactive preview have been removed.
 
 ## Implemented interface
 

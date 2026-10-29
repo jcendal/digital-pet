@@ -21,14 +21,10 @@ playback is illustrative; the implemented animation is the approved reference.
 Regenerate its catalog sprite sheet with
 `bun scripts/build-multiplayer-design-artwork.ts`.
 
-## Current visual evidence
+## Implemented behavior
 
-- [Latest comparison gallery](../../../assets/design/multiplayer/captures/refinements/index.html):
-  nine pairs at 390 × 844, with the prototype on the left and corrected application
-  on the right. Application captures use isolated fixture data and local simulated
-  transport. Stage translations and fixture selections may differ from sample text.
-- [Approved exchange animation](../../../assets/design/multiplayer/captures/refinements/exchange-approved.mp4):
-  recorded from the actual two-browser exchange test.
+Completed visual review captures and recordings are not retained. The browser
+tests exercise the implementation and can generate fresh captures when needed.
 
 Arena selects its own fighter without switching the active care companion. Profile
 and Friends thumbnails continue to use the active companion. The approved exchange
