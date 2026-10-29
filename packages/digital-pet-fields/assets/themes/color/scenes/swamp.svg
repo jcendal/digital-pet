@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Geko Swamp pixel landscape</title>
+  <rect width="160" height="160" fill="#b9d9cc"/>
+  <defs>
+    <g id="reeds" fill="#547963"><path d="M0 16V4h2v12h4V0h2v16h4V6h2v16H0zM5 1h4v7H5zM-1 5h4v6h-4z"/></g>
+    <g id="lily"><path fill="#b9d9cc" d="M0 2h4V0h12v2h4v4h-8V4H8v4H4V6H0z"/><path fill="#e1e7b7" d="M4 1h8v2H4z"/></g>
+  </defs>
+  <path fill="#8fba98" d="M0 38h12v-6h14v8h10v10h14v-8h18v6h16v-8h18v6h14V34h18v-6h14v12h12v74H0z"/>
+  <path fill="#628f7c" d="M0 86h18v-4h22v6h24v-4h30v8h26v-6h40v74H0z"/>
+  <path fill="#547963" d="M26 90V58h-8v-8H8v-4h14v8h6V30h6v32h8V48h12v-4h4v10H46v14H34v22zM118 86V52h-8v-8H98v-4h16v8h8V28h6v28h10V44h14v6h-10v12h-14v24z"/>
+  <path fill="#a0c2a5" d="M26 36h2v30h-2zM120 32h2v24h-2z"/>
+  <path fill="#8fba98" d="M0 100h24v2H0zM40 110h28v2H40zM94 98h30v2H94zM120 116h40v2h-40zM8 148h24v2H8zM106 148h28v2h-28z"/>
+  <use href="#lily" x="12" y="112"/><use href="#lily" x="64" y="98"/><use href="#lily" x="116" y="130"/>
+  <path fill="#a0c2a5" d="M0 126h160v14H0z"/>
+  <path fill="#547963" d="M0 126h160v2H0zM0 138h160v2H0zM14 128h2v10h-2zM38 128h2v10h-2zM62 128h2v10h-2zM86 128h2v10h-2zM110 128h2v10h-2zM134 128h2v10h-2z"/>
+  <use href="#reeds" x="8" y="132"/><use href="#reeds" x="140" y="130"/>
+</svg>

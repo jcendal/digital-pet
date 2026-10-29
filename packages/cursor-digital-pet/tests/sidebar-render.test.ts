@@ -112,8 +112,8 @@ const sidebarPreview = (idleAlignment?: string) => {
       createElementNS: () => new PreviewElement(),
     },
     window: {
-      addEventListener: (_name: string, handler: typeof receive) => {
-        receive = handler
+      addEventListener: (name: string, handler: typeof receive) => {
+        if (name === "message") receive = handler
       },
     },
     ResizeObserver: class {

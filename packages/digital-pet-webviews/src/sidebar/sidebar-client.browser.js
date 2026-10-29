@@ -3,6 +3,7 @@ const adventureClient = window.createAdventureClient(vscode, IntlModule)
 let model = null
 let state = { phase: "idle" }
 let artwork = ""
+let visualSnapshot
 let artworkColumns = 32
 let battleHud = null
 let eggInteraction = null
@@ -137,6 +138,10 @@ const renderArtwork = () => {
     (state.phase === "idle" || state.phase === "feeding" ? svg.dataset.idleAlignment || "xMidYMid" : "xMidYMid") +
       " meet",
   )
+  if (window.digitalPetVisuals?.paint(svg, visualSnapshot, state, model)) {
+    positionPetControls()
+    return
+  }
   const append = (tag, attrs) => {
     const node = document.createElementNS("http://www.w3.org/2000/svg", tag)
     for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value))
@@ -237,6 +242,8 @@ const renderSwitch = () => {
   button.title = button.getAttribute("aria-label")
   button.querySelector(".switch-portrait").setAttribute("viewBox", team.reserve.portraitViewBox ?? team.reserve.viewBox)
   button.querySelector(".switch-portrait path").setAttribute("d", team.reserve.artwork)
+  button.querySelector(".switch-portrait").dataset.monsterId = team.reserve.nodeId
+  button.querySelector(".switch-portrait").dataset.eggOrigin = team.reserve.originEggId ?? ""
 }
 byId("pet-switch")?.addEventListener("click", () => {
   const team = model?.team
@@ -406,11 +413,13 @@ window.addEventListener("message", (event) => {
   }
   if (message?.type === "animation-frame" && typeof message.artwork === "string") {
     artwork = message.artwork
+    visualSnapshot = message.visual
     battleHud = message.hud || null
     renderBattleHud()
     renderArtwork()
   }
 })
+window.addEventListener("digital-pet:theme-render", renderArtwork)
 new ResizeObserver(reportWidth).observe(root)
 render()
 reportWidth()

@@ -8,6 +8,7 @@ export const resourceFiles = (root: string): Record<string, string> => {
   const fields = resolve(root, "../digital-pet-fields/assets")
   const files: Record<string, string> = {
     "/maps/file-island.svg": resolve(fields, "maps/file-island.svg"),
+    "/maps/file-island-color.svg": resolve(fields, "themes/color/file-island.svg"),
     "/fonts/Silkscreen-Regular.ttf": fileURLToPath(
       import.meta.resolve("@jcendal/digital-pet-webviews/assets/fonts/Silkscreen-Regular.ttf"),
     ),
@@ -22,6 +23,7 @@ export const resourceFiles = (root: string): Record<string, string> => {
     files[`/music/${name}`] = resolve(root, "assets/music", name)
   for (const place of LOCATIONS) {
     files[`/regions/${place.id}/scene.svg`] = resolve(fields, "scenes", `${place.scene}.svg`)
+    files[`/regions/${place.id}/scene-color.svg`] = resolve(fields, "themes/color/scenes", `${place.scene}.svg`)
     const background = resolve(fields, "backgrounds", place.backgroundFile)
     if (existsSync(background)) files[`/regions/${place.id}/background.png`] = background
   }

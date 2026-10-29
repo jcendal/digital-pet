@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Overdell Cemetery pixel landscape</title>
+  <rect width="160" height="160" fill="#bdc6d4"/>
+  <defs><g id="grave"><path fill="#626e80" d="M4 0h12v4h4v22H0V4h4z"/><path fill="#b2b7ac" d="M4 4h12v16H4z"/><path fill="#788592" d="M9 6h2v3h4v2h-4v5H9v-5H5V9h4zM-2 22h24v2H-2z"/></g></defs>
+  <path fill="#dce0d7" d="M104 20h12v4h4v12h-4v4h-12v-4h-4V24h4z"/>
+  <path fill="#9babb1" d="M0 62h20v-8h16v12h22v-8h18v6h20v-8h20v10h20v-8h24v66H0z"/>
+  <path fill="#788592" d="M0 80h58v26H0zM102 80h58v26h-58z"/>
+  <path fill="#b2b7ac" d="M0 80h58v2H0zM102 80h58v2h-58zM0 92h58v2H0zM102 92h58v2h-58zM16 82h2v10h-2zM40 94h2v10h-2zM118 82h2v10h-2zM140 94h2v10h-2z"/>
+  <path fill="#626e80" d="M58 106V64h4v42zM98 106V64h4v42zM60 68h40v2H60zM60 78h40v2H60zM60 88h40v2H60zM68 66h2v40h-2zM78 66h2v40h-2zM88 66h2v40h-2zM14 84V44H6v-8H0v-4h10v8h8V22h4v24h8V34h10v4h-6v12H22v34z"/>
+  <rect y="108" width="160" height="52" fill="#9babb1"/>
+  <use href="#grave" x="30" y="100"/><use href="#grave" x="110" y="100"/>
+  <use href="#grave" x="10" y="130"/><use href="#grave" x="136" y="134"/>
+  <path fill="#788592" d="M54 150h8v2h-8zM100 142h8v2h-8zM68 132h24v2H68z"/>
+</svg>

@@ -1,5 +1,6 @@
 import { MonsterAnimationController } from "@jcendal/digital-pet-animation/idle/monster-animation.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { snapshotAnimation } from "@jcendal/digital-pet-animation/themes/artwork-snapshot.ts"
 import { DEFAULT_DIGITAL_PET_SETTINGS } from "@jcendal/digital-pet-core/config/defaults.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
@@ -40,6 +41,7 @@ export const sidebarData = (requestedWidth: number, pet = false) => {
     frame: {
       type: "animation-frame",
       artwork: renderPositionedArtwork(frame, width),
+      visual: snapshotAnimation(frame, width),
       motion: sceneMotionFor(frame, partnerKey, width),
     },
   }

@@ -1,4 +1,5 @@
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { snapshotAnimation } from "@jcendal/digital-pet-animation/themes/artwork-snapshot.ts"
 import { BROWSER_FEEDING_POLICY } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { consumeFood, peekLocalState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
@@ -72,7 +73,11 @@ const eat = async (): Promise<void> => {
         let frame = animation.dispatch({ kind: "feed" })
         for (let tick = 0; tick < 3; tick++) {
           await checkpoint()
-          actions.deliver({ type: "animation-frame", artwork: renderPositionedArtwork(frame, actions.width) })
+          actions.deliver({
+            type: "animation-frame",
+            artwork: renderPositionedArtwork(frame, actions.width),
+            visual: snapshotAnimation(frame, actions.width),
+          })
           await new Promise((resolve) => window.setTimeout(resolve, 800))
           frame = animation.dispatch({ kind: "tick" })
         }

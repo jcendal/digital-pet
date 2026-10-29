@@ -67,9 +67,9 @@ export const presentPendingEvolution = async (
           deliver({ type: "presentation-state", state: phaseState })
         }
         const onArtwork: import("@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts").BattleFrameListener =
-          async (artwork, hud) => {
+          async (artwork, hud, visual) => {
             await checkpoint()
-            deliver({ type: "animation-frame", artwork, ...(hud ? { hud } : {}) })
+            deliver({ type: "animation-frame", artwork, visual, ...(hud ? { hud } : {}) })
           }
         await presentEvolution(player.id, pending.targetNodeId, pending.opponentNodeId, width, {
           frameCatalog: MONSTER_FRAME_CATALOG,

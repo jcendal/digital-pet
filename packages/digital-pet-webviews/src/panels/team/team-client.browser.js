@@ -16,6 +16,8 @@
   })
   const svg = (member) => {
     const art = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    art.dataset.monsterId = member.nodeId
+    art.dataset.eggOrigin = member.originEggId ?? ""
     art.setAttribute("viewBox", member.viewBox)
     art.setAttribute("aria-hidden", "true")
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
@@ -72,6 +74,8 @@
     if (!egg) return
     byId("egg-name").textContent = egg.name
     byId("egg-preview").querySelector("path").setAttribute("d", egg.artwork)
+    byId("egg-preview").dataset.monsterId = "0-001"
+    byId("egg-preview").dataset.eggOrigin = egg.id
     byId("egg-preview").setAttribute("viewBox", egg.viewBox)
     byId("egg-unlock").textContent = egg.unlocked ? copy("eggs.available") : egg.hint
     byId("egg-create").textContent = copy("eggs.chooseThis")

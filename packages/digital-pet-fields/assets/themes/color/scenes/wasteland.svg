@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Wasteland pixel landscape</title>
+  <rect width="160" height="160" fill="#d4d8dd"/>
+  <path d="M42 94V74h8V64h6V54h6V44h6V34h8V24h8v10h6v12h8v10h6v14h6v24z" fill="#b7a597"/>
+  <path d="M66 44h10v-6h8v4h8v4H78v6H60v-4h6z M50 68h18v-6h24v-6h8v6h-6v6H70v6H44v-4h6z M42 88h26v-6h30v-6h10v6h-8v6H70v6H42z" fill="#d4d8dd"/>
+  <path d="M0 90h8V72h8V62h10v12h8v24h14v26H0z M112 124V84h10V64h8V54h10v18h12v18h8v34z" fill="#928375"/>
+  <path d="M10 80h14v2H10z M126 76h18v2h-18z M14 84h4v14h-4z M136 80h4v18h-4z" fill="#b7a597"/>
+  <path d="M32 112V96h4v-8h4v8h4v16z M114 114V98h4v-6h4v6h4v16z M30 112h16v12H30z M112 114h16v10h-16z" fill="#746d67"/>
+  <rect y="124" width="160" height="36" fill="#b7a597"/>
+  <path d="M0 128h20v4h12v4h14v4h-8v-2H26v-4H16v-2H0z M160 134h-24v4h-12v4h-14v4h8v-2h12v-4h12v-2h18z M8 148h16v2H8z M132 152h12v2h-12z" fill="#746d67"/>
+</svg>

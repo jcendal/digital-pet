@@ -1,0 +1,707 @@
+{
+  "source": "https://digimon-db.omnipet.app.br/api/gathering/dmc",
+  "moduleSha256": "a0e2a9e3574c232d64447c9db7120519299043a155b982bfe825f2023dad7f69",
+  "files": [
+    {
+      "file": "attack-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/bce17edcdd0ab0f9b28c9d639d20309acb6531e407be2d7eeba8abc65baef882.png",
+      "sha256": "bce17edcdd0ab0f9b28c9d639d20309acb6531e407be2d7eeba8abc65baef882"
+    },
+    {
+      "file": "attack-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1c4fb2bfc061229a7316621529d090b11bb7f9aec5b66b9094d785ec26c56e8d.png",
+      "sha256": "1c4fb2bfc061229a7316621529d090b11bb7f9aec5b66b9094d785ec26c56e8d"
+    },
+    {
+      "file": "attack-2.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/ff63cd6e98a6984ced560363789b102bbabbc84a8aa138879948953774bf394d.png",
+      "sha256": "ff63cd6e98a6984ced560363789b102bbabbc84a8aa138879948953774bf394d"
+    },
+    {
+      "file": "attack-3.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c70092ca554bdf05aad77c0e1c590efab2cc3a7c235abaea20706c3387f89ac6.png",
+      "sha256": "c70092ca554bdf05aad77c0e1c590efab2cc3a7c235abaea20706c3387f89ac6"
+    },
+    {
+      "file": "attack-4.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/5cb8e19aa7473b1fc632ea49624eefc77d62bb75dae2ae6bd4389f76f9873429.png",
+      "sha256": "5cb8e19aa7473b1fc632ea49624eefc77d62bb75dae2ae6bd4389f76f9873429"
+    },
+    {
+      "file": "attack-5.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3480a514c318a7401e1dec855dfd59ef5ca9c91e1dac127bbc6aa9d5ace23952.png",
+      "sha256": "3480a514c318a7401e1dec855dfd59ef5ca9c91e1dac127bbc6aa9d5ace23952"
+    },
+    {
+      "file": "attack-6.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/967b91f4bf9b2fdda86c85a06b7f947be86f5828c6084266876b80cad90d24b2.png",
+      "sha256": "967b91f4bf9b2fdda86c85a06b7f947be86f5828c6084266876b80cad90d24b2"
+    },
+    {
+      "file": "attack-7.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/95f4efb4bd79a718dbdd6aa5e97b5cc8b097a56dfbb8c44fe2a770ceda99ad73.png",
+      "sha256": "95f4efb4bd79a718dbdd6aa5e97b5cc8b097a56dfbb8c44fe2a770ceda99ad73"
+    },
+    {
+      "file": "attack-8.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/e2e21e6bacbea6cde07f1401cdba3435c465de5b8d48a923a176c5808a523207.png",
+      "sha256": "e2e21e6bacbea6cde07f1401cdba3435c465de5b8d48a923a176c5808a523207"
+    },
+    {
+      "file": "attack-9.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b801a20c38e8692f93608bd18cb1c20863f182bd54c07a95589ba65b27710432.png",
+      "sha256": "b801a20c38e8692f93608bd18cb1c20863f182bd54c07a95589ba65b27710432"
+    },
+    {
+      "file": "attack-10.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/101d4408d48fc44df1545a74974498ba95970a58be344a6f9d2f65b0622712b6.png",
+      "sha256": "101d4408d48fc44df1545a74974498ba95970a58be344a6f9d2f65b0622712b6"
+    },
+    {
+      "file": "attack-11.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/bd3c9bb3424e490887985c7fe692cbfb73912b285728e7f40c4d8dcfb13d4008.png",
+      "sha256": "bd3c9bb3424e490887985c7fe692cbfb73912b285728e7f40c4d8dcfb13d4008"
+    },
+    {
+      "file": "attack-12.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a921aa0b2d02da7f2ac03f926558c9e06e0fb647d8ab07d416ea43713a4916d1.png",
+      "sha256": "a921aa0b2d02da7f2ac03f926558c9e06e0fb647d8ab07d416ea43713a4916d1"
+    },
+    {
+      "file": "attack-13.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0f8662d7a030f794b4df145f60bc66f99b20925f732c2320795785eb0abd9236.png",
+      "sha256": "0f8662d7a030f794b4df145f60bc66f99b20925f732c2320795785eb0abd9236"
+    },
+    {
+      "file": "attack-14.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c134517b39faa0e6a4536114ba5be27d62e685b8737ce39cfd532150e885076c.png",
+      "sha256": "c134517b39faa0e6a4536114ba5be27d62e685b8737ce39cfd532150e885076c"
+    },
+    {
+      "file": "attack-15.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0a63d160815f219227d6d0188913f755a643c36e457428bd0a5a47c5d2e6a296.png",
+      "sha256": "0a63d160815f219227d6d0188913f755a643c36e457428bd0a5a47c5d2e6a296"
+    },
+    {
+      "file": "attack-16.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/6d50fbd2312e5ffb56299e468eb99d69297a9a81bf7f1bf149f6a817f4abbb1d.png",
+      "sha256": "6d50fbd2312e5ffb56299e468eb99d69297a9a81bf7f1bf149f6a817f4abbb1d"
+    },
+    {
+      "file": "attack-17.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a94f3c9ca1d7b6bbd784f080ca9a55df969e9fdeff510aa25b5a4781b615d100.png",
+      "sha256": "a94f3c9ca1d7b6bbd784f080ca9a55df969e9fdeff510aa25b5a4781b615d100"
+    },
+    {
+      "file": "attack-18.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a2290233ec880651c3cd7b6f21e8d52b6ab0f739a193e744b92909154af99e1b.png",
+      "sha256": "a2290233ec880651c3cd7b6f21e8d52b6ab0f739a193e744b92909154af99e1b"
+    },
+    {
+      "file": "attack-19.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/da83e80b5b0e7696d6f3c1a0ef262a274bad219da6024248c1c7b8c3da3bf5ed.png",
+      "sha256": "da83e80b5b0e7696d6f3c1a0ef262a274bad219da6024248c1c7b8c3da3bf5ed"
+    },
+    {
+      "file": "attack-20.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/edb79571cb2c5bfdb7564fa1348fe8fdecbb30340bab856840052d92a60c0eb9.png",
+      "sha256": "edb79571cb2c5bfdb7564fa1348fe8fdecbb30340bab856840052d92a60c0eb9"
+    },
+    {
+      "file": "attack-21.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/32fdee78a786c6105f5f1166ebe22e86b18f18ed0f17035508a5f92f782e3daf.png",
+      "sha256": "32fdee78a786c6105f5f1166ebe22e86b18f18ed0f17035508a5f92f782e3daf"
+    },
+    {
+      "file": "attack-22.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/7ab97ff57cba398558661ef5780fe72e6f262d79ccc232cb471c8b55f8a839be.png",
+      "sha256": "7ab97ff57cba398558661ef5780fe72e6f262d79ccc232cb471c8b55f8a839be"
+    },
+    {
+      "file": "attack-23.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/7bb8fc038b41a66eec53a5ecfb39c4ed9512872f723fef870c18bb38890f1584.png",
+      "sha256": "7bb8fc038b41a66eec53a5ecfb39c4ed9512872f723fef870c18bb38890f1584"
+    },
+    {
+      "file": "attack-24.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/f7459e975ca8f739d10a307158e3164bfb80fb67c03275143d432af3b3e2c259.png",
+      "sha256": "f7459e975ca8f739d10a307158e3164bfb80fb67c03275143d432af3b3e2c259"
+    },
+    {
+      "file": "attack-25.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a7fec7142e81be21f823dbfb86fbadc4b1e81333bd02ecc6b33e7c77134912d9.png",
+      "sha256": "a7fec7142e81be21f823dbfb86fbadc4b1e81333bd02ecc6b33e7c77134912d9"
+    },
+    {
+      "file": "attack-26.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c494a7558865304f220afb5f37af00039fe1fdc8e453ee2c00b5a41b940b523e.png",
+      "sha256": "c494a7558865304f220afb5f37af00039fe1fdc8e453ee2c00b5a41b940b523e"
+    },
+    {
+      "file": "attack-27.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/2ae8a3a31a5e7c01c946068f1c1fcf95492f0de870db0adb9670da518e9bdba4.png",
+      "sha256": "2ae8a3a31a5e7c01c946068f1c1fcf95492f0de870db0adb9670da518e9bdba4"
+    },
+    {
+      "file": "attack-28.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3564dcab54d35bf52b4bdffa36cc28b2a08dc635e78adbf3134e4d636075da64.png",
+      "sha256": "3564dcab54d35bf52b4bdffa36cc28b2a08dc635e78adbf3134e4d636075da64"
+    },
+    {
+      "file": "attack-29.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3f824d9e17292d791b2ab5a29a1f8e0487b922b4251c18d3f1d9646fb4859624.png",
+      "sha256": "3f824d9e17292d791b2ab5a29a1f8e0487b922b4251c18d3f1d9646fb4859624"
+    },
+    {
+      "file": "attack-30.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/bc2072e77c1e2abc018b61073cc498e73a960b883226048d35453b3280fc8571.png",
+      "sha256": "bc2072e77c1e2abc018b61073cc498e73a960b883226048d35453b3280fc8571"
+    },
+    {
+      "file": "attack-31.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/7069e6a2bb4f0e008ba76194ba6aaca7072daa599a47d5a06eb49a71e67a5d7e.png",
+      "sha256": "7069e6a2bb4f0e008ba76194ba6aaca7072daa599a47d5a06eb49a71e67a5d7e"
+    },
+    {
+      "file": "attack-32.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/4f497d47c257c3b4273da65f8d1f8698890bd06d907610e23034243761c39f51.png",
+      "sha256": "4f497d47c257c3b4273da65f8d1f8698890bd06d907610e23034243761c39f51"
+    },
+    {
+      "file": "attack-33.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/91ebd33406a57951e645aec7c12add9ae3b887d2b5d48a73d8c4ac9db7ffe64d.png",
+      "sha256": "91ebd33406a57951e645aec7c12add9ae3b887d2b5d48a73d8c4ac9db7ffe64d"
+    },
+    {
+      "file": "attack-34.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/68c34f9c106bd6bc84ca3cc2963591bb06e833b1652e5c64c682df74a109fced.png",
+      "sha256": "68c34f9c106bd6bc84ca3cc2963591bb06e833b1652e5c64c682df74a109fced"
+    },
+    {
+      "file": "attack-35.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b48cc1947540042d1b783653d4813e88cbcd19321d2d3c95cacad244f6550df5.png",
+      "sha256": "b48cc1947540042d1b783653d4813e88cbcd19321d2d3c95cacad244f6550df5"
+    },
+    {
+      "file": "attack-36.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0e4c8ab2b773e0022becf40d93faeb56ee68217bcf8fe5d3d82c364f03a1e029.png",
+      "sha256": "0e4c8ab2b773e0022becf40d93faeb56ee68217bcf8fe5d3d82c364f03a1e029"
+    },
+    {
+      "file": "attack-37.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/fcc9adfd565651fa299ed71a47a861d643ac238af63c7fc613b9d4f1c38da603.png",
+      "sha256": "fcc9adfd565651fa299ed71a47a861d643ac238af63c7fc613b9d4f1c38da603"
+    },
+    {
+      "file": "attack-38.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/ad146026729c2414ec55141671163520e0b2bffd88371229642307fdfbfad4e4.png",
+      "sha256": "ad146026729c2414ec55141671163520e0b2bffd88371229642307fdfbfad4e4"
+    },
+    {
+      "file": "attack-39.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/169c682f58bfba55ee998c5462e32d2d17a3a5d1a3ed533132f113ebced874d8.png",
+      "sha256": "169c682f58bfba55ee998c5462e32d2d17a3a5d1a3ed533132f113ebced874d8"
+    },
+    {
+      "file": "attack-40.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/fcb61ec510a83b8a074162ab51cd35d22db1e4cfde65b088c7dbeda059b91de8.png",
+      "sha256": "fcb61ec510a83b8a074162ab51cd35d22db1e4cfde65b088c7dbeda059b91de8"
+    },
+    {
+      "file": "attack-41.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/6397cd88388f4b7293037789626226e30424cf38d00511e98b37d8c42eab498c.png",
+      "sha256": "6397cd88388f4b7293037789626226e30424cf38d00511e98b37d8c42eab498c"
+    },
+    {
+      "file": "attack-42.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/be6416ef4d115ec572928cb2b1504314e39b757f14ab3181420944eb13f8c61a.png",
+      "sha256": "be6416ef4d115ec572928cb2b1504314e39b757f14ab3181420944eb13f8c61a"
+    },
+    {
+      "file": "attack-43.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c453e1048bfd388b07203f0eb3f5faea92d52b87de178fae44f18a0de138de48.png",
+      "sha256": "c453e1048bfd388b07203f0eb3f5faea92d52b87de178fae44f18a0de138de48"
+    },
+    {
+      "file": "attack-44.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a0798268df20b21021e293d060d7c5b810b1412532e381b5dfbcdd6c5e8fc179.png",
+      "sha256": "a0798268df20b21021e293d060d7c5b810b1412532e381b5dfbcdd6c5e8fc179"
+    },
+    {
+      "file": "attack-45.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/30758d09c3625e8b6507f5ae998298c7029d52219eafd2921c9d5f6929253972.png",
+      "sha256": "30758d09c3625e8b6507f5ae998298c7029d52219eafd2921c9d5f6929253972"
+    },
+    {
+      "file": "attack-46.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/2d76f8176604e0166eb5475d8981a0b113a8786ba2ced855e646d274e4518266.png",
+      "sha256": "2d76f8176604e0166eb5475d8981a0b113a8786ba2ced855e646d274e4518266"
+    },
+    {
+      "file": "attack-47.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/154936e547c6f9c04c6bfb7495919200a4a7e892ae1be2341ef41a3a22954960.png",
+      "sha256": "154936e547c6f9c04c6bfb7495919200a4a7e892ae1be2341ef41a3a22954960"
+    },
+    {
+      "file": "attack-48.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/afdd2c853d6dcf588bf55d243651b4cb39926fcc02f213375ab290f594ef3949.png",
+      "sha256": "afdd2c853d6dcf588bf55d243651b4cb39926fcc02f213375ab290f594ef3949"
+    },
+    {
+      "file": "attack-49.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b98dd5e5e89a1499d036282879756b5d42d1215cb8c58d21a963cec754fae9a7.png",
+      "sha256": "b98dd5e5e89a1499d036282879756b5d42d1215cb8c58d21a963cec754fae9a7"
+    },
+    {
+      "file": "attack-50.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/735619bbd1c5c3f8c32b8c3f0d0dae8b3cd30bf90f58615394491284f1a5d5b7.png",
+      "sha256": "735619bbd1c5c3f8c32b8c3f0d0dae8b3cd30bf90f58615394491284f1a5d5b7"
+    },
+    {
+      "file": "attack-51.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/9bb4aa59c814e94636cc7ac44b8eab743edaa1b81db3d8b67538c36299880a33.png",
+      "sha256": "9bb4aa59c814e94636cc7ac44b8eab743edaa1b81db3d8b67538c36299880a33"
+    },
+    {
+      "file": "attack-52.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/6cde3e203114d6616ca9ab603062f58327d0dd30806d5f8ac2a81cc8cd32b476.png",
+      "sha256": "6cde3e203114d6616ca9ab603062f58327d0dd30806d5f8ac2a81cc8cd32b476"
+    },
+    {
+      "file": "attack-53.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/945e8a08e4dcb1bb49493edcdef83575560ba6fa3e7ca0b4aceec49af8f92e86.png",
+      "sha256": "945e8a08e4dcb1bb49493edcdef83575560ba6fa3e7ca0b4aceec49af8f92e86"
+    },
+    {
+      "file": "attack-54.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/ea874a707765e5560ae2ed5a604a5df640528950b80eb23b23344c1c07a9a3f7.png",
+      "sha256": "ea874a707765e5560ae2ed5a604a5df640528950b80eb23b23344c1c07a9a3f7"
+    },
+    {
+      "file": "attack-55.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1f8d4b50fd5135d46b4b79f87e4b3f303c28cdb881a896ba34aeec3c98505923.png",
+      "sha256": "1f8d4b50fd5135d46b4b79f87e4b3f303c28cdb881a896ba34aeec3c98505923"
+    },
+    {
+      "file": "attack-56.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1e7047ca4f35a8ff6693e52e810949eb1eb25f908d61ef4f2d43ebc97b848d98.png",
+      "sha256": "1e7047ca4f35a8ff6693e52e810949eb1eb25f908d61ef4f2d43ebc97b848d98"
+    },
+    {
+      "file": "attack-57.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/8afcb34eacb5b70f055d2389ac60089a516200feb2e0d7f262e5e14073264b13.png",
+      "sha256": "8afcb34eacb5b70f055d2389ac60089a516200feb2e0d7f262e5e14073264b13"
+    },
+    {
+      "file": "attack-58.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/cceafae7fb82a32ac274629b2f1816ce935fc715a49e0832696cac50879ab082.png",
+      "sha256": "cceafae7fb82a32ac274629b2f1816ce935fc715a49e0832696cac50879ab082"
+    },
+    {
+      "file": "attack-59.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/ccf54d9fb48cd5ae77f9c2e19f671861d18100a062da0c2b466e0acb50556932.png",
+      "sha256": "ccf54d9fb48cd5ae77f9c2e19f671861d18100a062da0c2b466e0acb50556932"
+    },
+    {
+      "file": "attack-60.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/f0c882b311ffd2f6a46b553cb6e67ddbc604f2ec74170dadc86e097e257b356a.png",
+      "sha256": "f0c882b311ffd2f6a46b553cb6e67ddbc604f2ec74170dadc86e097e257b356a"
+    },
+    {
+      "file": "attack-61.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/85c730666fec2c628046071d10d943b83f84f42b299775bf01fe40d6e9ce5a09.png",
+      "sha256": "85c730666fec2c628046071d10d943b83f84f42b299775bf01fe40d6e9ce5a09"
+    },
+    {
+      "file": "attack-62.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/2464a35b02dec77ced0c623cbb9336e847769f02f05f95f0599996510361c4c3.png",
+      "sha256": "2464a35b02dec77ced0c623cbb9336e847769f02f05f95f0599996510361c4c3"
+    },
+    {
+      "file": "attack-63.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/44689581ab841e0ae78f4f0f68fa809de453c184d5677609e7e2fca42671b7af.png",
+      "sha256": "44689581ab841e0ae78f4f0f68fa809de453c184d5677609e7e2fca42671b7af"
+    },
+    {
+      "file": "attack-64.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/941a14a6ad530387a2f12524e41a15ca777ee288175a794b9522b756d57d1013.png",
+      "sha256": "941a14a6ad530387a2f12524e41a15ca777ee288175a794b9522b756d57d1013"
+    },
+    {
+      "file": "attack-65.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/502e63510e4fb9beaa96bb392a9cd7d5e4ac5b68a5ad96c2910a24eccaec36a3.png",
+      "sha256": "502e63510e4fb9beaa96bb392a9cd7d5e4ac5b68a5ad96c2910a24eccaec36a3"
+    },
+    {
+      "file": "attack-66.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0cc63c4558ab6e028b67931fe58fff8fe2dcb118e5be8eb2ea91598b230b9071.png",
+      "sha256": "0cc63c4558ab6e028b67931fe58fff8fe2dcb118e5be8eb2ea91598b230b9071"
+    },
+    {
+      "file": "attack-67.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b733592a9e2fe2885d9550258394fa6b80b7fb8f6f8679adce3b9c061d6a199e.png",
+      "sha256": "b733592a9e2fe2885d9550258394fa6b80b7fb8f6f8679adce3b9c061d6a199e"
+    },
+    {
+      "file": "attack-68.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/d7652e1bc0feb023eae113ca05824ac086ae3ae31ba7155d5ccc756e4743f38b.png",
+      "sha256": "d7652e1bc0feb023eae113ca05824ac086ae3ae31ba7155d5ccc756e4743f38b"
+    },
+    {
+      "file": "attack-69.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/6f3c581addc77336f324051526076cb5bb7e3b4f31eb959d1101695b3a38ceab.png",
+      "sha256": "6f3c581addc77336f324051526076cb5bb7e3b4f31eb959d1101695b3a38ceab"
+    },
+    {
+      "file": "attack-70.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/bf95e0e9bcfe542a2d0d2bb77c6a24f1f30dd03924eca1339c6ee38b091bd092.png",
+      "sha256": "bf95e0e9bcfe542a2d0d2bb77c6a24f1f30dd03924eca1339c6ee38b091bd092"
+    },
+    {
+      "file": "attack-71.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/e783d6c0b129c1a7a9e2d915fd478abe53df5c574fdb4e98918571ef7856a4d8.png",
+      "sha256": "e783d6c0b129c1a7a9e2d915fd478abe53df5c574fdb4e98918571ef7856a4d8"
+    },
+    {
+      "file": "attack-72.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/fae9623cc07a26ab4953d4bfd7e0c00236a5c07828545c5acedba2d5e402f216.png",
+      "sha256": "fae9623cc07a26ab4953d4bfd7e0c00236a5c07828545c5acedba2d5e402f216"
+    },
+    {
+      "file": "attack-73.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/618556d8c60f9c456dff7bff50d7d925c2d264122cc28dd52f4bb8101bc648d0.png",
+      "sha256": "618556d8c60f9c456dff7bff50d7d925c2d264122cc28dd52f4bb8101bc648d0"
+    },
+    {
+      "file": "attack-74.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/4031b87ab05b1fc0df8500e290a281de0d9aa078141508224662e8d60e71b44f.png",
+      "sha256": "4031b87ab05b1fc0df8500e290a281de0d9aa078141508224662e8d60e71b44f"
+    },
+    {
+      "file": "attack-75.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/65df92ce4c57159fcd8fddc5fbcadf15c6fe735058c350ec09b20f09889256b0.png",
+      "sha256": "65df92ce4c57159fcd8fddc5fbcadf15c6fe735058c350ec09b20f09889256b0"
+    },
+    {
+      "file": "attack-76.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/a8f4c15b17c4a5f2f2451b63b3a6603630716ec269ace165aac32be79ce04249.png",
+      "sha256": "a8f4c15b17c4a5f2f2451b63b3a6603630716ec269ace165aac32be79ce04249"
+    },
+    {
+      "file": "attack-77.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/380522956ae450e7b9548728b9a087c595deaa975e4f590c2f5c07429886901f.png",
+      "sha256": "380522956ae450e7b9548728b9a087c595deaa975e4f590c2f5c07429886901f"
+    },
+    {
+      "file": "attack-78.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1d32007e4fa4fa791ca28b8ac4fbdac8833507835e9807104e76daca3839f290.png",
+      "sha256": "1d32007e4fa4fa791ca28b8ac4fbdac8833507835e9807104e76daca3839f290"
+    },
+    {
+      "file": "attack-79.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c20f13def090ab93303d54d98ec10a9fe0e0d4d49dee9528258b588b423191c6.png",
+      "sha256": "c20f13def090ab93303d54d98ec10a9fe0e0d4d49dee9528258b588b423191c6"
+    },
+    {
+      "file": "attack-80.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0effaeeb3cb8161977f81920f918e66f1faa0e01bc52bbf79845561306e304db.png",
+      "sha256": "0effaeeb3cb8161977f81920f918e66f1faa0e01bc52bbf79845561306e304db"
+    },
+    {
+      "file": "attack-81.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/f29ddde607955eb93bd54b387819d5a0fb7bf3bbe2827f71449cd052ed13ffef.png",
+      "sha256": "f29ddde607955eb93bd54b387819d5a0fb7bf3bbe2827f71449cd052ed13ffef"
+    },
+    {
+      "file": "attack-82.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/d89bca8e68a72d970139b8eef8404f46771eb91b8a03bcd74709a7e0dbec12ff.png",
+      "sha256": "d89bca8e68a72d970139b8eef8404f46771eb91b8a03bcd74709a7e0dbec12ff"
+    },
+    {
+      "file": "attack-83.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/4adbecfc30732777df530239242d9609540c225ebf959abaf6c0c4afefe8ed0d.png",
+      "sha256": "4adbecfc30732777df530239242d9609540c225ebf959abaf6c0c4afefe8ed0d"
+    },
+    {
+      "file": "attack-84.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b0e3e80d828342aa6e08cfdde4abcf6f4d8f42924ea32c87fa10852ac6ab9b15.png",
+      "sha256": "b0e3e80d828342aa6e08cfdde4abcf6f4d8f42924ea32c87fa10852ac6ab9b15"
+    },
+    {
+      "file": "attack-85.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/12ff53ea56ccd63a27efcfb3810a10703181c9961d2168a97e5c0aef863ae983.png",
+      "sha256": "12ff53ea56ccd63a27efcfb3810a10703181c9961d2168a97e5c0aef863ae983"
+    },
+    {
+      "file": "attack-86.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/9879386d3f083a7837e9c3cd795978ed0b21320c6c340b505e8629ddc48e8faf.png",
+      "sha256": "9879386d3f083a7837e9c3cd795978ed0b21320c6c340b505e8629ddc48e8faf"
+    },
+    {
+      "file": "attack-87.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c294ad31427b97df88aad8a72b5af7ac654a283146aef09c01cb13a5f1a7e0ce.png",
+      "sha256": "c294ad31427b97df88aad8a72b5af7ac654a283146aef09c01cb13a5f1a7e0ce"
+    },
+    {
+      "file": "attack-88.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/790d7ad9fe26e4809421a2a7d39de080e88f4a6c6912a9097f87d7ffc3f8f7b5.png",
+      "sha256": "790d7ad9fe26e4809421a2a7d39de080e88f4a6c6912a9097f87d7ffc3f8f7b5"
+    },
+    {
+      "file": "attack-89.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/541ccd1ee11d49abfdbcad2e6dbb9bf1d0c65dcf5f20f8f3d74cd259d9b11df3.png",
+      "sha256": "541ccd1ee11d49abfdbcad2e6dbb9bf1d0c65dcf5f20f8f3d74cd259d9b11df3"
+    },
+    {
+      "file": "attack-90.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/fb420a40b48549feb326e8ec04e08a16c91fd987774181ce6b26e36e07093249.png",
+      "sha256": "fb420a40b48549feb326e8ec04e08a16c91fd987774181ce6b26e36e07093249"
+    },
+    {
+      "file": "attack-91.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/f04bc3ea33e134dfc5db07437a649fff0176479439a2a746cd9023591a7858e4.png",
+      "sha256": "f04bc3ea33e134dfc5db07437a649fff0176479439a2a746cd9023591a7858e4"
+    },
+    {
+      "file": "attack-92.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/07d1f79de8f8d3e8cc69c166e3a36f50a1edf1fb0e61c6624bcd782542857d94.png",
+      "sha256": "07d1f79de8f8d3e8cc69c166e3a36f50a1edf1fb0e61c6624bcd782542857d94"
+    },
+    {
+      "file": "attack-93.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c164b3a26b23f93a1000c0a3294d1eba70af7ed5a65197f8e9b99cefb1e66e4b.png",
+      "sha256": "c164b3a26b23f93a1000c0a3294d1eba70af7ed5a65197f8e9b99cefb1e66e4b"
+    },
+    {
+      "file": "attack-94.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b7b083eef5761543385c2230696374a4ee374775ac859b10e37e87a9f4205a68.png",
+      "sha256": "b7b083eef5761543385c2230696374a4ee374775ac859b10e37e87a9f4205a68"
+    },
+    {
+      "file": "attack-95.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b2443a5ea95f7d45866c72ea7f7d9d4a0119aebcf48461b6ca2a409546a4d036.png",
+      "sha256": "b2443a5ea95f7d45866c72ea7f7d9d4a0119aebcf48461b6ca2a409546a4d036"
+    },
+    {
+      "file": "attack-96.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1224e4577329fd2006c50ebfda610a7de1e86ebc6f10966b132b12f8412dea01.png",
+      "sha256": "1224e4577329fd2006c50ebfda610a7de1e86ebc6f10966b132b12f8412dea01"
+    },
+    {
+      "file": "attack-97.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3b401b112e77b7f8f108ba844c812f9130b14ec1cb5c0bb47de14cc564ca3824.png",
+      "sha256": "3b401b112e77b7f8f108ba844c812f9130b14ec1cb5c0bb47de14cc564ca3824"
+    },
+    {
+      "file": "attack-98.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3785614a1428aeafe087c8d4f4985e9f16f74aeb9f206e5095ee7638d494ffac.png",
+      "sha256": "3785614a1428aeafe087c8d4f4985e9f16f74aeb9f206e5095ee7638d494ffac"
+    },
+    {
+      "file": "attack-99.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1ad1ccbd810627c7f49cf91339c87aaa6e6a75acc7e20f86af1170d9a0675f29.png",
+      "sha256": "1ad1ccbd810627c7f49cf91339c87aaa6e6a75acc7e20f86af1170d9a0675f29"
+    },
+    {
+      "file": "attack-100.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/dd7708312e3aa8ba83beac14d2e8aa6f0b6eea87ff99a97498460a58f4fb6cfc.png",
+      "sha256": "dd7708312e3aa8ba83beac14d2e8aa6f0b6eea87ff99a97498460a58f4fb6cfc"
+    },
+    {
+      "file": "attack-101.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/6addf793abb0ed4e12b2dfeb48abd0e1a2be029a9ae7b2c51b7745d7d6146eda.png",
+      "sha256": "6addf793abb0ed4e12b2dfeb48abd0e1a2be029a9ae7b2c51b7745d7d6146eda"
+    },
+    {
+      "file": "attack-102.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/ab1309818d336159b790b3128c1e871893f4735967112f3f802a6837125f3d67.png",
+      "sha256": "ab1309818d336159b790b3128c1e871893f4735967112f3f802a6837125f3d67"
+    },
+    {
+      "file": "attack-103.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/b460d5a454fb2ae41b6c5c6144ca56a9afb85ae0023563ba1365cb8665fb644a.png",
+      "sha256": "b460d5a454fb2ae41b6c5c6144ca56a9afb85ae0023563ba1365cb8665fb644a"
+    },
+    {
+      "file": "attack-104.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/c3699e7bba7bd52e323693a2a72c85ae7fe3352011f963edb87499bfab2e73a6.png",
+      "sha256": "c3699e7bba7bd52e323693a2a72c85ae7fe3352011f963edb87499bfab2e73a6"
+    },
+    {
+      "file": "attack-105.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/106934de62b6f9459c6e739eb880811da82e3838886ed1bbbe43a7d30dec2551.png",
+      "sha256": "106934de62b6f9459c6e739eb880811da82e3838886ed1bbbe43a7d30dec2551"
+    },
+    {
+      "file": "attack-106.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/1940bd2e88fac6ff16cfd5591dfd7fbe7b12b9fc1a8b97ef984e45749f38d711.png",
+      "sha256": "1940bd2e88fac6ff16cfd5591dfd7fbe7b12b9fc1a8b97ef984e45749f38d711"
+    },
+    {
+      "file": "attack-107.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/11d35335f0b8d72dc967d8aad2a825844448327ccad165ff52d002c145e9dcce.png",
+      "sha256": "11d35335f0b8d72dc967d8aad2a825844448327ccad165ff52d002c145e9dcce"
+    },
+    {
+      "file": "attack-108.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/5dd86566c1520cdfca2a6b9983407041b89e7a53065172e37e2a3c928e3e142c.png",
+      "sha256": "5dd86566c1520cdfca2a6b9983407041b89e7a53065172e37e2a3c928e3e142c"
+    },
+    {
+      "file": "attack-109.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/42ff12dd5fb3b12c05cb8d7bcccc41bb1f22c8fb3063eade623c36eb90dc0aed.png",
+      "sha256": "42ff12dd5fb3b12c05cb8d7bcccc41bb1f22c8fb3063eade623c36eb90dc0aed"
+    },
+    {
+      "file": "attack-110.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/0a54f35c13e13cbfa913452bb9bdb5ecbe0574f9bd30ebcd0175b4f3acb00595.png",
+      "sha256": "0a54f35c13e13cbfa913452bb9bdb5ecbe0574f9bd30ebcd0175b4f3acb00595"
+    },
+    {
+      "file": "attack-111.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/937c0a040236c67f586d79688630cc81ebbda298523cc4abc924891f4289a5a1.png",
+      "sha256": "937c0a040236c67f586d79688630cc81ebbda298523cc4abc924891f4289a5a1"
+    },
+    {
+      "file": "attack-112.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/56dc79ee2d150ad16a4ee732f706babab18e0d157cb9e498c0e5c2ce59281934.png",
+      "sha256": "56dc79ee2d150ad16a4ee732f706babab18e0d157cb9e498c0e5c2ce59281934"
+    },
+    {
+      "file": "attack-113.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/cd65fd57f1eaf16e79397a57dc6d08c8efd2ed0ad3ef26783626130006c1489b.png",
+      "sha256": "cd65fd57f1eaf16e79397a57dc6d08c8efd2ed0ad3ef26783626130006c1489b"
+    },
+    {
+      "file": "attack-114.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/14cccf4575f4a6195da4b6c54a3c8bf67a9cf4cbdd659b1aa3581829b2e11776.png",
+      "sha256": "14cccf4575f4a6195da4b6c54a3c8bf67a9cf4cbdd659b1aa3581829b2e11776"
+    },
+    {
+      "file": "attack-115.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/18a23ff490df42ce8b629db30086955ceea35fa2d5c7b6b8e0972a865a770f6a.png",
+      "sha256": "18a23ff490df42ce8b629db30086955ceea35fa2d5c7b6b8e0972a865a770f6a"
+    },
+    {
+      "file": "attack-116.png",
+      "url": "https://digimon-db.omnipet.app.br/api/gathering/dmc/blobs/3f0d660e5d4975bc7fac63a336aea811f71eb665fbb0d9188d78becf6698bb55.png",
+      "sha256": "3f0d660e5d4975bc7fac63a336aea811f71eb665fbb0d9188d78becf6698bb55"
+    },
+    {
+      "file": "egg-10-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2010/sheet/color/frame/0",
+      "sha256": "ffffc8b318b42c013fc058a10bc30e186347d0b65a6fd99187b3deedb3a379c2"
+    },
+    {
+      "file": "egg-10-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2010/sheet/color/frame/1",
+      "sha256": "8bb61ba75aa925eb6eb922e97d134f72d04a0a3a165dd8b6bb80b3eac7712f16"
+    },
+    {
+      "file": "egg-1-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%201/sheet/color/frame/0",
+      "sha256": "484a10fc1b5d715a1ed12efeeded87f91e9a867846575dc08fd67e008e028e09"
+    },
+    {
+      "file": "egg-1-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%201/sheet/color/frame/1",
+      "sha256": "3f1f6a4e27aeaa12863af78b81701852a011dec9cec5ab84d4ef3fe728cea09e"
+    },
+    {
+      "file": "egg-4-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%204/sheet/color/frame/0",
+      "sha256": "7a0627f17d60cd46f4c7df261c7af99f72aff1f50c2dfcec74438911d5013bb2"
+    },
+    {
+      "file": "egg-4-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%204/sheet/color/frame/1",
+      "sha256": "63a2607d31f054f76679fd33998fc8f1a2fb213709117ce5385deaa6e5b3dbdc"
+    },
+    {
+      "file": "egg-14-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2014/sheet/color/frame/0",
+      "sha256": "632a9fbd149029d0fb3f6b63833f0abe36595a4d320573b32927dbb5620c2242"
+    },
+    {
+      "file": "egg-14-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2014/sheet/color/frame/1",
+      "sha256": "6f777f9f4374e391cffbc5a07cb051da8c04788706750b0311f0ec2801b21771"
+    },
+    {
+      "file": "egg-20-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2020/sheet/color/frame/0",
+      "sha256": "e9d816b7a046446e748f998ae88bf6ab9ad5160cab217434e2b7b868c7ad9847"
+    },
+    {
+      "file": "egg-20-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2020/sheet/color/frame/1",
+      "sha256": "224612434359062c1e0470c36dae061c7fbc8cc9d05ae0e785678b7b8e3a326a"
+    },
+    {
+      "file": "egg-8-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%208/sheet/color/frame/0",
+      "sha256": "66b4024ddd05053c0fd55e7ad1d10fa19b7102b7c61aea581ad9e4a1a10d45dd"
+    },
+    {
+      "file": "egg-8-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%208/sheet/color/frame/1",
+      "sha256": "f283cd67dc074b2b5cc34742c529142b89279b3cb04e758448fedc61cbd52244"
+    },
+    {
+      "file": "egg-43-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2043/sheet/color/frame/0",
+      "sha256": "5f0c7a4fb8c558a70c5319df7bbf91502a11dfa6a95001c5a761c1d59b415c90"
+    },
+    {
+      "file": "egg-43-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2043/sheet/color/frame/1",
+      "sha256": "1e8e0f4dc5c58e62eac5b6c0a1a4b19eb0a93d96aad1516ecf6244bea4b12415"
+    },
+    {
+      "file": "egg-21-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2021/sheet/color/frame/0",
+      "sha256": "1baf6df4484b1710cb0122b02fab66378a0a976e966fc009cf038bc0b27fd69b"
+    },
+    {
+      "file": "egg-21-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2021/sheet/color/frame/1",
+      "sha256": "101e2f917f1ced624c3e24fd4e9c2c22c28ed96debb7032619cf74cb0d87898a"
+    },
+    {
+      "file": "egg-9-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%209/sheet/color/frame/0",
+      "sha256": "11d7dbd629cdd58223c96b277658533a2d9e1d879ed956ebe8dc4b658a07a4d9"
+    },
+    {
+      "file": "egg-9-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%209/sheet/color/frame/1",
+      "sha256": "6a62a8e16a7b16c2dd9c0651e394b26469d61e00f7152ca90ed1b9e1b4dfb9b4"
+    },
+    {
+      "file": "egg-23-0.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2023/sheet/color/frame/0",
+      "sha256": "235e6b69bb1424ba37c354d4f80a3bc0aa280a31a5cb755845e4258211908abb"
+    },
+    {
+      "file": "egg-23-1.png",
+      "url": "https://digimon-db.omnipet.app.br/api/digitamas/Digitama%2023/sheet/color/frame/1",
+      "sha256": "0031c758201f65c5f6e123b604ebb77949f5020623d14f55b284293dc346f8ed"
+    }
+  ],
+  "rejectedFrames": [
+    {
+      "file": "attack-37.png",
+      "reason": "Off-grid source pixel: ./packages/digital-pet-animation/assets/themes/color/sources/attack-37.png (2, 1)"
+    },
+    {
+      "file": "attack-56.png",
+      "reason": "Off-grid source pixel: ./packages/digital-pet-animation/assets/themes/color/sources/attack-56.png (2, 2)"
+    },
+    {
+      "file": "attack-66.png",
+      "reason": "Off-grid source pixel: ./packages/digital-pet-animation/assets/themes/color/sources/attack-66.png (4, 5)"
+    }
+  ],
+  "ambiguousAttacks": {},
+  "unassignedPolicy": "Authored generic fireball, no invented official association."
+}

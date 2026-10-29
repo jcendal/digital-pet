@@ -152,7 +152,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       const result = await playSavedBattle(saved, {
         checkpoint,
         width: current.viewer.width,
-        frame: async (artwork, hud) => current.viewer?.frame(artwork, hud),
+        frame: async (artwork, hud, visual) => current.viewer?.frame(artwork, hud, visual),
       })
       // The complete outcome has been shown and its pending entry has been cleared.
       pending = undefined

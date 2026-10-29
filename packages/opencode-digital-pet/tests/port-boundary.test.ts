@@ -180,7 +180,8 @@ describe("lightweight package boundary", () => {
     async () => {
       fixture = await createPackageFixture()
     },
-    { timeout: 15_000 },
+    // The fixture copies shared assets and runs a full prepack build; allow cold builds under parallel host load.
+    { timeout: 45_000 },
   )
 
   afterAll(

@@ -12,6 +12,7 @@
     "@jcendal/digital-pet-intl": "0.1.0-dev.0"
   },
   "exports": {
+    "./themes/*": "./src/themes/*",
     "./constants/*": "./src/constants/*",
     "./idle/*": "./src/idle/*",
     "./render/*": "./src/render/*",

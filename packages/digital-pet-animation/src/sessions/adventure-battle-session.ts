@@ -33,9 +33,9 @@ export const runAdventureBattleSession = async (
     checkActive()
     if (event.rank === "boss" && event.completedShots === 0) {
       await ports.onState({ phase: "battle", fromNodeId: player.id, opponentNodeId: opponent.id, bossIntro: true })
-      await runAdventureBossIntro(ports.frames, opponent.sprite, width, async (artwork) => {
+      await runAdventureBossIntro(ports.frames, opponent.sprite, width, async (artwork, hud, visual) => {
         checkActive()
-        await ports.onFrame(artwork)
+        await ports.onFrame(artwork, hud, visual)
       })
       checkActive()
     }
@@ -46,9 +46,9 @@ export const runAdventureBattleSession = async (
       opponent.sprite,
       width,
       event.plan,
-      async (artwork, hud) => {
+      async (artwork, hud, visual) => {
         checkActive()
-        await ports.onFrame(artwork, hud)
+        await ports.onFrame(artwork, hud, visual)
       },
       {
         completedShots: event.completedShots,

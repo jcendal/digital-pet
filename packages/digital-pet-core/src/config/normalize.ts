@@ -1,4 +1,5 @@
 import { DEFAULT_DIGITAL_PET_SETTINGS, DEFAULT_STAGE_THRESHOLDS } from "./defaults.ts"
+import { normalizeVisualTheme } from "./theme.ts"
 import type { DigitalPetLanguage, ResolvedDigitalPetSettings, StageThresholdKey } from "./types.ts"
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> => {
@@ -46,6 +47,7 @@ export const normalizeDigitalPetSettings = (input: unknown): ResolvedDigitalPetS
     const language = read(input, "language")
     const notifications = read(input, "notifications")
     return Object.freeze({
+      theme: normalizeVisualTheme(read(input, "theme")),
       language: isLanguage(language) ? language : DEFAULT_DIGITAL_PET_SETTINGS.language,
       notifications: isBoolean(notifications) ? notifications : DEFAULT_DIGITAL_PET_SETTINGS.notifications,
       stageLabels: DEFAULT_DIGITAL_PET_SETTINGS.stageLabels,

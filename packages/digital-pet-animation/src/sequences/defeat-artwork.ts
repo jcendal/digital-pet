@@ -3,6 +3,7 @@ import type { MonsterFrameCatalog, MonsterFrameName } from "@jcendal/digital-pet
 import { MONSTER_FRAME_COLUMNS, MONSTER_FRAME_ROWS } from "../constants/monster-artwork.ts"
 import { DEFEAT_CYCLE_MS, DEFEAT_CYCLES, DEFEAT_PRE_ANIMATION_MS } from "../constants/presentation-timing.ts"
 import { sleep } from "../utils/sleep.ts"
+import type { BattleFrameListener } from "./evolution-battle-artwork.ts"
 
 const NORMAL_FRAME: MonsterFrameName = "walk_1"
 const SAD_FRAMES: readonly MonsterFrameName[] = ["refuse", "injured_1"]
@@ -45,14 +46,19 @@ export const runDefeatAnimation = async (
   catalog: MonsterFrameCatalog,
   sprite: string,
   viewportWidth: number,
-  onFrame: (artwork: string) => Promise<void>,
+  onFrame: BattleFrameListener,
 ): Promise<void> => {
   await sleep(DEFEAT_PRE_ANIMATION_MS)
 
   for (let cycle = 0; cycle < DEFEAT_CYCLES; cycle += 1) {
     const sad = cycle % 2 === 1
     const sadAlt = cycle % 4 >= 2
-    await onFrame(renderDefeatArtwork(catalog, sprite, { sad, sadAlt }, viewportWidth))
+    await onFrame(renderDefeatArtwork(catalog, sprite, { sad, sadAlt }, viewportWidth), undefined, {
+      kind: "monster",
+      sprite,
+      pose: sad ? sadFrameFor(catalog, sprite, sadAlt) : NORMAL_FRAME,
+      width: viewportWidth,
+    })
     if (cycle < DEFEAT_CYCLES - 1) await sleep(DEFEAT_CYCLE_MS)
   }
 }

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Jungle pixel landscape</title>
+  <rect width="160" height="160" fill="#b3dcda"/>
+  <path d="M0 76h10V50h8v24h12V56h6v26h16v42H0z M112 124V68h12V46h6v28h14V54h8v20h8v50z" fill="#78ae82"/>
+  <path d="M6 18h8v94h4v12h10v4H12v-8H6z M138 10h8v104h-4v10h-10v4h-10v-4h14v-12h2z" fill="#408a64"/>
+  <path d="M0 4h26v8h12v8h12v8H30v-4H16v-6H6v10H0z M114 0h46v26h-14V16h-12v8h-20v-8h10V8h-10z M0 38h18v-8h10v8h12v8H24v8H8v-8H0z M124 36h12v-8h14v8h10v12h-20v8h-16z" fill="#336954"/>
+  <path d="M32 12h2v44h-4v8h-4v10h-2v-12h4v-8h4z M112 4h2v58h4v12h-2V64h-4z" fill="#408a64"/>
+  <path d="M24 100h28v-2h8v-2h44v2h8v2h24v4h-24v-2h-8v-2H60v2h-8v2H24z M24 114h28v-2h60v2h24v4h-24v-2H52v2H24z" fill="#408a64"/>
+  <path d="M28 96h2v24h-2z M48 96h2v24h-2z M110 96h2v24h-2z M130 96h2v24h-2z M56 112h4v4h-4z M66 112h4v4h-4z M76 112h4v4h-4z M86 112h4v4h-4z M96 112h4v4h-4z" fill="#336954"/>
+  <rect y="124" width="160" height="36" fill="#78ae82"/>
+  <path d="M0 142h8v-8H4v-4h12v8h4v-12h4v12h12v4H24v8h-4v-8H8v8H0z M128 142h10v-10h4v10h4v-16h4v10h10v4h-10v12h-4v-6h-18z" fill="#336954"/>
+</svg>

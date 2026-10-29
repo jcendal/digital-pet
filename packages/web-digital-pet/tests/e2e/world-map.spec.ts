@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test"
 import { openOptions } from "./helpers/navigation.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 const travel = async (page: Page, locationId: string, zoneId = locationId) => {
   await page.locator(`[data-map-zone="${zoneId}"]`).click()
@@ -113,6 +114,7 @@ test("the LCD map travels to every destination and keeps the save offline", asyn
 
 test("map destinations translate and keyboard travel respects reduced motion", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
+    ...themeContextOptions,
     locale: "es-ES",
     viewport: { width: 390, height: 800 },
     reducedMotion: "reduce",
@@ -264,7 +266,11 @@ test("new habitat destinations load their scenery and preserve travel offline", 
 test("zone dropdowns fit mobile screens and dismiss without changing the saved destination", async ({
   browser,
 }, testInfo) => {
-  const context = await browser.newContext({ locale: "es-ES", viewport: { width: 320, height: 800 } })
+  const context = await browser.newContext({
+    ...themeContextOptions,
+    locale: "es-ES",
+    viewport: { width: 320, height: 800 },
+  })
   const page = await context.newPage()
   await page.goto("/")
   const pet = page.frameLocator('iframe[data-page="sidebar"]')

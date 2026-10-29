@@ -1,5 +1,6 @@
 import { withDigitamaOriginArtwork } from "@jcendal/digital-pet-animation/render/digitama-artwork.ts"
 import { renderPositionedArtwork } from "@jcendal/digital-pet-animation/render/positioned-artwork.ts"
+import { snapshotAnimation } from "@jcendal/digital-pet-animation/themes/artwork-snapshot.ts"
 import type { SidebarSnapshot } from "@jcendal/digital-pet-core/application/ports/sidebar-snapshot.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { hygieneMood } from "@jcendal/digital-pet-core/domain/hygiene.ts"
@@ -93,6 +94,7 @@ export const sidebar = async (requestedWidth: number) => {
     frame: {
       type: "animation-frame",
       artwork: renderPositionedArtwork(withDigitamaOriginArtwork(frame, state.originEggId), width),
+      visual: snapshotAnimation(frame, width, state.originEggId),
       motion: { ...sceneMotionFor(frame, partnerKey, width), adventuring: adventureTraveling() },
     },
   }
@@ -144,6 +146,7 @@ export const petPartner = async (width: number, active: () => boolean) => {
     frame: {
       type: "animation-frame",
       artwork: renderPositionedArtwork(frame, width),
+      visual: snapshotAnimation(frame, width),
       motion: sceneMotionFor(frame, currentPartner, width),
     },
   }

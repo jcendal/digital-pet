@@ -24,6 +24,7 @@ import {
 } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { openNewEgg, registerTeamBusyGuard } from "../team/controller.ts"
+import { setVisualTheme, visualTheme } from "../theme/controller.ts"
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 const levels: readonly ExperienceLevel[] = ["low", "normal", "high"]
@@ -34,6 +35,14 @@ const descriptions: Record<ExperienceLevel, string> = {
 }
 
 export const initBrowserOptions = async (): Promise<void> => {
+  const theme = byId<HTMLSelectElement>("theme-select")
+  theme.value = visualTheme()
+  theme.addEventListener("change", () => {
+    void setVisualTheme(theme.value === "color" ? "color" : "lcd").catch(() => {
+      theme.value = visualTheme()
+      byId("options-status").textContent = IntlModule.translate("theme.saveError")
+    })
+  })
   const language = document.querySelector<HTMLSelectElement>("#language-select")!
   language.value = IntlModule.locale
   language.addEventListener("change", () => {

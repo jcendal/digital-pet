@@ -1,5 +1,6 @@
 import type { BattleFrameHud } from "@jcendal/digital-pet-animation/sequences/evolution-battle-artwork.ts"
 import { runAdventureBattleSession } from "@jcendal/digital-pet-animation/sessions/adventure-battle-session.ts"
+import type { ArtworkSnapshot } from "@jcendal/digital-pet-animation/themes/artwork-snapshot.ts"
 import { createAdventureService } from "@jcendal/digital-pet-core/application/use-cases/explore-adventure.ts"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { MONSTER_FRAME_CATALOG } from "@jcendal/digital-pet-core/data/monster-frame-catalog.ts"
@@ -100,8 +101,8 @@ export const actAdventure = async (
           onState: async (next) => {
             deliver({ type: "presentation-state", state: next })
           },
-          onFrame: async (artwork: string, hud?: BattleFrameHud) => {
-            deliver({ type: "animation-frame", artwork, hud })
+          onFrame: async (artwork: string, hud?: BattleFrameHud, visual?: ArtworkSnapshot) => {
+            deliver({ type: "animation-frame", artwork, hud, visual })
           },
           checkpoint: async (eventId, completedShots) => {
             const next = await service.act(

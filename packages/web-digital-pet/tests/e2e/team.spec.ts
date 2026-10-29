@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises"
 import { expect, type Page, test } from "@playwright/test"
 import { openOptions } from "./helpers/navigation.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 test.use({ locale: "es-ES" })
 
@@ -72,9 +73,9 @@ test("new journey chooses an egg, keeps the principal and switches both ways", a
   await expect(page.locator("#egg-carousel")).toBeVisible()
   await expect(page.locator("#egg-slot")).toHaveValue("reserve")
   await expect(page.locator("#egg-create")).toBeEnabled()
-  const starterArtwork = await page.locator("#egg-preview path").getAttribute("d")
+  const starterArtwork = await page.locator("#egg-preview > path").getAttribute("d")
   await page.locator("#egg-next").click()
-  expect(await page.locator("#egg-preview path").getAttribute("d")).not.toBe(starterArtwork)
+  expect(await page.locator("#egg-preview > path").getAttribute("d")).not.toBe(starterArtwork)
   await expect(page.locator("#egg-create")).toBeDisabled()
   await page.locator("#egg-close").click()
   expect((await state(page)).partnerId).toBe(original.partnerId)
@@ -157,7 +158,7 @@ test("ten distinct regional eggs unlock individually and a discovered origin sur
   const names = new Set<string>()
   for (let index = 0; index < 10; index++) {
     const name = await page.locator("#egg-name").textContent()
-    const art = await page.locator("#egg-preview path").getAttribute("d")
+    const art = await page.locator("#egg-preview > path").getAttribute("d")
     if (!name || !art) throw new Error("Missing regional egg")
     names.add(name)
     artworks.add(art)
@@ -329,7 +330,7 @@ test("backup v4 exports both companions and restores them on another device", as
   expect(exported.version).toBe(4)
   expect(exported.state.partnerId).toBe(team.partnerId)
   expect(exported.state.reserve.partnerId).toBe((team.reserve as { partnerId: string }).partnerId)
-  const context = await browser.newContext({ locale: "es-ES" })
+  const context = await browser.newContext({ ...themeContextOptions, locale: "es-ES" })
   try {
     const receiver = await context.newPage()
     await receiver.goto("/")

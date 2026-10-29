@@ -58,7 +58,13 @@ export const presentEvolution = async (
       await runEvolutionRevealSession({ fromNodeId, toNodeId: resolvedTarget }, width, dependencies)
     } else {
       const frame = dependencies.frameCatalog.get(player.sprite, "walk_1")
-      if (frame) await dependencies.onArtwork(renderPositionedArtwork({ kind: "frame", frame }, width))
+      if (frame)
+        await dependencies.onArtwork(renderPositionedArtwork({ kind: "frame", frame }, width), undefined, {
+          kind: "monster",
+          sprite: player.sprite,
+          pose: "walk_1",
+          width,
+        })
       await dependencies.onState?.({ phase: "no_evolution", fromNodeId })
       await sleep(2500)
     }

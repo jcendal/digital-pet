@@ -22,6 +22,7 @@ function createPanelHelpers(entries) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     svg.setAttribute("viewBox", "0 0 16 16")
     svg.setAttribute("aria-hidden", "true")
+    if (entry.id && entry.discovered !== false && entry.catalogued !== false) svg.dataset.monsterId = entry.id
     if (className) svg.setAttribute("class", className)
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
     path.setAttribute("d", entry.artwork || UNKNOWN)

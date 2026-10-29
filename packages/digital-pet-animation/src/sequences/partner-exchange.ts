@@ -2,8 +2,8 @@ import type { MonsterFrameCatalog, MonsterFrameName } from "@jcendal/digital-pet
 import { artworkPixels } from "../render/artwork-pixels.ts"
 
 export type ExchangePhase = "packing" | "crossing" | "arrival" | "complete"
-export type ExchangePixel = { x: number; y: number; size: number }
-type Point = { x: number; y: number }
+export type ExchangePixel = { x: number; y: number; size: number; color?: string }
+type Point = { x: number; y: number; color?: string }
 type Poses = Record<"walk_1" | "walk_2" | "happy", readonly Point[]>
 export type ExchangeArtwork = { outgoing: Poses; incoming: Poses }
 export const EXCHANGE_DURATION_MS = 4800
@@ -45,12 +45,13 @@ const cluster = (index: number): Point => {
   return { x: column + row, y: column - row }
 }
 const at = (pixels: readonly Point[], x: number, y: number, mirror = false): ExchangePixel[] =>
-  pixels.map((p) => ({ x: x + (mirror ? -p.x - 1 : p.x) * 2, y: y + p.y * 2, size: 2 }))
+  pixels.map((p) => ({ ...p, x: x + (mirror ? -p.x - 1 : p.x) * 2, y: y + p.y * 2, size: 2 }))
 const gather = (pixels: readonly Point[], x: number, y: number, progress: number, mirror: boolean): ExchangePixel[] =>
   pixels.map((p, i) => {
     const target = cluster(i)
     const t = ease((progress - (i % 7) * 0.025) / 0.85)
     return {
+      ...p,
       x: x + mix((mirror ? -p.x - 1 : p.x) * 2, target.x, t),
       y: y + mix(p.y * 2, target.y, t),
       size: mix(2, 1, t),
@@ -60,7 +61,7 @@ const travel = (pixels: readonly Point[], progress: number, incoming: boolean): 
   const t = ease(progress)
   const x = incoming ? mix(60, 20, t) : mix(20, 60, t)
   const y = 29 + Math.sin(t * Math.PI) * (incoming ? 12 : -12)
-  return pixels.map((_, i) => ({ x: x + cluster(i).x, y: y + cluster(i).y, size: 1 }))
+  return pixels.map((p, i) => ({ ...p, x: x + cluster(i).x, y: y + cluster(i).y, size: 1 }))
 }
 
 /** A single clock drives every pixel, including the uninterrupted arrival path. Coordinates use an 80 × 56 LCD. */
@@ -95,7 +96,8 @@ export const renderExchangeScene = (art: ExchangeArtwork, elapsed: number, reduc
     const t = ease((time - 2600) / 1100)
     incoming = gather(art.incoming.walk_1, mix(20, 40, t), 29, 1 - t, false)
     if (t < 0.75)
-      outgoing = art.outgoing.walk_1.map((_, i) => ({
+      outgoing = art.outgoing.walk_1.map((p, i) => ({
+        ...p,
         x: mix(60, 88, t / 0.75) + cluster(i).x,
         y: 29 + cluster(i).y,
         size: 1,

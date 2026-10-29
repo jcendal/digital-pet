@@ -1,4 +1,5 @@
 import { catalogs } from "../i18n.ts"
+import { DEFAULT_VISUAL_THEME } from "./theme.ts"
 import type { DigitalPetStageLabels, ResolvedDigitalPetSettings, StageLabels, StageThresholdSettings } from "./types.ts"
 
 const EN_STAGE_LABELS = Object.freeze({
@@ -40,6 +41,7 @@ export const DEFAULT_STAGE_THRESHOLDS = Object.freeze({
 } as const satisfies StageThresholdSettings)
 
 export const DEFAULT_DIGITAL_PET_SETTINGS = Object.freeze({
+  theme: DEFAULT_VISUAL_THEME,
   language: "jp",
   notifications: true,
   stageLabels: DIGITAL_PET_STAGE_LABELS,

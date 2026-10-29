@@ -1,11 +1,13 @@
 import { IntlModule } from "../../shared/i18n.ts"
 import { initBrowserInstallation } from "../features/installation/controller.ts"
 import { initBrowserMusic } from "../features/music/controller.ts"
+import { initVisualTheme } from "../features/theme/controller.ts"
 import { configureWebWorker } from "../platform/service-worker.ts"
 import { initMoreMenu } from "./more-menu.browser.js"
 import "./styles.css"
 import { initBrowserTeam } from "../features/team/controller.ts"
 ;(() => {
+  initVisualTheme()
   initBrowserInstallation()
   initBrowserMusic()
   const moreMenu = initMoreMenu()

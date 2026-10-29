@@ -15,7 +15,12 @@ export const runAdventureBossIntro = async (
     const lines = artwork.split("\n")
     const columns = Math.max(...lines.map((line) => line.length))
     const padding = " ".repeat(Math.max(0, Math.floor((width - columns) / 2)))
-    await onFrame(lines.map((line) => `${padding}${line}`.padEnd(width, " ")).join("\n"))
+    await onFrame(lines.map((line) => `${padding}${line}`.padEnd(width, " ")).join("\n"), undefined, {
+      kind: "monster",
+      sprite,
+      pose,
+      width,
+    })
     await sleep(800)
   }
 }

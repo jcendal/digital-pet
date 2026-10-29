@@ -8,5 +8,7 @@
   "evolutionPresentation.unknownEvolutionParticipant": "Participante de evolución desconocido",
   "evolutionPresentation.invalidEvolutionOpponent": "El rival de evolución no es válido",
   "evolutionPresentation.onlyAnEggCanEvolveWithoutABattle": "Solo un huevo puede evolucionar sin combatir",
-  "battle.intro": "COMBATE"
+  "battle.intro": "COMBATE",
+  "themes.lcd": "LCD",
+  "themes.color": "Color"
 }

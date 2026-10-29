@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Great Canyon pixel landscape</title>
+  <rect width="160" height="160" fill="#c9dfec"/>
+  <path fill="#fff0cc" d="M54 20h12v-4h26v4h14v6H54z"/>
+  <path fill="#c6a382" d="M0 40h32v8h16v18h10v58H0zM102 124V62h10V44h16V32h32v92z"/>
+  <path fill="#a67b62" d="M0 66h24v12h14v16h12v30H0zM110 124V86h12V66h16V52h22v72z"/>
+  <path fill="#e2c69b" d="M0 40h32v4H0zM32 48h16v4H32zM0 64h24v2H0zM0 84h38v2H0zM0 104h50v2H0zM128 32h32v4h-32zM112 44h16v4h-16zM138 66h22v2h-22zM122 86h38v2h-38zM110 106h50v2h-50z"/>
+  <path fill="#835d52" d="M44 96h72v4H44zM48 80h2v20h-2zM110 78h2v22h-2zM48 82h64v2H48zM56 84h2v12h-2zM68 84h2v12h-2zM80 84h2v12h-2zM92 84h2v12h-2zM104 84h2v12h-2z"/>
+  <path fill="#a67b62" d="M64 122v-12h6v-4h20v4h6v12z"/>
+  <rect y="124" width="160" height="36" fill="#e2c69b"/>
+  <path fill="#a67b62" d="M0 124h160v2H0zM18 140h16v2H18zM126 146h18v2h-18zM38 150h8v2h-8zM102 134h8v2h-8z"/>
+</svg>

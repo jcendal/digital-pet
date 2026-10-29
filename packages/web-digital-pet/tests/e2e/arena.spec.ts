@@ -1,11 +1,15 @@
 import { expect, test } from "@playwright/test"
 import { chooseAlias, linkSocialPeers, readPet, seedSocialPet } from "./helpers/social-peers.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 test("Arena selection persists separately from the principal and battles reward the selected reserve", async ({
   browser,
 }, info) => {
   test.setTimeout(90000)
-  const contexts = await Promise.all([browser.newContext({ locale: "es-ES" }), browser.newContext({ locale: "es-ES" })])
+  const contexts = await Promise.all([
+    browser.newContext({ ...themeContextOptions, locale: "es-ES" }),
+    browser.newContext({ ...themeContextOptions, locale: "es-ES" }),
+  ])
   const alice = await contexts[0].newPage()
   const bob = await contexts[1].newPage()
   await linkSocialPeers([alice, bob])

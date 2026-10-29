@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" shape-rendering="crispEdges">
+  <title>Lake pixel landscape</title>
+  <rect width="160" height="160" fill="#bde5f4"/>
+  <path d="M12 28h8v-4h20v4h8v6H12z M100 16h8v-4h20v4h12v6h-40z" fill="#eff7ed"/>
+  <path d="M0 64h14V58h12V46h12v-6h10v8h12v10h16v6h22V54h12V42h10V32h10v14h12v10h10v8h8v16H0z" fill="#84af91"/>
+  <path d="M0 72h18v-6h12v6h24v-6h20v6h28v-6h24v6h18v-6h16v16H0z" fill="#5b8c6e"/>
+  <rect y="80" width="160" height="48" fill="#70b8d1"/>
+  <g fill="#637b83">
+    <path d="M24 56h2v12h-2v14h-2v12h-2v14h-2v10h-2v-12h2V92h2V80h2V66h2z M30 56h2v10h2v14h2v12h2v14h2v12h-2v-10h-2V94h-2V82h-2V68h-2z M18 64h20v2H18z M16 76h24v2H16z M20 88h16v2H20z M18 100h20v2H18z"/>
+    <path d="M80 68h2v14h-2v14h-2v14h-2v6h-2v-8h2V94h2V80h2z M84 68h2v12h2v14h2v14h2v8h-2v-6h-2V96h-2V82h-2z M74 76h18v2H74z M72 88h22v2H72z M76 100h14v2H76z"/>
+    <path d="M132 52h2v14h-2v14h-2v12h-2v14h-2v12h-2v-14h2V90h2V78h2V64h2z M138 52h2v12h2v14h2v12h2v14h2v14h-2v-12h-2V92h-2V80h-2V66h-2z M126 60h22v2h-22z M124 74h26v2h-26z M128 88h18v2h-18z M126 102h22v2h-22z"/>
+  </g>
+  <path d="M32 62h14v6h12v4h12v2h10v-2h12v-4h14v-6h24v2h-22v6H94v4H82v2H68v-2H56v-4H44v-6H32z" fill="#5b8c6e"/>
+  <path d="M4 90h12v2H4z M42 98h20v2H42z M96 94h16v2H96z M10 118h30v2H10z M68 120h30v2H68z M124 122h24v2h-24z" fill="#eff7ed"/>
+  <path d="M0 124h22v4h28v4h60v-4h28v-4h22v36H0z" fill="#84af91"/>
+  <path d="M0 8h12v8h8v10h-8v14H6v90H0z M148 0h12v128h-6V34h-8V22h-8V12h10z" fill="#5b8c6e"/>
+  <path d="M0 134h10v-8h4v10h8v-12h4v16h14v4H0z M126 140h10v-10h4v6h8v-12h4v12h8v8h-34z" fill="#637b83"/>
+</svg>

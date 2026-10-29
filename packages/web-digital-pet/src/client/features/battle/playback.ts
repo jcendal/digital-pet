@@ -31,9 +31,9 @@ export const playSavedBattle = async (battle: PendingBattle, actions: PlaybackAc
     remote.sprite,
     actions.width,
     plan,
-    async (artwork, hud) => {
+    async (artwork, hud, visual) => {
       await actions.checkpoint()
-      await actions.frame(artwork, hud)
+      await actions.frame(artwork, hud, visual)
     },
     {
       completedShots: battle.completedShots,

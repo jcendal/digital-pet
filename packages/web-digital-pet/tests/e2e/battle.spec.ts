@@ -1,12 +1,13 @@
 import { readFile } from "node:fs/promises"
 import { expect, type Page, test } from "@playwright/test"
 import { openHistory, openOptions } from "./helpers/navigation.ts"
+import { themeContextOptions } from "./helpers/theme.ts"
 
 test("two isolated browser saves decline, accept, agree on a winner and persist only one reward", async ({
   browser,
 }, testInfo) => {
   test.setTimeout(90_000)
-  const contexts = await Promise.all([browser.newContext(), browser.newContext()])
+  const contexts = await Promise.all([browser.newContext(themeContextOptions), browser.newContext(themeContextOptions)])
   const pages = await Promise.all(contexts.map((context) => context.newPage()))
   const [alice, bob] = pages
   if (!alice || !bob) throw new Error("Missing test pages")
@@ -115,7 +116,9 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       await expect(page.locator('iframe[data-page="sidebar"]')).toHaveClass(/active/)
       const pet = page.frameLocator('iframe[data-page="sidebar"]')
       await expect(pet.locator("#phase")).toHaveText("BATTLE")
-      await expect(pet.locator("#artwork rect").first()).toBeVisible()
+      await expect(
+        pet.locator(process.env.PLAYWRIGHT_THEME === "color" ? '#artwork path[fill^="#"]' : "#artwork rect").first(),
+      ).toBeVisible()
       await expect(pet.locator("#battle-scores")).toBeVisible()
       const music = page.locator("#background-music")
       await expect(music).toHaveAttribute("src", /brave-heart.*\.mp3$/)
