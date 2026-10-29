@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-29
+
+### Changed
+
+- Feat/multiplayer product design
+
+
 ## [0.16.0] - 2026-10-21
 
 - Repair DoneDevimon's identity, missing LoaderLeomon/Crowmon branches and eight pair-only routes without adding species or changing saved IDs.
