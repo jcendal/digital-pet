@@ -18,6 +18,7 @@ class Connection extends Events {
     this.peer = peer
     this.connectionId = connectionId
     this.closed = false
+    this.open = false
     connections.set(connectionId, this)
   }
   send(data) {
@@ -26,6 +27,7 @@ class Connection extends Events {
   close() {
     if (this.closed) return
     this.closed = true
+    this.open = false
     this.emit("close")
     void window.testPeerSend({ type: "close", connectionId: this.connectionId })
   }
@@ -40,10 +42,17 @@ window.testPeerEvent = (event) => {
     }
   } else if (event.type === "incoming") {
     peers.get(event.target)?.emit("connection", new Connection(event.peer, event.connectionId))
-    connections.get(event.connectionId)?.emit("open")
+    const connection = connections.get(event.connectionId)
+    if (connection) {
+      connection.open = true
+      connection.emit("open")
+    }
   } else {
     const connection = connections.get(event.connectionId)
-    if (event.type === "close" && connection) connection.closed = true
+    if (event.type === "close" && connection) {
+      connection.closed = true
+      connection.open = false
+    }
     connection?.emit(event.type, event.data)
   }
 }
@@ -66,7 +75,10 @@ export default class Peer extends Events {
       void window
         .testPeerSend({ type: "connect", target, peer: this.id, connectionId: connection.connectionId })
         .then((opened) => {
-          if (opened !== false) connection.emit("open")
+          if (opened !== false) {
+            connection.open = true
+            connection.emit("open")
+          }
         })
     }, 0)
     return connection

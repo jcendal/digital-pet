@@ -12,7 +12,7 @@ test("More opens Options and closes on selection, outside taps and Escape", asyn
   await expect(more).toHaveAccessibleName("More")
   await expect(navigation.locator("a:visible, button:visible")).toHaveCount(5)
   await expect(page.locator("#options-button")).not.toBeVisible()
-  await expect(menu.locator("a, button")).toHaveCount(1)
+  await expect(menu.locator("a, button")).toHaveCount(2)
 
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 800 })
@@ -58,7 +58,7 @@ test("More opens Options and closes on selection, outside taps and Escape", asyn
 
   await more.focus()
   await more.press("Enter")
-  await expect(page.locator("#options-button")).toBeFocused()
+  await expect(page.locator("#profile-button")).toBeFocused()
   await page.keyboard.press("Escape")
   await expect(menu).not.toBeVisible()
   await expect(more).toBeFocused()

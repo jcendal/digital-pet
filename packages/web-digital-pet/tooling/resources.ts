@@ -12,6 +12,9 @@ export const resourceFiles = (root: string): Record<string, string> => {
       import.meta.resolve("@jcendal/digital-pet-webviews/assets/fonts/Silkscreen-Regular.ttf"),
     ),
     "/favicon.ico": resolve(root, "assets/icons/favicon.ico"),
+    "/social/digital-pet-share.png": resolve(root, "assets/social/digital-pet-share.png"),
+    "/screenshots/digidex.jpg": resolve(root, "assets/screenshots/digidex.jpg"),
+    "/screenshots/partner-desktop.jpg": resolve(root, "assets/screenshots/partner-desktop.jpg"),
   }
   for (const name of readdirSync(resolve(root, "assets/icons")).filter((name) => name.endsWith(".png")))
     files[`/icons/${name}`] = resolve(root, "assets/icons", name)

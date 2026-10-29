@@ -12,7 +12,9 @@ server.middlewares.use(async (request, response, next) => {
   const pathname = new URL(request.url ?? "/", "http://localhost").pathname
   if (pathname === "/manifest.webmanifest") {
     const manifest = JSON.parse(await readFile(new URL("../assets/manifest.webmanifest", import.meta.url), "utf8"))
-    for (const icon of manifest.icons) icon.src = assets[icon.src]
+    const images = [...manifest.icons, ...(manifest.screenshots ?? [])]
+    for (const shortcut of manifest.shortcuts ?? []) images.push(...(shortcut.icons ?? []))
+    for (const image of images) image.src = assets[image.src]
     response.setHeader("Content-Type", "application/manifest+json")
     response.end(JSON.stringify(manifest))
     return

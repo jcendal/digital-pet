@@ -24,9 +24,11 @@ await writeFile(resolve(output, "index.html"), stableStaticNonce(renderShell("si
 await mkdir(resolve(output, "api"), { recursive: true })
 await writeFile(resolve(output, "api/browser.json"), '{"mode":"browser"}\n')
 const manifest = JSON.parse(await readFile(resolve(root, "../assets/manifest.webmanifest"), "utf8"))
-for (const icon of manifest.icons) {
-  const url = resources.assets[icon.src]
-  if (!url) throw new Error(`Missing manifest icon: ${icon.src}`)
-  icon.src = url
+const manifestImages = [...manifest.icons, ...(manifest.screenshots ?? [])]
+for (const shortcut of manifest.shortcuts ?? []) manifestImages.push(...(shortcut.icons ?? []))
+for (const image of manifestImages) {
+  const url = resources.assets[image.src]
+  if (!url) throw new Error(`Missing manifest image: ${image.src}`)
+  image.src = url
 }
 await writeFile(resolve(output, "manifest.webmanifest"), JSON.stringify(manifest, null, 2))

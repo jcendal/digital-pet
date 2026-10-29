@@ -1,0 +1,764 @@
+.social-device[hidden],
+.social-device [hidden] {
+  display: none;
+}
+.social-device .brand,
+.social-device h1 {
+  font-size: 14px;
+}
+.social-screen {
+  gap: 12px;
+  overflow: hidden;
+}
+.social-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) var(--line);
+  padding: 0 4px 8px;
+}
+.social-device h2 {
+  font-size: 15px;
+  margin: 10px 0 16px;
+  font-weight: 400;
+}
+.social-device h3 {
+  font-size: 12px;
+  margin: 6px 0;
+  font-weight: 400;
+}
+.social-hint {
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  margin: 10px 0;
+}
+.social-device button,
+#social-dialog button,
+#social-playback button {
+  font: inherit;
+  font-size: 10px;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--muted);
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.social-device button.primary-action,
+#social-dialog button.primary-action,
+#social-playback button.primary-action {
+  background: var(--muted);
+  color: var(--lcd);
+}
+.social-device .dex-tabs button {
+  border: 0;
+  padding: 8px;
+  font-size: 10px;
+}
+.social-device .dex-tabs button[aria-selected="true"] {
+  background: var(--muted);
+  color: var(--lcd);
+}
+.social-device input,
+#social-dialog input,
+#social-dialog select {
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 2px solid var(--muted);
+  padding: 10px;
+  margin: 10px 0;
+}
+.social-device label,
+#social-dialog label {
+  display: block;
+  font-size: 11px;
+  margin-top: 16px;
+}
+.social-device .social-portrait {
+  width: 48px;
+  height: 48px;
+  flex: none;
+}
+.social-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.social-person > div {
+  flex: 1;
+  min-width: 0;
+}
+.social-person h3 {
+  overflow-wrap: anywhere;
+}
+.social-code {
+  font-size: 9px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  margin: 4px 0;
+}
+.social-eyebrow {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.social-heading,
+.social-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.social-heading {
+  border-bottom: 2px solid var(--muted);
+  padding: 10px 0;
+}
+.social-heading h2,
+.social-heading h3 {
+  margin: 0;
+}
+.social-code-bar {
+  border-bottom: 4px solid var(--line);
+  padding: 8px 0 14px;
+  font-size: 9px;
+}
+.social-own-code {
+  display: block;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.social-row .social-own-code {
+  font-size: 10px;
+}
+.social-friend,
+.social-item {
+  padding: 16px 0;
+  border-bottom: 2px dotted var(--line);
+}
+.social-presence {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 8px;
+  color: var(--muted);
+}
+.social-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.social-device .social-actions button,
+.social-device .social-heading > button {
+  position: relative;
+  width: auto;
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: 9px;
+}
+.social-actions button::before,
+.social-heading > button::before {
+  content: "";
+  position: absolute;
+  inset: -7px 0;
+}
+.social-device .social-remove {
+  border: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px;
+  font-size: 14px;
+}
+.social-group {
+  margin-top: 20px;
+}
+.social-device .social-log-heading {
+  margin-top: 28px;
+}
+.social-log-row {
+  border-bottom: 2px dotted var(--line);
+  padding: 14px 0;
+  font-size: 10px;
+  line-height: 1.8;
+}
+.social-profile-code {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 4px solid var(--line);
+}
+.social-profile-code .social-actions button {
+  flex: 1;
+  min-height: 44px;
+}
+.social-device .social-text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  min-height: 44px;
+}
+.social-text-action svg {
+  width: 16px;
+  height: 16px;
+}
+.social-text-action:hover span {
+  text-decoration: underline;
+}
+#social-current,
+#social-profile-companion {
+  padding: 12px 0 18px;
+}
+#social-current .social-portrait,
+#social-profile-companion .social-portrait {
+  width: 96px;
+  height: 96px;
+}
+#social-choose-team {
+  margin-bottom: 20px;
+}
+.social-device details {
+  border-top: 2px dotted var(--line);
+  padding: 12px 0;
+  margin-top: 16px;
+}
+.social-device summary {
+  font-size: 11px;
+  cursor: pointer;
+  min-height: 32px;
+}
+.social-device .pair-code-row {
+  margin: 12px 0;
+}
+.social-device .pair-code-row input {
+  min-width: 0;
+}
+.social-device .connection-status,
+.social-device .setting-caption,
+.social-device .section-description {
+  font-size: 10px;
+  line-height: 1.8;
+}
+#social-dialog .social-portrait {
+  width: 80px;
+  height: 80px;
+}
+#social-dialog .social-person {
+  margin-bottom: 18px;
+}
+#social-dialog-status {
+  padding: 0 20px 12px;
+}
+#social-dialog button {
+  margin-top: 8px;
+}
+#social-playback {
+  text-align: center;
+}
+#social-playback .dialog-body {
+  padding: 20px;
+}
+#social-playback h2 {
+  font-size: 16px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--line);
+}
+#social-exchange-scene {
+  margin-top: 18px;
+}
+.social-exchange-participants {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 72px;
+}
+.social-exchange-participants strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  margin: 4px 0;
+}
+.social-exchange-participants .social-eyebrow {
+  overflow-wrap: anywhere;
+}
+.social-exchange-direction {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+.social-exchange-artwork {
+  display: block;
+  width: 320px;
+  height: 224px;
+  margin: 12px auto;
+  fill: var(--ink);
+  overflow: hidden;
+}
+.social-exchange-corners {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+#social-exchange-outgoing {
+  fill: var(--muted);
+}
+#social-exchange-trail,
+#social-exchange-sparks {
+  fill: var(--muted);
+}
+.social-exchange-welcome {
+  min-height: 66px;
+  visibility: hidden;
+}
+#social-exchange-scene[data-revealed="true"] .social-exchange-welcome {
+  visibility: visible;
+}
+#social-playback .social-exchange-welcome h3 {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  margin: 0 0 6px;
+}
+#social-playback .social-exchange-welcome p {
+  font-size: 9px;
+  color: var(--muted);
+}
+#social-playback #social-exchange-status {
+  min-height: 36px;
+  margin: 4px 0 12px;
+  font-size: 10px;
+  line-height: 1.8;
+}
+.social-exchange-actions {
+  min-height: 44px;
+}
+#social-exchange-result {
+  display: flex;
+  gap: 8px;
+}
+#social-playback #social-exchange-result button {
+  width: auto;
+  flex: 1;
+  padding-inline: 8px;
+  text-align: center;
+}
+@media (max-width: 390px) {
+  .social-exchange-artwork {
+    width: 240px;
+    height: 168px;
+  }
+}
+@media (max-width: 300px) {
+  .social-exchange-artwork {
+    width: 160px;
+    height: 112px;
+  }
+}
+.social-offers {
+  border: 0;
+  padding: 0;
+  margin: 16px 0;
+}
+.social-offers legend {
+  font-size: 11px;
+}
+#social-dialog .social-offer-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--muted);
+  padding: 8px;
+  margin: 8px 0;
+  cursor: pointer;
+  min-height: 64px;
+}
+#social-dialog .social-offer-option:has(input:checked) {
+  background: var(--muted);
+  color: var(--lcd);
+}
+#social-dialog .social-offer-option .social-eyebrow {
+  color: inherit;
+}
+#social-dialog .social-offer-option .social-portrait {
+  width: 56px;
+  height: 56px;
+}
+#social-dialog .social-offer-option input {
+  appearance: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+#social-dialog .social-offer-option:has(input:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (max-width: 350px) {
+  .social-device .brand,
+  .social-device h1 {
+    font-size: 12px;
+  }
+  .social-device .social-actions button {
+    padding-inline: 7px;
+    font-size: 8px;
+  }
+}
+
+/* Product screens and proposal dialogs. Settled exchange playback is independent. */
+.social-device .social-small-button {
+  position: relative;
+  width: auto;
+  flex: none;
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: 9px;
+}
+.social-small-button::before {
+  content: "";
+  position: absolute;
+  inset: -7px 0;
+}
+.social-hero,
+.social-profile-hero,
+.social-dialog-hero,
+.social-invitation-hero,
+.social-proposal-preview {
+  text-align: center;
+}
+.social-hero {
+  padding: 14px 0 24px;
+}
+.social-device #social-current {
+  padding: 10px 0 14px;
+}
+.social-device #social-current .social-portrait {
+  width: 160px;
+  height: 160px;
+}
+.social-device #social-current h3 {
+  font-size: 17px;
+  margin: 10px 0;
+}
+.social-device #social-profile-companion {
+  padding: 22px 0 8px;
+}
+.social-profile-hero .social-eyebrow {
+  margin-top: 10px;
+}
+.social-device #social-choose-team {
+  margin-bottom: 0;
+}
+#social-arena-status {
+  text-align: right;
+  max-width: 48%;
+  font-size: 8px;
+}
+.social-arena-friend {
+  padding: 16px 0;
+  border-bottom: 2px dotted var(--line);
+}
+.social-device .social-avatar-button {
+  border: 0;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  flex: none;
+}
+.social-device .social-avatar-button:hover,
+.social-device .social-avatar-button:focus-visible {
+  outline: 2px dotted var(--muted);
+  outline-offset: 3px;
+}
+.social-code-bar > div {
+  min-width: 0;
+}
+.social-code-bar > button {
+  flex: none;
+}
+.social-device .social-code-bar .social-own-code {
+  font-size: 10px;
+  margin-top: 8px;
+}
+.social-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.social-input-row input {
+  flex: 1;
+  min-width: 0;
+}
+#social-add-form {
+  padding-bottom: 12px;
+  border-bottom: 2px dotted var(--line);
+}
+#social-count {
+  display: inline-block;
+  border: 1px solid var(--muted);
+  padding: 2px 3px;
+  margin-left: 4px;
+  font-size: 8px;
+}
+.social-device .dex-tabs [aria-selected="true"] #social-count {
+  border-color: currentColor;
+}
+#social-total {
+  font-size: 9px;
+  color: var(--muted);
+}
+#social-alias-form > button {
+  width: 100%;
+}
+#social-dialog .dialog-head > div {
+  min-width: 0;
+}
+#social-dialog-context {
+  margin: 0 0 8px;
+}
+#social-dialog h3 {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+#social-dialog .social-person .social-portrait {
+  width: 48px;
+  height: 48px;
+}
+#social-dialog .social-person h3 {
+  margin: 4px 0;
+}
+.social-dialog-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+#social-dialog .social-dialog-actions button {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.social-matchup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin: 20px 0;
+  text-align: center;
+}
+.social-companion-card {
+  min-width: 0;
+}
+#social-dialog .social-companion-card .social-portrait {
+  width: 96px;
+  height: 96px;
+  max-width: 100%;
+  margin-top: 10px;
+}
+.social-matchup-direction {
+  font-size: 12px;
+  color: var(--muted);
+}
+.social-history-note {
+  border: 2px dotted var(--muted);
+  padding: 12px;
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+#social-dialog .social-history-note p {
+  margin: 0;
+  line-height: 1.9;
+}
+#social-dialog .social-history-note p + p {
+  margin-top: 8px;
+}
+.social-food-art {
+  display: block;
+  width: 88px;
+  height: 88px;
+  margin: 14px auto;
+}
+#social-dialog .social-invitation-hero .social-portrait {
+  width: 80px;
+  height: 80px;
+  margin: 16px 0;
+}
+.social-offer-option strong {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.social-offer-check {
+  visibility: hidden;
+  margin-left: auto;
+}
+.social-offer-option:has(input:checked) .social-offer-check {
+  visibility: visible;
+}
+@media (max-width: 350px) {
+  .social-device .social-heading h2 {
+    font-size: 12px;
+  }
+  .social-device .social-code-bar .social-own-code {
+    font-size: 8px;
+  }
+  .social-code-bar {
+    gap: 5px;
+  }
+  .social-device #social-current .social-portrait {
+    width: 128px;
+    height: 128px;
+  }
+  .social-matchup .social-eyebrow {
+    font-size: 8px;
+  }
+}
+
+.social-device .footer {
+  font-size: 9px;
+  gap: 8px;
+}
+
+.social-matchup-direction svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+#social-dialog .social-dialog-actions button {
+  white-space: normal;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+#social-dialog h3 {
+  white-space: normal;
+}
+@media (max-width: 350px) {
+  #social-dialog h2 {
+    white-space: normal;
+    font-size: 16px;
+  }
+}
+
+.social-device button.primary-action,
+#social-dialog button.primary-action {
+  justify-content: center;
+  text-align: center;
+}
+.social-device #social-connect {
+  width: auto;
+  min-width: 78px;
+  margin: 10px 0;
+}
+#social-dialog .social-dialog-person {
+  border-bottom: 2px dotted var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+#social-dialog .social-dialog-person h3 {
+  margin: 4px 0;
+  font-size: 14px;
+}
+#social-dialog .social-dialog-hero,
+#social-dialog .social-invitation-hero {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 10px 0 18px;
+}
+#social-dialog .social-dialog-hero > .social-portrait {
+  width: 160px;
+  height: 160px;
+}
+#social-dialog .social-dialog-hero h3,
+#social-dialog .social-invitation-hero h3 {
+  font-size: 21px;
+  margin: 0;
+}
+#social-dialog .social-dialog-hero .social-hint {
+  margin: 10px 0 0;
+}
+#social-dialog .social-confirmation-lines {
+  border-top: 2px dotted var(--line);
+  padding: 12px 0;
+  margin-top: 10px;
+  font-size: 10px;
+  line-height: 2;
+  color: var(--muted);
+}
+#social-dialog .social-confirmation-lines p {
+  line-height: 2;
+}
+#social-dialog .social-offers legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#social-dialog-status:empty {
+  display: none;
+}
+.social-fighter-options {
+  display: grid;
+  gap: 10px;
+}
+#social-dialog .social-fighter-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  text-align: left;
+  white-space: normal;
+}
+#social-dialog .social-fighter-option[aria-pressed="true"] {
+  background: var(--muted);
+  color: var(--lcd);
+}
+#social-dialog .social-fighter-option .social-portrait {
+  width: 48px;
+  height: 48px;
+  flex: none;
+}
+.social-fighter-option .social-eyebrow {
+  color: inherit;
+  margin-top: 4px;
+}

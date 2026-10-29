@@ -1,9 +1,11 @@
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { adventureBusy } from "@jcendal/digital-pet-core/domain/adventure.ts"
+import { arenaEligible } from "../../../domain/battle/arena.ts"
 import { BattleNegotiation, battleNode, type Fighter } from "../../../domain/battle/protocol.ts"
 import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import type { LocalPetState } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
+import { readArenaFighter } from "../../persistence/arena-store.ts"
 import { readAdventureState, readLocalState, readPendingBattle, settleBattle } from "../../persistence/pet-store.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
@@ -52,13 +54,14 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     element("battle-status").textContent = message
   }
   const update = (): void => {
-    button.disabled = !enabled
+    button.disabled = false
     button.title = enabled
       ? IntlModule.translate("controller.playerBattle")
       : IntlModule.translate("controller.chooseThisBrowserInOptionsToBattle")
     request.disabled = !enabled || !ready || Boolean(session || playback || pending)
   }
   const open = (): void => {
+    window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: "/#combat" }))
     if (!dialog.open) dialog.showModal()
     button.setAttribute("aria-expanded", "true")
   }
@@ -175,13 +178,16 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     const adventure = await readAdventureState()
     if (adventureBusy(adventure)) throw new Error(IntlModule.translate("adventure.finishFirst"))
     await reservePresentation(current)
-    const state = await readLocalState()
+    const team = await readLocalState()
+    const state = await readArenaFighter(team)
     if (session !== current || !enabled || !browserSaveSelected())
       throw new Error(IntlModule.translate("controller.battleCancelled"))
     if (!DIGIMON_CATALOG.byId.get(state.currentNodeId)?.stage)
       throw new Error(IntlModule.translate("controller.waitForYourEggToHatchBeforeBattling"))
     if (state.pendingEvolution)
       throw new Error(IntlModule.translate("controller.finishYourCompanionSEvolutionBeforeBattling"))
+    const selected = team.reserve?.partnerId === state.partnerId ? team.reserve : team
+    if (!arenaEligible(selected)) throw new Error(IntlModule.translate("social.noArenaEligible"))
     current.local = state
     return { partnerId: state.partnerId, nodeId: state.currentNodeId }
   }
@@ -289,12 +295,6 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       if (!session?.agreed && !pending && !playback)
         cancel(IntlModule.translate("controller.couldNotConnect", { message: message }))
     },
-  })
-  button.addEventListener("click", () => {
-    if (playback || pending) {
-      window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: "/" }))
-      if (pending && !playback) void resume()
-    } else open()
   })
   request.addEventListener("click", () => {
     const target = input.value.trim()

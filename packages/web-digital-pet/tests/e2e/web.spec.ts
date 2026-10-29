@@ -71,11 +71,11 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   })
   await test.step("Open and close the battle panel", async () => {
     await navigation.getByRole("button", { name: "BATTLE", exact: true }).click()
-    await expect(page.locator("#battle-dialog")).toBeVisible()
+    await expect(page.locator("#social-view")).toBeVisible()
     await expect(page.locator("#options-dialog")).not.toBeVisible()
-    await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "true")
-    await page.locator("#battle-dialog .dialog-close").click()
-    await expect(page.locator("#battle-button")).toHaveAttribute("aria-expanded", "false")
+    await expect(page.locator("#battle-button")).toHaveAttribute("aria-current", "page")
+    await page.locator('a[data-page="sidebar"]').click()
+    await expect(page.locator("#social-view")).not.toBeVisible()
   })
   await test.step("Check Options order and the region preview", async () => {
     await openOptions(page)

@@ -10,6 +10,8 @@ const contentTypes: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
   ".ico": "image/x-icon",
   ".ttf": "font/ttf",
   ".mp3": "audio/mpeg",

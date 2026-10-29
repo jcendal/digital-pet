@@ -92,6 +92,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
       )
       if (page === alice) await page.locator('a[data-page="dex"]').click()
       await page.locator("#battle-button").click()
+      await page.locator("#social-code-battle summary").click()
     }
     const code = await bob.locator("#battle-own-code").textContent()
     if (!code) throw new Error("No battle code")
