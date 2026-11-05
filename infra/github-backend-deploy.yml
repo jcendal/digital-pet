@@ -114,11 +114,21 @@ Resources:
                 Resource: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:origin-access-control/${WebOriginAccessControlId}
               - Sid: InspectHostingFunction
                 Effect: Allow
-                Action: cloudfront:DescribeFunction
+                Action:
+                  - cloudfront:DescribeFunction
+                  - cloudfront:GetFunction
                 Resource: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:function/digital-pet-web-routes
+              - Sid: InspectHostingCloudFrontTags
+                Effect: Allow
+                Action: cloudfront:ListTagsForResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:function/digital-pet-web-routes
+                  - !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${WebDistributionId}
               - Sid: InspectHostingCertificate
                 Effect: Allow
-                Action: acm:DescribeCertificate
+                Action:
+                  - acm:DescribeCertificate
+                  - acm:ListTagsForCertificate
                 Resource: !Ref WebCertificateArn
               - Sid: InspectHostingDns
                 Effect: Allow
@@ -164,6 +174,28 @@ Resources:
                 Action:
                   - s3:ListBucket
                   - s3:GetBucketLocation
+                  # Required by the CloudFormation bucket read handler when resolving attributes.
+                  - s3:GetAccelerateConfiguration
+                  - s3:GetLifecycleConfiguration
+                  - s3:GetBucketPublicAccessBlock
+                  - s3:GetAnalyticsConfiguration
+                  - s3:GetBucketCORS
+                  - s3:GetEncryptionConfiguration
+                  - s3:GetInventoryConfiguration
+                  - s3:GetBucketLogging
+                  - s3:GetMetricsConfiguration
+                  - s3:GetBucketNotification
+                  - s3:GetBucketVersioning
+                  - s3:GetReplicationConfiguration
+                  - s3:GetBucketWebsite
+                  - s3:GetBucketObjectLockConfiguration
+                  - s3:GetBucketTagging
+                  - s3:ListTagsForResource
+                  - s3:GetBucketAbac
+                  - s3:GetBucketOwnershipControls
+                  - s3:GetIntelligentTieringConfiguration
+                  - s3:GetBucketMetadataTableConfiguration
+                  - s3:GetBucketDefaultStorageClass
                 Resource: !Sub arn:${AWS::Partition}:s3:::${WebBucketName}
               - Sid: PublishWebsiteObjects
                 Effect: Allow
