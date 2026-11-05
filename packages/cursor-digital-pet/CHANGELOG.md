@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-11-05
+
+### Changed
+
+- feat(web): add AWS serverless backend and Google account integration
+
+
 ## [0.19.0] - 2026-10-29
 
 ### Changed
