@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-11-05
+
+### Changed
+
+- feat(web): add AWS serverless backend and Google account integration
+
+
 ## [0.18.0] - 2026-10-29
 
 ### Changed
