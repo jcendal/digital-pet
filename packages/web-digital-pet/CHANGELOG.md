@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-11-05
+
+### Changed
+
+- fix(web): unify automatic frontend and backend releases
+
+
 ## [0.17.0] - 2026-11-05
 
 ### Changed
