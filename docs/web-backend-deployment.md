@@ -44,8 +44,7 @@ performing any operation. Local synthesis needs neither credentials nor AWS CLI.
 3. Reuse the existing production website, bucket, distribution and hosting stack.
    There is no additional domain, hosting stack, Cognito pool or backend for tests.
    The backend stack is `DigitalPetBackend-production`, with termination protection.
-   The workflow deploys only production and shares its publication lock with web
-   releases. Do not rename an already deployed stack without a migration plan.
+   The unified web release deploys only production and serializes publication. Do not rename an already deployed stack without a migration plan.
 4. Authenticate to the target AWS account, then run the commands below from the
    repository root. `bootstrap` is needed once per account/region; it creates CDK
    deployment roles, an asset bucket and an ECR repository. These are deployment
@@ -76,7 +75,10 @@ first deployment necessarily creates the backend before preparing CDN routing.
 `cdn-plan` creates a reviewable CloudFormation change set but does not execute it.
 It preserves existing hosting parameters and sets `BackendApiOrigin` and the exact
 `BackendStackArn`. It accepts only in-place modifications to `WebDistribution`
-and `WebDeployRole`; additions, removals, replacements and unrelated resources
+and `WebDeployRole`, plus the dependent `WebDnsA`/`WebDnsAAAA` alias refreshes that
+CloudFormation reports for `WebDistribution.DomainName`. DNS changes must be dynamic,
+non-replacing resource-attribute dependencies affecting only `AliasTarget`; direct
+DNS edits, additions, removals, replacements and unrelated resources
 require a separate hosting review. Preserve the backend parameter values on all
 future hosting updates. Clearing both intentionally disables the backend routes.
 
@@ -126,18 +128,31 @@ never enter the browser. The backend does not continuously back up local progres
 
 ## GitHub Actions
 
-`deploy-web-backend.yml` is manually dispatched from `main` for production only.
-Select `preflight`, `plan` (default), or `deploy`. It runs validation
-before authenticating with GitHub OIDC; no permanent AWS access keys are stored.
-The `deploy` action also runs the Chromium browser suite against local fixtures
-before obtaining AWS credentials. A failed game, migration, backup, social or
-connection check stops publication. These checks create no AWS test environment.
-Bootstrap remains a one-time administrator CLI operation and is not offered by
-this workflow because its deployment role intentionally lacks bootstrap permissions.
-The deploy action creates/updates the backend, prepares CDN routing, builds the
-connected web, applies routing and waits for CloudFront before publishing the web.
-Production backend deploys and ordinary web releases share a concurrency group.
-This serializes publication; it does not make backend/CDN/S3 publication atomic.
+`release-web.yml` is the single publication entry point for both the frontend and
+backend. Merging a relevant PR into `main` triggers `release-after-merge.yml`, which
+selects the web product and starts and monitors its release automatically. Changes
+to the backend, frontend, online contracts, shared browser dependencies, deployment
+scripts or hosting template all select this release. Documentation-only and
+unrelated host changes do not select it. Direct pushes are not the release trigger;
+use the reviewed PR merge flow. Bot version commits therefore do not create release
+loops. Manual dispatch remains available for a version bump or a `retry_tag`.
+
+The release creates a version tag, then checks out that exact tag for validation,
+backend deployment and the connected frontend build. It runs the Chromium suite
+against local fixtures before obtaining AWS credentials; a failed game, migration,
+backup, social or connection check stops publication. These checks create no AWS
+test environment. The job authenticates through the `web-production` OIDC role,
+creates/updates the backend with CDK, prepares CDN routing, exports the deployed
+backend outputs, builds the connected web, applies routing and waits for CloudFront
+before publishing the web. CDK leaves unchanged resources in place. There is no
+second frontend-only publishing job and no optional fallback to empty backend URLs.
+The publication lock serializes releases; backend/CDN/S3 publication is not atomic.
+
+`plan-web-infrastructure.yml` is an optional manual diagnostic workflow on `main`.
+It runs preflight and the infrastructure plan, never deploys or publishes the website, and
+uses the same lock so it does not inspect a partially completed release. Bootstrap
+remains a one-time administrator CLI operation, outside the deployment workflow.
+No permanent AWS access keys are stored in GitHub.
 
 Use the GitHub environment `web-production` to hold these variables. This is a
 GitHub deployment configuration, not an additional AWS environment:
@@ -162,7 +177,10 @@ Secrets Manager **DescribeSecret** for the supplied ARN and Lambda
 GetAccountSettings for preflight. Hosting integration needs DescribeStacks, CreateChangeSet,
 DescribeChangeSet and ExecuteChangeSet on the hosting stack/change sets, plus
 CloudFront GetDistribution/CreateInvalidation and list/upload access to the static
-bucket. CloudFormation needs authorization to update the hosting distribution and
+bucket. Resolving existing hosting attributes also requires scoped read access to
+its origin access control, CloudFront function, ACM certificate and hosted zone.
+CloudFormation needs authorization to refresh the existing A/AAAA aliases with
+UPSERT, limited to `digital-pet.rebase.es` in that zone, and to update the hosting distribution and
 release-role policy (through the stack execution role, or the invoking identity
 when the existing stack has no execution role). Do not assume the static publishing
 role has these deployment permissions. The backend execution role must resolve the
@@ -174,7 +192,10 @@ the workflow itself.
 The one-time access template is `infra/github-backend-deploy.yml`. Apply it as a
 separate CloudFormation stack, `digital-pet-github-access`, in the backend region
 using an administrator session and `CAPABILITY_NAMED_IAM`. Supply the existing
-`WebBucketName`, `WebDistributionId`, and `WebDeployRoleName`. Its output
+`WebBucketName`, `WebDistributionId`, `WebDeployRoleName`, `WebOriginAccessControlId`,
+`WebCertificateArn` and `WebHostedZoneId`. These identify existing hosting resources,
+not secrets. Update an existing access stack with these additional identifiers
+before using the unified release. Its output
 `BackendDeployRoleArn` becomes the GitHub environment variable
 `BACKEND_DEPLOY_ROLE_ARN`. It reuses the existing GitHub OIDC provider and trusts
 the repository's immutable subject
@@ -188,20 +209,24 @@ The access role delegates provisioning to the CDK bootstrap roles. The bootstrap
 execution role currently uses `AdministratorAccess`, so CI deployment access is
 privileged even though direct hosting permissions are scoped. Protect changes to
 workflow and infrastructure code accordingly. Direct hosting mutations are limited
-to the existing distribution and publishing role, through CloudFormation. The
+to the existing distribution, publishing role and A/AAAA site aliases, through CloudFormation. The
 access stack does not change the website, create application resources, or alter
 the Lambda concurrency quota. The CI role does not receive permissions to maintain
 this access stack or re-bootstrap CDK directly.
 
-For subsequent ordinary `release-web.yml` releases, set repository variable
-`BACKEND_STACK_NAME=DigitalPetBackend-production` and `AWS_REGION` to the backend
-region. Applying the hosting change set adds scoped `cloudformation:DescribeStacks`
-permission to its existing `AWS_ROLE_ARN` role automatically. It reads actual outputs before building, avoiding manually
-copying URLs after infrastructure updates. With no `BACKEND_STACK_NAME`, it keeps
-the existing `DIGITAL_PET_WEBSOCKET_URL` / `DIGITAL_PET_BACKUP_ORIGIN` variable path.
-Retry tags must contain the output-export script once this integration is enabled;
-older tags should only be used with the explicitly configured legacy variable path.
-The original release publication block is retained for those historical tags.
+Every web release uses `BACKEND_DEPLOY_ROLE_ARN` and the variables in
+`web-production`, including hosting variables that were previously repository-only.
+The frontend URLs come from that run's validated backend stack outputs. Repository
+variables `BACKEND_STACK_NAME`, `DIGITAL_PET_WEBSOCKET_URL`,
+`DIGITAL_PET_BACKUP_ORIGIN` and `AWS_ROLE_ARN` are no longer consumed by the web
+release. The existing hosting role is retained for compatibility with the hosting
+stack; removing that IAM resource is a separate infrastructure migration.
+
+If publication fails after the tag is created, dispatch `Release Digital Pet web`
+from `main` with that tag in `retry_tag`; this retries the same frontend and backend
+revision without creating another version. Tags predating the deployment scripts
+are rejected before AWS authentication. A historical retry can change backend
+resources too: review its infrastructure diff and storage/API compatibility first.
 
 ## Event-driven infrastructure
 
@@ -289,8 +314,10 @@ or background-job queue.
 
 ## Rollback
 
-Unset `BACKEND_STACK_NAME` and the two public build variables, then redeploy the static website to remove
-cloud features while preserving local saves and JSON import/export. Preserve all
+Roll back through a reviewed PR and the unified release, or retry a known compatible
+release tag. Removing GitHub variables no longer disables cloud features: missing
+configuration must fail publication. Disabling cloud features requires an explicit
+frontend/configuration change that preserves local saves and JSON import/export. Preserve all
 three buckets and the KMS key; the stack uses retain policies. Do not roll back the
 IndexedDB schema or force old pages to write version-1 storage. Existing cloud
 backups remain private and recoverable after services are re-enabled. A rollback

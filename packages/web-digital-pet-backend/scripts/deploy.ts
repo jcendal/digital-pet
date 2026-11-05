@@ -192,10 +192,12 @@ if (action === "bootstrap") {
       true,
     )
     const details = hostingAws(["describe-change-set", "--change-set-name", change.Id]) as HostingChangeSet
+    // Preserve diagnostics even when the safety check refuses the plan.
+    await save("hosting-changes.json", details)
+    console.log(`Review hosting change set: ${change.Id}`)
     const changes = verifyHostingChanges(details, hosting.StackId, apiOrigin, backend.StackId)
     await save("hosting-plan.json", { ...binding, changeSetId: change.Id })
-    await save("hosting-changes.json", details)
-    console.log(changes ? `Review hosting change set: ${change.Id}` : "No hosting changes required.")
+    console.log(changes ? "Hosting changes passed safety checks." : "No hosting changes required.")
   } else {
     const plan = JSON.parse(await readFile(resolve(directory, "hosting-plan.json"), "utf8"))
     for (const [key, value] of Object.entries(binding))

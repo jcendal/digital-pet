@@ -136,6 +136,48 @@ test("only explicit empty CloudFormation change sets are accepted as no-ops", ()
   ).toThrow()
 })
 
+test("CloudFormation can refresh A/AAAA aliases only as dependencies of the unchanged distribution identity", () => {
+  const detail = {
+    Target: { Attribute: "Properties", Name: "AliasTarget", RequiresRecreation: "Never" },
+    Evaluation: "Dynamic",
+    ChangeSource: "ResourceAttribute",
+    CausingEntity: "WebDistribution.DomainName",
+  }
+  const alias = {
+    LogicalResourceId: "WebDnsA",
+    ResourceType: "AWS::Route53::RecordSet",
+    Action: "Modify",
+    Replacement: "False",
+    Scope: ["Properties"],
+    Details: [detail],
+  }
+  const aliases = ["WebDnsA", "WebDnsAAAA"].map((LogicalResourceId) => ({
+    ResourceChange: { ...alias, LogicalResourceId },
+  }))
+  const base = change()
+  const plan = { ...base, Changes: [...(base.Changes ?? []), ...aliases] }
+  expect(verifyHostingChanges(plan, hosting.StackId, apiOrigin, backendArn)).toBe(true)
+
+  for (const mutation of [
+    { Details: [] },
+    { Scope: ["Properties", "DeletionPolicy"] },
+    { LogicalResourceId: "UnrelatedDns" },
+    { Replacement: "True" },
+    { Replacement: "Conditional" },
+    { Action: "Remove" },
+    { Details: [{ ...detail, Evaluation: "Static" }] },
+    { Details: [{ ...detail, ChangeSource: "DirectModification" }] },
+    { Details: [{ ...detail, CausingEntity: "OtherDistribution.DomainName" }] },
+    { Details: [{ ...detail, Target: { ...detail.Target, Name: "Name" } }] },
+    { Details: [{ ...detail, Target: { ...detail.Target, Name: "HostedZoneId" } }] },
+    { Details: [{ ...detail, Target: { ...detail.Target, RequiresRecreation: "Always" } }] },
+  ]) {
+    const modified = { ...base, Changes: [...(base.Changes ?? []), { ResourceChange: { ...alias, ...mutation } }] }
+    expect(() => verifyHostingChanges(modified, hosting.StackId, apiOrigin, backendArn)).toThrow()
+  }
+  expect(() => verifyHostingChanges({ ...base, Changes: aliases }, hosting.StackId, apiOrigin, backendArn)).toThrow()
+})
+
 test("Lambda preflight accepts the existing shared pool without requiring reserved capacity", () => {
   expect(checkCapacity(10)).toBe(10)
   expect(checkCapacity(1)).toBe(1)
