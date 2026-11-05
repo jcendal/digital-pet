@@ -106,7 +106,9 @@ jobs:
 
       - name: Update lockfile
         if: steps.mode.outputs.retry != 'true'
-        run: npm install --package-lock-only --ignore-scripts
+        run: |
+          node scripts/check-workspace-dependencies.mjs --sync @jcendal/web-digital-pet
+          npm install --package-lock-only --ignore-scripts
 
       - name: Run release checks
         if: steps.mode.outputs.retry != 'true'
@@ -126,7 +128,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
         run: |
           set -euo pipefail
-          git add packages/web-digital-pet/package.json packages/web-digital-pet/CHANGELOG.md package-lock.json
+          git add 'packages/*/package.json' packages/web-digital-pet/CHANGELOG.md package-lock.json
           git commit -m "chore(web release): v$RELEASE_VERSION"
           git tag -a "web-digital-pet-v$RELEASE_VERSION" -m "Web Digital Pet v$RELEASE_VERSION"
 
@@ -137,8 +139,9 @@ jobs:
         run: |
           set -euo pipefail
           node --experimental-strip-types scripts/release-metadata.ts set-package-version packages/web-digital-pet/package.json "$NEXT_DEV_VERSION"
+          node scripts/check-workspace-dependencies.mjs --sync @jcendal/web-digital-pet
           npm install --package-lock-only --ignore-scripts
-          git add packages/web-digital-pet/package.json package-lock.json
+          git add 'packages/*/package.json' package-lock.json
           git commit -m "chore(web): bump v$NEXT_DEV_VERSION"
 
       - name: Push release
