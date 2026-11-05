@@ -165,92 +165,82 @@ jobs:
           printf 'release_tag=web-digital-pet-v%s\n' "$version" >> "$GITHUB_OUTPUT"
 
   deploy:
-    name: Deploy Digital Pet web
+    name: Deploy Digital Pet web and backend
     needs: version
-    if: github.repository == 'jcendal/digital-pet' && needs.version.result == 'success'
+    if: github.repository == 'jcendal/digital-pet' && github.ref == 'refs/heads/main' && needs.version.result == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: web-production
     permissions:
       contents: read
       id-token: write
     env:
-      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
-      DIGITAL_PET_WEBSOCKET_URL: ${{ vars.DIGITAL_PET_WEBSOCKET_URL }}
-      DIGITAL_PET_BACKUP_ORIGIN: ${{ vars.DIGITAL_PET_BACKUP_ORIGIN }}
-      WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
+      DEPLOY_ENV: production
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}
+      COGNITO_DOMAIN_PREFIX: ${{ vars.COGNITO_DOMAIN_PREFIX }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_SECRET_ARN: ${{ vars.GOOGLE_SECRET_ARN }}
       WEB_DISTRIBUTION_ID: ${{ vars.WEB_DISTRIBUTION_ID }}
+      WEB_STACK_NAME: ${{ vars.WEB_STACK_NAME }}
+      WEB_STACK_REGION: ${{ vars.WEB_STACK_REGION }}
+      ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+      WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
     steps:
       - name: Check out release tag
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ needs.version.outputs.release_tag }}
-          fetch-depth: 1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Require a release with the unified deployment tooling
+        run: |
+          test -f packages/web-digital-pet-backend/scripts/deploy.ts
+          test -f packages/web-digital-pet-backend/scripts/export-web-env.ts
+          test -f scripts/publish-web.sh
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24.11.0
-          package-manager-cache: false
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Validate deployment settings
-        env:
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-        run: |
-          test -n "$AWS_ROLE_ARN" || { echo "Missing AWS_ROLE_ARN repository variable" >&2; exit 1; }
-          test -n "$WEB_BUCKET_NAME" || { echo "Missing WEB_BUCKET_NAME repository variable" >&2; exit 1; }
-          test -n "$WEB_DISTRIBUTION_ID" || { echo "Missing WEB_DISTRIBUTION_ID repository variable" >&2; exit 1; }
-
-      - name: Authenticate to AWS with GitHub OIDC
+          cache: npm
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - run: npm ci
+      - name: Restore task cache
+        uses: ./.github/actions/turbo-cache
+      - name: Validate web, backend and their dependencies
+        run: npm run validate:web
+      - name: Install browser for deployment checks
+        run: npx playwright install --with-deps chromium
+      - name: Verify game and online flows before deployment
+        id: browser-checks
+        run: npm run test:browser
+      - name: Save browser failure diagnostics
+        if: failure() && steps.browser-checks.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: web-release-browser-failures
+          path: packages/web-digital-pet/test-results/
+          retention-days: 7
+      - name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-
-      - name: Read backend web settings
-        if: vars.BACKEND_STACK_NAME != ''
-        env:
-          BACKEND_STACK_NAME: ${{ vars.BACKEND_STACK_NAME }}
+          role-to-assume: ${{ vars.BACKEND_DEPLOY_ROLE_ARN }}
+      - name: Check publication bucket
         run: |
           set -euo pipefail
-          aws cloudformation describe-stacks --stack-name "$BACKEND_STACK_NAME" \
-            --query 'Stacks[0].Outputs' --output json > "$RUNNER_TEMP/backend-outputs.json"
-          node --experimental-strip-types packages/web-digital-pet-backend/scripts/export-web-env.ts "$RUNNER_TEMP/backend-outputs.json"
-
-      - name: Build static website
+          : "${WEB_BUCKET_NAME:?Set WEB_BUCKET_NAME in this GitHub environment}"
+          : "${AWS_ACCOUNT_ID:?Set AWS_ACCOUNT_ID in this GitHub environment}"
+          aws s3api head-bucket --bucket "$WEB_BUCKET_NAME" --expected-bucket-owner "$AWS_ACCOUNT_ID"
+      - name: Deploy backend from the release tag
+        run: npm run backend -- deploy --environment "$DEPLOY_ENV"
+      - name: Prepare CDN routing
+        run: npm run backend -- cdn-plan --environment "$DEPLOY_ENV"
+      - name: Export validated backend outputs
+        run: node --experimental-strip-types packages/web-digital-pet-backend/scripts/export-web-env.ts ".backend-deploy/$DEPLOY_ENV/outputs.json"
+      - name: Build connected website
         run: npm run build:static --workspace @jcendal/web-digital-pet
-
+      - name: Apply CDN routing
+        run: npm run backend -- cdn-apply --environment "$DEPLOY_ENV"
       - name: Publish website
-        run: |
-          site=packages/web-digital-pet/dist-static
-          # Retried historical tags may still export the previous revisions layout.
-          for immutable_dir in assets revisions; do
-            if [ -d "$site/$immutable_dir" ]; then
-              aws s3 sync "$site/$immutable_dir" "s3://$WEB_BUCKET_NAME/$immutable_dir" \
-                --cache-control "public,max-age=31536000,immutable"
-            fi
-          done
-          aws s3 sync "$site" "s3://$WEB_BUCKET_NAME/" \
-            --exclude "assets/*" --exclude "revisions/*" --exclude "index.html" \
-            --exclude "service-worker.js" --exclude "manifest.webmanifest" \
-            --exclude "api/browser.json" \
-            --cache-control "no-cache"
-          aws s3 cp "$site/api/browser.json" "s3://$WEB_BUCKET_NAME/api/browser.json" \
-            --content-type "application/json" --cache-control "no-cache"
-          aws s3 cp "$site/manifest.webmanifest" \
-            "s3://$WEB_BUCKET_NAME/manifest.webmanifest" \
-            --content-type "application/manifest+json" \
-            --cache-control "no-cache"
-          aws s3 cp "$site/index.html" "s3://$WEB_BUCKET_NAME/index.html" \
-            --content-type "text/html; charset=utf-8" \
-            --cache-control "no-cache"
-          aws s3 cp "$site/service-worker.js" \
-            "s3://$WEB_BUCKET_NAME/service-worker.js" \
-            --content-type "text/javascript" \
-            --cache-control "no-cache"
-          aws cloudfront create-invalidation \
-            --distribution-id "$WEB_DISTRIBUTION_ID" \
-            --paths "/" "/index.html" "/dex*" "/history*" "/view/*" \
-              "/service-worker.js" "/manifest.webmanifest" "/api/*" \
-              "/fonts/*" "/images/*" "/icons/*" "/regions/*" "/favicon.ico"
+        run: bash scripts/publish-web.sh
