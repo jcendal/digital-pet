@@ -22,6 +22,7 @@ import {
   resolveSaveSource,
   SOURCE_PREFERENCE_KEY,
 } from "../../platform/save-source.ts"
+import { initOnlineAccount } from "../account/controller.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { openNewEgg, registerTeamBusyGuard } from "../team/controller.ts"
 import { setVisualTheme, visualTheme } from "../theme/controller.ts"
@@ -332,6 +333,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   window.addEventListener("digital-pet:save-updated", () => {
     void refreshSettings()
   })
+  await initOnlineAccount(() => Boolean(pairing?.busy || battles?.busy || social?.busy))
   try {
     const module = await import("../pairing/controller.ts")
     pairing = await module.initBrowserPairing(() => Boolean(battles?.busy || social?.busy))

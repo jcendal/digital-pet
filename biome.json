@@ -12,6 +12,7 @@
       "!packages/**/dist",
       "!packages/**/dist-static",
       "!packages/**/build",
+      "!packages/**/cdk.out",
       "!packages/**/test-results",
       "!packages/**/playwright-report",
       "!packages/cursor-digital-pet/hook-bridge.js",

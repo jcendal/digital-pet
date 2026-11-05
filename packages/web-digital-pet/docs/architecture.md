@@ -12,7 +12,7 @@ src/
     features/
       partner/         Animation, eating and evolution presentation
       options/         Options controller and styles
-      pairing/         Pairing controller and PeerJS transport
+      pairing/         Pairing controller and AWS WebSocket transport
       world/           World selection and landscape presentation
     persistence/       IndexedDB saves and browser world preferences
     platform/          Resource URLs, local API availability, save selection, PWA registration
@@ -43,12 +43,41 @@ must remain independent of DOM, browser storage, Node and the other runtimes.
 Shared game rules, animation and reusable HTML continue to belong to the existing
 workspace packages.
 
+The [web backend service design](../../../docs/web-backend-service-design.md)
+describes the implemented AWS integration for Google accounts, manual S3 snapshots,
+durable social operations and a shared WebSocket for social commands, notifications
+and battle/device-transfer channels. The active
+game remains local; there is no continuous cloud gameplay synchronization. Online
+features are enabled only when the static build supplies the two service origins.
+The [deployment runbook](../../../docs/web-backend-deployment.md) covers real Google,
+AWS and CDN configuration; local tests do not deploy those resources.
+
 Client features use persistence/platform adapters and shared workspace packages.
 `client/presentation/browser-session.ts` composes those pieces for the iframe
 bridge and browser panels; it is not a portable domain API. Keep CSS with its
 owning feature or entrypoint, using `client/styles` only for common web styles.
 Keep executable startup at the shell/frame entries, `server/main.ts`, the worker,
 and build/development command entrypoints.
+
+## Online transport layers
+
+`platform/online-wire.ts` owns the single physical connection, browser lock,
+backoff, session replacement and command correlation. `online-socket.ts` owns
+feature namespaces and logical links; `online-connection.ts` owns ordered frames.
+Feature controllers retain their existing battle, exchange and transfer semantics.
+
+`online-api.ts` owns the authenticated API facade. `online-rpc.ts` injects socket
+command delivery without a circular import; disconnected/oversized commands can
+use HTTPS before dispatch, but an ambiguous sent command is never automatically
+replayed through another transport. `online-events.ts` distributes small local
+invalidation notices across tabs. SocialSession reconciles on these events,
+connection/view lifecycle and actual pending deadlines, with no periodic polling.
+Local care ticks do not upload progress or unchanged presence.
+
+The backend's `social-application.ts` is shared by HTTP and socket adapters. Domain
+services depend on storage/delivery ports, composed with AWS adapters in handlers.
+Authentication and S3 backup upload/download remain HTTPS. Detailed contracts and
+failure boundaries are in the linked service design, not in rendering templates.
 
 ## Adding or removing code
 

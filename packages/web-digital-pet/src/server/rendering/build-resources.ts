@@ -6,6 +6,7 @@ export interface WebResources {
   views?: Partial<Record<"sidebar" | "dex" | "history", string>>
   mode: "browser" | "local"
   development?: boolean
+  online?: { socketUrl: string; backupOrigin: string }
   assets: Record<string, string>
   entryTags: (entry: "shell" | "frame") => string
 }
@@ -25,6 +26,7 @@ export const loadBuildResources = async (clientRoot: string, mode: WebResources[
   const assets: Record<string, string> = JSON.parse(await readFile(resolve(clientRoot, ".vite/resources.json"), "utf8"))
   return {
     mode,
+    ...onlineResources(mode),
     assets,
     entryTags(entry) {
       const styles = new Set<string>()
@@ -44,4 +46,24 @@ export const loadBuildResources = async (clientRoot: string, mode: WebResources[
       )
     },
   }
+}
+
+export const onlineResources = (mode: WebResources["mode"]): Pick<WebResources, "online"> => {
+  if (mode !== "browser" || !process.env.DIGITAL_PET_WEBSOCKET_URL) return {}
+  const socket = new URL(process.env.DIGITAL_PET_WEBSOCKET_URL)
+  const backup = new URL(process.env.DIGITAL_PET_BACKUP_ORIGIN ?? "")
+  const local = (url: URL) => ["127.0.0.1", "localhost"].includes(url.hostname)
+  if (
+    (socket.protocol !== "wss:" && !(local(socket) && socket.protocol === "ws:")) ||
+    (backup.protocol !== "https:" && !(local(backup) && backup.protocol === "http:")) ||
+    socket.username ||
+    socket.password ||
+    backup.username ||
+    backup.password ||
+    socket.search ||
+    socket.hash ||
+    backup.href !== `${backup.origin}/`
+  )
+    throw new Error("Invalid online service origins")
+  return { online: { socketUrl: socket.href, backupOrigin: backup.origin } }
 }

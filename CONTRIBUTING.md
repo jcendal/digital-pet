@@ -143,7 +143,7 @@ implementation and maintenance guidance in `docs/` or this contribution guide.
 - [World catalog and scenery](packages/digital-pet-fields/docs/catalog.md)
 - [Web architecture](packages/web-digital-pet/docs/architecture.md)
 - [Web caching](docs/web-caching.md)
-- [Player battle protocol](packages/web-digital-pet/docs/player-battles.md)
+- [Online services and battle recovery](docs/web-backend-service-design.md#live-battles-and-device-transfer)
 
 ## Tooling references
 

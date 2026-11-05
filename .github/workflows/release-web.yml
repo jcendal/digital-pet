@@ -170,7 +170,9 @@ jobs:
       contents: read
       id-token: write
     env:
-      AWS_REGION: us-east-1
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+      DIGITAL_PET_WEBSOCKET_URL: ${{ vars.DIGITAL_PET_WEBSOCKET_URL }}
+      DIGITAL_PET_BACKUP_ORIGIN: ${{ vars.DIGITAL_PET_BACKUP_ORIGIN }}
       WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
       WEB_DISTRIBUTION_ID: ${{ vars.WEB_DISTRIBUTION_ID }}
     steps:
@@ -189,9 +191,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build static website
-        run: npm run build:static --workspace @jcendal/web-digital-pet
-
       - name: Validate deployment settings
         env:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
@@ -205,6 +204,19 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+
+      - name: Read backend web settings
+        if: vars.BACKEND_STACK_NAME != ''
+        env:
+          BACKEND_STACK_NAME: ${{ vars.BACKEND_STACK_NAME }}
+        run: |
+          set -euo pipefail
+          aws cloudformation describe-stacks --stack-name "$BACKEND_STACK_NAME" \
+            --query 'Stacks[0].Outputs' --output json > "$RUNNER_TEMP/backend-outputs.json"
+          node --experimental-strip-types packages/web-digital-pet-backend/scripts/export-web-env.ts "$RUNNER_TEMP/backend-outputs.json"
+
+      - name: Build static website
+        run: npm run build:static --workspace @jcendal/web-digital-pet
 
       - name: Publish website
         run: |

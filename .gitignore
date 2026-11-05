@@ -10,6 +10,9 @@ test-results/
 playwright-report/
 .turbo/
 *.tsbuildinfo
+cdk.out/
+.backend-deploy/
+packages/web-digital-pet-backend/deployment/*.local.json
 __pycache__/
 
 # Editor and OS files

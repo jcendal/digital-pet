@@ -5,7 +5,6 @@ test.use({ locale: "es-ES" })
 test("pet indicators follow the principal through cleaning, switching and reload", async ({ page }, testInfo) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
   const sidebar = page.frameLocator('iframe[data-page="sidebar"]')
@@ -25,7 +24,7 @@ test("pet indicators follow the principal through cleaning, switching and reload
       hygiene: { poops, nextAt: poops.length === 3 ? null : now + 3_600_000, happyUntil: 0 },
     })
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
     })
     await new Promise<void>((resolve) => {

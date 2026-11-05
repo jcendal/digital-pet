@@ -9,7 +9,7 @@ test("eating preserves the pet's vertical position and scale through the entire 
   await expect(sidebar.locator("#name")).not.toHaveText("")
   await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })

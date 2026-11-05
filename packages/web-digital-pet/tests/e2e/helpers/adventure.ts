@@ -5,7 +5,7 @@ export const saveAdventure = async (page: Page, battle = false) => {
     const now = Date.now()
     const createdAt = new Date(now).toISOString()
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
     })
     await new Promise<void>((resolve) => {

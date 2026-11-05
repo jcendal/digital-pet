@@ -14,7 +14,7 @@ const seed = async (page: Page) => {
     const now = Date.now()
     const createdAt = new Date(now).toISOString()
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })
@@ -62,7 +62,6 @@ test("LCD and Color compare the same interfaces and all twenty scenery destinati
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.goto("/")
   const pet = page.frameLocator('iframe[data-page="sidebar"]')
   await expect(pet.locator("#name")).not.toBeEmpty()

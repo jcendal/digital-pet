@@ -10,7 +10,7 @@ const savedIdentity = (page: import("@playwright/test").Page) =>
   page.evaluate(
     () =>
       new Promise<string>((resolve, reject) => {
-        const open = indexedDB.open("web-digital-pet", 1)
+        const open = indexedDB.open("web-digital-pet", 2)
         open.onerror = () => reject(open.error)
         open.onsuccess = () => {
           const database = open.result

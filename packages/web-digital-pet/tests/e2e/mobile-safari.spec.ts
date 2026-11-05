@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises"
-import { devices, expect, test } from "@playwright/test"
+import { devices, expect, test, type WebSocketRoute } from "@playwright/test"
 import { openOptions } from "./helpers/navigation.ts"
+import { linkSocialPeers } from "./helpers/social-peers.ts"
 
 test.describe("iOS presentation", () => {
   test.use({ userAgent: devices["iPhone 13"].userAgent, locale: "es-ES" })
@@ -62,20 +62,16 @@ test.describe("iOS presentation", () => {
   })
 })
 
-test("restoring a cached page and a signaling failure recover both transports", async ({ page }) => {
-  const mock = await readFile(new URL("./peerjs.browser.js", import.meta.url), "utf8")
-  const registrations: string[] = []
-  await page.route("**/node_modules/.vite/deps/peerjs.js*", (route) =>
-    route.fulfill({ contentType: "text/javascript", body: mock }),
-  )
-  await page.exposeBinding("testPeerSend", (_source, event: { type: string; id: string }) => {
-    if (event.type === "register") registrations.push(event.id)
-    if (event.type === "connect") return false
+test("restoring a cached page and a socket failure recover both authenticated transports", async ({ page }) => {
+  await linkSocialPeers([page])
+  const sockets: Array<{ client: WebSocketRoute; server: WebSocketRoute }> = []
+  await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
+    sockets.push({ client, server: client.connectToServer() })
   })
   await page.goto("http://127.0.0.1:4177")
   await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
-  await expect.poll(() => registrations.length).toBe(2)
-  const device = registrations.find((id) => !id.includes("battle"))
+  await expect.poll(() => sockets.length).toBe(1)
+  const battle = await page.locator("#battle-own-code").textContent()
   await page.evaluate(() => {
     window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }))
   })
@@ -83,40 +79,24 @@ test("restoring a cached page and a signaling failure recover both transports", 
   await page.evaluate(() => {
     window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }))
   })
-  await expect.poll(() => registrations.length).toBe(4)
+  await expect.poll(() => sockets.length).toBe(2)
+  await expect(page.locator("#battle-own-code")).toHaveText(battle!)
   await expect(page.locator("#battle-request")).toBeEnabled()
   await expect(page.locator("#pair-request")).toBeEnabled()
-  expect(registrations.filter((id) => id === device)).toHaveLength(2)
-  await page.clock.install()
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
+  for (const socket of sockets.slice(-1)) {
+    await socket.client.close({ code: 1012, reason: "test restart" })
+    await socket.server.close()
+  }
+  await expect.poll(() => sockets.length).toBe(3)
+  await expect(page.locator("#battle-own-code")).toHaveText(battle!)
+  await expect(page.locator("#battle-request")).toBeEnabled()
+  await expect(page.locator("#pair-request")).toBeEnabled()
   await page.locator("#battle-button").click()
   await page.locator("#social-code-battle summary").click()
-  const own = await page.locator("#battle-own-code").textContent()
-  await page.locator("#battle-target").fill(own === "000001" ? "000002" : "000001")
+  await page.locator("#battle-target").fill(battle === "000001" ? "000002" : "000001")
   await page.locator("#battle-request").click()
-  await expect(page.locator("#battle-status")).toHaveText("Contacting the other player…")
-  await page.clock.runFor(20_000)
   await expect(page.locator("#battle-status")).toContainText("Could not reach the other player")
   await expect(page.locator("#battle-request")).toBeEnabled()
-  const battle = registrations.filter((id) => id.includes("battle")).at(-1)
-  await page.evaluate((peer) => {
-    const mock = window as unknown as { testPeerEvent: (value: unknown) => void }
-    mock.testPeerEvent({ type: "peer-failed", peer })
-  }, battle)
-  await expect(page.locator("#battle-request")).toBeDisabled()
-  await page.clock.runFor(4_999)
-  expect(registrations).toHaveLength(4)
-  await page.clock.runFor(1)
-  await expect.poll(() => registrations.length).toBe(5)
-  await expect(page.locator("#battle-request")).toBeEnabled()
-  const active = registrations.at(-1)
-  await page.evaluate((peer) => {
-    const mock = window as unknown as { testPeerEvent: (value: unknown) => void }
-    mock.testPeerEvent({ type: "peer-failed", peer })
-    window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }))
-  }, active)
-  await page.clock.runFor(30_000)
-  expect(registrations).toHaveLength(5)
 })
 
 test.describe("native installation prompt", () => {

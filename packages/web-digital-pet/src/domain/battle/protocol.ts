@@ -46,6 +46,13 @@ export const parseBattleMessage = (value: unknown): BattleMessage => {
 }
 
 type Dependencies = {
+  readonly prepared?: (
+    battleId: string,
+    challenger: Fighter,
+    receiver: Fighter,
+    plan: BattlePlan,
+    seed: string,
+  ) => Promise<void>
   readonly hash: (text: string) => Promise<string>
   readonly send: (message: BattleMessage) => void
   readonly requested: (fighter: Fighter) => void
@@ -148,6 +155,7 @@ export class BattleNegotiation {
       )
       this.seed = seed
       this.digest = await this.dependencies.hash(JSON.stringify([1, this.battleId, challenger, receiver, this.plan]))
+      await this.dependencies.prepared?.(this.battleId, challenger, receiver, this.plan, seed)
       this.phase = "planned"
       if (!this.challenger)
         this.dependencies.send({ type: "reveal", version: 1, battleId: this.battleId, secret: this.secret })

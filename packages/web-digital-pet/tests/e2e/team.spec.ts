@@ -8,7 +8,7 @@ test.use({ locale: "es-ES" })
 const state = (page: Page) =>
   page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const open = indexedDB.open("web-digital-pet", 1)
+      const open = indexedDB.open("web-digital-pet", 2)
       open.onsuccess = () => resolve(open.result)
       open.onerror = () => reject(open.error)
     })
@@ -39,13 +39,12 @@ const expectTeamActionsAtBottom = async (page: Page) => {
 test("new journey chooses an egg, keeps the principal and switches both ways", async ({ page }, testInfo) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toBeEmpty()
   await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const open = indexedDB.open("web-digital-pet", 1)
+      const open = indexedDB.open("web-digital-pet", 2)
       open.onsuccess = () => resolve(open.result)
     })
     await new Promise<void>((resolve) => {
@@ -171,7 +170,7 @@ test("ten distinct regional eggs unlock individually and a discovered origin sur
   await page.locator("#egg-close").click()
   await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const open = indexedDB.open("web-digital-pet", 1)
+      const open = indexedDB.open("web-digital-pet", 2)
       open.onsuccess = () => resolve(open.result)
     })
     await new Promise<void>((resolve) => {
@@ -238,7 +237,7 @@ test("an active adventure rejects an otherwise current switch command", async ({
   await expect(page.locator("#team-switch")).toBeEnabled()
   const placed = await state(page)
   await page.evaluate(async () => {
-    const open = indexedDB.open("web-digital-pet", 1)
+    const open = indexedDB.open("web-digital-pet", 2)
     await new Promise<void>((resolve) => {
       open.onsuccess = () => {
         const database = open.result

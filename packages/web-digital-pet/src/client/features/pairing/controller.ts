@@ -1,8 +1,7 @@
-import type { DataConnection } from "peerjs"
 import { type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "../../../domain/transfer/protocol.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
+import type { OnlineContext } from "../../persistence/online-store.ts"
 import {
-  getDeviceCode,
   getPairedDevice,
   hasPreviousSave,
   readLocalState,
@@ -10,6 +9,8 @@ import {
   restorePreviousSave,
   setPairedDevice,
 } from "../../persistence/pet-store.ts"
+import { onlineContext } from "../../platform/online-api.ts"
+import type { OnlineConnection as DataConnection } from "../../platform/online-connection.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import { BrowserTransfer, CODE_LENGTH, displayDeviceCode, normalizeDeviceCode, validDeviceCode } from "./transport.ts"
 
@@ -54,7 +55,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   const rejectSave = element<HTMLButtonElement>("pair-reject")
   const restore = element<HTMLButtonElement>("pair-restore")
 
-  const deviceCode = await getDeviceCode()
+  let deviceCode = ""
   let pairedCode = await getPairedDevice()
   ownCode.textContent = displayDeviceCode(deviceCode)
   input.maxLength = CODE_LENGTH + 3
@@ -62,6 +63,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   restore.hidden = !(await hasPreviousSave())
 
   let connection: DataConnection | null = null
+  let expectedContext: Promise<OnlineContext> | undefined
   let direction: "send" | "receive" | null = null
   let pendingTransfer: PetTransfer | null = null
   let timer: number | undefined
@@ -91,6 +93,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   }
   function openDialog(): void {
     if (!dialog.open) dialog.showModal()
+    transfer.resume()
   }
   function resetConnection(): void {
     window.clearTimeout(timer)
@@ -130,8 +133,10 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     updateControls()
   }
 
-  const transfer = new BrowserTransfer(deviceCode, {
-    ready: () => {
+  const transfer = new BrowserTransfer({
+    ready: (code) => {
+      deviceCode = code
+      ownCode.textContent = displayDeviceCode(code)
       ready = true
       updateControls()
       note(IntlModule.translate("controller.readyToConnectYourDevices"))
@@ -158,6 +163,8 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
 
   function bind(remote: DataConnection, role: "send" | "receive", syncRequest: boolean): void {
     connection = remote
+    expectedContext = onlineContext()
+    void expectedContext.catch(() => remote.close())
     direction = role
     finishing = false
     automatic = syncRequest
@@ -187,7 +194,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       }
     })
     remote.on("data", (data) => {
-      void receive(remote, data).catch((error: unknown) => {
+      return receive(remote, data).catch((error: unknown) => {
         if (remote !== connection) return
         resetConnection()
         note(error instanceof Error ? error.message : IntlModule.translate("controller.theTransferCouldNotBeCompleted"))
@@ -229,7 +236,9 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     receiving = true
     importSave.disabled = true
     try {
-      await replaceLocalState(snapshot.state)
+      const expected = await expectedContext
+      if (!expected || remote !== connection) throw new Error("online.saveChanged")
+      await replaceLocalState(snapshot.state, expected)
       await remember(remote)
       finish(
         { type: "result", accepted: true },
@@ -386,7 +395,9 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   window.addEventListener("pageshow", (event) => {
     if (event.persisted) transfer.resume()
   })
-  window.addEventListener("online", () => transfer.resume())
+  window.addEventListener("online", () => {
+    transfer.resume()
+  })
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) transfer.resume()
   })

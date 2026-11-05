@@ -40,20 +40,18 @@ This uses the existing root route and needs no new server route or personalized
 crawler endpoint. The generic Open Graph card is shared; the browser reads and
 validates the invitation after load. A fragment is not sent with the HTTP request.
 
-Opening must never send a request automatically. Show the supplied alias as an
+Opening never sends a request automatically. Show the supplied alias as an
 unverified link label and the exact code, reject malformed/self/duplicate targets,
-require a chosen local alias and ask the user to attempt the request. Refresh the
-counterpart's actual reported alias during the live handshake.
+and require authentication, a profile alias and explicit confirmation before
+sending. Resolve the actual profile through the authenticated social service.
 
-If the connection fails, persist a local outbox entry with one stable request ID
-and the target code. Show it in Activity → Friendship requests as **Not delivered**,
-with Retry and Cancel. Retrying reuses the request ID. Only after the receiving
-browser persists and acknowledges the invitation may it become **Received,
-awaiting acceptance**. A closed browser cannot receive a request through PeerJS.
-Offline and network failure cannot be reliably distinguished, so say that the
-other player is not responding rather than claiming their account does not exist.
+A failed send retains a local outbox intent and stable operation ID for retry.
+Only the backend's durable relationship decision acknowledges delivery; an error
+or timeout is not an acknowledgement. The recipient can be offline when the
+request is accepted by the backend. Pending invitations expire after 14 days and
+are discovered on connection/reconnection, opening the social view and change
+notifications, without periodic inbox polling.
 
-The app persists invitations and acknowledgements through IndexedDB. See
-[Browser multiplayer](multiplayer.md#storage-and-transport) for the current
-storage, identity and recovery behavior. The isolated design prototype uses its
-own fixture outbox and does not access real saves.
+See [Social decisions and offline recipients](../../../docs/web-backend-service-design.md#social-decisions-and-offline-recipients)
+for current identity, storage and recovery behavior. The isolated design prototype
+uses its own fixture outbox and does not access real saves.

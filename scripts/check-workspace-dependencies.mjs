@@ -12,6 +12,8 @@ const workspaces = [
   "digital-pet-animation",
   "digital-pet-webviews",
   "web-digital-pet",
+  "digital-pet-online",
+  "web-digital-pet-backend",
   "opencode-digital-pet",
   "cursor-digital-pet",
 ]

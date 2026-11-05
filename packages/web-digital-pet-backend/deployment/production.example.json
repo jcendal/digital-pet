@@ -1,0 +1,13 @@
+{
+  "environment": "production",
+  "account": "123456789012",
+  "region": "us-east-1",
+  "publicOrigin": "https://game.example",
+  "cognitoDomainPrefix": "digital-pet-example-production",
+  "googleClientId": "replace-with-client-id.apps.googleusercontent.com",
+  "googleSecretArn": "arn:aws:secretsmanager:us-east-1:123456789012:secret:digital-pet/production/google-REPLACE",
+  "webDistributionId": "EREPLACEME123",
+  "webStackName": "digital-pet-web",
+  "webStackRegion": "us-east-1",
+  "alertEmail": "operator@example.com"
+}
