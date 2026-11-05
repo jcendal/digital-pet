@@ -48,14 +48,16 @@ jobs:
         with:
           bun-version: 1.3.5
       - run: npm ci
-      - name: Validate source
-        run: npm run validate
+      - name: Restore task cache
+        uses: ./.github/actions/turbo-cache
+      - name: Validate web, backend and their dependencies
+        run: npm run validate:web
       - name: Install browser for deployment checks
         if: inputs.action == 'deploy'
         run: npx playwright install --with-deps chromium
       - name: Verify game and online flows before deployment
         if: inputs.action == 'deploy'
-        run: npm run test:browser --workspace @jcendal/web-digital-pet
+        run: npm run test:browser
       - name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:

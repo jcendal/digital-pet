@@ -19,7 +19,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "bun test tests"
+    "test": "bun test tests",
+    "check": "npm run typecheck"
   },
   "devDependencies": {
     "@types/bun": "1.3.14",

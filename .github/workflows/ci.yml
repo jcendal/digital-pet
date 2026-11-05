@@ -14,9 +14,15 @@ jobs:
   validate:
     name: Check, test and package
     runs-on: ubuntu-latest
+    env:
+      TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+      TURBO_SCM_HEAD: ${{ github.sha }}
+      TURBO_TELEMETRY_DISABLED: '1'
     steps:
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -32,25 +38,35 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check formatting, lint and types
-        run: npm run check
+      - name: Restore task cache
+        uses: ./.github/actions/turbo-cache
 
-      - name: Run unit tests
-        run: npm run test
+      - name: Select affected packages
+        id: affected
+        run: |
+          npx turbo run check test test:persistence build --affected --dry=json > "$RUNNER_TEMP/turbo-affected.json"
+          node scripts/ci-affected.mjs "$RUNNER_TEMP/turbo-affected.json"
 
-      - name: Run persistence tests
-        run: npm run test:persistence
+      - name: Check shared configuration and CI selection
+        run: npm run check:workspace && npm run test:ci
 
-      - name: Build all apps
-        run: npm run build
+      - name: Check affected packages
+        run: npx turbo run check --affected --concurrency=2
+
+      - name: Test affected packages
+        run: npx turbo run test test:persistence --affected --concurrency=2
+
+      - name: Build affected apps
+        run: npx turbo run build --affected --concurrency=2
 
       - name: Install browser for web checks
+        if: steps.affected.outputs.web == 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Verify web assets, offline mode and worker updates
         id: browser-checks
-        working-directory: packages/web-digital-pet
-        run: npx playwright test
+        if: steps.affected.outputs.web == 'true'
+        run: npm run test:browser
 
       - name: Save browser failure diagnostics
         if: failure() && steps.browser-checks.outcome == 'failure'
@@ -61,8 +77,10 @@ jobs:
           retention-days: 7
 
       - name: Inspect npm package
+        if: steps.affected.outputs.opencode == 'true'
         run: npm pack --workspace @jcendal/opencode-digital-pet --dry-run --json
 
       - name: Package Cursor VSIX
+        if: steps.affected.outputs.cursor == 'true'
         working-directory: packages/cursor-digital-pet
         run: npm run package

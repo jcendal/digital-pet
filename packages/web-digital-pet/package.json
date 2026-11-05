@@ -24,7 +24,8 @@
     "dev": "node scripts/dev.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test:browser": "npm run build:static && playwright test",
-    "check:architecture": "node tooling/check-boundaries.mjs"
+    "check:architecture": "node tooling/check-boundaries.mjs",
+    "test:browser:ci": "playwright test"
   },
   "dependencies": {
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
