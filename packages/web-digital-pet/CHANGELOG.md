@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-05
+
+### Changed
+
+- Feat/web aws google account
+
+
 ## [0.16.0] - 2026-10-29
 
 ### Changed
