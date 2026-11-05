@@ -18,7 +18,7 @@ describe("merged pull request release planning", () => {
     ).toEqual({
       opencode: { release: true, bump: "minor" },
       cursor: { release: true, bump: "patch" },
-      web: { release: false, bump: "patch" },
+      web: { release: true, bump: "patch" },
     })
   })
 
@@ -111,6 +111,13 @@ describe("merged pull request release planning", () => {
       ".github/workflows/release-web.yml",
       "packages/digital-pet-fields/src/application/world.ts",
       "packages/digital-pet-webviews/src/panels/world/world-model.ts",
+      "packages/web-digital-pet-backend/src/auth.ts",
+      "packages/web-digital-pet-backend/infrastructure/stack.ts",
+      "packages/digital-pet-online/src/contracts.ts",
+      "packages/digital-pet-intl/src/index.ts",
+      "scripts/publish-web.sh",
+      "scripts/plan-merged-release.ts",
+      "assets/branding/logo.png",
     ]) {
       const plan = planMergedRelease({
         changedFiles: [changedFile],
@@ -121,6 +128,8 @@ describe("merged pull request release planning", () => {
         alreadyReleased: { opencode: false, cursor: false, web: false },
       })
       expect(plan.web).toEqual({ release: true, bump: "patch" })
+      expect(plan.opencode.release).toBe(false)
+      expect(plan.cursor.release).toBe(false)
     }
   })
 

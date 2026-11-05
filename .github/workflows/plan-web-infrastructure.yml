@@ -1,0 +1,53 @@
+name: Plan Digital Pet web infrastructure
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: digital-pet-web-production
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  plan:
+    if: github.repository == 'jcendal/digital-pet' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: web-production
+    env:
+      DEPLOY_ENV: production
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}
+      COGNITO_DOMAIN_PREFIX: ${{ vars.COGNITO_DOMAIN_PREFIX }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_SECRET_ARN: ${{ vars.GOOGLE_SECRET_ARN }}
+      WEB_DISTRIBUTION_ID: ${{ vars.WEB_DISTRIBUTION_ID }}
+      WEB_STACK_NAME: ${{ vars.WEB_STACK_NAME }}
+      WEB_STACK_REGION: ${{ vars.WEB_STACK_REGION }}
+      ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+      WEB_BUCKET_NAME: ${{ vars.WEB_BUCKET_NAME }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.11.0
+          cache: npm
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - run: npm ci
+      - name: Restore task cache
+        uses: ./.github/actions/turbo-cache
+      - name: Validate web, backend and their dependencies
+        run: npm run validate:web
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.BACKEND_DEPLOY_ROLE_ARN }}
+      - name: Review infrastructure without deployment
+        run: npm run backend -- plan --environment "$DEPLOY_ENV"

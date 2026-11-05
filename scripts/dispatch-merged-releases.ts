@@ -27,7 +27,8 @@ type RunResponse = {
 }
 
 const API_VERSION = "2026-03-10"
-const MAX_POLLS = 120
+// Web releases include browser checks and CloudFormation/CloudFront stabilization.
+const MAX_POLLS = 360
 const POLL_INTERVAL_MS = 15_000
 
 const workflowFor = (product: Product): string => {
@@ -116,7 +117,7 @@ export const dispatchSelectedReleases = async (
         report(`Published ${product}: ${run.html_url ?? runUrl}`)
         return undefined
       }
-      return `${workflow} did not finish successfully within 30 minutes: ${runUrl}`
+      return `${workflow} did not finish successfully within 90 minutes: ${runUrl}`
     }),
   )
   const failures = results.filter((failure) => failure !== undefined)

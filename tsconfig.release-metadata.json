@@ -15,6 +15,7 @@
     "scripts/dispatch-merged-releases.ts",
     "scripts/push-release.ts",
     "scripts/tests/turbo.test.ts",
-    "scripts/tests/workspace-release.test.ts"
+    "scripts/tests/workspace-release.test.ts",
+    "scripts/tests/web-workflow.test.ts"
   ]
 }

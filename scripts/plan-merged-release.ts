@@ -71,9 +71,23 @@ export const planMergedRelease = (input: ReleasePlanInput): ReleasePlan => {
       (path) =>
         path.startsWith("packages/digital-pet-fields/") ||
         path.startsWith("packages/digital-pet-webviews/") ||
+        path.startsWith("packages/digital-pet-intl/") ||
+        path.startsWith("packages/digital-pet-online/") ||
         path.startsWith("packages/web-digital-pet/") ||
+        path.startsWith("packages/web-digital-pet-backend/") ||
+        path.startsWith("assets/") ||
+        path.startsWith("types/") ||
         path === "package.json" ||
         path === "package-lock.json" ||
+        path === "tsconfig.json" ||
+        path === "turbo.json" ||
+        path === "scripts/publish-web.sh" ||
+        path === "scripts/plan-merged-release.ts" ||
+        path === "scripts/dispatch-merged-releases.ts" ||
+        path === "scripts/release-metadata.ts" ||
+        path === "scripts/check-workspace-dependencies.mjs" ||
+        path === "scripts/push-release.ts" ||
+        path === ".github/workflows/release-after-merge.yml" ||
         path === ".github/workflows/release-web.yml" ||
         path === "infra/web-digital-pet.yml",
     )
