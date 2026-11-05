@@ -180,6 +180,46 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
   }
 })
 
+test("an invitation opened while the alias is publishing is not silently discarded", async ({ page }) => {
+  await linkSocialPeers([page])
+  await page.goto("http://127.0.0.1:4177")
+  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+  let release!: () => void
+  const held = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  let observed!: () => void
+  const publishing = new Promise<void>((resolve) => {
+    observed = resolve
+  })
+  await page.route("**/api/v1/me/inbox?*", async (route) => {
+    observed()
+    await held
+    await route.fallback()
+  })
+  try {
+    // Deliberately continue before saving finishes; the normal helper waits for completion.
+    await page.locator("#more-button").click()
+    await page.locator("#profile-button").click()
+    await page.locator("#social-alias").fill("Player")
+    await page.locator('#social-alias-form button[type="submit"]').click()
+    await publishing
+    await page.evaluate(() => {
+      location.hash = "invite?code=Y8KC4TNB7RWA2VDF&alias=Noa"
+    })
+    const invite = page.locator('[data-social-action="invite"]')
+    await expect(invite).toBeDisabled()
+    expect(Object.values((await readSocialState(page)).outbox)).toHaveLength(0)
+    release()
+    await expect(invite).toBeEnabled()
+    await invite.click()
+    await expect(page.locator('[data-social-action="retry"]')).toBeVisible()
+    expect(Object.values((await readSocialState(page)).outbox)).toHaveLength(1)
+  } finally {
+    release()
+  }
+})
+
 test("offline invitation retains one retryable request after reload and validates codes", async ({ page }) => {
   await linkSocialPeers([page])
   await page.goto("http://127.0.0.1:4177")

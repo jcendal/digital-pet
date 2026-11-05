@@ -89,6 +89,28 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     error,
     otherBusy,
   )
+  const actionRoots = [el("social-view"), dialog]
+  const busyButtons = new Set<HTMLButtonElement>()
+  const updateActionAvailability = () => {
+    if (!running) {
+      for (const button of busyButtons)
+        button.disabled = Boolean(button.dataset.requiresOnline && !engine.online.has(button.dataset.requiresOnline))
+      busyButtons.clear()
+      return
+    }
+    // Expose the controller lock to users, including actions in a newly opened dialog.
+    // Preserve buttons disabled by game rules or an unavailable peer.
+    for (const root of actionRoots)
+      for (const button of Array.from(
+        root.querySelectorAll<HTMLButtonElement>(
+          'button[data-social-action], #social-alias-form button[type="submit"], #social-connect, #social-choose-team',
+        ),
+      ))
+        if (!button.disabled) {
+          busyButtons.add(button)
+          button.disabled = true
+        }
+  }
   const modal = (title: string, body: string, context = "") => {
     dialogRevision++
     el("social-dialog-title").textContent = title
@@ -97,15 +119,18 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     el("social-dialog-context").textContent = context
     el("social-dialog-context").hidden = !context
     dialog.scrollTop = 0
+    updateActionAvailability()
     if (!dialog.open) dialog.showModal()
   }
   const run = (task: () => Promise<void>) => {
     if (running) return
     running = true
+    updateActionAvailability()
     void task()
       .catch(error)
       .finally(() => {
         running = false
+        updateActionAvailability()
         void render().catch(error)
       })
   }
@@ -300,6 +325,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       const unplayed = Object.values(state.trades).find((trade) => trade.phase === "resolved" && !trade.played)
       if (unplayed && !playback.open && browserSaveSelected()) play(unplayed)
     } finally {
+      updateActionAvailability()
       rendering = false
       if (queued) {
         queued = false
@@ -619,7 +645,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       return
     }
   }
-  for (const root of [el("social-view"), dialog])
+  for (const root of actionRoots)
     root.addEventListener("click", (event) => {
       const button = (event.target as Element).closest<HTMLElement>("[data-social-action]")
       if (button && button.dataset.socialAction !== "manual-connect")

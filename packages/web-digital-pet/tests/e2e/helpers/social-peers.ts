@@ -143,5 +143,8 @@ export const chooseAlias = async (page: Page, alias: string) => {
   await page.locator("#more-button").click()
   await page.locator("#profile-button").click()
   await page.locator("#social-alias").fill(alias)
-  await page.locator('#social-alias-form button[type="submit"]').click()
+  const save = page.locator('#social-alias-form button[type="submit"]')
+  await save.click()
+  await expect(page.locator("#social-own-alias")).toHaveText(alias)
+  await expect(save).toBeEnabled()
 }
