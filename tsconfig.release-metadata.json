@@ -3,6 +3,7 @@
     "strict": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "target": "ESNext",
     "types": ["bun", "node"],
     "noEmit": true,
