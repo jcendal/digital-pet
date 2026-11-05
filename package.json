@@ -12,23 +12,28 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm run test --workspace @jcendal/digital-pet-intl && npm run test --workspace @jcendal/digital-pet-core && npm run test --workspace @jcendal/digital-pet-animation && npm run test --workspace @jcendal/opencode-digital-pet && npm run test --workspace cursor-digital-pet && npm run test --workspace @jcendal/web-digital-pet && npm run test --workspace @jcendal/digital-pet-fields",
-    "test:persistence": "npm run test:persistence --workspace @jcendal/opencode-digital-pet",
+    "test": "npm run test:ci && turbo run test",
+    "test:persistence": "turbo run test:persistence",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "imports:fix": "biome check --write --formatter-enabled=false --linter-enabled=false .",
-    "check": "biome ci . && node scripts/check-workspace-dependencies.mjs && npm run check:assets && npm run typecheck",
-    "typecheck": "npm run typecheck --workspace @jcendal/digital-pet-intl && npm run typecheck:release-metadata && npm run typecheck --workspace @jcendal/digital-pet-core && npm run typecheck --workspace @jcendal/digital-pet-fields && npm run typecheck --workspace @jcendal/digital-pet-animation && npm run typecheck --workspace @jcendal/digital-pet-webviews && npm run check --workspace @jcendal/opencode-digital-pet && npm run check --workspace cursor-digital-pet && npm run check --workspace @jcendal/web-digital-pet",
+    "check": "npm run check:workspace && turbo run check",
+    "typecheck": "npm run typecheck:release-metadata && turbo run check",
     "validate": "npm run check && npm run test && npm run build",
-    "build": "npm run build --workspace @jcendal/opencode-digital-pet && npm run build --workspace cursor-digital-pet && npm run build --workspace @jcendal/web-digital-pet",
+    "build": "turbo run build",
     "web": "npm run build --workspace @jcendal/web-digital-pet && npm run start --workspace @jcendal/web-digital-pet",
     "pack:opencode": "npm pack --workspace @jcendal/opencode-digital-pet",
     "release:check": "npm run release:check --workspace @jcendal/opencode-digital-pet",
     "release-metadata": "node --experimental-strip-types scripts/release-metadata.ts",
     "typecheck:release-metadata": "tsc -p tsconfig.release-metadata.json --noEmit",
-    "check:assets": "node scripts/check-assets.mjs"
+    "check:assets": "node scripts/check-assets.mjs",
+    "backend": "node --experimental-strip-types packages/web-digital-pet-backend/scripts/deploy.ts",
+    "test:ci": "bun test ./scripts/tests",
+    "test:browser": "turbo run test:browser:ci --filter=@jcendal/web-digital-pet",
+    "check:workspace": "biome ci . && node scripts/check-workspace-dependencies.mjs && npm run check:assets && npm run typecheck:release-metadata",
+    "validate:web": "npm run check:workspace && npm run test:ci && turbo run check test build --filter=@jcendal/web-digital-pet-backend... --concurrency=2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",
@@ -37,6 +42,7 @@
     "@types/semver": "7.7.1",
     "esbuild": "0.28.2",
     "semver": "7.7.4",
+    "turbo": "2.11.10",
     "typescript": "5.9.3"
   },
   "engines": {

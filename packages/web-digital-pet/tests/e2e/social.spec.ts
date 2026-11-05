@@ -17,21 +17,24 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
   const alice = await a.newPage()
   const bob = await b.newPage()
   const errors: string[] = []
+  let largeResultReads = 0
   for (const p of [alice, bob]) {
     p.on("pageerror", (e) => errors.push(e.message))
+    p.on("request", (request) => {
+      if (request.method() === "GET" && /\/relationships\/[^/]+\/trades\/[^/]+$/.test(request.url())) largeResultReads++
+    })
     await p.setViewportSize({ width: 390, height: 844 })
   }
-  const network = await linkSocialPeers([alice, bob])
+  const network = await linkSocialPeers([alice, bob], true, true)
   try {
     await Promise.all([alice, bob].map((p) => p.goto("http://127.0.0.1:4177")))
     for (const p of [alice, bob]) await expect(p.locator("#social-current")).not.toBeEmpty()
-    await seedSocialPet(alice, "alice", "3-001")
-    await seedSocialPet(bob, "bob", "4-001")
+    // Each offer fits the socket; their combined result requires an authorized HTTP read.
+    await seedSocialPet(alice, "alice", "3-001", 256)
+    await seedSocialPet(bob, "bob", "4-001", 256)
     await chooseAlias(alice, "Alice")
     await chooseAlias(bob, "Bob")
-    await expect.poll(async () => network.peers.size).toBe(6)
     const code = (await alice.locator("#social-profile .social-own-code").innerText()).replaceAll("-", "")
-    const codeBob = (await bob.locator("#social-profile .social-own-code").innerText()).replaceAll("-", "")
     await bob.goto(`http://127.0.0.1:4177/#invite?code=${code}&alias=Alice`)
     await expect(bob.locator("#social-dialog")).toBeVisible()
     expect(Object.values((await readSocialState(bob)).outbox)).toHaveLength(0)
@@ -130,22 +133,15 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
     await expect(bob.locator("#social-count")).toHaveText("1")
     await expect(alice.locator('[data-social-action="confirm-review"]')).toBeVisible()
     await alice.locator('[data-social-action="confirm-review"]').click()
-    // Drop settlement to inspect persisted recovery before allowing delivery.
-    network.dropWhen((e) => e.type === "data" && (e.data as { type?: string; stage?: string })?.stage === "commit")
-    await alice.locator('[data-social-action="confirm-trade"]').click()
-    await expect.poll(async () => Object.values((await readSocialState(alice)).trades)[0]?.phase).toBe("committed")
-    expect(Object.values((await readSocialState(bob)).trades).filter((t) => t.phase === "prepared")).toHaveLength(1)
-    await expect(alice.locator("#social-playback")).not.toBeVisible()
-    await expect(bob.locator("#social-playback")).not.toBeVisible()
-    await expect(alice.locator('[data-social-group="trades"] [data-pending-trade]')).toHaveCount(1)
-    await expect(alice.locator("#social-count")).toHaveText("1")
+    // The server commits, but the sender loses its socket response and reloads.
+    const lostResponse = network.loseResponseOnce(alice, /\/trades\/[^/]+\/confirm$/)
+    await Promise.all([lostResponse, alice.locator('[data-social-action="confirm-trade"]').click()])
     await alice.reload()
-    network.dropWhen(() => false)
     for (const p of [alice, bob]) await expect(p.locator("#social-playback")).toBeVisible({ timeout: 25000 })
     const sceneBounds = await alice.locator("#social-playback").boundingBox()
     await alice.screenshot({ path: info.outputPath("exchange-start.png"), animations: "allow" })
     // Animation no longer requires a connection: prevent all subsequent peer traffic.
-    network.dropWhen((e) => e.type !== "register")
+    // Playback consumes only the local committed exchange.
     for (const p of [alice, bob]) await expect(p.locator("#social-exchange-result")).toBeVisible({ timeout: 15000 })
     const settledBounds = await alice.locator("#social-playback").boundingBox()
     expect(settledBounds?.height).toBe(sceneBounds?.height)
@@ -162,16 +158,8 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
     expect(savedB.gauge).toBe(100)
     for (const p of [alice, bob])
       await p.screenshot({ path: info.outputPath(p === alice ? "exchange-alice.png" : "exchange-bob.png") })
-    const trade = Object.values((await readSocialState(alice)).trades)[0]
+    const trade = Object.values((await readSocialState(alice)).trades).find((item) => item.phase === "resolved")
     expect(trade?.phase).toBe("resolved")
-    // Replaying a commit is idempotent and cannot archive the received companion twice.
-    await alice.evaluate(
-      async ({ id, code }) => {
-        const url = "/src/client/persistence/social-store.ts"
-        await (await import(url)).commitTrade(id, code)
-      },
-      { id: trade?.id ?? "", code: codeBob },
-    )
     expect((await readPet(alice)).retiredPartners).toHaveLength(1)
     await alice.locator("#social-exchange-done").click()
     await alice.locator('[data-social-tab="arena"]').click()
@@ -185,13 +173,55 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
     await expect.poll(() => alice.locator(".social-scroll").evaluate((element) => element.scrollTop)).toBe(0)
     await expect(alice.locator("#social-profile-companion .social-portrait")).toBeInViewport()
     expect(errors).toEqual([])
+    expect(largeResultReads).toBeGreaterThan(0)
   } finally {
     await a.close()
     await b.close()
   }
 })
 
+test("an invitation opened while the alias is publishing is not silently discarded", async ({ page }) => {
+  await linkSocialPeers([page])
+  await page.goto("http://127.0.0.1:4177")
+  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+  let release!: () => void
+  const held = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  let observed!: () => void
+  const publishing = new Promise<void>((resolve) => {
+    observed = resolve
+  })
+  await page.route("**/api/v1/me/inbox?*", async (route) => {
+    observed()
+    await held
+    await route.fallback()
+  })
+  try {
+    // Deliberately continue before saving finishes; the normal helper waits for completion.
+    await page.locator("#more-button").click()
+    await page.locator("#profile-button").click()
+    await page.locator("#social-alias").fill("Player")
+    await page.locator('#social-alias-form button[type="submit"]').click()
+    await publishing
+    await page.evaluate(() => {
+      location.hash = "invite?code=Y8KC4TNB7RWA2VDF&alias=Noa"
+    })
+    const invite = page.locator('[data-social-action="invite"]')
+    await expect(invite).toBeDisabled()
+    expect(Object.values((await readSocialState(page)).outbox)).toHaveLength(0)
+    release()
+    await expect(invite).toBeEnabled()
+    await invite.click()
+    await expect(page.locator('[data-social-action="retry"]')).toBeVisible()
+    expect(Object.values((await readSocialState(page)).outbox)).toHaveLength(1)
+  } finally {
+    release()
+  }
+})
+
 test("offline invitation retains one retryable request after reload and validates codes", async ({ page }) => {
+  await linkSocialPeers([page])
   await page.goto("http://127.0.0.1:4177")
   await expect(page.locator("#social-current")).not.toBeEmpty()
   await chooseAlias(page, "Player")
@@ -205,6 +235,12 @@ test("offline invitation retains one retryable request after reload and validate
   expect(Object.values((await readSocialState(page)).outbox).map((r) => r.id)).toEqual(before.map((r) => r.id))
   await page.locator('[data-social-action="retry"]').click()
   expect(Object.values((await readSocialState(page)).outbox)).toHaveLength(1)
+  await page.locator('[data-social-action="cancel-outgoing"]').click()
+  await expect
+    .poll(
+      async () => Object.values((await readSocialState(page)).outbox).filter((item) => item.state === "pending").length,
+    )
+    .toBe(0)
 })
 
 test("inline friend lookup verifies the connected identity before sending a request", async ({ browser }, info) => {

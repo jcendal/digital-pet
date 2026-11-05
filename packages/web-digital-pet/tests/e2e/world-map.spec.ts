@@ -14,7 +14,6 @@ const travel = async (page: Page, locationId: string, zoneId = locationId) => {
 test("the LCD map travels to every destination and keeps the save offline", async ({ page, context }, testInfo) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.goto("/")
   const pet = page.frameLocator('iframe[data-page="sidebar"]')
   await expect(pet.locator("#name")).not.toHaveText("")
@@ -216,7 +215,6 @@ test("computer map preferences stay separate from the browser save and show boss
 })
 
 test("new habitat destinations load their scenery and preserve travel offline", async ({ page, context }, testInfo) => {
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
   const pet = page.frameLocator('iframe[data-page="sidebar"]')

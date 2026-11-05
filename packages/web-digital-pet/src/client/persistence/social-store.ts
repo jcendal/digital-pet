@@ -14,6 +14,7 @@ import {
   validCode,
 } from "../../domain/social/model.ts"
 import { completed, openDatabase, resultOf, TRADE_LOCK_KEY } from "./database.ts"
+import { assertContext, BATTLE_INTENT_KEY, type OnlineContext } from "./online-store.ts"
 
 const KEY = "social:v1"
 export const updateSocial = async <T>(
@@ -55,8 +56,14 @@ export const saveAlias = (alias: string): Promise<void> =>
     if (!validAlias(alias)) throw new Error("social.aliasRule")
     s.profile = { alias, revision: (s.profile?.revision ?? 0) + 1 }
   })
-export const queueSocial = (code: string, event: Event, id = crypto.randomUUID()): Promise<string> =>
+export const queueSocial = (
+  code: string,
+  event: Event,
+  id: string = crypto.randomUUID(),
+  expected?: OnlineContext,
+): Promise<string> =>
   updateSocial(async (s, store) => {
+    if (expected) await assertContext(store, expected)
     if (!s.profile || !validCode(code)) throw new Error("social.chooseAlias")
     if (
       event.kind !== "invite" &&
@@ -233,8 +240,10 @@ export const collectGift = (id: string): Promise<void> =>
     r.state = "done"
     addSocialLog(s, "giftCollected", r.profile.alias)
   })
-export const prepareTrade = (trade: Trade): Promise<void> =>
+export const prepareTrade = (trade: Trade, expected?: OnlineContext): Promise<void> =>
   updateSocial(async (s, store) => {
+    if (expected) await assertContext(store, expected)
+    if (await resultOf(store.get(BATTLE_INTENT_KEY))) throw new Error("social.busy")
     const old = s.trades[trade.id]
     if (old) {
       if (
@@ -287,7 +296,7 @@ export const prepareTrade = (trade: Trade): Promise<void> =>
       const request = s.inbox[trade.id]
       if (request) request.state = "done"
     }
-    if (!trade.coordinator) {
+    if (!trade.coordinator && !expected) {
       const id = crypto.randomUUID()
       s.outbox[id] = {
         id,
@@ -313,24 +322,24 @@ export const commitTrade = (id: string, code: string): Promise<void> =>
     t.phase = "committed"
   })
 export const resolveTrade = (id: string, code: string): Promise<void> =>
-  updateSocial((s, store) => {
+  updateSocial(async (s, store) => {
     const t = s.trades[id]
     if (!t || t.code !== code || (t.phase !== "committed" && t.phase !== "resolved")) throw new Error("social.invalid")
     if (t.phase === "resolved") return
     t.phase = "resolved"
-    store.delete(TRADE_LOCK_KEY)
+    if ((await resultOf(store.get(TRADE_LOCK_KEY))) === id) store.delete(TRADE_LOCK_KEY)
     for (const r of [...Object.values(s.inbox), ...Object.values(s.outbox)])
       if (r.id === id || (r.event.kind === "trade-ready" && r.event.tradeId === id)) r.state = "done"
     addSocialLog(s, "tradeCompleted", s.friends[code]?.profile.alias ?? "PLAYER")
   })
 export const abortTrade = (id: string, code: string): Promise<boolean> =>
-  updateSocial((s, store) => {
+  updateSocial(async (s, store) => {
     const t = s.trades[id]
     if (t && (t.code !== code || t.phase === "committed" || t.phase === "resolved")) return false
     if (t?.phase === "aborted") return true
     if (t) {
       t.phase = "aborted"
-      store.delete(TRADE_LOCK_KEY)
+      if ((await resultOf(store.get(TRADE_LOCK_KEY))) === id) store.delete(TRADE_LOCK_KEY)
     }
     for (const r of [...Object.values(s.inbox), ...Object.values(s.outbox)])
       if (r.code === code && (r.id === id || (r.event.kind === "trade-ready" && r.event.tradeId === id)))

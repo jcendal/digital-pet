@@ -4,7 +4,7 @@ import { saveAdventure as save } from "./helpers/adventure.ts"
 const saved = (page: Page) =>
   page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
     })
     const transaction = database.transaction("pet", "readonly")
@@ -270,7 +270,7 @@ test("recruitment survives reload and adopts a new generation with its own adven
   await expect(pet.locator("#adventure-toggle")).toBeEnabled()
   const result = await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
     })
     const store = database.transaction("pet", "readonly").objectStore("pet")
@@ -321,7 +321,7 @@ test("a boss reveals itself in the viewer, awards 50% after combat and leaves a 
   await save(page, true)
   await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
     })
     await new Promise<void>((resolve) => {

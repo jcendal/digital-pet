@@ -118,13 +118,51 @@ Run these commands from the repository root:
 | `npm run check` | Check format, lint, workspace dependencies, and types |
 | `npm run test` | Run workspace unit tests |
 | `npm run test:persistence` | Run OpenCode SQLite persistence tests |
-| `npm run build` | Build OpenCode, Cursor, and the web app |
+| `npm run build` | Build OpenCode, Cursor, the web app, and the backend |
 | `npm run validate` | Run checks, unit tests, and builds together |
+| `npm run validate:web` | Validate the web, backend, and their workspace dependencies |
+| `npm run test:ci` | Verify affected-package selection and cache invalidation |
+| `npm run test:browser` | Build the web if needed, then run uncached browser tests |
 
-For focused work, run `npm run test --workspace <package-name>`. Pull request CI
-checks formatting, lint, types, unit/persistence tests, all builds, and packaging.
+For focused work, run `npm run test --workspace <package-name>` (direct execution)
+or `npx turbo run test --filter=<package-name>` (cached execution).
+Root check, test, and build commands use Turborepo. `npm run validate` still
+validates every workspace, reusing successful results when inputs are unchanged.
 In particular, changes to browser assets must pass both Bun tests and production
 builds because both load the assets through different runtimes.
+
+### Incremental CI and task caching
+
+Pull request CI always checks formatting, workspace boundaries, asset references,
+release-script types, and the CI regression tests. It uses `turbo --affected` to
+select workspace checks, unit/persistence tests, builds, and packaging. The base
+and head revisions are explicit and the checkout includes full Git history.
+A web-only change selects web and backend (the backend imports web transfer
+contracts), but does not run OpenCode or Cursor tests. Changes to shared packages
+select their transitive consumers. Root tooling, infrastructure, shared assets,
+and dependency/configuration changes conservatively trigger broader validation.
+
+`turbo.json` uses a scriptless `transit` task to include dependency sources in
+cache keys without running unrelated tests or building source-only libraries.
+Keep workspace dependencies accurate when adding cross-package imports. Declare
+new root-level shared inputs in `globalDependencies` and build-time environment
+variables in `env`; never pass all environment variables through to cached tasks.
+`VOLTA_HOME` is passed through so subprocess tests that isolate `HOME` can still
+find the pinned toolchain. Deployment commands and credentials stay outside Turbo.
+Biome's environment-variable allowlist covers host runtime settings and GitHub/CDK
+script inputs that are not inputs to cached tasks; it does not expose them to Turbo.
+
+Local task results live in `.turbo/cache`. GitHub Actions restores this directory
+with a cache separated by OS, architecture, pinned Node/Bun versions, and lockfile.
+The external remote cache is disabled; no Vercel account or cache token is needed.
+Cache misses run the task normally. Use `npx turbo run test --force` to rerun
+tests regardless of cached results.
+
+Browser tests run when either web or backend is affected and never cache their
+result. Their web build can use the cache. Packaging remains outside Turbo and
+runs after the selected checks, so npm lifecycle hooks cannot mutate manifests
+while other tasks are reading them. Backend deployment validates only web,
+backend, and their dependencies, then runs browser checks before deploying.
 
 ## Shared editor files
 
@@ -143,7 +181,7 @@ implementation and maintenance guidance in `docs/` or this contribution guide.
 - [World catalog and scenery](packages/digital-pet-fields/docs/catalog.md)
 - [Web architecture](packages/web-digital-pet/docs/architecture.md)
 - [Web caching](docs/web-caching.md)
-- [Player battle protocol](packages/web-digital-pet/docs/player-battles.md)
+- [Online services and battle recovery](docs/web-backend-service-design.md#live-battles-and-device-transfer)
 
 ## Tooling references
 

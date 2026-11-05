@@ -16,6 +16,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "bun test tests"
+    "test": "bun test tests",
+    "check": "npm run typecheck"
   }
 }

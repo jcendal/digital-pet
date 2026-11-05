@@ -40,7 +40,7 @@ export const colorMonsterFrame = (
   return result.kind === "frame" ? result.frame : undefined
 }
 
-/** Original effect geometry with an authored fire/impact palette; not an official species assignment. */
+/** Original fallback geometry with an authored palette; not an official species assignment. */
 const effectFrame = (artwork: string, palette: readonly string[]): PixelFrame => {
   const rows = artwork.split("\n")
   const width = Math.max(...rows.map((row) => row.length))
@@ -50,7 +50,6 @@ const effectFrame = (artwork: string, palette: readonly string[]): PixelFrame =>
   return createPixelFrame(width, height, [null, ...palette], pixels)
 }
 const genericShot = effectFrame(FIREBALL_LINES.join("\n"), ["#a33716", "#f58124", "#ffda64"])
-const impact = effectFrame(" ▄█▄ \n █▀█ \n ▀▀▀ ", ["#fff2a6", "#efae32", "#e55732"])
 
 /** Node identities from the active presentation disambiguate shared legacy sprite keys. */
 export const colorArtworkScene = (snapshot: ArtworkSnapshot, nodeIds: readonly string[] = []) => {
@@ -89,18 +88,21 @@ export const colorArtworkScene = (snapshot: ArtworkSnapshot, nodeIds: readonly s
             : "walk_1"
     add(monster(snapshot.player, pose(scene.playerPose, scene.playerInjuredAlt)), left, 0, "right")
     add(monster(snapshot.opponent, pose(scene.opponentPose, scene.opponentInjuredAlt)), left + 16 + BATTLE_GAP_COLUMNS)
-    if (scene.shooter) {
+    if (scene.shooter && scene.lastResult !== "miss") {
       const id = identity(scene.shooter === "player" ? snapshot.player : snapshot.opponent)
       const upstream = id && sourceIds.get(id)?.sprite
       const index = upstream ? attacks[upstream] : undefined
-      const shot = index === undefined ? genericShot : (extraFrame(`attack-${index}`) ?? genericShot)
+      const sourceShot = index === undefined ? undefined : extraFrame(`attack-${index}`)
+      const shot = sourceShot ?? genericShot
       const travel = BATTLE_GAP_COLUMNS - shot.width
       const progress = Math.min(1, Math.max(0, scene.progress))
       const x = left + 16 + Math.round((scene.shooter === "player" ? progress : 1 - progress) * travel)
-      // Source projectiles face right; VisualLayer's right facing mirrors a source frame.
-      add(shot, x, Math.floor((16 - shot.height) / 2), scene.shooter === "player" ? "left" : "right")
-      if (scene.lastResult === "hit")
-        add(impact, left + 16 + (scene.shooter === "player" ? BATTLE_GAP_COLUMNS - impact.width : 0), 4)
+      // DMC color projectiles face left, unlike the authored fallback. Mirror only
+      // the player's source shot; the opponent keeps the original pixel rows.
+      const mirror = sourceShot ? scene.shooter === "player" : scene.shooter === "opponent"
+      add(shot, x, Math.floor((16 - shot.height) / 2), mirror ? "right" : "left")
+      // Keep the assigned projectile at contact. The target's injury pose conveys
+      // the hit without covering fists, arrows or bubbles with generic fire.
     }
     return createVisualScene("color", Math.max(width, battleWidth), 16, layers)
   } else {

@@ -5,7 +5,7 @@ test.use({ locale: "es-ES" })
 const saved = (page: Page) =>
   page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const open = indexedDB.open("web-digital-pet", 1)
+      const open = indexedDB.open("web-digital-pet", 2)
       open.onsuccess = () => resolve(open.result)
     })
     const store = database.transaction("pet").objectStore("pet")
@@ -34,14 +34,13 @@ test("adventure waits advance in reserve while apples and piles pause through sw
   const now = Date.parse("2026-10-15T00:00:00Z")
   const minute = 60_000
   await page.clock.setFixedTime(now)
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.goto("/")
   const sidebar = page.frameLocator('iframe[data-page="sidebar"]')
   await expect(sidebar.locator("#name")).not.toBeEmpty()
   await page.evaluate(
     async ({ now, minute }) => {
       const database = await new Promise<IDBDatabase>((resolve) => {
-        const open = indexedDB.open("web-digital-pet", 1)
+        const open = indexedDB.open("web-digital-pet", 2)
         open.onsuccess = () => resolve(open.result)
       })
       const partner = (partnerId: string, currentNodeId: string) => ({

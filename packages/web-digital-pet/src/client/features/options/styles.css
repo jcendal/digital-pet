@@ -562,3 +562,24 @@
   outline: 2px dotted var(--ink);
   outline-offset: 3px;
 }
+
+#online-copies {
+  min-width: 0;
+  margin-top: 12px;
+  border: 1px solid var(--ink);
+}
+#online-account p {
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.online-backup-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ink);
+}
+.online-backup-row button {
+  margin: 4px;
+}
+#online-migration {
+  overflow: auto;
+  padding: 16px;
+}

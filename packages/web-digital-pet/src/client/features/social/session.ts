@@ -1,439 +1,495 @@
-import type { DataConnection } from "peerjs"
-import {
-  type Envelope,
-  type Event,
-  type Offer,
-  type Profile,
-  parseEnvelope,
-  parseProfile,
-  validAlias,
-  validCode,
-  validId,
-} from "../../../domain/social/model.ts"
+import { sameDestination } from "@jcendal/digital-pet-online/contracts.ts"
+import type { InboxPage, OnlineProfile, OnlineRelationship, OnlineTrade } from "@jcendal/digital-pet-online/social.ts"
+import { type Event, type Offer, type Profile, parseProfile } from "../../../domain/social/model.ts"
 import { readArenaFighter } from "../../persistence/arena-store.ts"
-import { getDeviceCode, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import {
-  abortTrade,
-  acknowledgeSocial,
-  commitTrade,
-  decideFriend,
-  prepareTrade,
-  queueSocial,
-  readSocial,
-  receiveSocial,
-  resolveTrade,
-  updateSocial,
-} from "../../persistence/social-store.ts"
+  beginGiftClaim,
+  clearGiftIntent,
+  mergeOnlineRelationship,
+  readGiftIntent,
+} from "../../persistence/online-social-store.ts"
+import { assertContext, type OnlineContext, sameContext } from "../../persistence/online-store.ts"
+import { readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
+import { prepareTrade, queueSocial, readSocial, updateSocial } from "../../persistence/social-store.ts"
+import { ApiError, api, newOperationId, onlineConfigured, onlineContext } from "../../platform/online-api.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
-import { SocialTransport, socialPeerCode } from "./transport.ts"
 
-type Channel = {
-  connection: DataConnection
-  outgoing: boolean
-  profile?: Profile
-  queue: Promise<void>
-  seen: number
-  timer: number
-}
+type Pair = { id: string; value: OnlineRelationship; profile: OnlineProfile }
 export class SocialSession {
   code = ""
   ready = false
   otherTab = false
-  conflict = false
-  readonly channels = new Map<string, Channel>()
-  private transport: SocialTransport | undefined
-  private release: (() => void) | undefined
-  private acquiring = false
+  readonly channels = new Map<string, { profile: Profile }>()
+  private pairs = new Map<string, Pair>()
+  private available = new Set<string>()
   private enabled = false
+  private owner = false
+  private acquiring = false
+  private release: (() => void) | undefined
+  private queue: Promise<void> = Promise.resolve()
+  private profileAccount = ""
+  private published = ""
+  private syncing: Promise<void> | undefined
+  private syncAgain = false
+  private hintTimer: number | undefined
+  private retryTimer?: number
+  private retryAttempt = 0
+  private expiryTimer?: number
   constructor(
     private changed: () => void,
     private error: (error: unknown) => void,
     private busy: () => boolean,
   ) {}
+  private exclusive<T>(work: () => Promise<T>): Promise<T> {
+    const task = this.queue.then(work)
+    this.queue = task.then(
+      () => {},
+      () => {},
+    )
+    return task
+  }
   async start(): Promise<void> {
-    this.code = await getDeviceCode()
     this.enabled = browserSaveSelected()
-    await updateSocial((s) => {
-      for (const r of Object.values(s.outbox)) if (r.delivery === "sending") r.delivery = "unavailable"
-    })
-    window.setInterval(() => {
-      if (!this.enabled) return
-      for (const [code, c] of this.channels) {
-        if (Date.now() - c.seen > 45000) {
-          c.connection.close()
-          this.drop(code, c)
-        } else if (c.profile) {
-          this.send(c, { type: "ping" })
-          void this.hello(c).catch(this.error)
-        }
-      }
-      void this.reconnect().catch(this.error)
-    }, 10000)
     window.addEventListener("pagehide", () => this.stop())
-    window.addEventListener("pageshow", () => {
+    for (const event of ["online", "pageshow", "digital-pet:online-ready", "digital-pet:online-released"])
+      window.addEventListener(event, () => {
+        void this.reconnect().catch(this.error)
+      })
+    window.addEventListener("digital-pet:account-changed", () => {
+      this.profileAccount = ""
+      this.published = ""
       void this.reconnect().catch(this.error)
     })
-    window.addEventListener("online", () => {
-      void this.reconnect().catch(this.error)
+    const reconcile = () => {
+      if (this.hintTimer !== undefined) return
+      this.hintTimer = window.setTimeout(() => {
+        this.hintTimer = undefined
+        void this.reconnect().catch(this.error)
+      }, 50)
+    }
+    window.addEventListener("digital-pet:online-social", reconcile)
+    // Opening a social view also recovers a notification lost during a connection gap.
+    const reconcileView = (path: string) => {
+      if (/^\/?#(?:friends|activity|profile|arena)(?:$|\?)/.test(path)) reconcile()
+    }
+    window.addEventListener("digital-pet:navigate", (event) => {
+      if (event instanceof CustomEvent && typeof event.detail === "string") reconcileView(event.detail)
+    })
+    window.addEventListener("hashchange", () => reconcileView(location.hash))
+    window.addEventListener("digital-pet:save-updated", () => {
+      if (this.owner && this.ready && !document.hidden) void this.publishProfile().catch(this.error)
     })
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) void this.reconnect().catch(this.error)
+      if (document.hidden) this.stop()
+      else void this.reconnect().catch(this.error)
     })
     await this.reconnect()
   }
   setEnabled(value: boolean): void {
+    if (this.enabled === value) return
     this.enabled = value
     if (!value) this.stop()
     else void this.reconnect().catch(this.error)
   }
   get online(): Set<string> {
-    return new Set([...this.channels].filter(([, c]) => Boolean(c.profile && c.connection.open)).map(([code]) => code))
-  }
-  private send(c: Channel, data: unknown): void {
-    if (c.connection.open) c.connection.send(data)
-  }
-  private async hello(c: Channel): Promise<void> {
-    const s = await readSocial()
-    if (!s.profile || !browserSaveSelected()) return
-    const pet = await readLocalState()
-    const fighter = await readArenaFighter(pet)
-    this.send(c, {
-      type: "hello",
-      version: 1,
-      profile: { ...s.profile, nodeId: pet.currentNodeId, arenaNodeId: fighter.currentNodeId },
-    })
-  }
-  async publishProfile(): Promise<void> {
-    for (const channel of this.channels.values()) await this.hello(channel)
+    return new Set(this.available)
   }
   async reconnect(): Promise<void> {
-    if (!this.enabled || !browserSaveSelected() || !(await readSocial()).profile) return
-    if (!this.transport && !this.acquiring) {
+    if (!onlineConfigured() || !this.enabled || !browserSaveSelected() || document.hidden || !navigator.onLine) return
+    if (!this.owner) {
+      if (this.acquiring) return
       this.acquiring = true
-      const register = () => {
-        this.transport = new SocialTransport(this.code, {
-          ready: () => {
-            this.ready = true
-            this.conflict = false
-            this.changed()
-            void this.reconnect().catch(this.error)
-          },
-          incoming: (c) => this.bind(c, false),
-          conflict: () => {
-            this.conflict = true
-            this.changed()
-          },
-          offline: () => {
-            this.ready = false
-            this.changed()
-          },
-        })
-        this.transport.start()
-      }
       if (navigator.locks) {
         void navigator.locks
-          .request("digital-pet:social-endpoint", { ifAvailable: true }, async (lock) => {
+          .request("digital-pet:social-endpoint-v2", { ifAvailable: true }, async (lock) => {
+            this.acquiring = false
+            this.otherTab = !lock
             if (!lock || !this.enabled) {
-              this.acquiring = false
-              this.otherTab = !lock
               this.changed()
               return
             }
-            this.otherTab = false
-            register()
-            await new Promise<void>((resolve) => {
+            this.owner = true
+            const held = new Promise<void>((resolve) => {
               this.release = resolve
             })
+            await this.reconnect()
+            await held
           })
           .catch(this.error)
-      } else register()
-    } else this.transport?.resume()
-    if (!this.ready) return
-    const s = await readSocial()
-    const targets = new Set([
-      ...Object.keys(s.friends),
-      ...Object.values(s.trades)
-        .filter((t) => t.phase === "prepared" || t.phase === "committed")
-        .map((t) => t.code),
-      ...Object.values(s.outbox)
-        .filter((r) => r.state === "pending" && (r.event.kind !== "invite" || r.delivery === "sending"))
-        .map((r) => r.code),
-    ])
-    for (const code of targets) this.connect(code)
-    for (const c of this.channels.values()) if (c.profile) await this.flush(c)
-  }
-  connect(code: string): void {
-    if (!this.enabled || !this.ready || !validCode(code) || code === this.code || this.channels.has(code)) return
-    try {
-      const c = this.transport?.connect(code)
-      if (c) this.bind(c, true)
-    } catch (error) {
-      this.error(error)
-    }
-  }
-  private drop(code: string, c: Channel): void {
-    if (this.channels.get(code) !== c) return
-    clearTimeout(c.timer)
-    this.channels.delete(code)
-    void updateSocial((s) => {
-      for (const r of Object.values(s.outbox))
-        if (r.code === code && r.delivery === "sending") r.delivery = "unavailable"
-    })
-      .then(this.changed)
-      .catch(this.error)
-  }
-  private bind(connection: DataConnection, outgoing: boolean): void {
-    const code = socialPeerCode(connection.peer)
-    if (!code || code === this.code || !this.enabled || this.channels.size >= 64) {
-      connection.close()
-      return
-    }
-    const old = this.channels.get(code)
-    if (old) {
-      const preferOutgoing = this.code < code
-      if (old.outgoing === preferOutgoing || outgoing !== preferOutgoing) {
-        connection.close()
         return
       }
-      this.channels.delete(code)
-      clearTimeout(old.timer)
-      old.connection.close()
+      this.acquiring = false
+      this.owner = true
     }
-    const c: Channel = { connection, outgoing, queue: Promise.resolve(), seen: Date.now(), timer: 0 }
-    this.channels.set(code, c)
-    c.timer = window.setTimeout(() => {
-      if (!c.profile) {
-        connection.close()
-        this.drop(code, c)
-      }
-    }, 12000)
-    connection.on("open", () => {
-      void this.hello(c).catch(this.error)
+    if (this.syncing) {
+      this.syncAgain = true
+      return this.syncing
+    }
+    window.clearTimeout(this.retryTimer)
+    this.syncing = this.exclusive(async () => {
+      do {
+        this.syncAgain = false
+        if (!this.owner || !this.enabled || document.hidden) return
+        try {
+          await this.sync()
+          this.ready = true
+          this.retryAttempt = 0
+        } catch (error) {
+          this.ready = false
+          this.available.clear()
+          if (!(error instanceof Error && ["online.signIn", "online.adoptFirst"].includes(error.message))) {
+            this.error(error)
+            if (this.retryAttempt < 3)
+              this.retryTimer = window.setTimeout(
+                () => {
+                  void this.reconnect().catch(this.error)
+                },
+                1000 * 2 ** this.retryAttempt++,
+              )
+          }
+          this.syncAgain = false
+        }
+        this.changed()
+      } while (this.syncAgain)
+    }).finally(() => {
+      this.syncing = undefined
     })
-    connection.on("data", (data) => {
-      c.queue = c.queue
-        .then(async () => {
-          if (this.channels.get(code) === c && this.enabled && browserSaveSelected()) await this.receive(code, c, data)
-        })
-        .catch((error) => {
-          this.error(error)
-          connection.close()
-          this.drop(code, c)
-        })
-    })
-    connection.on("close", () => this.drop(code, c))
-    connection.on("error", () => this.drop(code, c))
+    return this.syncing
   }
-  private async receive(code: string, c: Channel, data: unknown): Promise<void> {
-    if (
-      !data ||
-      typeof data !== "object" ||
-      Array.isArray(data) ||
-      new TextEncoder().encode(JSON.stringify(data)).length > 40000
+  private async sync(): Promise<void> {
+    const context = await onlineContext()
+    if (this.profileAccount !== context.accountId) {
+      const me = await api<OnlineProfile>("/api/v1/me/profile", "GET", undefined, context.accountId)
+      this.code = me.code
+      this.profileAccount = context.accountId
+      this.published = JSON.stringify([me.alias, me.nodeId, me.arenaNodeId])
+    }
+    await this.publish(context)
+    const intent = await readGiftIntent()
+    if (intent && sameContext(intent.context, context)) {
+      try {
+        await api(
+          `/api/v1/relationships/${intent.pair}/gifts/${intent.id}/claim`,
+          "POST",
+          { generation: intent.generation, destination: context },
+          context.accountId,
+        )
+      } catch (error) {
+        if (error instanceof ApiError && [404, 409].includes(error.status)) await clearGiftIntent(context, intent.id)
+        else throw error
+      }
+    }
+    let after: string | null = ""
+    const pairs = new Map<string, Pair>()
+    const profiles = new Map<string, OnlineProfile>()
+    for (let pageNumber = 0; after !== null && pageNumber < 40; pageNumber++) {
+      const page: InboxPage = await api(
+        `/api/v1/me/inbox?after=${encodeURIComponent(after)}`,
+        "GET",
+        undefined,
+        context.accountId,
+      )
+      for (const profile of page.profiles) profiles.set(profile.id, profile)
+      for (const entry of page.relationships) {
+        const other = entry.value.members.find((member) => member !== context.accountId)
+        const profile = other ? profiles.get(other) : undefined
+        if (!profile) throw new Error("social.invalid")
+        const pair: Pair = { ...entry, profile }
+        await this.recoverPrepared(context, pair)
+        const acks = await mergeOnlineRelationship(context, pair.id, pair.value, profile)
+        for (const ack of acks)
+          await api(
+            `/api/v1/relationships/${ack.pair}/${ack.kind}/${ack.id}/applied`,
+            "POST",
+            { destination: context },
+            context.accountId,
+          )
+        pairs.set(profile.code, pair)
+        this.channels.set(profile.code, { profile: parseProfile(profile) })
+        if (pair.value.active && page.online.includes(profile.id)) this.available.add(profile.code)
+        else this.available.delete(profile.code)
+      }
+      after = page.next
+    }
+    if (after !== null) throw new Error("social.full")
+    this.pairs = pairs
+    window.clearTimeout(this.expiryTimer)
+    const deadlines = [...pairs.values()]
+      .flatMap(({ value }) => [
+        ...value.invitations.filter((item) => item.state === "pending").map((item) => item.expiresAt),
+        ...value.gifts.filter((item) => item.state === "pending").map((item) => item.expiresAt),
+        ...value.trades.filter((item) => item.state === "pending").map((item) => item.expiresAt),
+        ...(value.challenges ?? []).map((item) => item.expiresAt),
+      ])
+      .filter((deadline) => deadline > Date.now())
+    if (deadlines.length)
+      this.expiryTimer = window.setTimeout(
+        () => {
+          void this.reconnect().catch(this.error)
+        },
+        Math.min(...deadlines) - Date.now() + 100,
+      )
+    for (const code of this.available) if (!pairs.has(code)) this.available.delete(code)
+    refreshBrowserViews()
+  }
+  private async recoverPrepared(context: OnlineContext & { accountId: string }, pair: Pair): Promise<void> {
+    const saved = await readSocial()
+    for (let index = 0; index < pair.value.trades.length; index++) {
+      const trade = pair.value.trades[index]
+      if (!trade || !pair.value.active || trade.state !== "pending" || trade.expiresAt <= Date.now()) continue
+      const local = saved.trades[trade.id]
+      if (local?.phase !== "prepared") continue
+      let side = trade.sides[context.accountId]
+      if (side && !sameDestination(side.destination, context)) continue
+      if (!side) {
+        const prepared = await api<OnlineTrade>(
+          `/api/v1/relationships/${pair.id}/trades`,
+          "POST",
+          { id: trade.id, generation: pair.value.generation, destination: context, offer: local.local },
+          context.accountId,
+        )
+        pair.value.trades[index] = prepared
+        side = prepared.sides[context.accountId]
+      }
+      if (side && !trade.confirmed.includes(context.accountId)) {
+        try {
+          pair.value.trades[index] = await api<OnlineTrade>(
+            `/api/v1/relationships/${pair.id}/trades/${trade.id}/confirm`,
+            "POST",
+            { destination: context },
+            context.accountId,
+          )
+        } catch (error) {
+          if (!(error instanceof ApiError) || error.status !== 409) throw error
+        }
+      }
+    }
+  }
+  private async publish(context: OnlineContext & { accountId: string }): Promise<void> {
+    const social = await readSocial()
+    if (!social.profile) return
+    const pet = await readLocalState()
+    const fighter = await readArenaFighter(pet)
+    const signature = JSON.stringify([social.profile.alias, pet.currentNodeId, fighter.currentNodeId])
+    if (signature === this.published) return
+    await api(
+      "/api/v1/me/presence",
+      "POST",
+      { profile: { ...social.profile, nodeId: pet.currentNodeId, arenaNodeId: fighter.currentNodeId } },
+      context.accountId,
     )
-      throw new Error("social.invalid")
-    const m = data as Record<string, unknown>
-    if (m.type === "hello") {
-      if (m.version !== 1) throw new Error("social.invalid")
-      const first = !c.profile
-      c.profile = parseProfile(m.profile)
-      c.seen = Date.now()
-      clearTimeout(c.timer)
-      await updateSocial((s) => {
-        const f = s.friends[code]
-        if (f && c.profile && c.profile.revision >= f.profile.revision) f.profile = c.profile
-        if (c.profile)
-          for (const r of Object.values(s.outbox)) if (r.code === code && r.state === "pending") r.profile = c.profile
-      })
-      if (first) await this.flush(c)
-      this.changed()
-      return
-    }
-    if (!c.profile) throw new Error("social.invalid")
-    c.seen = Date.now()
-    if (m.type === "ping") {
-      this.send(c, { type: "pong" })
-      return
-    }
-    if (m.type === "pong") return
-    if (m.type === "ack" && validId(m.id)) {
-      await acknowledgeSocial(code, m.id)
-      this.changed()
-      return
-    }
-    if (m.type === "settle" && validId(m.id)) {
-      const t = (await readSocial()).trades[m.id]
-      if (!t || t.code !== code) throw new Error("social.invalid")
-      if (m.stage === "commit" && !t.coordinator) {
-        await commitTrade(t.id, code)
-        this.send(c, { type: "settle", id: t.id, stage: "applied" })
-      } else if (m.stage === "applied" && t.coordinator) {
-        await resolveTrade(t.id, code)
-        this.send(c, { type: "settle", id: t.id, stage: "complete" })
-      } else if (m.stage === "complete" && !t.coordinator) await resolveTrade(t.id, code)
-      else if (m.stage === "abort" && !t.coordinator && (t.phase === "prepared" || t.phase === "aborted"))
-        await abortTrade(t.id, code)
-      else throw new Error("social.invalid")
-      refreshBrowserViews()
-      this.changed()
-      return
-    }
-    if (m.type !== "event") throw new Error("social.invalid")
-    const message = parseEnvelope(m.message)
-    await receiveSocial(code, c.profile, message)
-    if (message.event.kind === "trade-cancel") {
-      const aborted = await abortTrade(message.event.tradeId, code)
-      if (!aborted) await this.flush(c)
-    }
-    if (message.event.kind === "trade-abort-request") {
-      const tradeId = message.event.tradeId
-      const saved = await readSocial()
-      const original = saved.outbox[tradeId]
-      if (!original || original.code !== code || original.event.kind !== "trade-offer")
-        throw new Error("social.invalid")
-      if (await abortTrade(tradeId, code)) this.send(c, { type: "settle", id: tradeId, stage: "abort" })
-      else await this.flush(c)
-    }
-    if (message.event.kind === "trade-ready") {
-      const saved = await readSocial()
-      if (saved.outbox[message.event.tradeId]?.state === "done" && !saved.trades[message.event.tradeId])
-        this.send(c, { type: "settle", id: message.event.tradeId, stage: "abort" })
-    }
-    this.send(c, { type: "ack", id: message.id })
-    this.changed()
+    this.published = signature
   }
-  private async flush(c: Channel): Promise<void> {
-    const code = socialPeerCode(c.connection.peer)
-    if (!code || !c.profile) return
-    const s = await readSocial()
-    for (const r of Object.values(s.outbox)) {
-      if (r.code !== code || r.delivery === "delivered" || r.state !== "pending") continue
-      this.send(c, { type: "event", message: { version: 1, id: r.id, event: r.event } satisfies Envelope })
-    }
-    for (const receipt of Object.values(s.inbox)) {
-      if (receipt.code !== code || receipt.event.kind !== "trade-abort-request") continue
-      const id = receipt.event.tradeId
-      const trade = s.trades[id]
-      if (!trade || trade.phase === "aborted") this.send(c, { type: "settle", id, stage: "abort" })
-    }
-    for (const t of Object.values(s.trades)) {
-      if (t.code !== code) continue
-      if (t.phase === "aborted") {
-        if (t.coordinator) this.send(c, { type: "settle", id: t.id, stage: "abort" })
-        continue
-      }
-      if (t.coordinator && t.phase === "prepared") {
-        await commitTrade(t.id, code)
-        this.send(c, { type: "settle", id: t.id, stage: "commit" })
-      }
-      if (t.coordinator && t.phase === "committed") this.send(c, { type: "settle", id: t.id, stage: "commit" })
-      if (t.coordinator && t.phase === "resolved") this.send(c, { type: "settle", id: t.id, stage: "complete" })
-      if (!t.coordinator && t.phase === "committed") this.send(c, { type: "settle", id: t.id, stage: "applied" })
-      if (!t.coordinator && t.phase === "prepared") {
-        const ready = Object.values(s.outbox).find((r) => r.event.kind === "trade-ready" && r.event.tradeId === t.id)
-        if (ready) this.send(c, { type: "event", message: { version: 1, id: ready.id, event: ready.event } })
-      }
-    }
+  publishProfile(): Promise<void> {
+    return this.exclusive(async () => {
+      await this.publish(await onlineContext())
+    })
+  }
+  connect(code: string): void {
+    void this.exclusive(async () => {
+      const profile = await api<OnlineProfile>(`/api/v1/profiles/by-code/${code}`)
+      this.channels.set(code, { profile: parseProfile(profile) })
+      this.changed()
+    }).catch(this.error)
+  }
+  private pair(code: string): Pair {
+    const pair = this.pairs.get(code)
+    if (!pair) throw new Error("social.notFriend")
+    return pair
   }
   async deliver(id: string): Promise<void> {
-    const r = (await readSocial()).outbox[id]
-    if (!r) return
-    await updateSocial((s) => {
-      const entry = s.outbox[id]
-      if (entry) entry.delivery = "sending"
+    return this.exclusive(async () => {
+      if (!this.owner) throw new Error("social.anotherTab")
+      const context = await onlineContext()
+      const entry = (await readSocial()).outbox[id]
+      if (!entry) return
+      const event = entry.event
+      if (event.kind === "invite") await api("/api/v1/invitations", "POST", { id, code: entry.code }, context.accountId)
+      else {
+        const pair = this.pair(entry.code)
+        const path = `/api/v1/relationships/${pair.id}`
+        if (event.kind === "gift")
+          await api(`${path}/gifts`, "POST", { id, generation: pair.value.generation }, context.accountId)
+        else if (event.kind === "trade-offer")
+          await api(
+            `${path}/trades`,
+            "POST",
+            { id, generation: pair.value.generation, destination: context, offer: event.offer },
+            context.accountId,
+          )
+        else if (event.kind === "challenge")
+          await api(
+            `${path}/challenges`,
+            "POST",
+            { id, generation: pair.value.generation, battleCode: event.battleCode },
+            context.accountId,
+          )
+        else throw new Error("social.invalid")
+      }
+      await this.sync()
+      this.changed()
     })
-    this.connect(r.code)
-    const c = this.channels.get(r.code)
-    if (c?.profile) await this.flush(c)
-    window.setTimeout(() => {
-      void updateSocial((s) => {
-        const entry = s.outbox[id]
-        if (entry?.delivery === "sending") entry.delivery = "unavailable"
-      })
-        .then(this.changed)
-        .catch(this.error)
-    }, 12000)
-    this.changed()
   }
-  async sendEvent(code: string, event: Event, displayAlias?: string): Promise<string> {
+  async sendEvent(code: string, event: Event, _displayAlias?: string): Promise<string> {
     if (code === this.code) throw new Error("social.self")
-    const id = await queueSocial(code, event)
-    if (event.kind === "invite")
-      await updateSocial((s) => {
-        const r = s.outbox[id]
-        if (r)
-          r.profile = this.channels.get(code)?.profile ?? {
-            alias: validAlias(displayAlias) ? displayAlias : "PLAYER",
-            revision: 0,
-            nodeId: null,
-          }
-      })
-    await this.deliver(id)
+    if (!this.ready || !this.owner) throw new Error("social.offline")
+    if (event.kind === "trade-cancel" || event.kind === "trade-abort-request") {
+      await this.cancelTrade(event.tradeId, code)
+      return event.tradeId
+    }
+    const context = await onlineContext()
+    const id = await queueSocial(code, event, newOperationId(), context)
+    try {
+      await this.deliver(id)
+    } catch (error) {
+      this.error(error)
+      this.changed()
+    }
     return id
   }
-  async decide(id: string, accepted: boolean): Promise<void> {
-    const r = await decideFriend(id, accepted)
-    await this.deliver(r.id)
-  }
-  async readyTrade(id: string, local: Offer): Promise<void> {
-    if (this.busy() || !browserSaveSelected() || (await readPendingBattle())) throw new Error("social.busy")
-    const s = await readSocial()
-    const r = s.inbox[id]
-    if (!r || r.state !== "pending" || r.event.kind !== "trade-offer" || !this.online.has(r.code))
-      throw new Error("social.offline")
-    await prepareTrade({
-      id,
-      code: r.code,
-      coordinator: false,
-      local,
-      remote: r.event.offer,
-      phase: "prepared",
-      played: false,
+  decide(id: string, accepted: boolean): Promise<void> {
+    return this.exclusive(async () => {
+      const context = await onlineContext()
+      const entry = (await readSocial()).inbox[id]
+      if (!entry) throw new Error("social.invalid")
+      await api(
+        `/api/v1/relationships/${this.pair(entry.code).id}/invitations/${id}/decision`,
+        "POST",
+        { decision: accepted ? "accepted" : "declined" },
+        context.accountId,
+      )
+      await this.sync()
+      this.changed()
     })
-    const prepared = await readSocial()
-    const ready = Object.values(prepared.outbox).find(
-      (entry) => entry.event.kind === "trade-ready" && entry.event.tradeId === id,
-    )
-    if (ready) await this.deliver(ready.id)
   }
-  async confirmTrade(readyId: string): Promise<void> {
-    if (this.busy() || !browserSaveSelected()) throw new Error("social.busy")
-    const s = await readSocial()
-    const r = s.inbox[readyId]
-    if (!r || r.state !== "pending" || r.event.kind !== "trade-ready" || !this.online.has(r.code))
-      throw new Error("social.offline")
-    const original = s.outbox[r.event.tradeId]
-    if (!original || original.state !== "pending" || original.event.kind !== "trade-offer")
-      throw new Error("social.invalid")
-    try {
-      await prepareTrade({
-        id: original.id,
-        code: r.code,
-        coordinator: true,
-        local: original.event.offer,
-        remote: r.event.offer,
-        phase: "prepared",
-        played: false,
+  withdraw(id: string): Promise<void> {
+    return this.exclusive(async () => {
+      const context = await onlineContext()
+      const entry = (await readSocial()).outbox[id]
+      if (!entry) return
+      try {
+        await api("/api/v1/invitations", "POST", { id, code: entry.code }, context.accountId)
+      } catch (error) {
+        if (
+          !(error instanceof ApiError) ||
+          !["account-not-found", "operation-expired", "already-friends", "invitation-pending"].includes(error.code)
+        )
+          throw error
+      }
+      await this.sync()
+      const pair = this.pairs.get(entry.code)
+      if (pair?.value.invitations.some((item) => item.id === id && item.state === "pending")) {
+        try {
+          await api(
+            `/api/v1/relationships/${pair.id}/invitations/${id}/decision`,
+            "POST",
+            { decision: "canceled" },
+            context.accountId,
+          )
+        } catch (error) {
+          if (!(error instanceof ApiError) || error.code !== "invitation-finished") throw error
+        }
+      }
+      await updateSocial(async (state, store) => {
+        await assertContext(store, context)
+        const item = state.outbox[id]
+        if (item) item.state = "done"
       })
-    } catch (error) {
-      if (await abortTrade(original.id, r.code))
-        await this.sendEvent(r.code, { kind: "trade-cancel", tradeId: original.id })
-      throw error
-    }
-    await commitTrade(original.id, r.code)
-    const c = this.channels.get(r.code)
-    if (c) await this.flush(c)
-    this.changed()
+      await this.sync()
+      this.changed()
+    })
+  }
+  remove(code: string): Promise<void> {
+    return this.exclusive(async () => {
+      const context = await onlineContext(),
+        pair = this.pair(code)
+      await api(`/api/v1/relationships/${pair.id}`, "DELETE", { generation: pair.value.generation }, context.accountId)
+      await this.sync()
+      this.changed()
+    })
+  }
+  collect(id: string): Promise<void> {
+    return this.exclusive(async () => {
+      const context = await onlineContext()
+      const entry = (await readSocial()).inbox[id]
+      if (!entry) throw new Error("social.invalid")
+      const pair = this.pair(entry.code)
+      await beginGiftClaim({ context, id, pair: pair.id, generation: pair.value.generation })
+      await this.sync()
+      this.changed()
+    })
+  }
+  readyTrade(id: string, local: Offer): Promise<void> {
+    return this.exclusive(async () => {
+      if (this.busy() || !browserSaveSelected() || (await readPendingBattle())) throw new Error("social.busy")
+      const context = await onlineContext()
+      const entry = (await readSocial()).inbox[id]
+      if (!entry || entry.event.kind !== "trade-offer") throw new Error("social.invalid")
+      await prepareTrade(
+        {
+          id,
+          code: entry.code,
+          coordinator: false,
+          local,
+          remote: entry.event.offer,
+          phase: "prepared",
+          played: false,
+        },
+        context,
+      )
+      await this.sync()
+      this.changed()
+    })
+  }
+  confirmTrade(readyId: string): Promise<void> {
+    return this.exclusive(async () => {
+      if (this.busy() || !browserSaveSelected()) throw new Error("social.busy")
+      const context = await onlineContext(),
+        saved = await readSocial(),
+        ready = saved.inbox[readyId]
+      if (!ready || ready.event.kind !== "trade-ready") throw new Error("social.invalid")
+      const offer = saved.outbox[ready.event.tradeId]
+      if (!offer || offer.event.kind !== "trade-offer") throw new Error("social.invalid")
+      await prepareTrade(
+        {
+          id: offer.id,
+          code: offer.code,
+          coordinator: true,
+          local: offer.event.offer,
+          remote: ready.event.offer,
+          phase: "prepared",
+          played: false,
+        },
+        context,
+      )
+      await this.sync()
+      this.changed()
+    })
+  }
+  cancelTrade(id: string, code: string): Promise<boolean> {
+    return this.exclusive(async () => {
+      const context = await onlineContext()
+      let canceled = true
+      try {
+        await api(`/api/v1/relationships/${this.pair(code).id}/trades/${id}/cancel`, "POST", {}, context.accountId)
+      } catch (error) {
+        if (!(error instanceof ApiError) || error.code !== "trade-committed") throw error
+        canceled = false
+      }
+      await this.sync()
+      this.changed()
+      return canceled
+    })
   }
   stop(): void {
-    for (const [code, c] of this.channels) {
-      c.connection.close()
-      this.drop(code, c)
-    }
-    this.transport?.stop()
-    this.transport = undefined
+    window.clearTimeout(this.expiryTimer)
+    window.clearTimeout(this.retryTimer)
+    window.clearTimeout(this.hintTimer)
+    this.hintTimer = undefined
     this.ready = false
+    this.owner = false
     this.acquiring = false
+    this.available.clear()
     this.release?.()
     this.release = undefined
     this.changed()

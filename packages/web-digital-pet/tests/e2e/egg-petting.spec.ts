@@ -47,7 +47,7 @@ test("egg clicks sparkle, earn 1% once, persist offline, and stop at hatching", 
   await expect(sidebar.locator("#percent")).toHaveText("4%")
   await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })

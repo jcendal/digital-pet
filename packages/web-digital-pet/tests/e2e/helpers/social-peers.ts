@@ -1,72 +1,110 @@
-import { readFile } from "node:fs/promises"
-import type { Page } from "@playwright/test"
-export type PeerMessage = {
-  type: string
-  id: string
-  target: string
-  peer: string
-  connectionId: string
-  data: unknown
-}
-export const linkSocialPeers = async (pages: Page[]) => {
-  const mock = await readFile(new URL("../peerjs.browser.js", import.meta.url), "utf8")
-  const peers = new Map<string, Page>()
-  const connections = new Map<string, Page[]>()
-  let drop: (event: PeerMessage, sender: Page) => boolean = () => false
+import { expect, type Page } from "@playwright/test"
+/** Real HTTP handlers, CAS storage and WebSocket relay with local test adapters. */
+export const linkSocialPeers = async (pages: Page[], adopt = true, injectSocketFailures = false) => {
+  const failures = new Map<Page, RegExp>()
+  const failed = new Map<Page, () => void>()
+  const accounts: Array<{ accountId: string; profile: { code: string }; handle: string }> = []
   for (const page of pages) {
-    page.on("request", (request) => {
-      if (!request.isNavigationRequest() || request.frame() !== page.mainFrame()) return
-      for (const [id, owner] of peers) if (owner === page) peers.delete(id)
-      for (const [connectionId, owners] of connections) {
-        if (!owners.includes(page)) continue
-        connections.delete(connectionId)
-        const other = owners.find((owner) => owner !== page)
-        if (other && !other.isClosed())
-          void other
-            .evaluate((id) => {
-              ;(window as unknown as { testPeerEvent: (event: unknown) => void }).testPeerEvent({
-                type: "close",
-                connectionId: id,
-              })
-            }, connectionId)
-            .catch(() => {})
+    if (process.env.PLAYWRIGHT_WEBKIT !== "1")
+      await page.context().grantPermissions(["local-network-access"], { origin: "http://127.0.0.1:4177" })
+    const result = await page.request.post("http://127.0.0.1:4178/test/login")
+    const account = await result.json()
+    accounts.push(account)
+    if (injectSocketFailures)
+      await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
+        const server = client.connectToServer()
+        const lost = new Set<string>()
+        client.onMessage((raw) => {
+          const message = JSON.parse(String(raw))
+          if (message.action === "social" && message.command.type === "trade.confirm") {
+            const input = message.command.input
+            const path = `/api/v1/relationships/${input.relationship}/trades/${input.operation}/confirm`
+            if (failures.get(page)?.test(path)) {
+              failures.delete(page)
+              lost.add(message.requestId)
+            }
+          }
+          server.send(raw)
+        })
+        server.onMessage((raw) => {
+          const message = JSON.parse(String(raw))
+          if (message.kind === "response" && lost.delete(message.requestId)) {
+            client.send(JSON.stringify({ ...message, status: 503, body: { error: "temporarily-unavailable" } }))
+            failed.get(page)?.()
+            failed.delete(page)
+          } else client.send(raw)
+        })
+      })
+    await page.route(/\/(auth|api\/v1)\//, async (route) => {
+      const request = route.request(),
+        url = new URL(request.url())
+      const response = await route.fetch({
+        url: `http://127.0.0.1:4178${url.pathname}${url.search}`,
+        headers: { ...request.headers(), "x-test-session": account.handle },
+      })
+      const failure = failures.get(page)
+      if (failure?.test(url.pathname)) {
+        failures.delete(page)
+        await route.fulfill({
+          status: 503,
+          contentType: "application/json",
+          body: JSON.stringify({ error: "temporarily-unavailable" }),
+        })
+        failed.get(page)?.()
+        failed.delete(page)
+        return
       }
+      await route.fulfill({ response })
     })
-    await page.route("**/node_modules/.vite/deps/peerjs.js*", (route) =>
-      route.fulfill({ contentType: "text/javascript", body: mock }),
-    )
-    await page.exposeBinding("testPeerSend", async ({ page: sender }, event: PeerMessage) => {
-      if (drop(event, sender)) return false
-      if (event.type === "register") {
-        peers.set(event.id, sender)
-        return true
-      }
-      if (event.type === "connect") {
-        const destination = peers.get(event.target)
-        if (!destination || destination.isClosed()) return false
-        connections.set(event.connectionId, [sender, destination])
-        await destination.evaluate(
-          (e) => {
-            ;(window as unknown as { testPeerEvent: (x: unknown) => void }).testPeerEvent(e)
-          },
-          { ...event, type: "incoming" },
+    await page.route("http://127.0.0.1:4177/", async (route) => {
+      const response = await route.fetch()
+      const body = (await response.text())
+        .replace(
+          "<html ",
+          '<html data-online-socket="ws://127.0.0.1:4178/socket" data-backup-origin="http://127.0.0.1:4178" ',
         )
-        return true
-      }
-      const destination = connections.get(event.connectionId)?.find((p) => p !== sender)
-      if (destination && !destination.isClosed())
-        await destination
-          .evaluate((e) => {
-            ;(window as unknown as { testPeerEvent: (x: unknown) => void }).testPeerEvent(e)
-          }, event)
-          .catch(() => {})
-      return true
+        .replace('data-save-host="local"', 'data-save-host="browser"')
+        .replace("connect-src ", "connect-src ws://127.0.0.1:4178 http://127.0.0.1:4178 ")
+      await route.fulfill({ response, body })
     })
+    if (adopt)
+      await page.addInitScript(
+        async ({ accountId }) => {
+          if (location.protocol !== "http:") return
+          localStorage.setItem("online:migration-dismissed", "1")
+          await new Promise<void>((resolve, reject) => {
+            const open = indexedDB.open("web-digital-pet", 2)
+            open.onupgradeneeded = () => {
+              if (!open.result.objectStoreNames.contains("pet")) open.result.createObjectStore("pet")
+            }
+            open.onsuccess = () => {
+              const db = open.result,
+                tx = db.transaction("pet", "readwrite"),
+                store = tx.objectStore("pet")
+              const found = store.get("online:context")
+              found.onsuccess = () => {
+                if (!found.result)
+                  store.put(
+                    { accountId, installationId: crypto.randomUUID(), saveId: crypto.randomUUID() },
+                    "online:context",
+                  )
+              }
+              tx.oncomplete = () => {
+                db.close()
+                resolve()
+              }
+              tx.onerror = () => reject(tx.error)
+            }
+          })
+        },
+        { accountId: account.accountId },
+      )
   }
   return {
-    peers,
-    dropWhen: (predicate: typeof drop) => {
-      drop = predicate
+    accounts,
+    loseResponseOnce: (page: Page, pattern: RegExp) => {
+      failures.set(page, pattern)
+      return new Promise<void>((resolve) => failed.set(page, resolve))
     },
   }
 }
@@ -80,9 +118,9 @@ export const readPet = (page: Page) =>
     const url = "/src/client/persistence/pet-store.ts"
     return (await import(url)).peekLocalState() as Promise<import("../../../src/domain/pet/progress.ts").LocalPetState>
   })
-export const seedSocialPet = (page: Page, id: string, node: string) =>
+export const seedSocialPet = (page: Page, id: string, node: string, historyLength = 1) =>
   page.evaluate(
-    async ({ id, node }) => {
+    async ({ id, node, historyLength }) => {
       const now = Date.now()
       const createdAt = new Date(now).toISOString()
       const url = "/src/client/persistence/pet-store.ts"
@@ -93,16 +131,20 @@ export const seedSocialPet = (page: Page, id: string, node: string) =>
         lastTickAt: now,
         gauge: 100,
         isTerminal: false,
-        events: [{ currentNodeId: node, createdAt }],
-        food: { kind: "scheduled", availableAt: now + 60000 },
+        events: Array.from({ length: historyLength }, () => ({ currentNodeId: node, createdAt })),
+        food: { kind: "scheduled", availableAt: now + 600000 },
       })
       window.dispatchEvent(new Event("digital-pet:save-updated"))
     },
-    { id, node },
+    { id, node, historyLength },
   )
 export const chooseAlias = async (page: Page, alias: string) => {
+  await expect(page.locator("#social-current")).not.toBeEmpty()
   await page.locator("#more-button").click()
   await page.locator("#profile-button").click()
   await page.locator("#social-alias").fill(alias)
-  await page.locator('#social-alias-form button[type="submit"]').click()
+  const save = page.locator('#social-alias-form button[type="submit"]')
+  await save.click()
+  await expect(page.locator("#social-own-alias")).toHaveText(alias)
+  await expect(save).toBeEnabled()
 }

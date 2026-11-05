@@ -64,7 +64,7 @@ test("battle completion rewards once, rejects early completion and preserves leg
       agreedAt: now,
     }
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })

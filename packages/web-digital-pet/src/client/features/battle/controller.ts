@@ -6,9 +6,12 @@ import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import type { LocalPetState } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { readArenaFighter } from "../../persistence/arena-store.ts"
-import { readAdventureState, readLocalState, readPendingBattle, settleBattle } from "../../persistence/pet-store.ts"
+import type { OnlineContext } from "../../persistence/online-store.ts"
+import { readAdventureState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
+import { onlineContext } from "../../platform/online-api.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
+import { prepareOnlineBattle, recoverOnlineBattle } from "./online-agreement.ts"
 import { playSavedBattle } from "./playback.ts"
 import { BattleTransport, battleCodeOf, validBattleCode } from "./transport.ts"
 import { createBattleViewer } from "./viewer.ts"
@@ -40,8 +43,9 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   type Playback = { release?: () => void; viewer?: ReturnType<typeof createBattleViewer> }
   let playback: Playback | undefined
   type Session = {
-    connection: import("peerjs").DataConnection
+    connection: import("../../platform/online-connection.ts").OnlineConnection
     negotiation: BattleNegotiation
+    context?: OnlineContext
     local?: LocalPetState
     queue: Promise<void>
     timer?: number
@@ -74,6 +78,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     incoming.hidden = true
     accept.disabled = false
     update()
+    if (previous?.context) queueMicrotask(() => window.dispatchEvent(new Event("digital-pet:battle-recover")))
   }
   const stopPlayback = (): void => {
     const previous = playback
@@ -86,7 +91,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     reset()
     note(message)
   }
-  const enqueue = (current: Session, action: () => Promise<void>): void => {
+  const enqueue = (current: Session, action: () => Promise<void>): Promise<void> => {
     current.queue = current.queue
       .then(async () => {
         if (session === current) await action()
@@ -95,6 +100,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
         if (session !== current) return
         cancel(error instanceof Error ? error.message : IntlModule.translate("controller.theBattleCouldNotBeCompleted"))
       })
+    return current.queue
   }
   const reservePresentation = async (current: { release?: () => void }): Promise<void> => {
     if (!current.release && navigator.locks) {
@@ -172,6 +178,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     }
   }
   const prepare = async (current: Session): Promise<Fighter> => {
+    current.context = await onlineContext()
     if (!enabled || !browserSaveSelected() || otherBusy())
       throw new Error(IntlModule.translate("controller.finishYourDeviceTransferFirst"))
     if (await readPendingBattle()) throw new Error(IntlModule.translate("controller.finishTheSavedBattleFirst"))
@@ -192,7 +199,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     return { partnerId: state.partnerId, nodeId: state.currentNodeId }
   }
 
-  function bind(connection: import("peerjs").DataConnection, challenger: boolean): void {
+  function bind(connection: import("../../platform/online-connection.ts").OnlineConnection, challenger: boolean): void {
     if (session || playback || pending || !enabled || otherBusy()) {
       connection.close()
       return
@@ -217,11 +224,10 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
           note(IntlModule.translate("controller.aPlayerWantsToBattleAcceptToUse"))
           decline.focus()
         },
-        agreed: async (battleId, challengerFighter, receiver, plan, seed) => {
-          if (session !== current || !current.local || !enabled || !browserSaveSelected()) return
-          current.agreed = true
-          window.clearTimeout(current.timer)
-          pending = await settleBattle(
+        prepared: async (battleId, challengerFighter, receiver, plan, seed) => {
+          if (!current.local || !current.context) throw new Error("social.busy")
+          await prepareOnlineBattle(
+            connection.channel,
             {
               version: 1,
               battleId,
@@ -232,14 +238,22 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
               localSide: challenger ? "player" : "opponent",
             },
             current.local,
+            current.context,
           )
+        },
+        agreed: async (_battleId, _challengerFighter, _receiver, _plan, _seed) => {
+          if (session !== current || !current.local || !enabled || !browserSaveSelected()) return
+          current.agreed = true
+          window.clearTimeout(current.timer)
+          if (await recoverOnlineBattle()) throw new Error("online.working")
+          pending = await readPendingBattle()
           if (session !== current) return
           if (!pending) {
             reset()
             note(IntlModule.translate("controller.thisBattleWasAlreadyCompleted"))
             return
           }
-          await resume(current)
+          void resume(current)
         },
       }),
     }
@@ -271,7 +285,11 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     })
     connection.on("error", (error) => {
       if (session === current && !current.agreed)
-        cancel(IntlModule.translate("controller.battleConnectionFailed", { message: error.message }))
+        cancel(
+          ["endpoint-offline", "connection-timeout"].includes(error.message)
+            ? IntlModule.translate("connection.battleTimedOut")
+            : IntlModule.translate("controller.battleConnectionFailed", { message: error.message }),
+        )
     })
   }
 
@@ -343,7 +361,20 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     ready = false
     update()
   })
+  let recovering = false
   const reconnect = (): void => {
+    if (!recovering && !session) {
+      recovering = true
+      void recoverOnlineBattle()
+        .then(async () => {
+          pending = await readPendingBattle()
+          if (pending) void resume()
+        })
+        .catch(() => {})
+        .finally(() => {
+          recovering = false
+        })
+    }
     transport.resume()
     if (pending && !playback) void resume()
   }
@@ -354,6 +385,10 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) reconnect()
   })
+  window.addEventListener("digital-pet:online-battle", reconnect)
+  window.addEventListener("digital-pet:online-ready", reconnect)
+  window.addEventListener("digital-pet:battle-recover", reconnect)
+  reconnect()
   update()
   if (pending && enabled) void resume()
   return {

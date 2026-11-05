@@ -8,6 +8,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   timeout: 45_000,
+  expect: { timeout: 15_000 },
   reporter: process.env.CI ? [["list"], ["github"]] : "list",
   use: {
     ...themeContextOptions,
@@ -22,6 +23,11 @@ export default defineConfig({
         : {},
   },
   webServer: [
+    {
+      command: "bun ../web-digital-pet-backend/testing/server.ts",
+      url: "http://127.0.0.1:4178/health",
+      reuseExistingServer: false,
+    },
     { command: "node tests/e2e/server.mjs", url: "http://127.0.0.1:4175", reuseExistingServer: false },
     {
       command: "node dist/server.js",

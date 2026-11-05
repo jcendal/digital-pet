@@ -7,11 +7,13 @@
       "types/**",
       ".vscode/*.json",
       "package.json",
+      "turbo.json",
       "biome.json",
       "tsconfig*.json",
       "!packages/**/dist",
       "!packages/**/dist-static",
       "!packages/**/build",
+      "!packages/**/cdk.out",
       "!packages/**/test-results",
       "!packages/**/playwright-report",
       "!packages/cursor-digital-pet/hook-bridge.js",
@@ -57,7 +59,29 @@
       "suspicious": {
         "noDoubleEquals": "error",
         "noExplicitAny": "error",
-        "noVar": "error"
+        "noVar": "error",
+        "noUndeclaredEnvVars": {
+          "level": "warn",
+          "options": {
+            "allowedEnvVars": [
+              "APPDATA",
+              "DIGITAL_PET_HOOK_EVENTS_PATH",
+              "DIGITAL_PET_HOOK_BRIDGE_PATH",
+              "CURSOR_DIGITAL_PET_DEV",
+              "DIGITAL_PET_LANGUAGE",
+              "OPENCODE_DIGITAL_PET_DEV",
+              "DEPLOY_ENV",
+              "CDK_OUTDIR",
+              "WEB_BUCKET_NAME",
+              "GITHUB_ENV",
+              "PORT",
+              "PROD",
+              "DIGITAL_PET_DATABASE_PATH",
+              "GITHUB_OUTPUT",
+              "GITHUB_EVENT_PATH"
+            ]
+          }
+        }
       },
       "correctness": {
         "noUnusedImports": "error",

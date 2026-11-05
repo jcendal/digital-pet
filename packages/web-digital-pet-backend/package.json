@@ -1,0 +1,28 @@
+{
+  "name": "@jcendal/web-digital-pet-backend",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "bun test tests",
+    "build": "node scripts/build.mjs",
+    "synth": "npm run build && node --experimental-strip-types infrastructure/app.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "3.1161.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.1161.0",
+    "@aws-sdk/client-kms": "3.1161.0",
+    "@aws-sdk/client-s3": "3.1161.0",
+    "@aws-sdk/s3-presigned-post": "3.1161.0",
+    "@aws-sdk/s3-request-presigner": "3.1161.0",
+    "@jcendal/digital-pet-online": "0.1.0-dev.0",
+    "@jcendal/web-digital-pet": "0.16.1-dev.0",
+    "jose": "6.2.14"
+  },
+  "devDependencies": {
+    "aws-cdk": "2.1147.0",
+    "aws-cdk-lib": "2.275.0",
+    "constructs": "10.8.1"
+  }
+}

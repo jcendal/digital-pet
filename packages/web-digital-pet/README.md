@@ -201,8 +201,11 @@ an internet connection.
 
 ## Privacy and help
 
-No account, analytics, or automatic cloud backup is required. Saves stay on your
-device. Approved battles and transfers use PeerJS to connect the two players or devices.
+Local play keeps saves on your device and does not require an account. When online
+services are enabled, Continue with Google identifies you through Amazon Cognito
+for social features, battles, device transfers and manual cloud copies. Live
+connections use AWS WebSockets. Google does not store your progress; only copies
+you explicitly request are uploaded to private AWS S3 storage.
 
 Report problems or suggest features in [GitHub Issues](https://github.com/jcendal/digital-pet/issues).
 For development setup, see [CONTRIBUTING.md](../../CONTRIBUTING.md).

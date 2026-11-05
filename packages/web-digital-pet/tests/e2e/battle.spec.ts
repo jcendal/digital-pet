@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises"
 import { expect, type Page, test } from "@playwright/test"
 import { openHistory, openOptions } from "./helpers/navigation.ts"
+import { linkSocialPeers } from "./helpers/social-peers.ts"
 import { themeContextOptions } from "./helpers/theme.ts"
 
 test("two isolated browser saves decline, accept, agree on a winner and persist only one reward", async ({
@@ -11,41 +11,12 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
   const pages = await Promise.all(contexts.map((context) => context.newPage()))
   const [alice, bob] = pages
   if (!alice || !bob) throw new Error("Missing test pages")
-  const peers = new Map<string, Page>()
-  const connections = new Map<string, Page[]>()
   const errors: string[] = []
-  const mock = await readFile(new URL("./peerjs.browser.js", import.meta.url), "utf8")
-  type Message = { type: string; id: string; target: string; peer: string; connectionId: string; data: unknown }
-  const deliver = (page: Page, event: unknown) =>
-    page.evaluate((value) => {
-      const target = window as unknown as { testPeerEvent: (input: unknown) => void }
-      target.testPeerEvent(value)
-    }, event)
+  await linkSocialPeers(pages)
   try {
     for (const page of pages) {
       await page.setViewportSize({ width: 320, height: 760 })
       page.on("pageerror", (error) => errors.push(error.message))
-      await page.route("**/node_modules/.vite/deps/peerjs.js*", (route) =>
-        route.fulfill({
-          contentType: "text/javascript",
-          body: mock,
-        }),
-      )
-      await page.exposeBinding("testPeerSend", async ({ page: sender }, event: Message) => {
-        if (event.type === "register") {
-          peers.set(event.id, sender)
-          return
-        }
-        if (event.type === "connect") {
-          const destination = peers.get(event.target)
-          if (!destination) throw new Error("Missing destination")
-          connections.set(event.connectionId, [sender, destination])
-          await deliver(destination, { ...event, type: "incoming" })
-          return
-        }
-        const destination = connections.get(event.connectionId)?.find((candidate) => candidate !== sender)
-        if (destination && !destination.isClosed()) await deliver(destination, event)
-      })
     }
     await Promise.all(pages.map((page) => page.goto("http://127.0.0.1:4177")))
     await expect(alice.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
@@ -64,7 +35,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
           const now = Date.now()
           const createdAt = new Date(now).toISOString()
           await new Promise<void>((resolve, reject) => {
-            const open = indexedDB.open("web-digital-pet", 1)
+            const open = indexedDB.open("web-digital-pet", 2)
             open.onsuccess = () => {
               const database = open.result
               const transaction = database.transaction("pet", "readwrite")
@@ -139,7 +110,7 @@ test("two isolated browser saves decline, accept, agree on a winner and persist 
             receipt: { won: boolean }
             battleId: string
           }>((resolve, reject) => {
-            const open = indexedDB.open("web-digital-pet", 1)
+            const open = indexedDB.open("web-digital-pet", 2)
             open.onsuccess = () => {
               const database = open.result
               const transaction = database.transaction("pet")

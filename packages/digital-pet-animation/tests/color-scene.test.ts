@@ -1,9 +1,12 @@
 import { expect, test } from "bun:test"
 import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
+import identities from "@jcendal/digital-pet-core/data/color-sprite-identities.json"
 import { EGG_FAMILIES } from "@jcendal/digital-pet-core/data/egg-families.ts"
+import extras from "../assets/themes/color/generated/extras.json"
 import { defaultBattleScene } from "../src/sequences/evolution-battle-artwork.ts"
 import { renderExchangeScene } from "../src/sequences/partner-exchange.ts"
 import { colorArtworkScene, colorExchangeArtwork, colorMonsterFrame } from "../src/themes/color-scene.ts"
+import { visitLayerPixels } from "../src/themes/visual-scene.ts"
 
 test("all regional eggs retain two native colored poses and distinct designs", () => {
   const designs = new Set<string>()
@@ -43,4 +46,61 @@ test("exchange pixels keep source colors through packing, crossing and arrival",
     expect(frame.incoming.length).toBeGreaterThan(0)
     expect(frame.incoming.every((pixel) => /^#[a-f0-9]{6}$/.test(pixel.color ?? ""))).toBe(true)
   }
+})
+
+test("native color attacks face their target and retain their own artwork at contact", () => {
+  const assignments: Readonly<Record<string, number>> = extras.attacks
+  const sources: Readonly<
+    Record<string, { width: number; height: number; palette: (string | null)[]; pixels: number[] }>
+  > = extras.frames
+  let reviewed = 0
+  for (const [id, identity] of Object.entries(identities.nodes)) {
+    const index = assignments[identity.sprite]
+    if (index === undefined) continue
+    const node = DIGIMON_CATALOG.byId.get(id)
+    const source = sources[`attack-${index}`]
+    if (!node || !source) throw new Error(`Missing native color attack for ${id}`)
+    reviewed++
+    for (const shooter of ["player", "opponent"] as const) {
+      const snapshot = (progress: number, lastResult: "hit" | "miss" | null = null) =>
+        colorArtworkScene(
+          {
+            kind: "battle",
+            player: node.sprite,
+            opponent: node.sprite,
+            width: 60,
+            scene: defaultBattleScene({ shooter, progress, lastResult }),
+          },
+          [id],
+        )
+      const launch = snapshot(0)
+      const contact = snapshot(1)
+      const start = launch.layers[2]
+      const end = contact.layers[2]
+      if (!start || !end) throw new Error("Missing projectile during travel")
+      expect(shooter === "player" ? start.x < end.x : start.x > end.x).toBe(true)
+      for (const progress of [0, 0.5, 1]) {
+        const scene = snapshot(progress)
+        expect(scene.layers).toHaveLength(3)
+        const shot = scene.layers[2]
+        if (!shot) throw new Error("Missing projectile")
+        expect(shot.frame).toEqual(source)
+        const painted: Record<string, string> = {}
+        visitLayerPixels(scene, shot, (x, y, color) => {
+          painted[`${x - shot.x},${y - shot.y}`] = color
+        })
+        for (let y = 0; y < source.height; y++)
+          for (let x = 0; x < source.width; x++) {
+            const sourceX = shooter === "player" ? source.width - 1 - x : x
+            expect(painted[`${x},${y}`]).toBe(
+              source.palette[source.pixels[y * source.width + sourceX] ?? 0] ?? undefined,
+            )
+          }
+      }
+      // A hit must not overlay the selected fist/arrow/bubble with a generic flame.
+      expect(snapshot(1, "hit").layers).toEqual(contact.layers)
+      expect(snapshot(1, "miss").layers).toHaveLength(2)
+    }
+  }
+  expect(reviewed).toBeGreaterThan(0)
 })

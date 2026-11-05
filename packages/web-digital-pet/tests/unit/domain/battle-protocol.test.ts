@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test"
 import type { BattlePlan } from "@jcendal/digital-pet-core/domain/combat.ts"
+import type { WireFrame } from "@jcendal/digital-pet-online/contracts.ts"
+import { OrderedChannel } from "@jcendal/digital-pet-online/ordered-channel.ts"
 import { type BattleMessage, BattleNegotiation, parseBattleMessage } from "../../../src/domain/battle/protocol.ts"
 
 const battleId = "11111111-1111-4111-8111-111111111111"
@@ -99,4 +101,51 @@ test("decline cancels without combat; malformed, oversized and egg participants 
   expect(() => parseBattleMessage({ type: "cancel", version: 1, battleId, excess: "x".repeat(2048) })).toThrow(
     "Unsupported",
   )
+})
+
+test("the Lambda relay ordering layer preserves the existing battle agreement under reversed and duplicate frames", async () => {
+  const p = pair()
+  const toAlice: WireFrame[] = [],
+    toBob: WireFrame[] = []
+  const alice = new OrderedChannel(
+    "123456",
+    (frame) => {
+      toBob.push(frame)
+    },
+    (message) => p.alice.receive(message),
+  )
+  const bob = new OrderedChannel(
+    "123456",
+    (frame) => {
+      toAlice.push(frame)
+    },
+    (message) => p.bob.receive(message),
+  )
+  let reversed = false
+  const pump = async () => {
+    for (let round = 0; round < 32; round++) {
+      for (const message of p.toAlice.splice(0)) bob.send(message)
+      for (const message of p.toBob.splice(0)) alice.send(message)
+      if (!toAlice.length && !toBob.length) return
+      for (const [queue, channel] of [
+        [toAlice, alice],
+        [toBob, bob],
+      ] as const) {
+        if (queue.filter((frame) => frame.kind === "data").length > 1) reversed = true
+        for (const frame of queue.splice(0).reverse()) {
+          await channel.receive(frame)
+          await channel.receive(frame)
+        }
+      }
+    }
+    throw new Error("Negotiation did not settle")
+  }
+  await p.alice.start(battleId, challenger)
+  await pump()
+  expect(p.requests()).toBe(1)
+  await p.bob.accept(receiver)
+  await pump()
+  expect(reversed).toBe(true)
+  expect(p.results).toHaveLength(2)
+  expect(p.results[0]?.plan).toEqual(p.results[1]?.plan)
 })

@@ -5,8 +5,10 @@ import { fileURLToPath } from "node:url"
 const packages = fileURLToPath(new URL("../..", import.meta.url))
 const placeholders = (copy: string) => [...copy.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort()
 
-test("every package ships complete locale catalogs with matching placeholders and plain text", async () => {
+test("every presentation package ships complete locale catalogs with matching placeholders and plain text", async () => {
   for (const name of await readdir(packages)) {
+    // Protocol and backend packages expose machine-readable codes, not user-facing copy.
+    if (name === "digital-pet-online" || name === "web-digital-pet-backend") continue
     const directory = `${packages}/${name}/assets/i18n`
     const en: Record<string, string> = JSON.parse(await readFile(`${directory}/en.json`, "utf8"))
     expect(Object.keys(en).length).toBeGreaterThan(0)

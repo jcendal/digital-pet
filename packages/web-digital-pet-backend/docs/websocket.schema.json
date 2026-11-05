@@ -1,0 +1,815 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Digital Pet WebSocket v1",
+  "description": "Social requests <=24 KiB, relay envelopes <=25 KiB. Server errors carry action/channel/requestId where available. Retryable failures allow bounded retries; terminal channel failures close only that logical channel. Social 303 responses refer to authorized HTTP results; never replay a committed mutation.",
+  "$defs": {
+    "SocialCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "profile.read"
+            },
+            "input": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "profile.rename"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "alias": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9]{3,16}$",
+                  "minLength": 3,
+                  "maxLength": 16
+                }
+              },
+              "required": ["alias"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "profile.publish"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "$ref": "./openapi.json#/components/schemas/ProfileInput"
+                }
+              },
+              "required": ["profile"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "profile.lookup"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "^[A-HJ-NP-Z2-9]{16}$"
+                }
+              },
+              "required": ["code"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "inbox.read"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "after": {
+                  "type": "string",
+                  "pattern": "^([a-f0-9]{64})?$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": ["type", "input"],
+          "description": "HTTP only: the WebSocket adapter responds with 413 http-required. Read the paginated inbox over HTTP."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "battle.decide"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                },
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["channel", "destination"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "invitation.send"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{13}-[a-f0-9-]{36}$",
+                  "description": "Timestamp + UUID. Accepted for 14 days, with at most 60 seconds future clock skew; retries retain the ID."
+                },
+                "code": {
+                  "type": "string",
+                  "pattern": "^[A-HJ-NP-Z2-9]{16}$"
+                }
+              },
+              "required": ["id", "code"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "invitation.decide"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "enum": ["accepted", "declined", "canceled"]
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["decision", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "friend.remove"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "generation": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["generation", "relationship"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "gift.send"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{13}-[a-f0-9-]{36}$",
+                  "description": "Timestamp + UUID. Accepted for 14 days, with at most 60 seconds future clock skew; retries retain the ID."
+                },
+                "generation": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["id", "generation", "relationship"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "gift.claim"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "generation": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["generation", "destination", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "gift.applied"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["destination", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.read"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.prepare"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{13}-[a-f0-9-]{36}$",
+                  "description": "Timestamp + UUID. Accepted for 14 days, with at most 60 seconds future clock skew; retries retain the ID."
+                },
+                "generation": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "offer": {
+                  "$ref": "./openapi.json#/components/schemas/Offer"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["id", "generation", "destination", "offer", "relationship"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.confirm"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["destination", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.cancel"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.applied"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["destination", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "challenge.send"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{13}-[a-f0-9-]{36}$",
+                  "description": "Timestamp + UUID. Accepted for 14 days, with at most 60 seconds future clock skew; retries retain the ID."
+                },
+                "generation": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "battleCode": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6}$"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["id", "generation", "battleCode", "relationship"]
+            }
+          },
+          "required": ["type", "input"]
+        }
+      ]
+    },
+    "Frame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "kind": {
+              "const": "data"
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "payload": {}
+          },
+          "required": ["version", "channel", "kind", "sequence", "payload"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "kind": {
+              "const": "ack"
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": ["version", "channel", "kind", "sequence"]
+        }
+      ],
+      "x-maxBytes": 24576
+    },
+    "ClientMessage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "register"
+            },
+            "namespace": {
+              "enum": ["battle", "transfer"]
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_:-]{1,100}$"
+            }
+          },
+          "required": ["action", "namespace", "requestId"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "open"
+            },
+            "namespace": {
+              "enum": ["battle", "transfer"]
+            },
+            "code": {
+              "type": "string",
+              "pattern": "^([0-9]{6}|[A-HJ-NP-Z2-9]{16})$"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            }
+          },
+          "required": ["action", "namespace", "code", "requestId"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "resume"
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            }
+          },
+          "required": ["action", "channel"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "relay"
+            },
+            "frame": {
+              "$ref": "#/$defs/Frame"
+            }
+          },
+          "required": ["action", "frame"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "social"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "accountId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "command": {
+              "$ref": "#/$defs/SocialCommand"
+            }
+          },
+          "required": ["action", "requestId", "accountId", "command"]
+        }
+      ]
+    },
+    "ServerMessage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "registered"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_:-]{1,100}$"
+            },
+            "namespace": {
+              "enum": ["battle", "transfer"]
+            },
+            "code": {
+              "type": "string"
+            }
+          },
+          "required": ["kind", "requestId", "namespace", "code"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "opened"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            }
+          },
+          "required": ["kind", "requestId", "channel"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "incoming"
+            },
+            "namespace": {
+              "enum": ["battle", "transfer"]
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "peer": {
+              "type": "string"
+            }
+          },
+          "required": ["kind", "namespace", "channel", "peer"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "resumed"
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            }
+          },
+          "required": ["kind", "channel"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "frame"
+            },
+            "frame": {
+              "$ref": "#/$defs/Frame"
+            }
+          },
+          "required": ["kind", "frame"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "changed"
+            },
+            "topic": {
+              "enum": ["social", "battle"]
+            },
+            "eventId": {
+              "type": "string"
+            }
+          },
+          "required": ["kind", "topic", "eventId"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "error"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_:-]{1,100}$"
+            },
+            "action": {
+              "enum": ["register", "open", "resume", "relay"]
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "error": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": ["kind", "error"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "response"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "status": {
+              "const": 200
+            },
+            "body": {
+              "anyOf": [
+                {
+                  "$ref": "./openapi.json#/components/schemas/BattleDecision"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Challenge"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Gift"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Inbox"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Invitation"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/InvitationResult"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Ok"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Profile"
+                },
+                {
+                  "$ref": "./openapi.json#/components/schemas/Trade"
+                }
+              ]
+            }
+          },
+          "required": ["kind", "requestId", "status", "body"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "response"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "status": {
+              "const": 303
+            },
+            "body": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "pattern": "^/api/v1/relationships/[a-f0-9]{64}/trades/[A-Za-z0-9_-]+$"
+                }
+              },
+              "required": ["location"]
+            }
+          },
+          "required": ["kind", "requestId", "status", "body"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "response"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 400,
+              "maximum": 599
+            },
+            "body": {
+              "$ref": "./openapi.json#/components/schemas/Error"
+            }
+          },
+          "required": ["kind", "status", "body"]
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ClientMessage"
+    },
+    {
+      "$ref": "#/$defs/ServerMessage"
+    }
+  ]
+}

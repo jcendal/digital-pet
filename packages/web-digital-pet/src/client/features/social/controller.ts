@@ -27,15 +27,7 @@ import {
 import { IntlModule } from "../../../shared/i18n.ts"
 import { readArenaFighter, selectArenaFighter } from "../../persistence/arena-store.ts"
 import { readAdventureState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
-import {
-  abortTrade,
-  cancelInvitation,
-  collectGift,
-  readSocial,
-  removeFriend,
-  saveAlias,
-  updateSocial,
-} from "../../persistence/social-store.ts"
+import { readSocial, saveAlias, updateSocial } from "../../persistence/social-store.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { paintExchangeColors, themedExchangeArtwork } from "../theme/controller.ts"
@@ -85,7 +77,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
   }
   const error = (value: unknown) => {
     const key = value instanceof Error ? value.message : "social.invalid"
-    const message = key.startsWith("social.") ? IntlModule.translate(key) : t("invalid")
+    const message = key.startsWith("social.") || key.startsWith("online.") ? IntlModule.translate(key) : t("invalid")
     note(message)
     el("social-add-status").textContent = message
     if (dialog.open) el("social-dialog-status").textContent = message
@@ -97,6 +89,28 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     error,
     otherBusy,
   )
+  const actionRoots = [el("social-view"), dialog]
+  const busyButtons = new Set<HTMLButtonElement>()
+  const updateActionAvailability = () => {
+    if (!running) {
+      for (const button of busyButtons)
+        button.disabled = Boolean(button.dataset.requiresOnline && !engine.online.has(button.dataset.requiresOnline))
+      busyButtons.clear()
+      return
+    }
+    // Expose the controller lock to users, including actions in a newly opened dialog.
+    // Preserve buttons disabled by game rules or an unavailable peer.
+    for (const root of actionRoots)
+      for (const button of Array.from(
+        root.querySelectorAll<HTMLButtonElement>(
+          'button[data-social-action], #social-alias-form button[type="submit"], #social-connect, #social-choose-team',
+        ),
+      ))
+        if (!button.disabled) {
+          busyButtons.add(button)
+          button.disabled = true
+        }
+  }
   const modal = (title: string, body: string, context = "") => {
     dialogRevision++
     el("social-dialog-title").textContent = title
@@ -105,15 +119,18 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     el("social-dialog-context").textContent = context
     el("social-dialog-context").hidden = !context
     dialog.scrollTop = 0
+    updateActionAvailability()
     if (!dialog.open) dialog.showModal()
   }
   const run = (task: () => Promise<void>) => {
     if (running) return
     running = true
+    updateActionAvailability()
     void task()
       .catch(error)
       .finally(() => {
         running = false
+        updateActionAvailability()
         void render().catch(error)
       })
   }
@@ -201,6 +218,13 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     else if (r.event.kind === "decision") body += `<p class="social-hint">${h("waiting")}</p>`
     return `<article class="social-item" data-receipt="${r.id}">${body}<div class="social-actions">${buttons}</div></article>`
   }
+  const rendered = new Map<string, string>()
+  const renderHtml = (id: string, html: string): void => {
+    // A duplicate invalidation must not detach a focused or pressed action button.
+    if (rendered.get(id) === html) return
+    el(id).innerHTML = html
+    rendered.set(id, html)
+  }
   const render = async (): Promise<void> => {
     if (rendering) {
       queued = true
@@ -221,8 +245,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       const usable = browserSaveSelected() && Boolean(state.profile) && !activeTrade && !otherBusy()
       const node = DIGIMON_CATALOG.byId.get(fighter.currentNodeId)
       const fighterPartner = pet.reserve?.partnerId === fighter.partnerId ? pet.reserve : pet
-      const battleReady =
-        usable && arenaEligible(fighterPartner) && engine.ready && !engine.otherTab && !engine.conflict
+      const battleReady = usable && arenaEligible(fighterPartner) && engine.ready && !engine.otherTab
       el("social-arena-status").textContent =
         `■ ${t(!state.profile ? "chooseAlias" : !browserSaveSelected() ? "browserOnly" : battleReady ? "online" : !node?.stage ? "hatchFirst" : activeTrade || otherBusy() ? "occupied" : "offline")}`
       el("social-current").innerHTML =
@@ -231,26 +254,31 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
         `${companionPortrait(pet.currentNodeId)}<span class="social-eyebrow">${h("yourCompanion")} · ${name(pet.currentNodeId)}</span>`
       el("social-own-alias").textContent = state.profile?.alias ?? t("player")
       el("social-friend-count").textContent = String(friends.length).padStart(2, "0")
-      el("social-friend-list").innerHTML = friends.length
-        ? friends
-            .map((f) => {
-              const available = online.has(f.code) && f.confirmed && usable
-              const gifted = state.giftDays[f.code] === new Date().toISOString().slice(0, 10)
-              return `<article class="social-friend"><div class="social-row"><div class="social-person"><button class="social-avatar-button" type="button" data-social-action="companion" data-id="${f.code}" aria-label="${escapeHtml(t("inspectCompanion", { alias: f.profile.alias }))}">${companionPortrait(f.profile.nodeId)}</button><div><h3>${escapeHtml(f.profile.alias)}</h3><p class="social-code">${displayCode(f.code)}</p></div></div><button class="social-remove" type="button" data-social-action="remove" data-id="${f.code}" aria-label="${escapeHtml(t("removeAlias", { alias: f.profile.alias }))}">×</button></div><div class="social-presence"><span>${online.has(f.code) ? "■" : "□"} ${h(online.has(f.code) ? "online" : "offline")}</span><span>${name(f.profile.nodeId)} · ${stage(f.profile.nodeId)}</span></div><div class="social-actions">${["challenge", "gift", "exchange"].map((k) => `<button type="button" class="${k === "challenge" ? "primary-action" : ""}" data-social-action="${k}" data-id="${f.code}" ${!available || (k === "challenge" && !battleReady) || (k === "gift" && gifted) ? "disabled" : ""}>${h(k === "gift" && gifted ? "sent" : k)}${k === "gift" && gifted ? " ✓" : ""}</button>`).join("")}</div></article>`
-            })
-            .join("")
-        : `<p class="social-hint">${h("noFriends")}</p>`
-      const onlineFriends = friends.filter((f) => online.has(f.code) && f.confirmed)
-      el("social-arena-friends").innerHTML =
-        `<div class="social-heading"><h2>${h("challengeFriend")}</h2><span class="social-eyebrow">${escapeHtml(t("onlineCount", { count: String(onlineFriends.length) }))}</span></div>` +
-        (onlineFriends.length
-          ? onlineFriends
-              .map(
-                (f) =>
-                  `<div class="social-arena-friend social-row"><div><h3>${escapeHtml(f.profile.alias)}</h3><span class="social-eyebrow">${name(f.profile.arenaNodeId ?? f.profile.nodeId)} · ${stage(f.profile.arenaNodeId ?? f.profile.nodeId)}</span></div><button type="button" class="primary-action social-small-button" data-social-action="challenge" data-id="${f.code}" ${battleReady ? "" : "disabled"}>${h("challenge")}</button></div>`,
-              )
+      renderHtml(
+        "social-friend-list",
+        friends.length
+          ? friends
+              .map((f) => {
+                const available = online.has(f.code) && f.confirmed && usable
+                const gifted = state.giftDays[f.code] === new Date().toISOString().slice(0, 10)
+                return `<article class="social-friend"><div class="social-row"><div class="social-person"><button class="social-avatar-button" type="button" data-social-action="companion" data-id="${f.code}" aria-label="${escapeHtml(t("inspectCompanion", { alias: f.profile.alias }))}">${companionPortrait(f.profile.nodeId)}</button><div><h3>${escapeHtml(f.profile.alias)}</h3><p class="social-code">${displayCode(f.code)}</p></div></div><button class="social-remove" type="button" data-social-action="remove" data-id="${f.code}" aria-label="${escapeHtml(t("removeAlias", { alias: f.profile.alias }))}">×</button></div><div class="social-presence"><span>${online.has(f.code) ? "■" : "□"} ${h(online.has(f.code) ? "online" : "offline")}</span><span>${name(f.profile.nodeId)} · ${stage(f.profile.nodeId)}</span></div><div class="social-actions">${["challenge", "gift", "exchange"].map((k) => `<button type="button" class="${k === "challenge" ? "primary-action" : ""}" data-social-action="${k}" data-id="${f.code}" ${!(k === "gift" ? f.confirmed && usable && engine.ready : available) || (k === "challenge" && !battleReady) || (k === "gift" && gifted) ? "disabled" : ""}>${h(k === "gift" && gifted ? "sent" : k)}${k === "gift" && gifted ? " ✓" : ""}</button>`).join("")}</div></article>`
+              })
               .join("")
-          : `<p class="social-hint">${h("noOnlineFriends")}</p>`)
+          : `<p class="social-hint">${h("noFriends")}</p>`,
+      )
+      const onlineFriends = friends.filter((f) => online.has(f.code) && f.confirmed)
+      renderHtml(
+        "social-arena-friends",
+        `<div class="social-heading"><h2>${h("challengeFriend")}</h2><span class="social-eyebrow">${escapeHtml(t("onlineCount", { count: String(onlineFriends.length) }))}</span></div>` +
+          (onlineFriends.length
+            ? onlineFriends
+                .map(
+                  (f) =>
+                    `<div class="social-arena-friend social-row"><div><h3>${escapeHtml(f.profile.alias)}</h3><span class="social-eyebrow">${name(f.profile.arenaNodeId ?? f.profile.nodeId)} · ${stage(f.profile.arenaNodeId ?? f.profile.nodeId)}</span></div><button type="button" class="primary-action social-small-button" data-social-action="challenge" data-id="${f.code}" ${battleReady ? "" : "disabled"}>${h("challenge")}</button></div>`,
+                )
+                .join("")
+            : `<p class="social-hint">${h("noOnlineFriends")}</p>`),
+      )
       const { incoming, outgoing, count } = socialActivity(state)
       const groups = [
         { key: "requests", kinds: ["invite", "decision"] },
@@ -258,18 +286,21 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
         { key: "trades", kinds: ["trade-offer", "trade-ready"] },
         { key: "challenges", kinds: ["challenge"] },
       ]
-      el("social-inbox").innerHTML = groups
-        .map((g) => {
-          const ins = incoming.filter((r) => g.kinds.includes(r.event.kind))
-          const outs = outgoing.filter((r) => g.kinds.includes(r.event.kind))
-          const trade = g.key === "trades" ? activeTrade : undefined
-          const groupCount = ins.length + outs.length + (trade ? 1 : 0)
-          const recovery = trade
-            ? `<article class="social-item" data-pending-trade="${escapeHtml(trade.id)}"><h3>${escapeHtml(t("proposalFrom", { alias: state.friends[trade.code]?.profile.alias ?? t("player") }))}</h3><p class="social-hint">${h(online.has(trade.code) ? "waitingTrade" : "reconnectTrade")}</p><div class="social-actions">${action("reconnect", "retry", trade.code)}${!trade.coordinator && trade.phase === "prepared" ? action("abort-pending", "cancel", trade.id) : ""}</div></article>`
-            : ""
-          return `<section class="social-group" data-social-group="${g.key}"><div class="social-heading"><h3>${h(g.key)}</h3><span class="social-eyebrow">${String(groupCount).padStart(2, "0")}</span></div>${ins.map((r) => activityItem(r)).join("")}${outs.map((r) => activityItem(r, true)).join("")}${recovery}${groupCount ? "" : `<p class="social-hint">${h(`empty${g.key[0]?.toUpperCase()}${g.key.slice(1)}`)}</p>`}</section>`
-        })
-        .join("")
+      renderHtml(
+        "social-inbox",
+        groups
+          .map((g) => {
+            const ins = incoming.filter((r) => g.kinds.includes(r.event.kind))
+            const outs = outgoing.filter((r) => g.kinds.includes(r.event.kind))
+            const trade = g.key === "trades" ? activeTrade : undefined
+            const groupCount = ins.length + outs.length + (trade ? 1 : 0)
+            const recovery = trade
+              ? `<article class="social-item" data-pending-trade="${escapeHtml(trade.id)}"><h3>${escapeHtml(t("proposalFrom", { alias: state.friends[trade.code]?.profile.alias ?? t("player") }))}</h3><p class="social-hint">${h(online.has(trade.code) ? "waitingTrade" : "reconnectTrade")}</p><div class="social-actions">${action("reconnect", "retry", trade.code)}${!trade.coordinator && trade.phase === "prepared" ? action("abort-pending", "cancel", trade.id) : ""}</div></article>`
+              : ""
+            return `<section class="social-group" data-social-group="${g.key}"><div class="social-heading"><h3>${h(g.key)}</h3><span class="social-eyebrow">${String(groupCount).padStart(2, "0")}</span></div>${ins.map((r) => activityItem(r)).join("")}${outs.map((r) => activityItem(r, true)).join("")}${recovery}${groupCount ? "" : `<p class="social-hint">${h(`empty${g.key[0]?.toUpperCase()}${g.key.slice(1)}`)}</p>`}</section>`
+          })
+          .join(""),
+      )
       el("social-count").textContent = String(count)
       el("social-total").textContent = t("pendingTotal", { count: String(count).padStart(2, "0") })
       for (const button of Array.from(dialog.querySelectorAll<HTMLButtonElement>("[data-requires-online]"))) {
@@ -287,13 +318,14 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
           )
           .join("") || `<p class="social-hint">${h("noLog")}</p>`
       const networkStatus = el("social-network-status")
-      networkStatus.hidden = !engine.otherTab && !engine.conflict
-      networkStatus.textContent = engine.otherTab ? t("anotherTab") : engine.conflict ? t("codeConflict") : ""
+      networkStatus.hidden = !engine.otherTab
+      networkStatus.textContent = engine.otherTab ? t("anotherTab") : ""
       if (!browserSaveSelected()) note(t("browserOnly"))
       else if (el("social-status").textContent === t("browserOnly")) note("")
       const unplayed = Object.values(state.trades).find((trade) => trade.phase === "resolved" && !trade.played)
       if (unplayed && !playback.open && browserSaveSelected()) play(unplayed)
     } finally {
+      updateActionAvailability()
       rendering = false
       if (queued) {
         queued = false
@@ -446,8 +478,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       return
     }
     if (kind === "cancel-outgoing") {
-      const withdrawal = await cancelInvitation(id)
-      if (withdrawal) await engine.deliver(withdrawal)
+      await engine.withdraw(id)
       return
     }
     if (kind === "accept" || kind === "decline") {
@@ -455,7 +486,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       return
     }
     if (kind === "collect") {
-      await collectGift(id)
+      await engine.collect(id)
       refreshBrowserViews()
       return
     }
@@ -490,7 +521,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       return
     }
     if (kind === "confirm-remove") {
-      await removeFriend(id)
+      await engine.remove(id)
       dialog.close()
       await engine.reconnect()
       return
@@ -504,7 +535,6 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       return
     }
     if (kind === "send-gift") {
-      if (!engine.online.has(id)) throw new Error("social.offline")
       await engine.sendEvent(id, { kind: "gift", day: new Date().toISOString().slice(0, 10) })
       dialog.close()
       return
@@ -581,8 +611,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       const r = state.inbox[id]
       if (r?.event.kind !== "trade-ready") throw new Error("social.invalid")
       if (!engine.online.has(r.code)) throw new Error("social.offline")
-      if (!(await abortTrade(r.event.tradeId, r.code))) throw new Error("social.busy")
-      await engine.sendEvent(r.code, { kind: "trade-cancel", tradeId: r.event.tradeId })
+      if (!(await engine.cancelTrade(r.event.tradeId, r.code))) throw new Error("social.busy")
       state = await readSocial()
       activeTrade = pendingTrade(state)
       await tradeModal(r.code)
@@ -611,12 +640,12 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       const r = state.inbox[id] ?? state.outbox[id]
       if (!r) throw new Error("social.invalid")
       const tradeId = r.event.kind === "trade-ready" ? r.event.tradeId : id
-      if (await abortTrade(tradeId, r.code)) await engine.sendEvent(r.code, { kind: "trade-cancel", tradeId })
+      await engine.cancelTrade(tradeId, r.code)
       dialog.close()
       return
     }
   }
-  for (const root of [el("social-view"), dialog])
+  for (const root of actionRoots)
     root.addEventListener("click", (event) => {
       const button = (event.target as Element).closest<HTMLElement>("[data-social-action]")
       if (button && button.dataset.socialAction !== "manual-connect")

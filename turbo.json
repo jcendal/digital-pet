@@ -1,0 +1,60 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": [
+    "tsconfig*.json",
+    "types/**",
+    "biome.json",
+    "scripts/**",
+    "assets/**",
+    "infra/**",
+    ".github/workflows/**",
+    ".github/actions/**"
+  ],
+  "globalEnv": ["CI", "NODE_ENV", "TZ", "LANG", "LC_ALL", "LC_MESSAGES"],
+  "globalPassThroughEnv": ["VOLTA_HOME"],
+  "remoteCache": {
+    "enabled": false
+  },
+  "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "check": {
+      "dependsOn": ["transit"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["transit"],
+      "outputs": []
+    },
+    "test:persistence": {
+      "dependsOn": ["transit"],
+      "outputs": []
+    },
+    "build": {
+      "dependsOn": ["transit"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["DIGITAL_PET_WEBSOCKET_URL", "DIGITAL_PET_BACKUP_ORIGIN", "VITE_*"]
+    },
+    "@jcendal/opencode-digital-pet#build": {
+      "dependsOn": ["transit"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "cursor-digital-pet#build": {
+      "dependsOn": ["transit"],
+      "outputs": ["dist/**", "package.nls*.json"]
+    },
+    "@jcendal/web-digital-pet#test:browser:ci": {
+      "dependsOn": ["build", "@jcendal/web-digital-pet-backend#transit"],
+      "cache": false,
+      "passThroughEnv": [
+        "PLAYWRIGHT_WEBKIT",
+        "PLAYWRIGHT_CHROMIUM_EXECUTABLE",
+        "PLAYWRIGHT_BROWSERS_PATH",
+        "PLAYWRIGHT_THEME",
+        "PLAYWRIGHT_CAPTURE_EXCHANGE"
+      ]
+    }
+  }
+}

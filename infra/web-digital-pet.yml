@@ -2,6 +2,16 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Digital Pet browser site at digital-pet.rebase.es
 
 Parameters:
+  BackendApiOrigin:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^https://[a-z0-9]+\.execute-api\.[a-z0-9-]+\.amazonaws\.com$'
+    Description: Backend ApiOrigin output; empty keeps the static-only site
+  BackendStackArn:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^arn:aws:cloudformation:[a-z0-9-]+:[0-9]{12}:stack/DigitalPetBackend-production/[a-zA-Z0-9-]+$'
+    Description: Exact backend stack ARN whose public outputs the release role may read
   RebaseHostedZoneId:
     Type: String
     Description: Public Route 53 hosted zone ID for rebase.es
@@ -16,7 +26,20 @@ Parameters:
       - "repo:jcendal@29627990/digital-pet@1363502452:ref:refs/heads/main"
     Description: Exact immutable GitHub OIDC subject for this repository on main
 
+Rules:
+  BackendSettingsTogether:
+    Assertions:
+      - Assert: !Or
+          - !And
+            - !Equals [!Ref BackendApiOrigin, ""]
+            - !Equals [!Ref BackendStackArn, ""]
+          - !And
+            - !Not [!Equals [!Ref BackendApiOrigin, ""]]
+            - !Not [!Equals [!Ref BackendStackArn, ""]]
+        AssertDescription: Set both backend parameters, or leave both empty
+
 Conditions:
+  HasBackend: !Not [!Equals [!Ref BackendApiOrigin, ""]]
   CreateOidcProvider: !Equals [!Ref ExistingGitHubOidcProviderArn, ""]
 
 Resources:
@@ -97,6 +120,38 @@ Resources:
             OriginAccessControlId: !GetAtt WebOriginAccessControl.Id
             S3OriginConfig:
               OriginAccessIdentity: ""
+          - !If
+            - HasBackend
+            - Id: digital-pet-api
+              DomainName: !Select [2, !Split ["/", !Ref BackendApiOrigin]]
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+                OriginSSLProtocols: [TLSv1.2]
+                OriginReadTimeout: 30
+                OriginKeepaliveTimeout: 5
+            - !Ref AWS::NoValue
+        CacheBehaviors: !If
+          - HasBackend
+          -
+            - PathPattern: "/auth/*"
+              TargetOriginId: digital-pet-api
+              ViewerProtocolPolicy: redirect-to-https
+              Compress: true
+              AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+              CachedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+            - PathPattern: "/api/v1/*"
+              TargetOriginId: digital-pet-api
+              ViewerProtocolPolicy: redirect-to-https
+              Compress: true
+              AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+              CachedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+          - !Ref AWS::NoValue
         DefaultCacheBehavior:
           TargetOriginId: web-bucket
           ViewerProtocolPolicy: redirect-to-https
@@ -185,6 +240,12 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
+              - !If
+                - HasBackend
+                - Effect: Allow
+                  Action: cloudformation:DescribeStacks
+                  Resource: !Ref BackendStackArn
+                - !Ref AWS::NoValue
               - Effect: Allow
                 Action:
                   - s3:ListBucket

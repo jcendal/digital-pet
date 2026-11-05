@@ -29,7 +29,7 @@ test("petting shows hearts awake, bolts after sleeping, and works offline withou
     const now = Date.now()
     const createdAt = new Date(now).toISOString()
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("web-digital-pet", 1)
+      const request = indexedDB.open("web-digital-pet", 2)
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })

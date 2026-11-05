@@ -1,0 +1,11 @@
+name: Restore Turborepo cache
+description: Reuse local task results on compatible GitHub runners without a remote cache service
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: .turbo/cache
+        key: turbo-v1-${{ runner.os }}-${{ runner.arch }}-node24.11.0-bun1.3.5-${{ hashFiles('package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          turbo-v1-${{ runner.os }}-${{ runner.arch }}-node24.11.0-bun1.3.5-${{ hashFiles('package-lock.json') }}-

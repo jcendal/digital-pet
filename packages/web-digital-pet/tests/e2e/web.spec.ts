@@ -8,7 +8,7 @@ const savedPartnerId = (page: import("@playwright/test").Page) =>
   page.evaluate(
     () =>
       new Promise<string>((resolve, reject) => {
-        const open = indexedDB.open("web-digital-pet", 1)
+        const open = indexedDB.open("web-digital-pet", 2)
         open.onerror = () => reject(open.error)
         open.onsuccess = () => {
           const database = open.result
@@ -37,10 +37,6 @@ const controlled = async (page: import("@playwright/test").Page) => {
 test("static pages initialize shared clients, scenery, options and all panels without errors", async ({
   page,
 }, testInfo) => {
-  // This UI smoke test does not exercise networking; keep public signaling rate limits out of CI.
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => {
-    socket.send(JSON.stringify({ type: "OPEN" }))
-  })
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   page.on("console", (message) => {
@@ -80,7 +76,7 @@ test("static pages initialize shared clients, scenery, options and all panels wi
   await test.step("Check Options order and the region preview", async () => {
     await openOptions(page)
     await expect(page.locator("#options-dialog")).toBeVisible()
-    const sections = page.locator("#options-dialog .dialog-body section")
+    const sections = page.locator("#options-dialog .dialog-body section:visible")
     await expect(sections.nth(0)).toHaveClass(/language-section/)
     await expect(page.locator("#options-dialog .world-section")).toHaveCount(0)
     await expect(sections.nth(1)).toHaveClass(/theme-section/)

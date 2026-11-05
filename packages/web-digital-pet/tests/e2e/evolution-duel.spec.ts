@@ -5,7 +5,7 @@ test.use({ locale: "es-ES" })
 const saved = (page: Page) =>
   page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
-      const open = indexedDB.open("web-digital-pet", 1)
+      const open = indexedDB.open("web-digital-pet", 2)
       open.onsuccess = () => resolve(open.result)
     })
     const state = await new Promise<Record<string, unknown>>((resolve) => {
@@ -20,14 +20,13 @@ const openDuel = async (page: Page, nodeId: string, victories: number, dirty: bo
   await page.addInitScript(() => {
     Math.random = () => 0
   })
-  await page.routeWebSocket("wss://0.peerjs.com/**", (socket) => socket.send(JSON.stringify({ type: "OPEN" })))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toBeEmpty()
   await page.evaluate(
     async ({ nodeId, victories, dirty, isTerminal }) => {
       const database = await new Promise<IDBDatabase>((resolve) => {
-        const open = indexedDB.open("web-digital-pet", 1)
+        const open = indexedDB.open("web-digital-pet", 2)
         open.onsuccess = () => resolve(open.result)
       })
       const now = Date.now()

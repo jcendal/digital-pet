@@ -1,6 +1,7 @@
 import { IntlModule as languageIntl } from "@jcendal/digital-pet-intl"
 import { escapeHtml } from "@jcendal/digital-pet-webviews/shared/escape-html.ts"
 import { IntlModule } from "../../shared/i18n.ts"
+import { accountMarkup } from "./account-markup.ts"
 
 const deviceIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 2h8v2H2zm0 2h2v12H2zm6 0h2v12H8zm-6 12h8v2H2zm2-3h4v2H4zm10-7h8v2h-8zm0 2h2v12h-2zm6 0h2v12h-2zm-6 12h8v2h-8zm2-3h4v2h-4zM10 8h4v2h-4zm0 4h4v2h-4z"/></svg>`
 const eggIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 2h4v2h-4zM8 4h2v4H8zm6 0h2v4h-2zM6 8h2v4H6zm10 0h2v4h-2zM4 12h2v6H4zm14 0h2v6h-2zM6 18h2v2H6zm10 0h2v2h-2zM8 20h8v2H8zM8 10h4v4H8zm4 6h4v2h-4z"/></svg>`
@@ -9,6 +10,7 @@ export const optionsMarkup = /* html */ `
 <dialog id="options-dialog" class="web-dialog" aria-labelledby="options-title">
   <header class="dialog-head"><div><p class="dialog-eyebrow" data-i18n="web:optionsMarkup.digitalMonster">${escapeHtml(IntlModule.translate("optionsMarkup.digitalMonster"))}</p><h2 id="options-title" data-i18n="web:navigationMarkup.options">${escapeHtml(IntlModule.translate("navigationMarkup.options"))}</h2></div><form method="dialog"><button class="dialog-close" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.closeOptions"))}" data-i18n-aria-label="web:optionsMarkup.closeOptions">✕</button></form></header>
   <div class="dialog-body">
+    ${accountMarkup}
     <section class="options-section language-section">
       <label class="section-heading" id="language-label" for="language-select" data-i18n="intl:language.label">${escapeHtml(languageIntl.translate("language.label"))}</label>
       <p class="section-description" data-i18n="intl:language.description">${escapeHtml(languageIntl.translate("language.description"))}</p>

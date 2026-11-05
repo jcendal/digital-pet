@@ -13,6 +13,7 @@
     "scripts/release-metadata.ts",
     "scripts/plan-merged-release.ts",
     "scripts/dispatch-merged-releases.ts",
-    "scripts/push-release.ts"
+    "scripts/push-release.ts",
+    "scripts/tests/turbo.test.ts"
   ]
 }

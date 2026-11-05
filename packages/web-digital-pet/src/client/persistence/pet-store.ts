@@ -23,7 +23,8 @@ import {
 } from "../../domain/pet/progress.ts"
 import { applyLocalTeamCommand } from "../../domain/pet/team.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import { assertNoExchange, completed, openDatabase, resultOf, TRADE_LOCK_KEY } from "./database.ts"
+import { assertNoExchange, completed, localMutationLocked, openDatabase, resultOf } from "./database.ts"
+import { assertContext, type OnlineContext, rotateSaveIdentity } from "./online-store.ts"
 
 const STORE_NAME = "pet"
 const STATE_KEY = "current"
@@ -39,7 +40,7 @@ const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 const readStoredPartner = async (store: IDBObjectStore): Promise<LocalPetState | undefined> => {
   const state = await resultOf<LocalPetState | undefined>(store.get(STATE_KEY))
   if (!state) return undefined
-  if (await resultOf(store.get(TRADE_LOCK_KEY))) return state
+  if (await localMutationLocked(store)) return state
   const legacy = await resultOf<number | undefined>(store.get(LEGACY_ADVENTURE_READY_KEY))
   const readyAt = limitAdventureReadyAt(state.adventureReadyAt ?? legacy ?? 0, Date.now())
   const next = state.adventureReadyAt === readyAt ? state : { ...state, adventureReadyAt: readyAt }
@@ -83,7 +84,7 @@ export const applyBrowserTeamCommand = async (
       command,
       crypto.randomUUID(),
       now,
-      Boolean(pending || (await resultOf(store.get(TRADE_LOCK_KEY))) || adventureBusy(adventure)),
+      Boolean(pending || (await localMutationLocked(store)) || adventureBusy(adventure)),
     )
     if (changed.outcome.kind === "applied") {
       let next = changed.state
@@ -146,7 +147,7 @@ export const browserAdventureStore: AdventureStore = {
       const state = await readStoredPartner(store)
       const saved = await resultOf<{ partnerId: string; state: unknown } | undefined>(store.get(ADVENTURE_KEY))
       const battle = await resultOf(store.get(PENDING_BATTLE_KEY))
-      if (!state || (await resultOf(store.get(TRADE_LOCK_KEY)))) {
+      if (!state || (await localMutationLocked(store))) {
         await done
         return undefined
       }
@@ -229,6 +230,7 @@ export const browserAdventureStore: AdventureStore = {
 export const settleBattle = async (
   battle: AgreedBattle,
   expected: LocalPetState,
+  context?: OnlineContext,
 ): Promise<PendingBattle | undefined> => {
   const prepared = parsePendingBattle({
     ...battle,
@@ -246,7 +248,8 @@ export const settleBattle = async (
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
-    await assertNoExchange(store)
+    await assertNoExchange(store, Boolean(context))
+    if (context) await assertContext(store, context)
     const key = `battle:${battle.battleId}`
     const receipt = await resultOf(store.get(key))
     const storedPending = await resultOf(store.get(PENDING_BATTLE_KEY))
@@ -372,7 +375,7 @@ export const readLocalState = async (): Promise<LocalPetState> => {
     const store = transaction.objectStore(STORE_NAME)
     const stored = await readStoredPartner(store)
     const now = Date.now()
-    const locked = await resultOf(store.get(TRADE_LOCK_KEY))
+    const locked = await localMutationLocked(store)
     const state = stored ? (locked ? stored : advanceLocalPet(stored, now)) : initialState(now)
     if (state !== stored) store.put(state, STATE_KEY)
     await done
@@ -425,13 +428,16 @@ export const hasPreviousSave = async (): Promise<boolean> => {
   }
 }
 
-export const replaceLocalState = async (incoming: LocalPetState): Promise<void> => {
+export const replaceLocalState = async (incoming: LocalPetState, expected?: OnlineContext): Promise<void> => {
   const database = await openDatabase()
   try {
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
     await assertNoExchange(store)
+    if (expected) await assertContext(store, expected)
+    if (expected && (await resultOf(store.get(PENDING_BATTLE_KEY)))) throw new Error("social.busy")
+    await rotateSaveIdentity(store)
     const previous = await readStoredPartner(store)
     if (previous) store.put(previous, BACKUP_KEY)
     store.put(incoming, STATE_KEY)
@@ -456,6 +462,7 @@ export const restorePreviousSave = async (): Promise<boolean> => {
       return false
     }
     const current = await readStoredPartner(store)
+    await rotateSaveIdentity(store)
     store.put(previous, STATE_KEY)
     store.delete(LEGACY_ADVENTURE_READY_KEY)
     store.delete(ADVENTURE_KEY)
