@@ -4,6 +4,13 @@ Changes to the Cursor extension are recorded here. OpenCode releases have their 
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-11-06
+
+### Changed
+
+- Feat/web account options ux
+
+
 ## [0.20.0] - 2026-11-05
 
 ### Changed
