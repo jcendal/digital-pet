@@ -6,8 +6,12 @@
 @import "../features/options/styles.css";
 @import "@jcendal/digital-pet-webviews/panels/world/world-styles.css";
 @import "@jcendal/digital-pet-webviews/panels/world/map-styles.css";
+@import "../styles/frame.css";
+@import "../styles/tokens.css";
+@import "../styles/controls.css";
 
 .view-stack {
+  container: game-frame / size;
   position: relative;
   flex: 1;
   min-height: 0;

@@ -29,7 +29,7 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
   try {
     await Promise.all([alice, bob].map((p) => p.goto("http://127.0.0.1:4177")))
     for (const p of [alice, bob]) await expect(p.locator("#social-current")).not.toBeEmpty()
-    // Each offer fits the socket; their combined result requires an authorized HTTP read.
+    // Long histories require fragmented socket replies, including after a lost commit response.
     await seedSocialPet(alice, "alice", "3-001", 256)
     await seedSocialPet(bob, "bob", "4-001", 256)
     await chooseAlias(alice, "Alice")
@@ -173,7 +173,8 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
     await expect.poll(() => alice.locator(".social-scroll").evaluate((element) => element.scrollTop)).toBe(0)
     await expect(alice.locator("#social-profile-companion .social-portrait")).toBeInViewport()
     expect(errors).toEqual([])
-    expect(largeResultReads).toBeGreaterThan(0)
+    expect(largeResultReads).toBe(0)
+    expect(network.transport.chunkedResponses).toBeGreaterThan(0)
   } finally {
     await a.close()
     await b.close()
@@ -182,8 +183,6 @@ test("real social storage and transport: invitation, friendship, renaming, ratio
 
 test("an invitation opened while the alias is publishing is not silently discarded", async ({ page }) => {
   await linkSocialPeers([page])
-  await page.goto("http://127.0.0.1:4177")
-  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
   let release!: () => void
   const held = new Promise<void>((resolve) => {
     release = resolve
@@ -192,11 +191,27 @@ test("an invitation opened while the alias is publishing is not silently discard
   const publishing = new Promise<void>((resolve) => {
     observed = resolve
   })
-  await page.route("**/api/v1/me/inbox?*", async (route) => {
-    observed()
-    await held
-    await route.fallback()
+  let holding = false
+  await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
+    const server = client.connectToServer()
+    const pending = new Set<string>()
+    client.onMessage((raw) => {
+      const message = JSON.parse(String(raw))
+      if (holding && message.command?.type === "inbox.read") {
+        pending.add(message.requestId)
+        observed()
+      }
+      server.send(raw)
+    })
+    server.onMessage(async (raw) => {
+      const message = JSON.parse(String(raw))
+      if (pending.has(message.requestId)) await held
+      client.send(raw)
+    })
   })
+  await page.goto("http://127.0.0.1:4177")
+  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+  holding = true
   try {
     // Deliberately continue before saving finishes; the normal helper waits for completion.
     await page.locator("#more-button").click()
@@ -220,7 +235,7 @@ test("an invitation opened while the alias is publishing is not silently discard
   }
 })
 
-test("offline invitation retains one retryable request after reload and validates codes", async ({ page }) => {
+test("an unknown recipient retains one retryable invitation after reload without duplicating it", async ({ page }) => {
   await linkSocialPeers([page])
   await page.goto("http://127.0.0.1:4177")
   await expect(page.locator("#social-current")).not.toBeEmpty()

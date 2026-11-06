@@ -27,6 +27,7 @@ export default defineConfig(
             const url = new URL(request.url ?? "/", "http://localhost")
             if (["/", "/dex", "/history"].includes(url.pathname)) url.pathname = "/index.html"
             else if (/^\/view\/(sidebar|dex|history)$/.test(url.pathname)) url.pathname += ".html"
+            else if (/^\/legal\/(privacy|terms)$/.test(url.pathname)) url.pathname += ".html"
             else if (/^\/api\/(mode|sidebar|dex|history|world)$/.test(url.pathname)) url.pathname = "/api/browser.json"
             request.url = url.pathname + url.search
             next()

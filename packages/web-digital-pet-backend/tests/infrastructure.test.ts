@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import { App, Stack } from "aws-cdk-lib"
 import { Match, Template } from "aws-cdk-lib/assertions"
 import { CfnInclude } from "aws-cdk-lib/cloudformation-include"
+import { DeploymentAccessStack, foundationSynthesizer, HostingStack } from "../infrastructure/foundation.ts"
 import { BackendStack } from "../infrastructure/stack.ts"
 
 test("synthesized infrastructure keeps data private, credentials rotated and authorization uncached", () => {
@@ -77,10 +78,7 @@ test("synthesized infrastructure keeps data private, credentials rotated and aut
 })
 
 test("the hosting template owns uncached API routes and grants only the selected backend output read", () => {
-  const stack = new Stack(new App(), "Hosting")
-  new CfnInclude(stack, "ExistingHosting", {
-    templateFile: fileURLToPath(new URL("../../../infra/web-digital-pet.yml", import.meta.url)),
-  })
+  const stack = new HostingStack(new App(), "Hosting")
   const template = Template.fromStack(stack)
   template.resourceCountIs("AWS::CloudFront::Distribution", 1)
   template.resourceCountIs("AWS::S3::Bucket", 1)
@@ -107,4 +105,25 @@ test("the hosting template owns uncached API routes and grants only the selected
   expect(config.Aliases).toEqual(["digital-pet.rebase.es"])
   expect(resources.WebRoutes.Properties.Name).toBe("digital-pet-web-routes")
   expect(resources.WebOriginAccessControl.Properties.OriginAccessControlConfig.Name).toBe("digital-pet-web-s3")
+})
+
+test("CDK adoption preserves every foundation resource, parameter and output without bootstrap resources", () => {
+  for (const [StackType, file] of [
+    [HostingStack, "web-digital-pet.yml"],
+    [DeploymentAccessStack, "github-backend-deploy.yml"],
+  ] as const) {
+    const app = new App({ analyticsReporting: false, context: { "aws:cdk:enable-path-metadata": false } })
+    const baseline = new Stack(app, "Baseline", { analyticsReporting: false, synthesizer: foundationSynthesizer() })
+    new CfnInclude(baseline, "Original", {
+      templateFile: fileURLToPath(new URL(`../../../infra/${file}`, import.meta.url)),
+      preserveLogicalIds: true,
+    })
+    const adopted = new StackType(app, "Adopted", { env: { account: "123456789012", region: "us-east-1" } })
+    const expected = Template.fromStack(baseline).toJSON()
+    const actual = Template.fromStack(adopted).toJSON()
+    for (const key of ["Resources", "Parameters", "Outputs", "Conditions", "Rules"])
+      expect(actual[key]).toEqual(expected[key])
+    expect(actual.Parameters?.BootstrapVersion).toBeUndefined()
+    expect(actual.Resources?.CDKMetadata).toBeUndefined()
+  }
 })

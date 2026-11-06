@@ -12,6 +12,7 @@ import {
   stackName,
   webEnvironment,
 } from "../infrastructure/deployment-config.ts"
+import { synthesizeFoundation } from "../infrastructure/foundation.ts"
 import {
   type HostingChangeSet,
   type HostingStack,
@@ -28,13 +29,23 @@ const { values, positionals } = parseArgs({
 const action = positionals[0]
 if (values.help || !action) {
   console.log(
-    "npm run backend -- <synth|preflight|plan|bootstrap|deploy|cdn-plan|cdn-apply|outputs> [--environment production] [--config file.json]",
+    "npm run backend -- <synth|foundation-synth|preflight|plan|bootstrap|deploy|cdn-plan|cdn-apply|outputs> [--environment production] [--config file.json]",
   )
   process.exit(0)
 }
 if (
   positionals.length !== 1 ||
-  !["synth", "preflight", "plan", "bootstrap", "deploy", "cdn-plan", "cdn-apply", "outputs"].includes(action)
+  ![
+    "synth",
+    "foundation-synth",
+    "preflight",
+    "plan",
+    "bootstrap",
+    "deploy",
+    "cdn-plan",
+    "cdn-apply",
+    "outputs",
+  ].includes(action)
 )
   throw new Error("Unknown backend action; use --help")
 const environment = values.environment ?? "production"
@@ -120,12 +131,17 @@ const preflight = () => {
   )
 }
 
-if (action !== "synth") {
+if (!["synth", "foundation-synth"].includes(action)) {
   const identity = aws(["sts", "get-caller-identity"])
   if (identity.Account !== config.account) throw new Error("AWS credentials belong to another account")
 }
 if (["preflight", "plan", "deploy"].includes(action)) preflight()
-if (action === "bootstrap") {
+if (action === "foundation-synth") {
+  const templates = synthesizeFoundation(config, resolve(directory, "foundation"))
+  console.log(
+    `Hosting template: ${templates.hosting}\nPrivileged access template (separate administration): ${templates.access}`,
+  )
+} else if (action === "bootstrap") {
   cdk("bootstrap", `aws://${config.account}/${config.region}`)
 } else if (["synth", "plan", "deploy"].includes(action)) {
   run("npm", ["run", "build", "--workspace", "@jcendal/web-digital-pet-backend"])
@@ -160,6 +176,7 @@ if (action === "bootstrap") {
     backendArn: backend.StackId,
   }
   if (action === "cdn-plan") {
+    const templates = synthesizeFoundation(config, resolve(directory, "foundation"))
     const parameters = hostingParameters(hosting, apiOrigin, backend.StackId)
     const change = hostingAws([
       "create-change-set",
@@ -170,7 +187,7 @@ if (action === "bootstrap") {
       "--change-set-type",
       "UPDATE",
       "--template-body",
-      `file://${resolve(root, "infra/web-digital-pet.yml")}`,
+      `file://${templates.hosting}`,
       "--parameters",
       JSON.stringify(parameters),
       "--capabilities",

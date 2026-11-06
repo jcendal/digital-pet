@@ -6,9 +6,9 @@ import type { PendingBattle } from "../../../domain/battle/saved-battle.ts"
 import type { LocalPetState } from "../../../domain/pet/progress.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { readArenaFighter } from "../../persistence/arena-store.ts"
-import type { OnlineContext } from "../../persistence/online-store.ts"
+import { type OnlineContext, readOnlineContext } from "../../persistence/online-store.ts"
 import { readAdventureState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
-import { onlineContext } from "../../platform/online-api.ts"
+import { currentOnlineSession, onlineConfigured, onlineContext } from "../../platform/online-api.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { prepareOnlineBattle, recoverOnlineBattle } from "./online-agreement.ts"
@@ -28,7 +28,8 @@ const hash = async (text: string): Promise<string> =>
     byte.toString(16).padStart(2, "0"),
   ).join("")
 
-export const initBrowserBattles = async (otherBusy: () => boolean): Promise<BrowserPairingControls> => {
+export type BrowserBattleControls = BrowserPairingControls & { challengeFriend(accountId: string): void }
+export const initBrowserBattles = async (otherBusy: () => boolean): Promise<BrowserBattleControls> => {
   const button = element<HTMLButtonElement>("battle-button")
   const dialog = element<HTMLDialogElement>("battle-dialog")
   const ownCode = element("battle-own-code")
@@ -37,6 +38,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   const accept = element<HTMLButtonElement>("battle-accept")
   const decline = element<HTMLButtonElement>("battle-decline")
   const incoming = element("battle-incoming")
+  let localAccount = (await readOnlineContext()).accountId
   let enabled = browserSaveSelected()
   let ready = false
   let pending: PendingBattle | undefined = await readPendingBattle()
@@ -58,11 +60,25 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
     element("battle-status").textContent = message
   }
   const update = (): void => {
+    const active = currentOnlineSession()
+    const signedOut = onlineConfigured() && !active
+    const needsLink = onlineConfigured() && Boolean(active && active.accountId !== localAccount)
+    element("battle-code-controls").hidden = signedOut || needsLink
+    element("battle-code-login").hidden = !signedOut && !needsLink
+    for (const [id, key] of [
+      ["battle-login-message", needsLink ? "battleUi.linkFirst" : "battleUi.signIn"],
+      ["battle-login-label", needsLink ? "online.continue" : "battleUi.connect"],
+    ] as const) {
+      const label = element(id)
+      label.dataset.i18n = `web:${key}`
+      label.textContent = IntlModule.translate(key)
+    }
     button.disabled = false
     button.title = enabled
-      ? IntlModule.translate("controller.playerBattle")
+      ? IntlModule.translate("social.title")
       : IntlModule.translate("controller.chooseThisBrowserInOptionsToBattle")
     request.disabled = !enabled || !ready || Boolean(session || playback || pending)
+    element<HTMLButtonElement>("battle-copy").disabled = !enabled || !ready
   }
   const open = (): void => {
     window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: "/#combat" }))
@@ -298,7 +314,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
       ready = true
       ownCode.textContent = code
       update()
-      if (!session && !playback && !pending) note(IntlModule.translate("controller.shareYourSixDigitCodeToReceiveA"))
+      if (!session && !playback && !pending) note("")
     },
     incoming: (connection) => bind(connection, false),
     disconnected: () => {
@@ -314,6 +330,18 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
         cancel(IntlModule.translate("controller.couldNotConnect", { message: message }))
     },
   })
+  element("battle-login").addEventListener("click", () => {
+    if (currentOnlineSession()) window.dispatchEvent(new Event("digital-pet:account-connect"))
+    else element<HTMLDialogElement>("online-migration").showModal()
+  })
+  const refreshAccount = (): void => {
+    void readOnlineContext().then((context) => {
+      localAccount = context.accountId
+      update()
+    })
+  }
+  window.addEventListener("digital-pet:account-changed", refreshAccount)
+  window.addEventListener("digital-pet:save-updated", refreshAccount)
   request.addEventListener("click", () => {
     const target = input.value.trim()
     if (!validBattleCode(target)) return note(IntlModule.translate("controller.enterASixDigitBattleCode"))
@@ -392,6 +420,12 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   update()
   if (pending && enabled) void resume()
   return {
+    challengeFriend(accountId) {
+      if (!enabled || !ready || session || playback || pending || otherBusy()) throw new Error("social.busy")
+      bind(transport.connect("", accountId), true)
+      open()
+      note(IntlModule.translate("controller.contactingTheOtherPlayer"))
+    },
     get busy() {
       return Boolean(session || playback || pending)
     },

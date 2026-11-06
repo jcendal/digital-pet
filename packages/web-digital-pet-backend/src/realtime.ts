@@ -4,17 +4,24 @@ import {
   OnlineError,
   parseFrame,
   type SessionView,
-  sameDestination,
 } from "@jcendal/digital-pet-online/contracts.ts"
+import type { OnlineRelationship } from "@jcendal/digital-pet-online/social.ts"
 import type { Session } from "./auth.ts"
-import { digest } from "./identity.ts"
+import { BattleDecisions } from "./battle-decisions.ts"
+import { digest, relationshipId } from "./identity.ts"
 import { SocketTickets, type Ticket } from "./socket-tickets.ts"
 import { change, type ObjectStore } from "./store.ts"
 
 type Connection = { accountId: string; sessionKey: string; installationId: string; expiresAt: number; closed: boolean }
 type Member = { accountId: string; installationId: string; connectionId: string }
 type Endpoint = Member & { namespace: string; code: string; expiresAt: number }
-type Link = { namespace: string; members: (Member & { code: string })[]; expiresAt: number }
+type FriendEndpoints = { endpoints: Endpoint[] }
+type Link = {
+  namespace: string
+  members: (Member & { code: string })[]
+  expiresAt: number
+  friendship?: { id: string; generation: number }
+}
 type Subscribers = { connections: (Member & { expiresAt: number })[] }
 export interface SocketDelivery {
   send(connectionId: string, value: unknown): Promise<boolean>
@@ -159,49 +166,7 @@ export class RealtimeService {
     destination: Destination,
     report?: string,
   ): Promise<{ state: "pending" | "committed" | "canceled"; expiresAt?: number }> {
-    identifier(channel)
-    type Decision = {
-      members: Member[]
-      reports: Record<string, { destination: Destination; digest: string }>
-      state: "pending" | "committed" | "canceled"
-      expiresAt: number
-    }
-    const key = `battle-decisions/${channel}`
-    const existing = await this.store.get<Decision>(key)
-    const link = existing ? undefined : await this.store.get<Link>(`realtime/channels/${channel}`)
-    if (!existing && (!link || link.value.namespace !== "battle" || link.value.expiresAt <= this.now()))
-      return { state: "canceled" }
-    const initial: Decision = existing?.value ?? {
-      members: link!.value.members,
-      reports: {},
-      state: "pending",
-      expiresAt: this.now() + 120_000,
-    }
-    return change<Decision, { state: Decision["state"]; expiresAt: number }>(
-      this.store,
-      key,
-      () => initial,
-      (value) => {
-        const member = value.members.find(
-          (item) => item.accountId === actor && item.installationId === destination.installationId,
-        )
-        if (!member) throw new OnlineError("forbidden", 403)
-        const identity = digest(`${actor}:${destination.installationId}`)
-        const old = value.reports[identity]
-        if (old && !sameDestination(old.destination, destination)) throw new OnlineError("destination-conflict", 409)
-        if (value.state === "pending" && value.expiresAt <= this.now()) value.state = "canceled"
-        if (report) {
-          if (!/^[a-f0-9]{64}$/.test(report)) throw new OnlineError("invalid-report")
-          if (old && old.digest !== report) throw new OnlineError("report-conflict", 409)
-          if (value.state === "pending") {
-            value.reports[identity] = { destination, digest: report }
-            const reports = Object.values(value.reports)
-            if (reports.length === 2) value.state = reports[0]?.digest === reports[1]?.digest ? "committed" : "canceled"
-          }
-        }
-        return { state: value.state, expiresAt: value.expiresAt }
-      },
-    )
+    return new BattleDecisions(this.store, this.now).decide(actor, channel, destination, report)
   }
 
   async register(connectionId: string, namespace: string): Promise<string> {
@@ -233,19 +198,63 @@ export class RealtimeService {
         code,
         expiresAt: connection.expiresAt,
       }
-      if (await this.store.put(key, value, found?.revision ?? null)) return code
+      if (await this.store.put(key, value, found?.revision ?? null)) {
+        if (namespace === "battle")
+          await change<FriendEndpoints, void>(
+            this.store,
+            `realtime/friend-endpoints/${connection.accountId}`,
+            () => ({ endpoints: [] }),
+            (current) => {
+              current.endpoints = current.endpoints
+                .filter((item) => item.expiresAt > this.now() && item.installationId !== value.installationId)
+                .slice(-7)
+              current.endpoints.push(value)
+            },
+          )
+        return code
+      }
     }
     throw new OnlineError("endpoint-limit", 429)
   }
 
-  async open(connectionId: string, namespace: string, code: string, requestId: string): Promise<string> {
+  async open(
+    connectionId: string,
+    namespace: string,
+    code: string,
+    requestId: string,
+    friend?: string,
+  ): Promise<string> {
     identifier(requestId)
+    const actor = await this.connection(connectionId)
+    let friendship: Link["friendship"]
+    if (friend !== undefined) {
+      identifier(friend)
+      if (namespace !== "battle" || code !== "" || friend === actor.accountId) throw new OnlineError("invalid-endpoint")
+      const id = relationshipId(actor.accountId, friend)
+      const pair = await this.store.get<OnlineRelationship>(`relationships/${id}`)
+      if (!pair?.value.active) throw new OnlineError("not-friends", 409)
+      friendship = { id, generation: pair.value.generation }
+      const endpoints = await this.store.get<FriendEndpoints>(`realtime/friend-endpoints/${friend}`)
+      // Prefer the most recently registered device, skipping closed or revoked sessions.
+      // This is resolved only when challenging, never by polling the friend's devices.
+      for (const endpoint of [...(endpoints?.value.endpoints ?? [])].reverse()) {
+        if (endpoint.expiresAt <= this.now()) continue
+        try {
+          await this.connection(endpoint.connectionId)
+          if (this.delivery.connected && !(await this.delivery.connected(endpoint.connectionId))) continue
+          code = endpoint.code
+          break
+        } catch (error) {
+          if (!(error instanceof OnlineError) || error.status !== 401) throw error
+        }
+      }
+      if (!code) throw new OnlineError("endpoint-offline", 409)
+    }
     if (
       !["battle", "transfer"].includes(namespace) ||
       !(namespace === "battle" ? /^\d{6}$/ : /^[A-HJ-NP-Z2-9]{16}$/).test(code)
     )
       throw new OnlineError("invalid-endpoint")
-    const actor = await this.connection(connectionId)
     const minute = Math.floor(this.now() / 60_000)
     await change<{ minute: number; count: number }, void>(
       this.store,
@@ -262,6 +271,7 @@ export class RealtimeService {
     )
     const target = await this.store.get<Endpoint>(`realtime/endpoints/${namespace}/${code}`)
     if (!target || target.value.expiresAt <= this.now()) throw new OnlineError("endpoint-offline", 409)
+    if (friend !== undefined && target.value.accountId !== friend) throw new OnlineError("endpoint-offline", 409)
     await this.connection(target.value.connectionId)
     if (actor.accountId === target.value.accountId && actor.installationId === target.value.installationId)
       throw new OnlineError("self-connection")
@@ -274,7 +284,8 @@ export class RealtimeService {
         { accountId: actor.accountId, installationId: actor.installationId, connectionId, code: ownCode },
         target.value,
       ],
-      expiresAt: this.now() + 15 * 60_000,
+      expiresAt: this.now() + (friendship ? 120_000 : 15 * 60_000),
+      ...(friendship ? { friendship } : {}),
     }
     await change<Link, void>(
       this.store,
@@ -285,6 +296,7 @@ export class RealtimeService {
           recipient = value.members[1]
         if (
           value.namespace !== namespace ||
+          JSON.stringify(value.friendship) !== JSON.stringify(friendship) ||
           !sender ||
           !recipient ||
           recipient.code !== code ||
@@ -330,6 +342,11 @@ export class RealtimeService {
     const frame = parseFrame(raw)
     const room = await this.store.get<Link>(`realtime/channels/${frame.channel}`)
     if (!room || room.value.expiresAt <= this.now()) throw new OnlineError("room-expired", 409)
+    if (room.value.friendship) {
+      const pair = await this.store.get<OnlineRelationship>(`relationships/${room.value.friendship.id}`)
+      if (!pair?.value.active || pair.value.generation !== room.value.friendship.generation)
+        throw new OnlineError("not-friends", 409)
+    }
     if (
       !room.value.members.some(
         (member) =>

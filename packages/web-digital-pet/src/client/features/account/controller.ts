@@ -1,5 +1,7 @@
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { type BackupSummary, MAX_BACKUP_BYTES } from "@jcendal/digital-pet-online/contracts.ts"
 import { type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "../../../domain/transfer/protocol.ts"
+import { ACTION_ICON_PATHS, type ActionIcon } from "../../../shared/action-icons.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { resultOf } from "../../persistence/database.ts"
 import {
@@ -35,26 +37,65 @@ const allowedUrl = (value: string): string => {
 export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void> => {
   if (!onlineConfigured()) return
   el("online-account").hidden = false
+  const restoreDialog = el<HTMLDialogElement>("online-preview")
   let working = false
+  const accountDialog = el<HTMLDialogElement>("account-switch-dialog")
+  let accountChoice: { accountId: string; context: OnlineContext } | undefined
+  let settling: Promise<void> | undefined
   let preview: { transfer: PetTransfer; context: OnlineContext } | undefined
+  let listGeneration = 0
+  const setCopiesOpen = (open: boolean) => {
+    el("online-backups").hidden = !open
+    const control = el("online-list")
+    control.setAttribute("aria-expanded", String(open))
+    const label = control.querySelector("span")
+    if (label) {
+      const key = open ? "closeList" : "list"
+      label.dataset.i18n = `web:online.${key}`
+      label.textContent = t(key)
+    }
+    control.querySelector("path")?.setAttribute("d", ACTION_ICON_PATHS[open ? "cancel" : "list"])
+    if (!open) listGeneration++
+  }
   const status = (text: string) => {
     el("online-status").textContent = text
+    if (accountDialog.open) el("account-switch-status").textContent = text
+    if (restoreDialog.open) el("online-preview-status").textContent = text
   }
   const refresh = async () => {
     const session = currentOnlineSession()
     const context = await readOnlineContext()
     const bound = Boolean(session && session.accountId === context.accountId)
+    if (!bound) {
+      setCopiesOpen(false)
+      el("online-backups").replaceChildren()
+    }
     el("online-login").hidden = Boolean(session)
+    el("online-login-hint").hidden = Boolean(session)
+    el("online-login-legal").hidden = Boolean(session)
+    el("online-account-settings").hidden = !session
+    el("backup-file-label").hidden = !bound
     el("online-logout").hidden = !session
-    el("online-adopt").hidden = !session || bound
-    el("online-adopt-hint").hidden = !session || bound
+    el("online-copies").hidden = !bound
     el<HTMLFieldSetElement>("online-copies").disabled = !bound || !browserSaveSelected()
-    if (!working)
-      status(t(!session ? "signIn" : bound ? "connected" : context.accountId ? "differentAccount" : "adoptHint"))
+    el("online-session-status").textContent = t(!session ? "signIn" : "googleConnected")
   }
   const run = (task: () => Promise<void>) => {
     if (working) return
     working = true
+    el("online-account").setAttribute("aria-busy", "true")
+    const controls = [
+      "online-restore",
+      "online-cancel-restore",
+      "online-preview-close",
+      "online-save",
+      "online-list",
+      "online-logout",
+      "account-switch-confirm",
+      "account-switch-cancel",
+      "account-switch-close",
+    ].map((id) => el<HTMLButtonElement>(id))
+    for (const control of controls) control.disabled = true
     status(t("working"))
     void task()
       .catch((error: unknown) => {
@@ -70,6 +111,8 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
       })
       .finally(() => {
         working = false
+        el("online-account").setAttribute("aria-busy", "false")
+        for (const control of controls) control.disabled = false
       })
   }
   const upload = async (intent: Upload) => {
@@ -98,6 +141,7 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
     status(t("saved"))
   }
   const list = async () => {
+    const generation = ++listGeneration
     const context = await onlineContext()
     const data = await api<{ backups: BackupSummary[]; pending: Array<BackupSummary & { status: string }> }>(
       "/api/v1/me/backups",
@@ -105,20 +149,38 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
       undefined,
       context.accountId,
     )
+    if (generation !== listGeneration) return
     const root = el("online-backups")
     root.replaceChildren()
-    for (const item of [...data.backups, ...data.pending]) {
+    for (const item of [...data.backups, ...data.pending].sort((a, b) => b.createdAt - a.createdAt)) {
       const row = document.createElement("div")
       row.className = "online-backup-row"
       const label = document.createElement("p")
-      label.textContent = `${item.label} · ${new Date(item.createdAt).toLocaleString(IntlModule.locale)}`
-      row.append(label)
-      const button = (key: string, action: () => Promise<void>) => {
+      label.textContent = new Date(item.createdAt).toLocaleString(IntlModule.locale)
+      const state = document.createElement("p")
+      state.className = "setting-caption"
+      state.textContent = t("status" in item ? "pending" : "ready")
+      const actions = document.createElement("div")
+      actions.className = "online-backup-actions"
+      row.append(label, state, actions)
+      const button = (key: ActionIcon | "confirmDelete", action: () => Promise<void>) => {
         const control = document.createElement("button")
         control.type = "button"
-        control.textContent = t(key)
+        if (key === "delete" || key === "confirmDelete") control.className = "danger-action"
+        const text = document.createElement("span")
+        text.textContent = t(key)
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        icon.setAttribute("class", "action-icon")
+        icon.setAttribute("viewBox", "0 0 16 16")
+        icon.setAttribute("aria-hidden", "true")
+        icon.setAttribute("focusable", "false")
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+        path.setAttribute("fill", "currentColor")
+        path.setAttribute("d", ACTION_ICON_PATHS[key === "confirmDelete" ? "delete" : key])
+        icon.append(path)
+        control.append(icon, text)
         control.addEventListener("click", () => run(action))
-        row.append(control)
+        actions.append(control)
       }
       if (!("status" in item))
         button("preview", async () => {
@@ -141,11 +203,11 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
           if (blob.size > MAX_BACKUP_BYTES) throw new Error("online.failed")
           const transfer = parsePetTransfer(JSON.parse(await blob.text()), MAX_BACKUP_BYTES)
           preview = { transfer, context: active }
-          el("online-preview-text").textContent =
-            `${t("restoreWarning")} ${new Date(transfer.state.createdAt).toLocaleDateString(IntlModule.locale)}`
-          el("online-preview").hidden = false
+          el("online-preview-pet").textContent = DIGIMON_CATALOG.byId.get(transfer.state.currentNodeId)?.nameEn ?? ""
+          el("online-preview-text").textContent = new Date(item.createdAt).toLocaleString(IntlModule.locale)
+          restoreDialog.showModal()
           el("online-cancel-restore").focus()
-          status(t("review"))
+          status("")
         })
       else
         button("retry", async () => {
@@ -158,33 +220,100 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
           await list()
         })
       button("delete", async () => {
-        await api(`/api/v1/me/backups/${item.id}`, "DELETE", {}, context.accountId)
-        await onlineTransaction(async (store) => {
-          store.delete(uploadKey(context.accountId, item.id))
+        actions.replaceChildren()
+        state.textContent = t("deletePrompt")
+        button("cancel", list)
+        button("confirmDelete", async () => {
+          await api(`/api/v1/me/backups/${item.id}`, "DELETE", {}, context.accountId)
+          await onlineTransaction(async (store) => {
+            store.delete(uploadKey(context.accountId, item.id))
+          })
+          await list()
+          status(t("deleted"))
         })
-        await list()
+        actions.querySelector<HTMLButtonElement>("button:first-child")?.focus()
+        status("")
       })
       root.append(row)
     }
     if (!root.childElementCount) root.textContent = t("noCopies")
-    status(t("connected"))
+    setCopiesOpen(true)
+    status("")
   }
-  el("online-adopt").addEventListener("click", () =>
+  const settleSession = (): Promise<void> => {
+    if (settling) return settling
+    settling = (async () => {
+      const active = currentOnlineSession()
+      if (!active) {
+        accountChoice = undefined
+        accountDialog.close()
+        await refresh()
+        return
+      }
+      const context = await readOnlineContext()
+      if (context.accountId !== active.accountId) {
+        if (await adoptAccount(active.accountId, { automatic: true, expected: context })) {
+          window.dispatchEvent(new Event("digital-pet:account-changed"))
+        } else {
+          accountChoice = { accountId: active.accountId, context }
+          el("account-switch-description").textContent = t(context.accountId ? "gameOtherAccount" : "legacyContacts")
+          el("account-switch-status").textContent = ""
+          if (!accountDialog.open) accountDialog.showModal()
+          el("account-switch-cancel").focus()
+        }
+      } else {
+        accountChoice = undefined
+        accountDialog.close()
+      }
+      await refresh()
+    })().finally(() => {
+      settling = undefined
+    })
+    return settling
+  }
+  const resumeSession = (): void => {
+    void settleSession().catch(() => status(t("offline")))
+  }
+  accountDialog.addEventListener("cancel", (event) => {
+    if (working) event.preventDefault()
+  })
+  el("account-switch-cancel").addEventListener("click", () => accountDialog.close())
+  accountDialog.addEventListener("close", () => {
+    if (!accountChoice) return
+    const choice = accountChoice
+    accountChoice = undefined
     run(async () => {
-      if (otherBusy()) throw new Error("online.busy")
+      try {
+        await logoutOnline()
+        await refresh()
+        el<HTMLDialogElement>("online-migration").showModal()
+        status("")
+      } catch (error) {
+        accountChoice = choice
+        accountDialog.showModal()
+        throw error
+      }
+    })
+  })
+  el("account-switch-confirm").addEventListener("click", () =>
+    run(async () => {
+      if (!accountChoice || otherBusy()) throw new Error("online.busy")
+      const choice = accountChoice
       const active = await loadOnlineSession()
-      if (!active) throw new Error("online.signIn")
-      await adoptAccount(active.accountId)
+      if (!active || active.accountId !== choice.accountId) throw new Error("online.saveChanged")
+      await adoptAccount(active.accountId, { expected: choice.context })
+      accountChoice = undefined
+      accountDialog.close()
       window.dispatchEvent(new Event("digital-pet:account-changed"))
       await refresh()
-      status(t("adopted"))
+      status("")
     }),
   )
   el("online-logout").addEventListener("click", () =>
     run(async () => {
       await logoutOnline()
       preview = undefined
-      el("online-preview").hidden = true
+      restoreDialog.close()
       el("online-backups").replaceChildren()
       await refresh()
       status(t("signIn"))
@@ -217,49 +346,62 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
       status(t("saved"))
     }),
   )
-  el("online-list").addEventListener("click", () => run(list))
+  el("online-list").addEventListener("click", () => {
+    if (working) return
+    if (!el("online-backups").hidden) {
+      setCopiesOpen(false)
+      status("")
+    } else run(list)
+  })
+  el("options-dialog").addEventListener("close", () => setCopiesOpen(false))
+  restoreDialog.addEventListener("close", () => {
+    preview = undefined
+  })
+  restoreDialog.addEventListener("cancel", (event) => {
+    if (working) event.preventDefault()
+  })
   el("online-cancel-restore").addEventListener("click", () => {
     preview = undefined
-    el("online-preview").hidden = true
+    restoreDialog.close()
   })
   el("online-restore").addEventListener("click", () =>
     run(async () => {
       if (!preview || otherBusy() || !browserSaveSelected()) throw new Error("online.busy")
+      const candidate = preview
       const active = await onlineContext()
-      if (active.accountId !== preview.context.accountId) throw new Error("online.saveChanged")
-      await replaceLocalState(preview.transfer.state, preview.context)
+      if (preview !== candidate) return
+      if (active.accountId !== candidate.context.accountId) throw new Error("online.saveChanged")
+      await replaceLocalState(candidate.transfer.state, candidate.context)
       preview = undefined
-      el("online-preview").hidden = true
+      restoreDialog.close()
       refreshBrowserViews()
-      status(t("restored"))
+      status("")
+      window.dispatchEvent(new Event("digital-pet:backup-restored"))
     }),
   )
-  window.addEventListener("digital-pet:account-changed", () => {
-    void refresh()
-  })
+  window.addEventListener("digital-pet:account-changed", resumeSession)
+  window.addEventListener("digital-pet:account-connect", resumeSession)
   window.addEventListener("digital-pet:save-updated", () => {
     void refresh()
   })
   window.addEventListener("online", () => {
     void loadOnlineSession()
-      .then(refresh)
+      .then(settleSession)
       .catch(() => {})
   })
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden)
       void loadOnlineSession()
-        .then(refresh)
+        .then(settleSession)
         .catch(() => {})
   })
-  el("online-later").addEventListener("click", () => localStorage.setItem("online:migration-dismissed", "1"))
+  el("online-migration").addEventListener("close", () => localStorage.setItem("online:migration-dismissed", "1"))
   await readOnlineContext()
   try {
     const active = await loadOnlineSession()
-    await refresh()
+    await settleSession()
     if (!active && !localStorage.getItem("online:migration-dismissed"))
       el<HTMLDialogElement>("online-migration").showModal()
-    else if (active && (await readOnlineContext()).accountId !== active.accountId)
-      el<HTMLDialogElement>("options-dialog").showModal()
   } catch {
     status(t("offline"))
   }

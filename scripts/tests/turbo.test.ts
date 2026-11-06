@@ -137,15 +137,47 @@ test("web endpoint configuration and local env files invalidate the web build ca
   )
 })
 
-test("backend-only changes also enable browser checks but skip unrelated packaging", () => {
+test("backend-only changes skip unrelated packaging", () => {
   write("packages/web-digital-pet-backend/src/fixture.ts", "export const value = 2\n")
   commit()
   write("plan.json", JSON.stringify(plan(true)))
   execFileSync(process.execPath, [join(root, "scripts/ci-affected.mjs"), join(directory, "plan.json")], {
-    env: { ...process.env, GITHUB_OUTPUT: join(directory, "outputs") },
+    cwd: directory,
+    env: {
+      ...process.env,
+      TURBO_SCM_BASE: "HEAD~1",
+      TURBO_SCM_HEAD: "HEAD",
+      GITHUB_OUTPUT: join(directory, "outputs"),
+    },
     stdio: "pipe",
   })
-  expect(readFileSync(join(directory, "outputs"), "utf8")).toBe("web=true\nopencode=false\ncursor=false\n")
+  expect(readFileSync(join(directory, "outputs"), "utf8")).toBe("opencode=false\ncursor=false\nimporters=false\n")
+})
+
+test("importer validation is selected for Python and catalog changes, not web UI changes", () => {
+  for (const [file, selected] of [
+    ["packages/web-digital-pet/src/panel.ts", false],
+    ["scripts/import-attack-artwork.py", true],
+    ["scripts/tests/test_color_sprites.py", true],
+    ["scripts/requirements-tests.txt", true],
+    ["packages/digital-pet-core/src/data/evolution-reference.json", true],
+  ] as const) {
+    write(file, "changed\n")
+    commit()
+    write("plan.json", JSON.stringify({ packages: [] }))
+    write("outputs", "")
+    execFileSync(process.execPath, [join(root, "scripts/ci-affected.mjs"), join(directory, "plan.json")], {
+      cwd: directory,
+      env: {
+        ...process.env,
+        TURBO_SCM_BASE: "HEAD~1",
+        TURBO_SCM_HEAD: "HEAD",
+        GITHUB_OUTPUT: join(directory, "outputs"),
+      },
+      stdio: "pipe",
+    })
+    expect(readFileSync(join(directory, "outputs"), "utf8")).toContain(`importers=${selected}\n`)
+  }
 })
 
 test("successful builds restore missing artifacts from cache", () => {
@@ -185,15 +217,15 @@ test("a failed test exits unsuccessfully and is never reused from cache", () => 
 
 test("browser checks build only the web, depend on backend sources, and never cache their result", () => {
   const result = JSON.parse(
-    execFileSync(turbo, ["run", "test:browser:ci", "--dry=json"], {
+    execFileSync(turbo, ["run", "test:browser:run", "--dry=json"], {
       cwd: directory,
       env: { ...process.env, TURBO_TELEMETRY_DISABLED: "1" },
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
     }),
   ) as Plan
-  expect(tasks(result).sort()).toEqual([`${web}#build`, `${web}#test:browser:ci`])
-  expect(result.tasks.find((task) => task.taskId === `${web}#test:browser:ci`)?.resolvedTaskDefinition.cache).toBe(
+  expect(tasks(result).sort()).toEqual([`${web}#build`, `${web}#test:browser:run`])
+  expect(result.tasks.find((task) => task.taskId === `${web}#test:browser:run`)?.resolvedTaskDefinition.cache).toBe(
     false,
   )
   expect(result.tasks.some((task) => task.taskId === `${backend}#transit`)).toBe(true)

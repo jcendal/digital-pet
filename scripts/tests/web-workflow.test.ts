@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
 import { planMergedRelease } from "../plan-merged-release.ts"
@@ -32,7 +32,6 @@ test("the web release deploys one tagged revision after checks, then publishes w
   expect(steps[auth].with?.["role-to-assume"]).toBe("${{ vars.BACKEND_DEPLOY_ROLE_ARN }}")
   const ordered = [
     index("npm run validate:web"),
-    index("npm run test:browser"),
     auth,
     index("npm run backend -- deploy"),
     index("npm run backend -- cdn-plan"),
@@ -47,6 +46,20 @@ test("the web release deploys one tagged revision after checks, then publishes w
   expect(existsSync(resolve(root, ".github/workflows/deploy-web-backend.yml"))).toBe(false)
 })
 
+test("Actions leave Playwright to local runs while retaining checks, unit tests and builds", () => {
+  for (const file of readdirSync(resolve(root, ".github/workflows")).filter((name) => /\.ya?ml$/.test(name))) {
+    const content = readFileSync(resolve(root, ".github/workflows", file), "utf8")
+    expect(content).not.toMatch(/playwright|test:browser|browser-checks|browser-failures/)
+  }
+  const runs = workflow("ci")
+    .jobs.validate.steps.map((step) => step.run ?? "")
+    .join("\n")
+  expect(runs).toContain("npx turbo run check --affected")
+  expect(runs).toContain("npx turbo run test test:persistence --affected")
+  expect(runs).toContain("npx turbo run build --affected")
+  expect(workflow("release-web").jobs.deploy.steps.some((step) => step.run === "npm run validate:web")).toBe(true)
+})
+
 test("merged PRs select releases automatically while infrastructure plans cannot publish", () => {
   const trigger = workflow("release-after-merge")
   expect(trigger.on.pull_request_target.types).toContain("closed")
@@ -55,7 +68,7 @@ test("merged PRs select releases automatically while infrastructure plans cannot
   expect(trigger.jobs.publish.steps.some((step) => step.run?.includes("dispatch-merged-releases.ts"))).toBe(true)
   const plan = workflow("plan-web-infrastructure")
   expect(plan.on.workflow_dispatch).toEqual({})
-  expect(plan.jobs.plan.steps.at(-1)?.run).toBe('npm run backend -- plan --environment "$DEPLOY_ENV"')
+  expect(plan.jobs.plan.steps.at(-1)?.run).toBe('npm run backend -- cdn-plan --environment "$DEPLOY_ENV"')
   expect(plan.jobs.plan.steps.some((step) => step.run?.includes("publish-web"))).toBe(false)
   expect(plan.concurrency).toEqual(workflow("release-web").concurrency)
   expect(plan.concurrency["cancel-in-progress"]).toBe(false)

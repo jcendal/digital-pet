@@ -12,6 +12,7 @@ import { assertContext, type OnlineContext, sameContext } from "../../persistenc
 import { readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { prepareTrade, queueSocial, readSocial, updateSocial } from "../../persistence/social-store.ts"
 import { ApiError, api, newOperationId, onlineConfigured, onlineContext } from "../../platform/online-api.ts"
+import { onlineWire } from "../../platform/online-wire.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 
 type Pair = { id: string; value: OnlineRelationship; profile: OnlineProfile }
@@ -21,11 +22,10 @@ export class SocialSession {
   otherTab = false
   readonly channels = new Map<string, { profile: Profile }>()
   private pairs = new Map<string, Pair>()
+  private context: OnlineContext | undefined
   private available = new Set<string>()
   private enabled = false
   private owner = false
-  private acquiring = false
-  private release: (() => void) | undefined
   private queue: Promise<void> = Promise.resolve()
   private profileAccount = ""
   private published = ""
@@ -51,12 +51,21 @@ export class SocialSession {
   async start(): Promise<void> {
     this.enabled = browserSaveSelected()
     window.addEventListener("pagehide", () => this.stop())
-    for (const event of ["online", "pageshow", "digital-pet:online-ready", "digital-pet:online-released"])
+    window.addEventListener("digital-pet:online-disconnected", () => this.stop())
+    for (const event of [
+      "online",
+      "pageshow",
+      "digital-pet:online-ready",
+      "digital-pet:online-released",
+      "digital-pet:online-ownership",
+    ])
       window.addEventListener(event, () => {
         void this.reconnect().catch(this.error)
       })
     window.addEventListener("digital-pet:account-changed", () => {
       this.profileAccount = ""
+      this.context = undefined
+      this.pairs.clear()
       this.published = ""
       void this.reconnect().catch(this.error)
     })
@@ -96,30 +105,12 @@ export class SocialSession {
   }
   async reconnect(): Promise<void> {
     if (!onlineConfigured() || !this.enabled || !browserSaveSelected() || document.hidden || !navigator.onLine) return
+    this.owner = onlineWire.connected
+    this.otherTab = onlineWire.waitingForConnection
     if (!this.owner) {
-      if (this.acquiring) return
-      this.acquiring = true
-      if (navigator.locks) {
-        void navigator.locks
-          .request("digital-pet:social-endpoint-v2", { ifAvailable: true }, async (lock) => {
-            this.acquiring = false
-            this.otherTab = !lock
-            if (!lock || !this.enabled) {
-              this.changed()
-              return
-            }
-            this.owner = true
-            const held = new Promise<void>((resolve) => {
-              this.release = resolve
-            })
-            await this.reconnect()
-            await held
-          })
-          .catch(this.error)
-        return
-      }
-      this.acquiring = false
-      this.owner = true
+      this.ready = false
+      this.changed()
+      return
     }
     if (this.syncing) {
       this.syncAgain = true
@@ -132,6 +123,7 @@ export class SocialSession {
         if (!this.owner || !this.enabled || document.hidden) return
         try {
           await this.sync()
+          if (!this.owner || !onlineWire.connected) return
           this.ready = true
           this.retryAttempt = 0
         } catch (error) {
@@ -213,6 +205,7 @@ export class SocialSession {
     }
     if (after !== null) throw new Error("social.full")
     this.pairs = pairs
+    this.context = context
     window.clearTimeout(this.expiryTimer)
     const deadlines = [...pairs.values()]
       .flatMap(({ value }) => [
@@ -291,6 +284,39 @@ export class SocialSession {
       this.channels.set(code, { profile: parseProfile(profile) })
       this.changed()
     }).catch(this.error)
+  }
+  friendAccount(code: string): string {
+    const pair = this.pair(code)
+    if (!pair.value.active) throw new Error("social.notFriend")
+    return pair.profile.id
+  }
+  get recoveries(): Array<{ id: string; code: string; alias: string }> {
+    const context = this.context
+    if (!context?.accountId) return []
+    const accountId = context.accountId
+    return [...this.pairs.values()].flatMap((pair) =>
+      pair.value.trades.flatMap((trade) => {
+        const side = trade.sides[accountId]
+        return trade.state === "committed" && side && !side.applied && !sameDestination(side.destination, context)
+          ? [{ id: trade.id, code: pair.profile.code, alias: pair.profile.alias }]
+          : []
+      }),
+    )
+  }
+  releaseTrade(id: string): Promise<void> {
+    return this.exclusive(async () => {
+      const recovery = this.recoveries.find((item) => item.id === id)
+      if (!recovery) throw new Error("social.invalid")
+      const context = await onlineContext()
+      await api(
+        `/api/v1/relationships/${this.pair(recovery.code).id}/trades/${id}/release`,
+        "POST",
+        { destination: context },
+        context.accountId,
+      )
+      await this.sync()
+      this.changed()
+    })
   }
   private pair(code: string): Pair {
     const pair = this.pairs.get(code)
@@ -488,10 +514,8 @@ export class SocialSession {
     this.hintTimer = undefined
     this.ready = false
     this.owner = false
-    this.acquiring = false
+    this.otherTab = onlineWire.waitingForConnection
     this.available.clear()
-    this.release?.()
-    this.release = undefined
     this.changed()
   }
 }

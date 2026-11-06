@@ -13,7 +13,7 @@
   min-height: 44px;
   padding: 8px;
   font: inherit;
-  font-size: 11px;
+  font-size: var(--ui-type-label);
   background: transparent;
   color: var(--muted);
   border: 0;

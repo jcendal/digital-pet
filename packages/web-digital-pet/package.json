@@ -18,14 +18,17 @@
   "scripts": {
     "build": "vite build --ssr && vite build",
     "build:static": "npm run build && node scripts/export-static.mjs",
+    "legal:pdf": "python3 scripts/generate-legal-pdfs.py",
     "start": "node dist/server.js",
     "check": "npm run check:architecture && tsc --noEmit -p tsconfig.client.json && tsc --noEmit -p tsconfig.server.json && tsc --noEmit -p tsconfig.worker.json",
     "test": "bun test ./tests/unit",
     "dev": "node scripts/dev.mjs",
     "preview": "vite preview --host 127.0.0.1",
-    "test:browser": "npm run build:static && playwright test",
+    "test:browser": "npm run build:static && npm run test:browser:run",
     "check:architecture": "node tooling/check-boundaries.mjs",
-    "test:browser:ci": "playwright test"
+    "test:browser:run": "playwright test --grep-invert @visual",
+    "test:browser:visual": "playwright test --grep @visual",
+    "test:browser:webkit": "PLAYWRIGHT_WEBKIT=1 playwright test --grep-invert @visual"
   },
   "dependencies": {
     "@jcendal/digital-pet-animation": "0.2.0-dev.0",
@@ -33,7 +36,9 @@
     "@jcendal/digital-pet-fields": "0.1.0-dev.0",
     "@jcendal/digital-pet-intl": "0.1.0-dev.0",
     "@jcendal/digital-pet-online": "0.1.0-dev.0",
-    "@jcendal/digital-pet-webviews": "0.1.0-dev.0"
+    "@jcendal/digital-pet-webviews": "0.1.0-dev.0",
+    "p-queue": "9.1.0",
+    "partysocket": "1.3.0"
   },
   "devDependencies": {
     "@playwright/test": "1.64.0",

@@ -1,22 +1,28 @@
 import { expect, type Page } from "@playwright/test"
+
+const sessions = new WeakMap<Page, string>()
 /** Real HTTP handlers, CAS storage and WebSocket relay with local test adapters. */
 export const linkSocialPeers = async (pages: Page[], adopt = true, injectSocketFailures = false) => {
+  const transport = { chunkedResponses: 0 }
   const failures = new Map<Page, RegExp>()
   const failed = new Map<Page, () => void>()
   const accounts: Array<{ accountId: string; profile: { code: string }; handle: string }> = []
   for (const page of pages) {
     if (process.env.PLAYWRIGHT_WEBKIT !== "1")
       await page.context().grantPermissions(["local-network-access"], { origin: "http://127.0.0.1:4177" })
-    const result = await page.request.post("http://127.0.0.1:4178/test/login")
+    const result = await page.request.post("http://127.0.0.1:4178/test/login", {
+      headers: { "x-test-session": sessions.get(page) ?? "" },
+    })
     const account = await result.json()
     accounts.push(account)
+    sessions.set(page, account.handle)
     if (injectSocketFailures)
       await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
         const server = client.connectToServer()
         const lost = new Set<string>()
         client.onMessage((raw) => {
           const message = JSON.parse(String(raw))
-          if (message.action === "social" && message.command.type === "trade.confirm") {
+          if (message.action === "social" && message.command?.type === "trade.confirm") {
             const input = message.command.input
             const path = `/api/v1/relationships/${input.relationship}/trades/${input.operation}/confirm`
             if (failures.get(page)?.test(path)) {
@@ -28,8 +34,17 @@ export const linkSocialPeers = async (pages: Page[], adopt = true, injectSocketF
         })
         server.onMessage((raw) => {
           const message = JSON.parse(String(raw))
-          if (message.kind === "response" && lost.delete(message.requestId)) {
-            client.send(JSON.stringify({ ...message, status: 503, body: { error: "temporarily-unavailable" } }))
+          if (message.kind === "response-part") transport.chunkedResponses++
+          if (["response", "response-part"].includes(message.kind) && lost.has(message.requestId)) {
+            if (!failed.has(page)) return
+            client.send(
+              JSON.stringify({
+                kind: "response",
+                requestId: message.requestId,
+                status: 503,
+                body: { error: "temporarily-unavailable" },
+              }),
+            )
             failed.get(page)?.()
             failed.delete(page)
           } else client.send(raw)
@@ -102,6 +117,7 @@ export const linkSocialPeers = async (pages: Page[], adopt = true, injectSocketF
   }
   return {
     accounts,
+    transport,
     loseResponseOnce: (page: Page, pattern: RegExp) => {
       failures.set(page, pattern)
       return new Promise<void>((resolve) => failed.set(page, resolve))

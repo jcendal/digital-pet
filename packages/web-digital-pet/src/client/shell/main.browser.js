@@ -51,7 +51,7 @@ import { initBrowserTeam } from "../features/team/controller.ts"
       tab.tabIndex = selected ? 0 : -1
     }
     document.getElementById("social-page-name").textContent = IntlModule.translate(
-      socialPage === "profile" ? "social.profile" : "social.combat",
+      socialPage === "profile" ? "social.profile" : "social.title",
     )
     const footer = document.getElementById("social-footer-label")
     footer.dataset.i18n = socialPage === "profile" ? "web:social.profileFooter" : "web:social.connectionFooter"

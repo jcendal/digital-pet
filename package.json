@@ -21,7 +21,7 @@
     "imports:fix": "biome check --write --formatter-enabled=false --linter-enabled=false .",
     "check": "npm run check:workspace && turbo run check",
     "typecheck": "npm run typecheck:release-metadata && turbo run check",
-    "validate": "npm run check && npm run test && npm run build",
+    "validate": "npm run check && npm run test && npm run test:persistence && npm run test:assets && npm run build",
     "build": "turbo run build",
     "web": "npm run build --workspace @jcendal/web-digital-pet && npm run start --workspace @jcendal/web-digital-pet",
     "pack:opencode": "npm pack --workspace @jcendal/opencode-digital-pet",
@@ -31,9 +31,12 @@
     "check:assets": "node scripts/check-assets.mjs",
     "backend": "node --experimental-strip-types packages/web-digital-pet-backend/scripts/deploy.ts",
     "test:ci": "bun test ./scripts/tests",
-    "test:browser": "turbo run test:browser:ci --filter=@jcendal/web-digital-pet",
+    "test:browser": "turbo run test:browser:run --filter=@jcendal/web-digital-pet",
     "check:workspace": "biome ci . && node scripts/check-workspace-dependencies.mjs && npm run check:assets && npm run typecheck:release-metadata",
-    "validate:web": "npm run check:workspace && npm run test:ci && turbo run check test build --filter=@jcendal/web-digital-pet-backend... --concurrency=2"
+    "validate:web": "npm run check:workspace && npm run test:ci && turbo run check test build --filter=@jcendal/web-digital-pet-backend... --concurrency=2",
+    "test:browser:visual": "turbo run test:browser:visual --filter=@jcendal/web-digital-pet",
+    "test:browser:webkit": "turbo run test:browser:webkit --filter=@jcendal/web-digital-pet",
+    "test:assets": "python3 -m unittest discover -s scripts/tests -p 'test_*.py'"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",

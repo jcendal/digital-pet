@@ -181,6 +181,7 @@ export class BackendStack extends Stack {
     auth.grantRead(functions.realtime, "sessions/*")
     data.grantReadWrite(functions.realtime, "realtime/*")
     data.grantRead(functions.social, "realtime/*")
+    data.grantReadWrite(functions.social, "realtime/requests/*")
     auth.grantRead(functions.social, "sessions/*")
     for (const prefix of ["profiles", "social-index", "relationships", "battle-decisions"])
       data.grantRead(functions.realtime, `${prefix}/*`)

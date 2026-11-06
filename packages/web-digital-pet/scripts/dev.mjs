@@ -10,6 +10,12 @@ const server = await createServer({ root, server: { host: "127.0.0.1", port: Num
 const assets = Object.fromEntries(Object.entries(resourceFiles(root)).map(([url, path]) => [url, `/@fs${path}`]))
 server.middlewares.use(async (request, response, next) => {
   const pathname = new URL(request.url ?? "/", "http://localhost").pathname
+  if (/^\/legal\/(privacy|terms)\.pdf$/.test(pathname) && request.method === "GET") {
+    response.setHeader("Content-Type", "application/pdf")
+    response.setHeader("Cache-Control", "no-cache")
+    response.end(await readFile(new URL(`../assets${pathname}`, import.meta.url)))
+    return
+  }
   if (pathname === "/manifest.webmanifest") {
     const manifest = JSON.parse(await readFile(new URL("../assets/manifest.webmanifest", import.meta.url), "utf8"))
     const images = [...manifest.icons, ...(manifest.screenshots ?? [])]
@@ -19,7 +25,7 @@ server.middlewares.use(async (request, response, next) => {
     response.end(JSON.stringify(manifest))
     return
   }
-  if (!/^\/(?:api\/|view\/|$|dex$|history$)/.test(pathname)) return next()
+  if (!/^\/(?:api\/|view\/|legal\/|$|dex$|history$)/.test(pathname)) return next()
   try {
     const { createWebHandler } = await server.ssrLoadModule("/src/server/http/app.ts")
     const resources = {

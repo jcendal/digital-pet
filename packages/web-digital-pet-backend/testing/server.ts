@@ -15,6 +15,7 @@ import { SocialService } from "../src/social.ts"
 import { socialHandler } from "../src/social-http.ts"
 import { socialSocket } from "../src/social-socket.ts"
 import { socketAction } from "../src/socket-action.ts"
+import { SocketRequests } from "../src/socket-requests.ts"
 import { MemoryStore } from "../tests/memory-store.ts"
 
 const store = new MemoryStore(),
@@ -62,6 +63,7 @@ const services = {
   origin: "http://127.0.0.1:4177",
   auth,
   realtime,
+  requests: new SocketRequests(store),
   accounts: new Accounts(store),
   social: new SocialService(store),
   backups: new BackupService(
@@ -100,6 +102,8 @@ Bun.serve<{ id: string }>({
     const url = new URL(request.url)
     if (url.pathname === "/health") return new Response("ok")
     if (url.pathname === "/test/login" && request.method === "POST") {
+      const previous = request.headers.get("x-test-session")
+      if (previous) await auth.logout(previous)
       const accountId = randomBytes(16).toString("hex"),
         handle = randomBytes(32).toString("base64url")
       const session: Session = {

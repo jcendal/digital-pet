@@ -2,13 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { exchangeFrame } from "@jcendal/digital-pet-animation/sequences/partner-exchange.ts"
 import type { LocalPetState } from "../../../../src/domain/pet/progress.ts"
 import { applyExchange, exchangeOffer } from "../../../../src/domain/social/exchange.ts"
-import {
-  normalizeCode,
-  parseEnvelope,
-  parseOffer,
-  parseProfile,
-  validCode,
-} from "../../../../src/domain/social/model.ts"
+import { normalizeCode, parseOffer, parseProfile, validCode } from "../../../../src/domain/social/model.ts"
 
 const now = Date.now()
 const pet = (id: string, node = "3-001"): LocalPetState => ({
@@ -67,14 +61,11 @@ describe("social exchange", () => {
     expect(() => parseOffer({ ...offer, partner: { ...offer.partner, reserve: pet("nested") } })).toThrow()
     expect(() => parseOffer({ ...offer, partner: { ...offer.partner, currentNodeId: "7-999" } })).toThrow()
   })
-  test("normalizes permanent codes but keeps aliases separate and validates protocol boundaries", () => {
+  test("normalizes permanent codes and rejects invalid aliases", () => {
     const code = normalizeCode("k7md-9qxr 4nwa-6tby")
     expect(validCode(code)).toBe(true)
     expect(validCode("jcendal-9065786")).toBe(false)
     expect(() => parseProfile({ alias: "<img>", revision: 1, nodeId: null })).toThrow()
-    expect(() => parseEnvelope({ version: 2, id: "id", event: { kind: "invite" } })).toThrow()
-    expect(() => parseEnvelope({ version: 1, id: "id", event: { kind: "replace-save" } })).toThrow()
-    expect(parseEnvelope({ version: 1, id: "id", event: { kind: "invite" } }).event.kind).toBe("invite")
   })
   test("Arena presence preserves the active thumbnail and accepts profiles from older peers", () => {
     const profile = { alias: "Alice", revision: 1, nodeId: "3-001" }

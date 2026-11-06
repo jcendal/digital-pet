@@ -449,13 +449,15 @@ export const replaceLocalState = async (incoming: LocalPetState, expected?: Onli
   }
 }
 
-export const restorePreviousSave = async (): Promise<boolean> => {
+export const restorePreviousSave = async (expected?: OnlineContext): Promise<boolean> => {
   const database = await openDatabase()
   try {
     const transaction = database.transaction(STORE_NAME, "readwrite")
     const done = completed(transaction)
     const store = transaction.objectStore(STORE_NAME)
     await assertNoExchange(store)
+    if (expected) await assertContext(store, expected)
+    if (expected && (await resultOf(store.get(PENDING_BATTLE_KEY)))) throw new Error("social.busy")
     const previous = (await resultOf(store.get(BACKUP_KEY))) as LocalPetState | undefined
     if (!previous) {
       await done

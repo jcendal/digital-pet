@@ -1,0 +1,198 @@
+{
+  "version": "2026-11-06",
+  "updated": "6 de noviembre de 2026",
+  "origin": "https://digital-pet.rebase.es",
+  "owner": "Jorge Cendal Prego",
+  "address": "Os Carballos, 15688 Oroso, España",
+  "email": "jorge_cendal@hotmail.com",
+  "privacy": {
+    "title": "Política de privacidad",
+    "summary": "Tu partida se guarda en tu dispositivo. Tú decides cuándo crear una copia en la nube. Google se utiliza únicamente para iniciar sesión.",
+    "pages": [
+      [
+        {
+          "title": "1. Responsable y ámbito",
+          "paragraphs": [
+            "Jorge Cendal Prego es el responsable del tratamiento de los datos de Digital Pet en digital-pet.rebase.es. Dirección: Os Carballos, 15688 Oroso, España. Contacto: jorge_cendal@hotmail.com.",
+            "Esta política se aplica a la aplicación web y sus servicios online. Puedes jugar sin cuenta. Las cuentas online, las copias en la nube y las funciones sociales están reservadas a personas de 18 años o más."
+          ]
+        },
+        {
+          "title": "2. Qué datos se utilizan",
+          "paragraphs": [
+            "En tu dispositivo: la partida, compañeros, progreso, ajustes, idioma y datos necesarios para recuperar operaciones se guardan en el almacenamiento del navegador. No se sube una copia completa de la partida por el mero hecho de jugar o iniciar sesión.",
+            "Al identificarte: Google comunica un identificador de cuenta y tu correo electrónico a través de Amazon Cognito. Digital Pet utiliza identificadores internos y datos de sesión para reconocer tu cuenta. No recibe tu contraseña de Google ni solicita acceso a Gmail, contactos, Drive, calendario o archivos. No guarda tus partidas en Google.",
+            "Al usar funciones online: se tratan el alias, código de amistad, identificadores de cuenta e instalación, presencia, ubicación dentro del juego, relaciones de amistad y datos de invitaciones, regalos, intercambios, combates o transferencias entre dispositivos. La ubicación del juego no es tu ubicación geográfica.",
+            "Al guardar una copia: se envía a Amazon S3 el contenido de la partida exportada y datos como fecha, tamaño, etiqueta e identificador de la copia. Solo se crea cuando lo solicitas. Las funciones sociales pueden enviar los datos de juego necesarios para esa interacción sin crear una copia completa.",
+            "Al conectarte o contactar: la infraestructura procesa datos de conexión, como la dirección IP y la petición HTTP, y registros técnicos de errores y seguridad. Si escribes al correo de contacto, se trata tu dirección y el contenido de tu consulta. No incluyas información sensible innecesaria."
+          ]
+        }
+      ],
+      [
+        {
+          "title": "3. Finalidades y bases jurídicas",
+          "paragraphs": [
+            "La identificación, las copias solicitadas y las interacciones online se realizan para prestar las funciones que pides, sobre la base de la ejecución de las condiciones del servicio (artículo 6.1.b del RGPD). Sin los datos necesarios para estas funciones no es posible ofrecerlas; el juego sin cuenta sigue disponible.",
+            "La protección del servicio, el diagnóstico de fallos y la prevención de abusos se basan en el interés legítimo en mantener un servicio seguro y operativo (artículo 6.1.f). Las solicitudes de derechos se atienden por obligación legal (artículo 6.1.c); otras consultas, para responder a tu petición o por interés legítimo de atención al usuario.",
+            "No se venden datos personales ni se utilizan para publicidad personalizada. Esta versión no incorpora analítica publicitaria. No se adoptan decisiones automatizadas con efectos jurídicos o efectos similares significativos sobre ti."
+          ]
+        },
+        {
+          "title": "4. Proveedores y personas que reciben datos",
+          "paragraphs": [
+            "Amazon Web Services (AWS) proporciona alojamiento, distribución web, autenticación mediante Cognito, almacenamiento y comunicaciones del backend, como proveedor encargado de los tratamientos que realiza por cuenta de Digital Pet. Google presta el servicio de identificación y aplica su propia política a la cuenta y al inicio de sesión de Google.",
+            "Los jugadores con los que interactúas pueden recibir tu alias, código y datos de juego necesarios para la relación o actividad compartida. Tu correo de Google no se muestra como parte del perfil social. Un destinatario puede conservar información que ya haya recibido; cancelar una amistad no retira copias locales ajenas.",
+            "El proveedor de correo electrónico procesa las consultas enviadas al contacto público. También pueden comunicarse datos a autoridades cuando exista una obligación legal. No se autoriza a los proveedores a usar tus copias de partida para publicidad."
+          ]
+        },
+        {
+          "title": "5. Tratamiento fuera del Espacio Económico Europeo",
+          "paragraphs": [
+            "La infraestructura online de Digital Pet utiliza AWS en Estados Unidos y una red global de distribución de contenido. Google y los proveedores técnicos pueden tratar datos fuera del Espacio Económico Europeo.",
+            "Las condiciones de tratamiento de AWS incorporan cláusulas contractuales tipo de la Comisión Europea para las transferencias a las que resultan aplicables. Google describe sus mecanismos de transferencia en su política de privacidad. Puedes solicitar al responsable información y copia de las garantías aplicables a los tratamientos de Digital Pet."
+          ]
+        }
+      ],
+      [
+        {
+          "title": "6. Durante cuánto tiempo",
+          "paragraphs": [
+            "Los datos locales permanecen en el navegador hasta que los elimines o el navegador los borre. Desinstalar la aplicación o limpiar sus datos puede eliminar la partida. Puedes descargar un archivo para conservar una copia propia.",
+            "La cuenta, el perfil y los datos sociales asociados se conservan mientras mantengas la cuenta, salvo que solicites su supresión o exista una necesidad legal de conservación limitada. Las copias completadas en la nube se mantienen hasta que las borres o solicites eliminar la cuenta. El límite actual es de cinco copias por cuenta.",
+            "Las invitaciones de amistad, regalos e intercambios pendientes caducan funcionalmente a los 14 días. Esto no significa que todo registro asociado se borre físicamente ese día: pueden permanecer estados de operaciones vinculados a la cuenta para evitar repeticiones y conservar la coherencia del juego.",
+            "La sesión puede durar hasta 365 días. Los objetos técnicos de sesión tienen una regla de eliminación a los 400 días desde su última modificación. Los registros de aplicación del backend se conservan 14 días. Las cargas de copias incompletas y ciertos objetos temporales tienen reglas de limpieza de un día; la ejecución efectiva depende del ciclo de limpieza de AWS.",
+            "Las consultas se conservan mientras sea necesario para responderlas y resolver incidencias. Si una obligación legal o una reclamación exige conservar determinados datos, se limitarán a ese fin durante el plazo aplicable."
+          ]
+        },
+        {
+          "title": "7. Cookies y almacenamiento del navegador",
+          "paragraphs": [
+            "Digital Pet utiliza almacenamiento local e IndexedDB para la partida y las preferencias, y cachés para cargar la aplicación y permitir su uso sin conexión. Son funciones técnicas del servicio, no mecanismos de publicidad.",
+            "El inicio de sesión usa la cookie técnica __Host-digital-pet-login, de hasta 10 minutos, y la sesión usa __Host-digital-pet-session, de hasta 365 días. Son cookies seguras y no accesibles al JavaScript de la aplicación. Cerrar sesión elimina la cookie de sesión e invalida esa sesión.",
+            "Puedes borrar cookies y almacenamiento desde tu navegador, pero perderás la sesión y podrías perder la partida local. Los sitios de Google y AWS que intervienen en la identificación pueden utilizar sus propias cookies técnicas conforme a sus políticas."
+          ]
+        }
+      ],
+      [
+        {
+          "title": "8. Tus derechos y eliminación de cuenta",
+          "paragraphs": [
+            "Puedes solicitar acceso, rectificación, supresión, portabilidad o limitación del tratamiento y oponerte a los tratamientos basados en interés legítimo escribiendo a jorge_cendal@hotmail.com. Indica qué solicitas y la cuenta afectada. Solo se pedirá información adicional de identidad cuando sea necesaria para evitar entregar o borrar datos de otra persona.",
+            "Puedes borrar tus copias desde la aplicación. Para eliminar la cuenta y sus datos online, solicita la supresión por correo. Cerrar sesión o revocar el acceso de Google no elimina por sí solo la cuenta de Digital Pet. El borrado online no borra los archivos descargados ni los datos guardados en tus dispositivos.",
+            "Las solicitudes se atenderán normalmente en el plazo de un mes; una ampliación legalmente permitida se comunicará con su motivo. Si algún tratamiento se basara en tu consentimiento, podrías retirarlo sin afectar a su licitud anterior. Puedes reclamar ante la Agencia Española de Protección de Datos (www.aepd.es) o ante la autoridad competente de tu lugar de residencia."
+          ]
+        },
+        {
+          "title": "9. Menores y seguridad",
+          "paragraphs": [
+            "El contenido del juego sin cuenta está dirigido a todos los públicos, con la supervisión que corresponda. Digital Pet no ofrece cuentas online para menores de 18 años ni un procedimiento de consentimiento parental. Si detectas una cuenta de un menor, contacta con el responsable para revisar el caso y proceder a su eliminación cuando corresponda.",
+            "Se utilizan comunicaciones cifradas, controles de acceso y almacenamiento privado para proteger los datos online. Ningún sistema puede garantizar una seguridad absoluta. Protege tu cuenta de Google, cierra sesión en dispositivos compartidos y evita utilizar datos personales como alias."
+          ]
+        },
+        {
+          "title": "10. Cambios e información adicional",
+          "paragraphs": [
+            "La fecha de esta política identifica su versión. Los cambios relevantes en el uso de datos se comunicarán de forma adecuada antes de aplicarlos; si requieren consentimiento, se solicitará. La página web y su PDF contienen el mismo texto."
+          ]
+        }
+      ]
+    ],
+    "links": [
+      {
+        "label": "Agencia Española de Protección de Datos",
+        "url": "https://www.aepd.es"
+      },
+      {
+        "label": "Privacidad de Google",
+        "url": "https://policies.google.com/privacy?hl=es"
+      },
+      {
+        "label": "AWS: protección de datos y transferencias",
+        "url": "https://aws.amazon.com/compliance/gdpr-center/"
+      }
+    ]
+  },
+  "terms": {
+    "title": "Condiciones del servicio",
+    "summary": "Digital Pet es un juego gratuito, sin compras ni transacciones monetarias. Puedes jugar sin cuenta; las funciones online son opcionales y están reservadas a mayores de 18 años.",
+    "pages": [
+      [
+        {
+          "title": "1. Titular y servicio",
+          "paragraphs": [
+            "El titular de Digital Pet es Jorge Cendal Prego. Dirección de contacto: Os Carballos, 15688 Oroso, España. Correo: jorge_cendal@hotmail.com. Estas condiciones se aplican a la aplicación web disponible en digital-pet.rebase.es y a sus funciones online.",
+            "Digital Pet permite cuidar compañeros virtuales, explorar y participar en actividades de juego. No ofrece compras, pagos, apuestas ni premios con valor monetario. Los regalos e intercambios se refieren exclusivamente a elementos virtuales del juego."
+          ]
+        },
+        {
+          "title": "2. Edad y cuenta online",
+          "paragraphs": [
+            "Puedes jugar sin cuenta. El contenido del juego está dirigido a todos los públicos; los menores deben contar con la supervisión adecuada a su edad. Para crear y utilizar una cuenta online debes tener al menos 18 años y capacidad para aceptar estas condiciones.",
+            "La cuenta se identifica mediante Google y Amazon Cognito. No debes compartir tu acceso, suplantar a otra persona ni utilizar una cuenta ajena sin autorización. Google solo se utiliza para la identificación: no almacena tus partidas. La disponibilidad de tu cuenta de Google se rige también por las condiciones de ese proveedor.",
+            "Estas condiciones se facilitan antes del acceso a la cuenta. El uso de las funciones online supone aceptar sus reglas; la política de privacidad informa por separado del tratamiento de datos y no constituye un consentimiento genérico."
+          ]
+        },
+        {
+          "title": "3. Partidas y copias",
+          "paragraphs": [
+            "La partida se guarda en el navegador del dispositivo. Iniciar sesión no activa una copia automática en la nube ni garantiza que dos dispositivos compartan siempre el mismo progreso. Limpiar el navegador, perder el dispositivo o usar navegación privada puede provocar la pérdida de datos locales.",
+            "Puedes exportar e importar un archivo de partida. Si tienes cuenta, puedes guardar y recuperar manualmente copias en AWS. El límite actual es de cinco copias por cuenta. Revisa la fecha y el contenido antes de restaurar o importar: la operación puede sustituir la partida del navegador.",
+            "Se recomienda conservar un archivo propio antes de sustituir o borrar una partida. Digital Pet adoptará medidas razonables para proteger los datos que gestiona, pero una copia antigua no contiene avances realizados después de su creación."
+          ]
+        }
+      ],
+      [
+        {
+          "title": "4. Amigos, regalos e intercambios",
+          "paragraphs": [
+            "Las funciones sociales utilizan los datos necesarios para entregar solicitudes y coordinar acciones entre jugadores. Algunas solicitudes pueden quedar pendientes cuando la otra persona no está conectada y caducan a los 14 días.",
+            "Eliminar una amistad cancela los regalos pendientes y los intercambios en curso asociados a esa relación. Los regalos o intercambios ya completados no se deshacen por eliminar la amistad. Las interrupciones de conexión pueden retrasar una confirmación; comprueba el estado antes de repetir una operación.",
+            "Los compañeros y objetos virtuales no son dinero ni activos financieros, y Digital Pet no ofrece su conversión a dinero ni un mercado de compraventa."
+          ]
+        },
+        {
+          "title": "5. Uso respetuoso y protección del servicio",
+          "paragraphs": [
+            "No utilices el servicio para acosar, suplantar identidades, difundir contenido ilegal, acceder a cuentas o datos ajenos, eludir controles de seguridad o sobrecargar deliberadamente la infraestructura. No incluyas datos personales de terceros en los alias o archivos que compartas.",
+            "Podrá limitarse temporalmente el acceso ante un riesgo de seguridad o un incumplimiento de estas reglas, de forma proporcionada. Se informará del motivo cuando sea posible y no comprometa la seguridad ni una obligación legal. Puedes solicitar revisión escribiendo al correo de contacto."
+          ]
+        },
+        {
+          "title": "6. Código, marcas y contenidos",
+          "paragraphs": [
+            "El código del proyecto se distribuye conforme a la licencia indicada en su repositorio. Los gráficos, sonidos, nombres y marcas de terceros mantienen sus derechos y licencias propios. El uso del juego no transfiere la titularidad de esos materiales.",
+            "Digital Pet es un proyecto independiente y no implica afiliación, patrocinio ni aprobación por los titulares de Digimon o por Google o AWS. Las condiciones del servicio no sustituyen las licencias de software o materiales que sean aplicables."
+          ]
+        }
+      ],
+      [
+        {
+          "title": "7. Disponibilidad y responsabilidad",
+          "paragraphs": [
+            "El servicio puede sufrir errores, mantenimiento o interrupciones de red y de proveedores. No se promete disponibilidad ininterrumpida ni ausencia absoluta de fallos. Se procurará avisar de interrupciones o cambios relevantes cuando sea razonablemente posible.",
+            "Cada parte responderá en los términos previstos por la legislación aplicable. Estas condiciones no excluyen la responsabilidad que no pueda excluirse legalmente, ni limitan los derechos obligatorios de consumidores y usuarios. Las recomendaciones de conservar copias no eximen al titular de sus obligaciones."
+          ]
+        },
+        {
+          "title": "8. Baja, privacidad y cambios",
+          "paragraphs": [
+            "Puedes dejar de usar la aplicación en cualquier momento. Para eliminar tu cuenta y datos online escribe a jorge_cendal@hotmail.com. Cerrar sesión no elimina la cuenta. Los archivos descargados y las partidas locales se gestionan en tus dispositivos. La política de privacidad detalla los datos, plazos y derechos.",
+            "Si cambian de forma relevante estas condiciones o se prevé el cierre del servicio online, se comunicará con antelación razonable cuando sea posible, para que puedas decidir si continúas y conservar tus copias. No se introducirán pagos mediante una aceptación implícita de una actualización."
+          ]
+        },
+        {
+          "title": "9. Contacto y legislación",
+          "paragraphs": [
+            "Puedes enviar consultas o reclamaciones a jorge_cendal@hotmail.com. Se aplica la legislación española, sin privarte de la protección de las normas imperativas que correspondan en tu lugar de residencia. Cualquier controversia se resolverá ante los órganos competentes conforme a la ley, sin imponer una renuncia al fuero que te proteja como consumidor."
+          ]
+        }
+      ]
+    ],
+    "links": [
+      {
+        "label": "Política de privacidad de Digital Pet",
+        "url": "https://digital-pet.rebase.es/legal/privacy"
+      }
+    ]
+  }
+}

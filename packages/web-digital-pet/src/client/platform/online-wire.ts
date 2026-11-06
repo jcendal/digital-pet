@@ -1,7 +1,8 @@
 import { record } from "@jcendal/digital-pet-online/contracts.ts"
-import type { SocialCommand } from "@jcendal/digital-pet-online/social-commands.ts"
+import ReconnectingWebSocket from "partysocket/ws"
 import { api, currentOnlineSession, onlineConfigured, onlineContext, onlineSocketUrl } from "./online-api.ts"
 import { announceOnline } from "./online-events.ts"
+import { OnlineRequests } from "./online-requests.ts"
 import { installSocialSender } from "./online-rpc.ts"
 
 export interface WireListener {
@@ -12,16 +13,21 @@ export interface WireListener {
   resend(): void
   error(message: string): void
 }
-type Request = { resolve: (response: Response) => void; reject: (error: Error) => void; timer: number }
 
 /** One physical connection and one browser lock, multiplexing feature protocols. */
 class OnlineWire {
-  private socket: WebSocket | undefined
+  private socket: ReconnectingWebSocket | undefined
   private listeners = new Set<WireListener>()
   private registered = new Set<WireListener>()
-  private requests = new Map<string, Request>()
+  private requests = new OnlineRequests({
+    connected: () => this.connected,
+    account: () => currentOnlineSession()?.accountId,
+    send: (value) => this.write(value),
+    resume: () => this.resume(),
+  })
   private notices = new Set<string>()
   private connecting = false
+  private waitingForLock = false
   private suspended = false
   private epoch = 0
   private attempt = 0
@@ -30,7 +36,7 @@ class OnlineWire {
   private sessionDeadline?: number
   private releaseLock: (() => void) | undefined
   constructor() {
-    installSocialSender((account, command) => this.request(account, command))
+    installSocialSender((account, command) => this.requests.request(account, command))
     window.addEventListener("digital-pet:account-changed", () => {
       this.pause()
       this.notices.clear()
@@ -49,11 +55,15 @@ class OnlineWire {
       this.suspended = false
       this.resume()
     })
+    window.addEventListener("offline", () => this.pause())
     for (const name of ["online", "digital-pet:online-released"]) window.addEventListener(name, () => this.resume())
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) this.pause()
       else this.resume()
     })
+  }
+  get waitingForConnection(): boolean {
+    return this.waitingForLock
   }
   get connected(): boolean {
     return this.socket?.readyState === WebSocket.OPEN
@@ -70,32 +80,31 @@ class OnlineWire {
   detach(listener: WireListener): void {
     this.listeners.delete(listener)
     this.registered.delete(listener)
-    if (!this.listeners.size) this.pause()
+    if (!this.wanted) this.pause()
+  }
+  private get wanted(): boolean {
+    return this.listeners.size > 0 || this.requests.size > 0
   }
   ready(listener: WireListener): void {
     this.registered.add(listener)
     if ([...this.listeners].every((item) => this.registered.has(item))) this.attempt = 0
   }
   reconnect(): void {
-    this.pause()
-    this.schedule()
+    const socket = this.socket
+    if (!socket) {
+      this.resume()
+      return
+    }
+    // A transport can be open while its feature handshake fails. Back off these
+    // explicit protocol restarts too; PartySocket owns unexpected network closes.
+    socket.close()
+    window.clearTimeout(this.timer)
+    this.timer = window.setTimeout(() => {
+      if (socket === this.socket) socket.reconnect()
+    }, this.retryDelay())
   }
-  write(value: unknown): void {
-    if (this.connected) this.socket!.send(JSON.stringify(value))
-  }
-  private request(accountId: string, command: SocialCommand): Promise<Response> | undefined {
-    if (!this.connected) return
-    const requestId = crypto.randomUUID()
-    const message = { action: "social", requestId, accountId, command }
-    if (new TextEncoder().encode(JSON.stringify(message)).byteLength > 24 * 1024) return
-    return new Promise((resolve, reject) => {
-      const timer = window.setTimeout(() => {
-        this.requests.delete(requestId)
-        reject(new Error("online.offline"))
-      }, 25_000)
-      this.requests.set(requestId, { resolve, reject, timer })
-      this.write(message)
-    })
+  write(value: unknown): boolean {
+    return this.connected ? this.socket!.send(JSON.stringify(value)) : false
   }
   private async acquire(): Promise<boolean> {
     if (!navigator.locks) return true
@@ -129,7 +138,7 @@ class OnlineWire {
       this.suspended ||
       this.connecting ||
       this.socket ||
-      !this.listeners.size ||
+      !this.wanted ||
       document.hidden ||
       !navigator.onLine ||
       !onlineConfigured()
@@ -139,26 +148,58 @@ class OnlineWire {
     const epoch = this.epoch
     try {
       if (!(await this.acquire())) {
+        this.waitingForLock = true
+        window.dispatchEvent(new Event("digital-pet:online-ownership"))
         // A just-released page lock may still be settling. This retry is local only.
         this.schedule()
         return
       }
-      if (this.suspended || epoch !== this.epoch || !this.listeners.size || document.hidden) return
-      const context = await onlineContext()
-      if (this.suspended || epoch !== this.epoch || !this.listeners.size || document.hidden) return
-      const ticket = await api<{ ticket: string }>(
-        "/auth/ticket",
-        "POST",
-        { installationId: context.installationId },
-        context.accountId,
+      this.waitingForLock = false
+      window.dispatchEvent(new Event("digital-pet:online-ownership"))
+      if (this.suspended || epoch !== this.epoch || !this.wanted || document.hidden) return
+      const active = () =>
+        !this.suspended && epoch === this.epoch && this.wanted && !document.hidden && navigator.onLine
+      const socket = new ReconnectingWebSocket(
+        async () => {
+          try {
+            if (!active()) throw new Error("online.offline")
+            const context = await onlineContext()
+            if (!active()) throw new Error("online.offline")
+            const ticket = await api<{ ticket: string }>(
+              "/auth/ticket",
+              "POST",
+              { installationId: context.installationId },
+              context.accountId,
+            )
+            if (!active()) throw new Error("online.offline")
+            const url = new URL(onlineSocketUrl())
+            url.searchParams.set("ticket", ticket.ticket)
+            return url.href
+          } catch (error) {
+            if (
+              socket === this.socket &&
+              error instanceof Error &&
+              ["online.signIn", "online.adoptFirst"].includes(error.message)
+            )
+              this.pause()
+            throw error
+          }
+        },
+        [],
+        {
+          startClosed: true,
+          maxEnqueuedMessages: 0,
+          connectionTimeout: 10_000,
+          minReconnectionDelay: 1000 + Math.random() * 2000,
+          maxReconnectionDelay: 30_000,
+          reconnectionDelayGrowFactor: 2,
+          minUptime: 10_000,
+        },
       )
-      if (this.suspended || epoch !== this.epoch || !this.listeners.size || document.hidden) return
-      const url = new URL(onlineSocketUrl())
-      url.searchParams.set("ticket", ticket.ticket)
-      const socket = new WebSocket(url)
       this.socket = socket
       socket.onopen = () => {
         if (socket !== this.socket) return
+        this.requests.opened()
         const expiresAt = currentOnlineSession()?.accessExpiresAt
         if (expiresAt)
           this.sessionDeadline = window.setTimeout(
@@ -185,10 +226,13 @@ class OnlineWire {
       }
       socket.onclose = () => {
         if (socket !== this.socket) return
-        this.pause()
-        this.schedule()
+        this.disconnected()
       }
-      socket.onerror = () => socket.close()
+      // PartySocket owns retries; destroying it here would reset its backoff.
+      socket.onerror = () => {
+        if (socket === this.socket) this.disconnected()
+      }
+      socket.reconnect()
     } catch (error) {
       if (!(error instanceof Error && ["online.signIn", "online.adoptFirst"].includes(error.message))) {
         for (const listener of this.listeners)
@@ -207,19 +251,7 @@ class OnlineWire {
       this.reconnect()
       return
     }
-    if (value.kind === "response" && typeof value.requestId === "string" && typeof value.status === "number") {
-      const request = this.requests.get(value.requestId)
-      if (!request) return
-      this.requests.delete(value.requestId)
-      window.clearTimeout(request.timer)
-      request.resolve(
-        new Response(JSON.stringify(value.body), {
-          status: value.status,
-          headers: { "Content-Type": "application/json" },
-        }),
-      )
-      return
-    }
+    if (this.requests.receive(value)) return
     if (
       value.kind === "changed" &&
       typeof value.eventId === "string" &&
@@ -235,25 +267,29 @@ class OnlineWire {
   }
   private schedule(): void {
     window.clearTimeout(this.timer)
-    if (!this.suspended && !document.hidden && navigator.onLine && this.listeners.size)
-      this.timer = window.setTimeout(() => this.resume(), Math.min(30_000, 1000 * 2 ** Math.min(this.attempt++, 5)))
+    if (!this.suspended && !document.hidden && navigator.onLine && this.wanted)
+      this.timer = window.setTimeout(() => this.resume(), this.retryDelay())
   }
-  private pause(): void {
-    this.epoch++
+  private retryDelay(): number {
+    return Math.min(30_000, (1000 + Math.random() * 1000) * 2 ** Math.min(this.attempt++, 5))
+  }
+  private disconnected(): void {
+    window.dispatchEvent(new Event("digital-pet:online-disconnected"))
     this.registered.clear()
-    window.clearTimeout(this.timer)
     window.clearInterval(this.maintenance)
     window.clearTimeout(this.sessionDeadline)
+    this.requests.disconnected()
+    for (const listener of this.listeners) listener.disconnected()
+  }
+  private pause(): void {
+    this.waitingForLock = false
+    this.epoch++
+    window.clearTimeout(this.timer)
     const socket = this.socket
     this.socket = undefined
     socket?.close()
     this.release()
-    for (const request of this.requests.values()) {
-      window.clearTimeout(request.timer)
-      request.reject(new Error("online.offline"))
-    }
-    this.requests.clear()
-    for (const listener of this.listeners) listener.disconnected()
+    this.disconnected()
   }
 }
 export const onlineWire = new OnlineWire()

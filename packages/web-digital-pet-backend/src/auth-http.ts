@@ -29,6 +29,9 @@ export const authHandler = (services: {
         event.queryStringParameters?.code ?? "",
         cookie(event, LOGIN_COOKIE),
       )
+      // Existing sockets authenticate by session handle, independently of cookies.
+      // Retire the replaced session only after the new OAuth proof was validated.
+      if (handle && handle !== result.handle) await services.auth.logout(handle)
       return {
         ...response(302, {}, [
           setCookie(SESSION_COOKIE, result.handle, Math.floor((result.session.expiresAt - Date.now()) / 1000)),

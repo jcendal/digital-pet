@@ -1,8 +1,10 @@
 import { expect, test } from "bun:test"
-import { INVITATION_LIFETIME_MS, MAX_TRADE_OFFER_BYTES } from "@jcendal/digital-pet-online/contracts.ts"
+import { INVITATION_LIFETIME_MS, jsonBytes, MAX_TRADE_OFFER_BYTES } from "@jcendal/digital-pet-online/contracts.ts"
+import type { OnlineRelationship } from "@jcendal/digital-pet-online/social.ts"
 import { parseEnvelope, parseOffer } from "@jcendal/web-digital-pet/protocol/social"
 import { readBody } from "../src/http.ts"
-import { relationshipId, SocialService } from "../src/social.ts"
+import { relationshipId } from "../src/identity.ts"
+import { SocialService } from "../src/social.ts"
 import { MemoryStore } from "./memory-store.ts"
 
 const phone = { installationId: "phone", saveId: "phone-game" }
@@ -142,7 +144,8 @@ test("trade needs both exact destinations and confirmations; removal cannot undo
   await expect(service.cancelTrade("bob", id, "trade")).rejects.toThrow("trade-committed")
   await service.acknowledgeTrade("alice", id, "trade", phone)
   await service.acknowledgeTrade("bob", id, "trade", friend)
-  expect((await service.inbox("alice")).relationships[0]?.value.trades[0]?.sides.bob?.applied).toBe(true)
+  expect((await service.inbox("alice")).relationships[0]?.value.trades).toEqual([])
+  expect(await service.readTrade("alice", id, "trade")).toMatchObject({ state: "committed", sides: {} })
 })
 
 test("removing a friendship aborts a prepared trade and rejects later confirmation", async () => {
@@ -191,4 +194,100 @@ test("expired inbox references release capacity without removing active friendsh
   const inbox = await service.inbox("bob")
   expect(inbox.relationships).toHaveLength(2)
   expect(inbox.relationships.some((pair) => pair.value.active)).toBe(true)
+})
+
+test("a renewed friendship can trade while a previous generation still awaits its original device", async () => {
+  const { service, id } = await setup()
+  await service.prepareTrade("alice", id, 1, "old", phone, { partner: "a" })
+  await service.prepareTrade("bob", id, 1, "old", friend, { partner: "b" })
+  await service.confirmTrade("alice", id, "old", phone)
+  await service.confirmTrade("bob", id, "old", friend)
+  await service.acknowledgeTrade("alice", id, "old", phone)
+  await expect(service.prepareTrade("alice", id, 1, "new", phone, { partner: "a" })).rejects.toThrow("trade-busy")
+  await service.remove("alice", id, 1)
+  await service.invite("alice", "bob", "again")
+  await service.decideInvitation("bob", id, "again", "accepted")
+  expect((await service.prepareTrade("alice", id, 2, "new", phone, { partner: "a" })).state).toBe("pending")
+  expect((await service.readTrade("bob", id, "old")).state).toBe("committed")
+  await service.acknowledgeTrade("bob", id, "old", friend)
+  expect(await service.readTrade("bob", id, "old")).toMatchObject({ state: "committed", sides: {} })
+})
+
+test("inbox pagination packs small relationships and stops at the byte budget without skipping entries", async () => {
+  for (const large of [false, true]) {
+    const store = new MemoryStore(),
+      service = new SocialService(store)
+    const ids: string[] = []
+    for (let index = 0; index < 32; index++) {
+      const { id } = await service.invite("alice", `friend-${index}`, `invitation-${index}`)
+      ids.push(id)
+      if (large) {
+        const found = await store.get<OnlineRelationship>(`relationships/${id}`)
+        if (!found) throw new Error("Missing test relationship")
+        found.value.trades = Array.from({ length: 35 }, (_, i) => ({
+          id: `trade-${i}`,
+          generation: 0,
+          createdAt: Date.now(),
+          expiresAt: Date.now(),
+          state: "committed",
+          confirmed: [],
+          sides: { alice: { destination: phone, applied: false, offer: { data: "a".repeat(24000) } } },
+        }))
+        expect(jsonBytes(found.value)).toBeLessThan(1024 * 1024)
+        await store.put(`relationships/${id}`, found.value, found.revision)
+      }
+    }
+    let after: string | null = "",
+      pages = 0
+    const received: string[] = []
+    while (after !== null) {
+      const page = await service.inbox("alice", after)
+      expect(jsonBytes(page)).toBeLessThan(3 * 1024 * 1024 + 1024)
+      expect(page.relationships.length).toBeGreaterThan(0)
+      received.push(...page.relationships.map((pair) => pair.id))
+      after = page.next
+      expect(++pages).toBeLessThanOrEqual(32)
+    }
+    expect(received).toEqual(ids.sort())
+    if (!large) expect(pages).toBe(2)
+  }
+})
+
+test("finished trade receipts retain retry identity without retaining large offers", async () => {
+  const { service, id, store } = await setup()
+  const offer = { history: "a".repeat(24_000) }
+  for (let i = 0; i < 100; i++) {
+    await service.prepareTrade("alice", id, 1, `trade-${i}`, phone, offer)
+    await service.cancelTrade("alice", id, `trade-${i}`)
+  }
+  const record = await store.get(`relationships/${id}`)
+  expect(jsonBytes(record?.value)).toBeLessThan(100_000)
+  expect((await service.inbox("alice")).relationships[0]?.value.trades).toEqual([])
+  expect((await service.prepareTrade("alice", id, 1, "trade-0", phone, offer)).state).toBe("canceled")
+  await expect(service.prepareTrade("alice", id, 1, "trade-0", phone, { history: "changed" })).rejects.toThrow(
+    "operation-conflict",
+  )
+  await expect(service.prepareTrade("alice", id, 1, "trade-0", laptop, offer)).rejects.toThrow("different-save")
+})
+
+test("lost-device recovery abandons only the actor's delivery and preserves the peer's offer", async () => {
+  const { service, id } = await setup()
+  await service.prepareTrade("alice", id, 1, "trade", phone, { partner: "a" })
+  await service.prepareTrade("bob", id, 1, "trade", friend, { partner: "b" })
+  await service.confirmTrade("alice", id, "trade", phone)
+  await service.confirmTrade("bob", id, "trade", friend)
+  await expect(service.releaseTrade("alice", id, "trade", phone)).rejects.toThrow("original-save")
+  await expect(service.releaseTrade("mallory", id, "trade", laptop)).rejects.toThrow("forbidden")
+  await service.releaseTrade("alice", id, "trade", laptop)
+  await service.releaseTrade("alice", id, "trade", laptop)
+  expect((await service.inbox("alice")).relationships[0]?.value.trades[0]?.state).toBe("canceled")
+  const pending = (await service.inbox("bob")).relationships[0]?.value.trades[0]
+  expect(pending).toMatchObject({
+    state: "committed",
+    sides: { alice: { abandoned: true, applied: true, offer: { partner: "a" } }, bob: { applied: false } },
+  })
+  await service.acknowledgeTrade("bob", id, "trade", friend)
+  expect((await service.inbox("bob")).relationships[0]?.value.trades).toEqual([])
+  await service.acknowledgeTrade("bob", id, "trade", friend)
+  expect((await service.prepareTrade("alice", id, 1, "next", laptop, { partner: "c" })).state).toBe("pending")
 })

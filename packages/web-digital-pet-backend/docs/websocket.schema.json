@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Digital Pet WebSocket v1",
-  "description": "Social requests <=24 KiB, relay envelopes <=25 KiB. Server errors carry action/channel/requestId where available. Retryable failures allow bounded retries; terminal channel failures close only that logical channel. Social 303 responses refer to authorized HTTP results; never replay a committed mutation.",
+  "description": "Native API Gateway WebSocket protocol. Social envelopes <=24 KiB. responseChunks clients use fragmented requests (48 KiB assembled) and replies (5 MiB assembled). No automatic replay of social commands. Legacy clients retain HTTP reads and 303 trade-result locations.",
   "$defs": {
     "SocialCommand": {
       "oneOf": [
@@ -95,7 +95,7 @@
             }
           },
           "required": ["type", "input"],
-          "description": "HTTP only: the WebSocket adapter responds with 413 http-required. Read the paginated inbox over HTTP."
+          "description": "Paginated inbox over WebSocket for responseChunks clients; legacy clients use HTTP."
         },
         {
           "type": "object",
@@ -448,6 +448,32 @@
             }
           },
           "required": ["type", "input"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "trade.release"
+            },
+            "input": {
+              "type": "object",
+              "properties": {
+                "destination": {
+                  "$ref": "./openapi.json#/components/schemas/Destination"
+                },
+                "relationship": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                }
+              },
+              "required": ["destination", "relationship", "operation"]
+            }
+          },
+          "required": ["type", "input"]
         }
       ]
     },
@@ -527,15 +553,39 @@
               "enum": ["battle", "transfer"]
             },
             "code": {
-              "type": "string",
-              "pattern": "^([0-9]{6}|[A-HJ-NP-Z2-9]{16})$"
+              "type": "string"
             },
             "requestId": {
               "type": "string",
               "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "friend": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+              "description": "Authenticated friend account; battle namespace only. Resolve its live endpoint on the server. Leave code empty."
             }
           },
-          "required": ["action", "namespace", "code", "requestId"]
+          "required": ["action", "namespace", "code", "requestId"],
+          "if": {
+            "required": ["friend"]
+          },
+          "then": {
+            "properties": {
+              "namespace": {
+                "const": "battle"
+              },
+              "code": {
+                "const": ""
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "code": {
+                "pattern": "^([0-9]{6}|[A-HJ-NP-Z2-9]{16})$"
+              }
+            }
+          }
         },
         {
           "type": "object",
@@ -578,9 +628,52 @@
             },
             "command": {
               "$ref": "#/$defs/SocialCommand"
+            },
+            "responseChunks": {
+              "type": "boolean"
             }
           },
-          "required": ["action", "requestId", "accountId", "command"]
+          "required": ["action", "requestId", "accountId", "command"],
+          "not": {
+            "required": ["fragment"]
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "social"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "accountId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "responseChunks": {
+              "const": true
+            },
+            "fragment": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Fragment"
+                },
+                {
+                  "properties": {
+                    "total": {
+                      "maximum": 16
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": ["action", "requestId", "accountId", "responseChunks", "fragment"],
+          "not": {
+            "required": ["command"]
+          }
         }
       ]
     },
@@ -800,8 +893,48 @@
             }
           },
           "required": ["kind", "status", "body"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "response-part"
+            },
+            "requestId": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 200,
+              "maximum": 599
+            },
+            "fragment": {
+              "$ref": "#/$defs/Fragment"
+            }
+          },
+          "required": ["kind", "requestId", "status", "fragment"]
         }
       ]
+    },
+    "Fragment": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
+        },
+        "data": {
+          "type": "string",
+          "description": "A contiguous fragment of serialized JSON. Escaped UTF-8 size is at most 23 KiB."
+        }
+      },
+      "required": ["index", "total", "data"]
     }
   },
   "oneOf": [

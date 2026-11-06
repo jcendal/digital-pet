@@ -14,7 +14,7 @@ const icons = {
   dex: icon(
     '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 5v15M3 4h5l4 2 4-2h5v14h-5l-4 2-4-2H3zM6 8h3M6 12h3m6-4h3m-3 4h3"/>',
   ),
-  battle: icon(
+  social: icon(
     '<g stroke="currentColor" stroke-width="2" stroke-linejoin="miter"><path fill="var(--case)" d="M21 3h-4L4 16l4 4L21 7z"/><path fill="var(--case)" d="M3 3h4l13 13-4 4L3 7z"/><path fill="none" d="m3 14 7 7m4 0 7-7M5 19l-3 3m17-3 3 3"/></g>',
   ),
   profile: icon('<path fill="currentColor" d="M9 2h6v6H9zM6 11h12v3h3v8H3v-8h3z"/>'),
@@ -25,19 +25,19 @@ const icons = {
 }
 const label = (key: string): string =>
   `<span class="nav-label" data-i18n="web:${key}" aria-hidden="true">${escapeHtml(IntlModule.translate(key))}</span>`
-const battleButton = `<button id="battle-button" class="nav-battle" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.battle"))}" data-i18n-aria-label="web:navigationMarkup.battle" title="${escapeHtml(IntlModule.translate("controller.playerBattle"))}" data-i18n-title="web:controller.playerBattle" aria-controls="social-view">${icons.battle}${label("navigationMarkup.battle")}</button>`
+const socialButton = `<button id="battle-button" class="nav-battle" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.social"))}" data-i18n-aria-label="web:navigationMarkup.social" title="${escapeHtml(IntlModule.translate("social.title"))}" data-i18n-title="web:social.title" aria-controls="social-view">${icons.social}${label("navigationMarkup.social")}</button>`
 
 export const navigationMarkup = (page: "sidebar" | "dex" | "history"): string => {
   const installation = `<div id="install-banner" class="install-banner" hidden><button id="install-open" type="button" data-i18n="web:installation.action">${escapeHtml(IntlModule.translate("installation.action"))}</button><button id="install-dismiss" type="button" aria-label="${escapeHtml(IntlModule.translate("installation.dismiss"))}" data-i18n-aria-label="web:installation.dismiss">✕</button></div>`
   const links = (["sidebar", "dex"] as const)
     .map((view) => {
-      const key = view === "sidebar" ? "navigationMarkup.partner" : `navigation.${view}`
+      const key = view === "sidebar" ? "navigationMarkup.partner" : "navigation.team"
       const name = escapeHtml(IntlModule.translate(key))
       const symbol = view === "sidebar" ? icons.partner : icons[view]
       const current = view === page || (view === "dex" && page === "history")
-      const link = `<a href="${view === "sidebar" ? "/" : `/${view}`}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${current ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
+      const link = `<a href="${view === "sidebar" ? "/" : "/dex?tab=team"}" data-page="${view}" aria-label="${name}" title="${name}" data-i18n-aria-label="web:${key}" data-i18n-title="web:${key}"${current ? ' aria-current="page"' : ""}>${symbol}${label(key)}</a>`
       const mapButton = `<button id="map-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.map"))}" data-i18n-aria-label="web:navigationMarkup.map" aria-controls="world-map-view">${icons.map}${label("navigationMarkup.map")}</button>`
-      return view === "sidebar" ? link : link + mapButton + battleButton
+      return view === "sidebar" ? link : link + mapButton + socialButton
     })
     .join("")
   const more = `<div class="nav-more"><button id="more-button" type="button" aria-label="${escapeHtml(IntlModule.translate("navigationMarkup.more"))}" data-i18n-aria-label="web:navigationMarkup.more" aria-controls="more-menu" aria-expanded="false">${icons.more}${label("navigationMarkup.more")}</button><div id="more-menu" class="more-menu" hidden>

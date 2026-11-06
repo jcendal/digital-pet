@@ -119,10 +119,20 @@ Run these commands from the repository root:
 | `npm run test` | Run workspace unit tests |
 | `npm run test:persistence` | Run OpenCode SQLite persistence tests |
 | `npm run build` | Build OpenCode, Cursor, the web app, and the backend |
-| `npm run validate` | Run checks, unit tests, and builds together |
+| `npm run validate` | Run checks, unit/persistence/importer tests, and builds together |
 | `npm run validate:web` | Validate the web, backend, and their workspace dependencies |
 | `npm run test:ci` | Verify affected-package selection and cache invalidation |
-| `npm run test:browser` | Build the web if needed, then run uncached browser tests |
+| `npm run test:browser` | Build the web if needed, then run browser tests locally |
+| `npm run test:browser:visual` | Generate the exhaustive theme screenshot tour for manual review |
+| `npm run test:browser:webkit` | Run functional browser tests in WebKit with the iPhone device profile |
+| `npm run test:assets` | Run the offline Python asset-importer tests |
+
+The full validation also needs Python 3, Pillow and BeautifulSoup. Install the
+pinned test dependencies in a virtual environment with
+`python3 -m venv /tmp/digital-pet-python`, then activate it with
+`source /tmp/digital-pet-python/bin/activate` and run
+`python -m pip install -r scripts/requirements-tests.txt`.
+These importer tests use local fixtures and do not download upstream resources.
 
 For focused work, run `npm run test --workspace <package-name>` (direct execution)
 or `npx turbo run test --filter=<package-name>` (cached execution).
@@ -158,11 +168,22 @@ The external remote cache is disabled; no Vercel account or cache token is neede
 Cache misses run the task normally. Use `npx turbo run test --force` to rerun
 tests regardless of cached results.
 
-Browser tests run when either web or backend is affected and never cache their
-result. Their web build can use the cache. Packaging remains outside Turbo and
-runs after the selected checks, so npm lifecycle hooks cannot mutate manifests
-while other tasks are reading them. Backend deployment validates only web,
-backend, and their dependencies, then runs browser checks before deploying.
+Browser tests run locally on demand with `npm run test:browser`; GitHub Actions
+does not install browsers or run Playwright in PR validation or web releases.
+The normal command excludes the `@visual` screenshot tour. Captures are manual
+review artifacts, not image-baseline assertions. Run `npm run test:browser:visual`
+when comparing themes and layouts. The default browser is Chromium; an iPhone
+user-agent test alone does not prove Safari compatibility. Install WebKit with
+`npx playwright install webkit` before using `npm run test:browser:webkit`.
+Direct Playwright commands can select individual specs; add `--grep-invert @visual`
+when invoking the whole functional suite directly.
+Local browser test results remain uncached so each requested run exercises the
+browser; their web build can use the cache. CI retains checks, unit/persistence
+tests and builds, and runs Python importer tests only when their scripts, data or
+CI configuration change. Packaging remains outside Turbo and runs after the selected
+checks, so npm lifecycle hooks cannot mutate manifests while other tasks are
+reading them. Backend deployment validates web, backend and their dependencies
+before deploying. Run focused browser tests locally for changes to browser flows.
 
 ## Shared editor files
 

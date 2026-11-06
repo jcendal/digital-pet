@@ -9,7 +9,7 @@ import {
   restorePreviousSave,
   setPairedDevice,
 } from "../../persistence/pet-store.ts"
-import { onlineContext } from "../../platform/online-api.ts"
+import { onlineConfigured, onlineContext } from "../../platform/online-api.ts"
 import type { OnlineConnection as DataConnection } from "../../platform/online-connection.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import { BrowserTransfer, CODE_LENGTH, displayDeviceCode, normalizeDeviceCode, validDeviceCode } from "./transport.ts"
@@ -86,12 +86,24 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
       ? IntlModule.translate("controller.pairAnotherDevice")
       : IntlModule.translate("controller.pairDevices")
     linked.textContent = pairedCode ? displayDeviceCode(pairedCode) : ""
+    copy.disabled = !ready || !deviceCode
     request.disabled = !ready || !enabled || connection !== null
     sync.disabled = !ready || !enabled || connection !== null || pairedCode === null
     forget.disabled = connection !== null
     button.disabled = !enabled
   }
-  function openDialog(): void {
+  async function openDialog(): Promise<void> {
+    if (onlineConfigured()) {
+      try {
+        await onlineContext()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "online.offline"
+        note(IntlModule.translate(message))
+        if (message === "online.signIn") element<HTMLDialogElement>("online-migration").showModal()
+        else if (message === "online.adoptFirst") window.dispatchEvent(new Event("digital-pet:account-connect"))
+        return
+      }
+    }
     if (!dialog.open) dialog.showModal()
     transfer.resume()
   }
@@ -151,13 +163,26 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
     disconnected: () => {
       ready = false
       updateControls()
-      note(IntlModule.translate("controller.deviceConnectionLostReconnecting"))
+      if (onlineConfigured()) {
+        void onlineContext().then(
+          () => {
+            if (!ready) note(IntlModule.translate("controller.deviceConnectionLostReconnecting"))
+          },
+          (error: unknown) => {
+            if (!ready) note(IntlModule.translate(error instanceof Error ? error.message : "online.offline"))
+          },
+        )
+      } else note(IntlModule.translate("controller.deviceConnectionLostReconnecting"))
     },
     error: (message) => {
       ready = transfer.connected
       if (connection) resetConnection()
       updateControls()
-      note(IntlModule.translate("controller.couldNotConnectCheckThatTheOtherApp", { message: message }))
+      note(
+        message.startsWith("online.")
+          ? IntlModule.translate(message)
+          : IntlModule.translate("controller.couldNotConnectCheckThatTheOtherApp", { message }),
+      )
     },
   })
 
@@ -336,7 +361,9 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
   const showError = (error: unknown): void =>
     note(error instanceof Error ? error.message : IntlModule.translate("controller.couldNotCompleteTheRequest"))
 
-  button.addEventListener("click", openDialog)
+  button.addEventListener("click", () => {
+    void openDialog()
+  })
   dialog.addEventListener("close", () => {
     if (connection && !finishing) finish({ type: "decline" }, IntlModule.translate("controller.transferCancelled"))
   })

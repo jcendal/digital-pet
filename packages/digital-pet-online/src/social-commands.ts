@@ -17,6 +17,7 @@ export const SOCIAL_COMMAND_TYPES = [
   "trade.confirm",
   "trade.cancel",
   "trade.applied",
+  "trade.release",
   "challenge.send",
 ] as const
 export type SocialCommandType = (typeof SOCIAL_COMMAND_TYPES)[number]
@@ -48,7 +49,7 @@ export const socialCommandFor = (
   const lookup = /^\/profiles\/by-code\/([A-HJ-NP-Z2-9]{16})$/.exec(path)
   if (lookup && method === "GET") return command("profile.lookup", { code: lookup[1] })
   const pair =
-    /^\/relationships\/([a-f0-9]{64})(?:\/(invitations|gifts|trades|challenges)(?:\/([A-Za-z0-9_-]+)(?:\/(decision|claim|applied|confirm|cancel))?)?)?$/.exec(
+    /^\/relationships\/([a-f0-9]{64})(?:\/(invitations|gifts|trades|challenges)(?:\/([A-Za-z0-9_-]+)(?:\/(decision|claim|applied|confirm|cancel|release))?)?)?$/.exec(
       path,
     )
   if (!pair) return
@@ -65,6 +66,7 @@ export const socialCommandFor = (
   }
   if (resource === "trades") {
     if (!operation) return command("trade.prepare", args)
-    if (action === "confirm" || action === "cancel" || action === "applied") return command(`trade.${action}`, args)
+    if (action === "confirm" || action === "cancel" || action === "applied" || action === "release")
+      return command(`trade.${action}`, args)
   }
 }

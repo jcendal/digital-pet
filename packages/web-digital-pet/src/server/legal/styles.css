@@ -1,0 +1,127 @@
+:root {
+  color-scheme: light;
+  color: #22321d;
+  background: #edf0e5;
+  font-family: system-ui, sans-serif;
+  line-height: 1.7;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: #2e4d26;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+a:focus-visible {
+  outline: 3px solid #496a36;
+  outline-offset: 4px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px max(24px, calc((100% - 780px) / 2));
+  background: #becb9e;
+  border-bottom: 4px double #53633e;
+}
+header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.brand {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+[aria-current="page"] {
+  font-weight: 700;
+}
+main {
+  max-width: 828px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+h1 {
+  margin: 8px 0;
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+h2 {
+  margin: 32px 0 12px;
+  font-size: 21px;
+  line-height: 1.4;
+  scroll-margin-top: 24px;
+}
+p {
+  margin: 0 0 16px;
+}
+.eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.updated {
+  margin: 16px 0 24px;
+  font-size: 14px;
+}
+.summary {
+  padding: 20px;
+  background: #dfe6cf;
+  border-left: 4px solid #53633e;
+  font-size: 18px;
+}
+.download {
+  display: inline-flex;
+  gap: 24px;
+  padding: 10px 16px;
+  border: 2px solid #53633e;
+  font-weight: 700;
+  text-decoration: none;
+}
+.contents {
+  margin-top: 28px;
+  padding: 8px 16px;
+  border-block: 1px solid #aab895;
+}
+.contents li {
+  padding: 3px 0;
+}
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #aab895;
+  font-size: 14px;
+}
+@media print {
+  :root {
+    color: #000;
+    background: #fff;
+  }
+  header,
+  .download,
+  .contents {
+    display: none;
+  }
+  main {
+    padding: 0;
+  }
+  h2 {
+    break-after: avoid;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+}

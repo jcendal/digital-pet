@@ -11,10 +11,18 @@ accounts on the production site before announcing availability.
 
 ## Infrastructure as code
 
-The backend uses AWS CDK in TypeScript, which synthesizes CloudFormation. The
+The backend, hosting and deployment-access definitions use AWS CDK in TypeScript,
+which synthesizes CloudFormation. The
 pinned local CDK CLI is installed by `npm ci`; no Terraform state or globally
 installed CDK is required. AWS owns stack state in CloudFormation. The existing
-static hosting distribution remains owned by `infra/web-digital-pet.yml`. The
+static hosting distribution remains in its existing stack. `HostingStack` and
+`DeploymentAccessStack` in `infrastructure/foundation.ts` adopt the existing YAML
+with `CfnInclude` and preserve logical IDs, parameters, outputs and policies.
+The YAML files are retained as the migration boundary, not a second deployment
+path. A regression test checks exact resource equivalence. Both foundation stacks
+use a bootstrapless synthesizer: adopting them creates no new asset bucket, KMS
+key or helper Lambda. Future conversion to native constructs must preserve these
+identities and produce a reviewed change set without resource replacements. The
 commands below prepare and execute a CloudFormation change set against that
 existing hosting stack; they never call `UpdateDistribution` directly. The
 hosting template declares the API routes and the release role's scoped output
@@ -23,7 +31,7 @@ imported into the backend stack or recreated by this integration.
 
 Use Node/npm/Bun versions from CONTRIBUTING.md and AWS CLI v2. AWS credentials must
 already be available through an SSO profile or short-lived role session. Commands
-other than `synth` verify the caller's account against the configuration before
+other than `synth` and `foundation-synth` verify the caller's account against the configuration before
 performing any operation. Local synthesis needs neither credentials nor AWS CLI.
 
 1. Copy `packages/web-digital-pet-backend/deployment/production.example.json` to
@@ -138,10 +146,10 @@ use the reviewed PR merge flow. Bot version commits therefore do not create rele
 loops. Manual dispatch remains available for a version bump or a `retry_tag`.
 
 The release creates a version tag, then checks out that exact tag for validation,
-backend deployment and the connected frontend build. It runs the Chromium suite
-against local fixtures before obtaining AWS credentials; a failed game, migration,
-backup, social or connection check stops publication. These checks create no AWS
-test environment. The job authenticates through the `web-production` OIDC role,
+backend deployment and the connected frontend build. It runs checks, unit tests
+and builds for web, backend and their dependencies before obtaining AWS credentials.
+Playwright remains available for local validation and does not run in Actions.
+The job authenticates through the `web-production` OIDC role,
 creates/updates the backend with CDK, prepares CDN routing, exports the deployed
 backend outputs, builds the connected web, applies routing and waits for CloudFront
 before publishing the web. CDK leaves unchanged resources in place. There is no
@@ -189,7 +197,12 @@ locally by an administrator; do not grant the normal CI role blanket administrat
 access solely to allow recurring bootstrap. No role or account trust is created by
 the workflow itself.
 
-The one-time access template is `infra/github-backend-deploy.yml`. Apply it as a
+Generate foundation templates locally with `npm run backend -- foundation-synth
+--environment production --config packages/web-digital-pet-backend/deployment/production.local.json`.
+The resulting `.backend-deploy/production/foundation/DeploymentAccess.template.json`
+is the privileged access template; its source remains `infra/github-backend-deploy.yml`.
+The regular release never applies this template or changes its own deployment access.
+Apply it as a
 separate CloudFormation stack, `digital-pet-github-access`, in the backend region
 using an administrator session and `CAPABILITY_NAMED_IAM`. Supply the existing
 `WebBucketName`, `WebDistributionId`, `WebDeployRoleName`, `WebOriginAccessControlId`,
@@ -241,7 +254,10 @@ The WebSocket `social` route invokes the social Lambda; register/open/resume/rel
 invoke realtime. Both receive the exact `SOCKET_MANAGEMENT_URL` and scoped
 ManageConnections permissions. Social also reads session metadata for per-message
 authorization; neither handler receives refresh-token decryption rights. Large
-reads and backups keep their existing HTTP routes.
+reads now use the same socket; authentication and manual backups keep HTTPS.
+The social Lambda additionally needs read/write access to `realtime/requests/*`
+for bounded request fragments. CDK grants only that prefix. Deploy the backend
+before publishing the web bundle; existing tabs retain the previous protocol.
 
 Verify all four bucket notifications and Lambda invoke permission after deployment.
 Inject a transient hint-delivery failure, verify asynchronous retries, and inspect

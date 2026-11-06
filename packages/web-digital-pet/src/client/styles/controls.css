@@ -1,0 +1,193 @@
+/* Shared interaction states also cover controls created after page load. */
+:where(.device, .web-dialog, .egg-carousel) :is(button, summary, a, input, select):focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: -4px;
+}
+:where(.device, .web-dialog, .egg-carousel) button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+:where(.device, .web-dialog, .egg-carousel) button[aria-busy="true"] {
+  cursor: progress;
+}
+.social-device button:not(.primary-action):not([role="tab"]):hover:not(:disabled),
+#social-dialog button:not(.primary-action):hover:not(:disabled) {
+  background: var(--lcd-edge);
+}
+:where(.device, .web-dialog, .egg-carousel) .primary-action {
+  background: var(--ink);
+  color: var(--lcd);
+  border-color: var(--ink);
+}
+:where(.device, .web-dialog, .egg-carousel) .primary-action:focus-visible {
+  outline-color: var(--lcd);
+}
+.dex-tabs button,
+.map-tabs button {
+  font-size: var(--ui-type-label);
+  min-height: var(--ui-control-height);
+}
+.device .screen summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--ui-control-height);
+  padding: var(--ui-control-padding);
+  border: 2px solid var(--muted);
+  font-size: var(--ui-type-control);
+  line-height: var(--ui-line-height);
+  cursor: pointer;
+  list-style: none;
+}
+.device .screen summary::-webkit-details-marker {
+  display: none;
+}
+.device .screen summary::after {
+  content: "+";
+  flex: none;
+  font-family: monospace;
+  font-size: 20px;
+  line-height: 1;
+}
+.device .screen details[open] > summary::after {
+  content: "−";
+}
+.device .screen summary:hover {
+  background: var(--lcd-edge);
+}
+.device .resident-more .resident-arrow {
+  display: none;
+}
+.device .screen .resident-more[open] > summary {
+  display: none;
+}
+dialog.egg-carousel {
+  width: min(94vw, 410px);
+  max-width: min(94vw, 410px);
+  max-height: min(calc(var(--viewport-height, 100dvh) * 0.9), 820px);
+  border: var(--ui-dialog-border);
+  box-shadow: var(--ui-dialog-shadow);
+  font-size: var(--ui-type-body);
+  line-height: var(--ui-line-height);
+}
+dialog.egg-carousel::backdrop {
+  background: var(--ui-dialog-backdrop);
+}
+dialog.egg-carousel h2,
+dialog.egg-carousel h3 {
+  font-size: var(--ui-type-heading);
+  line-height: 1.5;
+}
+dialog.egg-carousel button {
+  min-height: var(--ui-control-height);
+  font-size: var(--ui-type-control);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+dialog.egg-carousel #egg-close,
+dialog.egg-carousel #egg-previous,
+dialog.egg-carousel #egg-next {
+  min-width: var(--ui-control-height);
+}
+dialog.egg-carousel select {
+  min-height: var(--ui-control-height);
+  font-size: var(--ui-type-input);
+}
+.web-dialog input:not([type="radio"]):not([type="range"]):not([type="file"]) {
+  min-height: var(--ui-control-height);
+  font-size: var(--ui-type-input);
+  border: 2px solid var(--muted);
+}
+.select-control {
+  position: relative;
+}
+.select-control::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.web-dialog .select-control > :is(#language-select, #theme-select) {
+  appearance: none;
+  width: 100%;
+  min-height: var(--ui-control-height);
+  padding: 8px 40px 8px 12px;
+  border: 2px solid var(--muted);
+  font-size: var(--ui-type-control);
+  line-height: var(--ui-line-height);
+}
+.web-dialog .danger-action,
+#social-dialog .danger-action {
+  border-style: double;
+  border-width: 3px;
+}
+.device .team-management h2,
+.map-device .region-title,
+.map-device #map-location-name {
+  font-size: var(--ui-type-heading);
+}
+.device .team-management h3 {
+  font-size: var(--ui-type-name);
+}
+.device .team-management button,
+.world-regions button {
+  font-size: var(--ui-type-control);
+  min-height: var(--ui-control-height);
+}
+.device .team-management .team-caption,
+.map-device .section-description,
+.map-device .setting-caption {
+  font-size: var(--ui-type-body);
+  line-height: var(--ui-line-height);
+}
+.device .team-management .team-member {
+  padding-block: 16px;
+}
+.world-regions .primary-action,
+.world-regions .text-action,
+.world-regions .world-locations button,
+.world-regions .resident-row button {
+  font-size: var(--ui-type-control);
+}
+.world-regions h3 {
+  font-size: var(--ui-type-heading);
+}
+.world-regions .region-card strong,
+.world-regions .resident-row strong {
+  font-size: var(--ui-type-name);
+}
+.world-regions .region-card small,
+.world-regions .resident-row small,
+.world-regions .resident-row button span {
+  font-size: var(--ui-type-meta);
+}
+.map-device .world-here,
+.map-device .region-card-meta,
+.map-device .world-preview span {
+  font-size: var(--ui-type-meta);
+}
+.partner-device #adventure-actions {
+  top: 14px;
+  right: 14px;
+  gap: 12px;
+}
+.partner-device #adventure-toggle,
+.partner-device #adventure-stop {
+  position: relative;
+  min-height: 32px;
+  min-width: 32px;
+  font-size: var(--ui-type-meta);
+}
+/* Compact scene controls retain separate 44 px touch targets. */
+.partner-device #adventure-actions button::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}

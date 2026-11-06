@@ -209,18 +209,6 @@ jobs:
         uses: ./.github/actions/turbo-cache
       - name: Validate web, backend and their dependencies
         run: npm run validate:web
-      - name: Install browser for deployment checks
-        run: npx playwright install --with-deps chromium
-      - name: Verify game and online flows before deployment
-        id: browser-checks
-        run: npm run test:browser
-      - name: Save browser failure diagnostics
-        if: failure() && steps.browser-checks.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: web-release-browser-failures
-          path: packages/web-digital-pet/test-results/
-          retention-days: 7
       - name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:

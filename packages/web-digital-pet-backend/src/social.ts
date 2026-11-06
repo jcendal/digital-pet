@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto"
 import {
   type Destination,
   INVITATION_LIFETIME_MS,
@@ -12,9 +11,10 @@ import type {
   OnlineGift as Gift,
   OnlineInvitation as Invitation,
   OnlineChallenge,
-  OnlineRelationship as Relationship,
   OnlineTrade as Trade,
 } from "@jcendal/digital-pet-online/social.ts"
+import { type BattleRelationship, compactBattles } from "./battle-decisions.ts"
+import { digest, relationshipId } from "./identity.ts"
 import { change, type ObjectStore } from "./store.ts"
 
 export type {
@@ -24,18 +24,12 @@ export type {
 } from "@jcendal/digital-pet-online/social.ts"
 
 type Index = { relationships: string[]; touched: Record<string, number> }
+type TradeReceipt = { trade: Trade; sides: Record<string, { destination: Destination; hash: string }> }
+type Relationship = BattleRelationship & { tradeReceipts?: Record<string, TradeReceipt> }
 const MAX_RELATIONSHIPS = 128
 const MAX_RECORDS = 256
 const missing = (): never => {
   throw new OnlineError("not-found", 404)
-}
-export const relationshipId = (a: string, b: string): string => {
-  identifier(a)
-  identifier(b)
-  if (a === b) throw new OnlineError("same-account")
-  return createHash("sha256")
-    .update(JSON.stringify([a, b].sort()))
-    .digest("hex")
 }
 
 /** One relationship object serializes removal, gift claims and trade decisions. */
@@ -98,12 +92,15 @@ export class SocialService {
     return change<Relationship, R>(this.store, `relationships/${identifier(id)}`, missing, (value) => {
       if (!value.members.includes(actor)) throw new OnlineError("forbidden", 403)
       this.compact(value)
-      return apply(value)
+      const result = apply(value)
+      this.compact(value)
+      return result
     })
   }
 
   private compact(pair: Relationship): void {
     const now = this.now()
+    compactBattles(pair, now)
     const cutoff = now - 2 * INVITATION_LIFETIME_MS
     pair.challenges = (pair.challenges ?? []).filter((item) => item.expiresAt > now)
     for (const item of pair.trades) if (item.state === "pending" && item.expiresAt <= now) item.state = "canceled"
@@ -116,6 +113,46 @@ export class SocialService {
         item.createdAt > cutoff ||
         (item.state === "committed" && Object.values(item.sides).some((side) => !side.applied)),
     )
+    for (const trade of pair.trades) {
+      if (
+        trade.state === "canceled" ||
+        (trade.state === "committed" && Object.values(trade.sides).every((side) => side.applied))
+      ) {
+        pair.tradeReceipts ??= {}
+        pair.tradeReceipts[trade.id] = {
+          trade: { ...trade, sides: {} },
+          sides: Object.fromEntries(
+            Object.entries(trade.sides).map(([actor, side]) => [
+              actor,
+              {
+                destination: side.destination,
+                hash: digest(JSON.stringify(side.offer)),
+              },
+            ]),
+          ),
+        }
+      }
+    }
+    pair.trades = pair.trades.filter((trade) => !pair.tradeReceipts?.[trade.id])
+    for (const [id, receipt] of Object.entries(pair.tradeReceipts ?? {}))
+      if (receipt.trade.createdAt <= cutoff) delete pair.tradeReceipts?.[id]
+  }
+
+  private receipt(
+    pair: Relationship,
+    actor: string,
+    id: string,
+    destination?: Destination,
+    offer?: unknown,
+  ): Trade | undefined {
+    const receipt = pair.tradeReceipts?.[id]
+    if (!receipt) return
+    const side = receipt.sides[actor]
+    if (destination && (!side || !sameDestination(side.destination, destination)))
+      throw new OnlineError("different-save", 409)
+    if (offer !== undefined && side?.hash !== digest(JSON.stringify(offer)))
+      throw new OnlineError("operation-conflict", 409)
+    return receipt.trade
   }
 
   private assertActive(pair: Relationship, generation: number): void {
@@ -192,6 +229,7 @@ export class SocialService {
     return this.update(actor, id, (pair) => {
       if (pair.generation !== generation) throw new OnlineError("relationship-changed", 409)
       pair.active = false
+      for (const battle of Object.values(pair.battles ?? {})) if (battle.state === "pending") battle.state = "canceled"
       pair.challenges = []
       for (const gift of pair.gifts) if (gift.state === "pending") gift.state = "canceled"
       for (const trade of pair.trades) if (trade.state === "pending") trade.state = "canceled"
@@ -295,7 +333,11 @@ export class SocialService {
     const pair = (await this.store.get<Relationship>(`relationships/${identifier(id)}`))?.value ?? missing()
     if (!pair.members.includes(actor)) throw new OnlineError("forbidden", 403)
     this.compact(pair)
-    return pair.trades.find((item) => item.id === identifier(operationId)) ?? missing()
+    return (
+      pair.trades.find((item) => item.id === identifier(operationId)) ??
+      this.receipt(pair, actor, operationId) ??
+      missing()
+    )
   }
 
   prepareTrade(
@@ -312,17 +354,22 @@ export class SocialService {
     const now = this.now()
     return this.update(actor, id, (pair) => {
       this.assertActive(pair, generation)
+      const receipt = this.receipt(pair, actor, operationId, destination, offer)
+      if (receipt) return receipt
       let trade = pair.trades.find((item) => item.id === operationId)
       if (!trade) {
         if (
           pair.trades.some(
             (item) =>
               item.state === "pending" ||
-              (item.state === "committed" && Object.values(item.sides).some((side) => !side.applied)),
+              (item.state === "committed" &&
+                item.generation === generation &&
+                Object.values(item.sides).some((side) => !side.applied)),
           )
         )
           throw new OnlineError("trade-busy", 409)
-        if (pair.trades.length >= MAX_RECORDS) throw new OnlineError("relationship-full", 429)
+        if (pair.trades.length + Object.keys(pair.tradeReceipts ?? {}).length >= MAX_RECORDS)
+          throw new OnlineError("relationship-full", 429)
         trade = {
           id: operationId,
           generation,
@@ -349,6 +396,11 @@ export class SocialService {
   confirmTrade(actor: string, id: string, operationId: string, destination: Destination): Promise<Trade> {
     const now = this.now()
     return this.update(actor, id, (pair) => {
+      const receipt = this.receipt(pair, actor, operationId, destination)
+      if (receipt) {
+        if (receipt.state !== "committed") throw new OnlineError("trade-finished", 409)
+        return receipt
+      }
       const trade = pair.trades.find((item) => item.id === operationId) ?? missing()
       const side = trade.sides[actor]
       if (!side || !sameDestination(side.destination, destination)) throw new OnlineError("different-save", 409)
@@ -364,7 +416,8 @@ export class SocialService {
 
   cancelTrade(actor: string, id: string, operationId: string): Promise<Trade> {
     return this.update(actor, id, (pair) => {
-      const trade = pair.trades.find((item) => item.id === operationId) ?? missing()
+      const trade =
+        pair.trades.find((item) => item.id === operationId) ?? this.receipt(pair, actor, operationId) ?? missing()
       if (trade.state === "committed") throw new OnlineError("trade-committed", 409)
       trade.state = "canceled"
       return trade
@@ -373,11 +426,30 @@ export class SocialService {
 
   acknowledgeTrade(actor: string, id: string, operationId: string, destination: Destination): Promise<void> {
     return this.update(actor, id, (pair) => {
+      const receipt = this.receipt(pair, actor, operationId, destination)
+      if (receipt) {
+        if (receipt.state !== "committed") throw new OnlineError("trade-not-committed", 409)
+        return
+      }
       const trade = pair.trades.find((item) => item.id === operationId) ?? missing()
       const side = trade.sides[actor]
       if (!side || !sameDestination(side.destination, destination)) throw new OnlineError("different-save", 409)
       if (trade.state !== "committed") throw new OnlineError("trade-not-committed", 409)
       side.applied = true
+    })
+  }
+
+  releaseTrade(actor: string, id: string, operationId: string, destination: Destination): Promise<void> {
+    return this.update(actor, id, (pair) => {
+      if (pair.tradeReceipts?.[operationId]) return
+      const trade = pair.trades.find((item) => item.id === operationId) ?? missing()
+      const side = trade.sides[actor]
+      if (!side || trade.state !== "committed") throw new OnlineError("trade-not-committed", 409)
+      if (side.applied) return
+      if (sameDestination(side.destination, destination)) throw new OnlineError("original-save", 409)
+      // Explicit abandonment affects only this account's delivery; the peer's decision survives.
+      side.applied = true
+      side.abandoned = true
     })
   }
 
@@ -387,16 +459,28 @@ export class SocialService {
     after = "",
   ): Promise<{ relationships: Array<{ id: string; value: Relationship }>; next: string | null }> {
     const index = await this.store.get<Index>(`social-index/${identifier(actor)}`)
-    // At most four 1 MiB metadata objects, below Lambda's 6 MiB response limit.
-    const ids = (index?.value.relationships ?? []).filter((id) => id > after).slice(0, 4)
+    const ids = (index?.value.relationships ?? []).filter((id) => id > after)
     const relationships: Array<{ id: string; value: Relationship }> = []
-    for (const id of ids) {
+    let bytes = 0
+    let last = after
+    // Pack small relationships together; reserve response space for profiles and framing.
+    for (const id of ids.slice(0, 16)) {
       const found = await this.store.get<Relationship>(`relationships/${id}`)
       if (found?.value.members.includes(actor)) {
         this.compact(found.value)
-        relationships.push({ id, value: found.value })
+        const { battles: _battles, tradeReceipts: _receipts, ...publicValue } = found.value
+        // Older clients also interpret an abandoned delivery as canceled for its owner.
+        publicValue.trades = publicValue.trades.map((trade) =>
+          trade.sides[actor]?.abandoned ? { ...trade, state: "canceled" } : trade,
+        )
+        const entry = { id, value: publicValue }
+        const size = jsonBytes(entry)
+        if (relationships.length && bytes + size > 3 * 1024 * 1024) break
+        relationships.push(entry)
+        bytes += size
       }
+      last = id
     }
-    return { relationships, next: ids.length === 4 ? (ids.at(-1) ?? null) : null }
+    return { relationships, next: ids.some((id) => id > last) ? last : null }
   }
 }

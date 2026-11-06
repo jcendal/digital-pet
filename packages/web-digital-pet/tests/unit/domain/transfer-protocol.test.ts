@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test"
-import { advanceLocalPet } from "../../../src/domain/pet/progress.ts"
+import { advanceLocalPet, type LocalPetState, replaceLocalPartner } from "../../../src/domain/pet/progress.ts"
 import { MAX_BACKUP_BYTES, parsePetTransfer } from "../../../src/domain/transfer/protocol.ts"
 
 const state = {
@@ -13,6 +13,16 @@ const state = {
 }
 
 describe("browser save transfer", () => {
+  it("round-trips archives grown by the game beyond 128 companions within the byte budget", () => {
+    let grown: LocalPetState = state
+    for (let index = 1; index <= 200; index++)
+      grown = replaceLocalPartner(grown, `partner-${index}`, state.lastTickAt + index, "0-001", false)
+    const transfer = { version: 4, state: grown }
+    const restored = parsePetTransfer(JSON.parse(JSON.stringify(transfer)), MAX_BACKUP_BYTES)
+    expect(restored.state.retiredPartners).toEqual(grown.retiredPartners)
+    expect(restored.state.retiredPartners).toHaveLength(200)
+    expect(() => parsePetTransfer(transfer, 1024)).toThrow()
+  })
   it("accepts already pending DoneDevimon duels after correcting its stage in either position", () => {
     for (const [currentNodeId, opponentNodeId, targetNodeId] of [
       ["5-033", "5-001", "6-028"],
