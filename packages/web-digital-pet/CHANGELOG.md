@@ -4,6 +4,13 @@ Changes to the browser site are recorded here. OpenCode and Cursor releases have
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-11-06
+
+### Changed
+
+- Feat/web account options ux
+
+
 ## [0.17.1] - 2026-11-05
 
 ### Changed

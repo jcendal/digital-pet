@@ -17,7 +17,7 @@
     "@aws-sdk/s3-presigned-post": "3.1161.0",
     "@aws-sdk/s3-request-presigner": "3.1161.0",
     "@jcendal/digital-pet-online": "0.1.0-dev.0",
-    "@jcendal/web-digital-pet": "0.17.2-dev.0",
+    "@jcendal/web-digital-pet": "0.18.0",
     "jose": "6.2.14"
   },
   "devDependencies": {
