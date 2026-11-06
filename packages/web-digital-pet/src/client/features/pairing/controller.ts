@@ -100,7 +100,7 @@ export const initBrowserPairing = async (otherBusy: () => boolean = () => false)
         const message = error instanceof Error ? error.message : "online.offline"
         note(IntlModule.translate(message))
         if (message === "online.signIn") element<HTMLDialogElement>("online-migration").showModal()
-        else if (message === "online.adoptFirst") element("online-adopt").focus()
+        else if (message === "online.adoptFirst") window.dispatchEvent(new Event("digital-pet:account-connect"))
         return
       }
     }

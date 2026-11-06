@@ -18,9 +18,10 @@ export const initBrowserMusic = (): void => {
     audio,
     { game: webAsset("/music/butter-fly.mp3"), battle: webAsset("/music/brave-heart.mp3") },
     (status: MusicStatus) => {
-      caption.textContent = IntlModule.translate(
-        status === "waiting" ? "music.tapToPlay" : status === "failed" ? "music.unavailable" : "music.description",
-      )
+      caption.hidden = status !== "waiting" && status !== "failed"
+      caption.textContent = caption.hidden
+        ? ""
+        : IntlModule.translate(status === "waiting" ? "music.tapToPlay" : "music.unavailable")
     },
   )
   const updatePreference = (): void => {

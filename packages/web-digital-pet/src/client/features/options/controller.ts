@@ -1,3 +1,4 @@
+import { DIGIMON_CATALOG } from "@jcendal/digital-pet-core/data/catalog.ts"
 import { LANGUAGE_PREFERENCE_KEY } from "@jcendal/digital-pet-intl"
 import type { ExperienceLevel } from "../../../domain/pet/progress.ts"
 import {
@@ -6,8 +7,10 @@ import {
   parsePetTransfer,
   TRANSFER_VERSION,
 } from "../../../domain/transfer/protocol.ts"
+import { ACTION_ICON_PATHS } from "../../../shared/action-icons.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { LANDSCAPE_MOTION_KEY, landscapeMotionEnabled } from "../../../shared/scene-motion.ts"
+import { type OnlineContext, readOnlineContext, sameContext } from "../../persistence/online-store.ts"
 import {
   hasPreviousSave,
   readLocalState,
@@ -83,7 +86,33 @@ export const initBrowserOptions = async (): Promise<void> => {
   const backupFile = byId<HTMLInputElement>("backup-file")
   const backupConfirm = byId<HTMLElement>("backup-confirm")
   const backupRestore = byId<HTMLButtonElement>("backup-restore")
+  const importDialog = byId<HTMLDialogElement>("backup-import-dialog")
+  const importStatus = byId("backup-import-status")
+  const backupResult = byId("backup-result")
   let pendingBackup: PetTransfer | null = null
+  let importContext: OnlineContext | undefined
+  let undoContext: OnlineContext | undefined
+  let previousSelected = false
+  let importing = false
+  const dismissResult = (): void => {
+    backupResult.hidden = true
+    undoContext = undefined
+  }
+  const showResult = async (key = "backup.imported"): Promise<void> => {
+    const message = byId("backup-result-message")
+    message.dataset.i18n = `web:${key}`
+    message.textContent = IntlModule.translate(key)
+    undoContext = await readOnlineContext()
+    backupResult.hidden = false
+  }
+  byId("backup-result-close").addEventListener("click", dismissResult)
+  window.addEventListener("digital-pet:backup-restored", () => void showResult("backup.recovered"))
+  window.addEventListener("digital-pet:save-updated", () => {
+    if (undoContext)
+      void readOnlineContext().then((current) => {
+        if (undoContext && !sameContext(current, undoContext)) dismissResult()
+      })
+  })
   let pairing: BrowserPairingControls | undefined
   let battles: BrowserBattleControls | undefined
   let social: BrowserPairingControls | undefined
@@ -142,7 +171,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     const level = (await readLocalState()).experienceLevel ?? "high"
     slider.value = String(levels.indexOf(level))
     describe(level)
-    backupRestore.hidden = !(await hasPreviousSave())
+    byId("backup-previous").hidden = !(await hasPreviousSave())
   }
   const updateSource = async (): Promise<void> => {
     localStorage.setItem(ACTIVE_SOURCE_KEY, source)
@@ -190,7 +219,10 @@ export const initBrowserOptions = async (): Promise<void> => {
     dialog.querySelector(".dialog-body")?.scrollTo(0, 0)
     void refreshAvailability()
   })
-  dialog.addEventListener("close", () => byId("options-button").setAttribute("aria-expanded", "false"))
+  dialog.addEventListener("close", () => {
+    byId("options-button").setAttribute("aria-expanded", "false")
+    dismissResult()
+  })
   byId("computer-retry").addEventListener("click", () => {
     void refreshAvailability()
   })
@@ -239,66 +271,124 @@ export const initBrowserOptions = async (): Promise<void> => {
       status.textContent = String(error)
     }
   })
-  byId("backup-import").addEventListener("click", () => backupFile.click())
+  const describeImport = (): void => {
+    const title = byId("backup-import-title")
+    const key = previousSelected ? "backup.recoverTitle" : "backup.title"
+    title.dataset.i18n = `web:${key}`
+    title.textContent = IntlModule.translate(key)
+    byId("backup-accept")
+      .querySelector("path")
+      ?.setAttribute("d", ACTION_ICON_PATHS[previousSelected ? "restore" : "import"])
+  }
+  const showPreview = (): void => {
+    describeImport()
+    byId("backup-picker").hidden = true
+    backupConfirm.hidden = false
+    const label = byId("backup-accept-label")
+    label.dataset.i18n = previousSelected ? "web:backup.recover" : "web:backup.import"
+    label.textContent = IntlModule.translate(previousSelected ? "backup.recover" : "backup.import")
+    if (!importDialog.open) importDialog.showModal()
+    byId("backup-cancel").focus()
+  }
+  byId("backup-import").addEventListener("click", () => {
+    dismissResult()
+    previousSelected = false
+    describeImport()
+    backupConfirm.hidden = true
+    byId("backup-picker").hidden = false
+    importStatus.textContent = ""
+    importDialog.showModal()
+    void refreshSettings()
+    backupFile.click()
+  })
+  byId("backup-choose").addEventListener("click", () => backupFile.click())
+  importDialog.addEventListener("cancel", (event) => {
+    if (importing) event.preventDefault()
+  })
+  importDialog.addEventListener("close", () => {
+    pendingBackup = null
+    importContext = undefined
+    previousSelected = false
+    backupConfirm.hidden = true
+    byId("backup-import").focus()
+  })
   backupFile.addEventListener("change", async () => {
     const file = backupFile.files?.[0]
     backupFile.value = ""
-    backupConfirm.hidden = true
     pendingBackup = null
+    previousSelected = false
+    importStatus.textContent = ""
     if (!file || source !== "browser") return
     if (file.size > MAX_BACKUP_BYTES) {
-      status.textContent = IntlModule.translate("controller.thisBackupFileIsTooLarge")
+      importStatus.textContent = IntlModule.translate("controller.thisBackupFileIsTooLarge")
       return
     }
     try {
       pendingBackup = parsePetTransfer(JSON.parse(await file.text()) as unknown, MAX_BACKUP_BYTES)
-      byId("backup-preview").textContent = IntlModule.translate("controller.backupFrom", {
-        value0: new Date(pendingBackup.state.createdAt).toLocaleDateString(IntlModule.locale),
-      })
-      backupConfirm.hidden = false
-      byId("backup-cancel").focus()
-    } catch (error) {
-      status.textContent =
-        error instanceof Error ? error.message : IntlModule.translate("controller.thisBackupCouldNotBeRead")
+      importContext = await readOnlineContext()
+      byId("backup-pet-name").textContent = DIGIMON_CATALOG.byId.get(pendingBackup.state.currentNodeId)?.nameEn ?? ""
+      byId("backup-preview").textContent = file.name
+      showPreview()
+    } catch {
+      importStatus.textContent = IntlModule.translate("controller.thisBackupCouldNotBeRead")
     }
   })
-  byId("backup-cancel").addEventListener("click", () => {
-    backupConfirm.hidden = true
+  byId("backup-previous").addEventListener("click", async () => {
+    previousSelected = true
     pendingBackup = null
-    byId("backup-import").focus()
+    importContext = await readOnlineContext()
+    byId("backup-pet-name").textContent = IntlModule.translate("backup.previous")
+    byId("backup-preview").textContent = ""
+    showPreview()
   })
+  byId("backup-cancel").addEventListener("click", () => importDialog.close())
   byId("backup-accept").addEventListener("click", async () => {
-    if (source !== "browser" || !pendingBackup) return
+    if (importing || source !== "browser" || !importContext || (!pendingBackup && !previousSelected)) return
     if (pairing?.busy || battles?.busy || social?.busy) {
-      status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
+      importStatus.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
+    importing = true
+    const controls = ["backup-accept", "backup-cancel", "backup-dialog-close"].map((id) => byId<HTMLButtonElement>(id))
+    for (const control of controls) control.disabled = true
     try {
-      await replaceLocalState(pendingBackup.state)
-      backupConfirm.hidden = true
-      pendingBackup = null
+      if (previousSelected) {
+        if (!(await restorePreviousSave(importContext)))
+          throw new Error(IntlModule.translate("controller.thereIsNoPreviousSaveToRestore"))
+      } else if (pendingBackup) await replaceLocalState(pendingBackup.state, importContext)
+      const resultKey = previousSelected ? "backup.recovered" : "backup.imported"
+      importDialog.close()
       refreshBrowserViews()
-      status.textContent = IntlModule.translate("controller.backupImportedYourPreviousSaveCanBeRestored")
+      status.textContent = ""
+      await showResult(resultKey)
     } catch (error) {
-      status.textContent = String(error)
+      importStatus.textContent =
+        error instanceof Error && error.message === "online.saveChanged"
+          ? IntlModule.translate("online.saveChanged")
+          : String(error)
+    } finally {
+      importing = false
+      for (const control of controls) control.disabled = false
     }
   })
   backupRestore.addEventListener("click", async () => {
-    if (source !== "browser") return
+    if (source !== "browser" || !undoContext || backupRestore.disabled) return
     if (pairing?.busy || battles?.busy || social?.busy) {
       status.textContent = IntlModule.translate("controller.finishTheCurrentTransferOrBattleFirst")
       return
     }
+    backupRestore.disabled = true
     try {
-      if (await restorePreviousSave()) {
+      if (await restorePreviousSave(undoContext)) {
         refreshBrowserViews()
         status.textContent = IntlModule.translate("controller.previousSaveRestored")
-      } else {
-        backupRestore.hidden = true
-        status.textContent = IntlModule.translate("controller.thereIsNoPreviousSaveToRestore")
       }
-    } catch (error) {
-      status.textContent = String(error)
+      dismissResult()
+    } catch {
+      dismissResult()
+      status.textContent = IntlModule.translate("online.saveChanged")
+    } finally {
+      backupRestore.disabled = false
     }
   })
   for (const button of Array.from(dialog.querySelectorAll<HTMLButtonElement>("[data-experience-index]")))

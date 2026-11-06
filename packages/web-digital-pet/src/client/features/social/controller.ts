@@ -38,7 +38,7 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 const t = (key: string, args?: Record<string, string>) => IntlModule.translate(`social.${key}`, args)
 const h = (key: string) => escapeHtml(t(key))
 const action = (name: string, label: string, id = "", primary = false) =>
-  `<button type="button" data-social-action="${name}" data-id="${escapeHtml(id)}" class="${primary ? "primary-action" : ""}">${h(label)}</button>`
+  `<button type="button" data-social-action="${name}" data-id="${escapeHtml(id)}" class="${primary ? "primary-action" : name === "confirm-remove" || name === "release-trade" ? "danger-action" : ""}">${h(label)}</button>`
 const name = (id: string | null) => escapeHtml(DIGIMON_CATALOG.byId.get(id ?? "")?.nameEn ?? t("player"))
 const stage = (id: string | null) => {
   const node = DIGIMON_CATALOG.byId.get(id ?? "")
@@ -275,8 +275,9 @@ export const initBrowserSocial = async (
                 return `<article class="social-friend"><div class="social-row"><div class="social-person"><button class="social-avatar-button" type="button" data-social-action="companion" data-id="${f.code}" aria-label="${escapeHtml(t("inspectCompanion", { alias: f.profile.alias }))}">${companionPortrait(f.profile.nodeId)}</button><div><h3>${escapeHtml(f.profile.alias)}</h3><p class="social-code">${displayCode(f.code)}</p></div></div><button class="social-remove" type="button" data-social-action="remove" data-id="${f.code}" aria-label="${escapeHtml(t("removeAlias", { alias: f.profile.alias }))}">×</button></div><div class="social-presence"><span>${online.has(f.code) ? "■" : "□"} ${h(online.has(f.code) ? "online" : "offline")}</span><span>${name(f.profile.nodeId)} · ${stage(f.profile.nodeId)}</span></div><div class="social-actions">${["challenge", "gift", "exchange"].map((k) => `<button type="button" class="${k === "challenge" ? "primary-action" : ""}" data-social-action="${k}" data-id="${f.code}" ${!(k === "gift" ? f.confirmed && usable && engine.ready : available) || (k === "challenge" && !battleReady) || (k === "gift" && gifted) ? "disabled" : ""}>${h(k === "gift" && gifted ? "sent" : k)}${k === "gift" && gifted ? " ✓" : ""}</button>`).join("")}</div></article>`
               })
               .join("")
-          : `<p class="social-hint">${h("noFriends")}</p>`,
+          : "",
       )
+      el("social-no-friends").hidden = friends.length > 0
       const onlineFriends = friends.filter((f) => online.has(f.code) && f.confirmed)
       renderHtml(
         "social-arena-friends",

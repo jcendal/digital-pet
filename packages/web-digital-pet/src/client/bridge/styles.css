@@ -1,5 +1,8 @@
 @import "../styles/base.css";
 @import "../styles/frame.css";
+@import "../styles/tokens.css";
+@import "../styles/controls.css";
+@import "./catalog.css";
 
 html {
   display: block;

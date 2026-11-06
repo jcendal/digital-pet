@@ -5,10 +5,10 @@
   overflow: hidden;
   color: var(--ink);
   background: var(--lcd);
-  border: 6px double var(--case-edge);
-  box-shadow: 0 10px 35px #0009;
+  border: var(--ui-dialog-border);
+  box-shadow: var(--ui-dialog-shadow);
   font:
-    13px "Digital Pet Pixel",
+    var(--ui-type-body) "Digital Pet Pixel",
     monospace;
 }
 .web-dialog[open] {
@@ -23,11 +23,11 @@
   height: min(calc(var(--viewport-height, 100vh) * 0.8), 600px);
 }
 .web-dialog::backdrop {
-  background: #071211b8;
+  background: var(--ui-dialog-backdrop);
 }
 .account-legal,
 .options-legal {
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   line-height: 1.6;
 }
 .account-legal {
@@ -50,12 +50,12 @@
 }
 .web-dialog h2 {
   margin: 0;
-  font-size: 19px;
+  font-size: var(--ui-type-heading);
   line-height: 1.4;
 }
 .web-dialog h3 {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--ui-type-heading);
   line-height: 1.5;
 }
 .web-dialog p {
@@ -82,7 +82,8 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .wide-action > span:first-child > span {
   display: block;
@@ -90,7 +91,7 @@
 .web-dialog small,
 .web-dialog .section-description,
 .setting-caption {
-  font-size: 11px;
+  font-size: var(--ui-type-body);
   line-height: 1.65;
 }
 .web-dialog button,
@@ -103,7 +104,7 @@
 .web-dialog button,
 .web-dialog input:not([type="radio"]):not([type="range"]) {
   border: 2px solid var(--muted);
-  padding: 10px;
+  padding: var(--ui-control-padding);
 }
 .web-dialog button {
   cursor: pointer;
@@ -135,17 +136,17 @@
 .web-dialog .dialog-eyebrow {
   margin-bottom: 3px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   letter-spacing: 1px;
 }
 .web-dialog .dialog-close {
   display: grid;
   place-items: center;
-  width: 36px;
-  min-height: 36px;
+  width: var(--ui-control-height);
+  min-height: var(--ui-control-height);
   padding: 0;
   border: 2px solid var(--line);
-  font-size: 16px;
+  font-size: var(--ui-type-heading);
 }
 .dialog-body {
   flex: 1 1 auto;
@@ -256,11 +257,11 @@
   gap: 6px 8px;
 }
 .save-card strong {
-  font-size: 12px;
+  font-size: var(--ui-type-control);
   font-weight: 400;
 }
 .web-dialog .save-badge {
-  font-size: 8px;
+  font-size: var(--ui-type-meta);
   padding: 2px 4px;
   border: 1px solid currentColor;
   line-height: 1.4;
@@ -274,7 +275,7 @@
   gap: 8px;
   align-items: start;
   margin-top: 12px;
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 .note-mark {
@@ -291,12 +292,12 @@
   border-left: 4px solid var(--muted);
 }
 .source-notice strong {
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   font-weight: 400;
 }
 .source-notice p {
   margin-top: 6px;
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
 }
 .section-heading {
   display: flex;
@@ -307,7 +308,7 @@
 .value-badge {
   flex: none;
   padding: 4px 6px;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
   background: var(--ink);
   color: var(--lcd);
 }
@@ -377,14 +378,14 @@
   gap: 6px;
 }
 .web-dialog .range-labels button {
-  font-size: 11px;
+  font-size: var(--ui-type-body);
   padding: 5px 2px;
   border: 2px solid transparent;
 }
 .range-labels button span {
   display: block;
   margin-top: 4px;
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
 }
 .web-dialog .range-labels button[aria-pressed="true"] {
   border-color: var(--muted);
@@ -392,7 +393,7 @@
 .web-dialog .setting-caption {
   margin-top: 10px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
 }
 .action-heading {
   display: flex;
@@ -437,20 +438,20 @@
 }
 .card-label {
   display: block;
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 #pair-linked {
   margin: 6px 0 12px;
   overflow-wrap: anywhere;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
 }
 .web-dialog .text-action {
   width: 100%;
   min-height: 44px;
   margin-top: 6px;
   border: 0;
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -460,7 +461,7 @@
   padding: 10px 0 0 14px;
   border-top: 2px dotted var(--line);
   position: relative;
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 .connection-status:not(:empty)::before {
@@ -479,7 +480,7 @@
 .web-dialog .dialog-feedback {
   flex: none;
   padding: 10px 16px;
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   border-top: 2px solid var(--muted);
   background: var(--line);
 }
@@ -489,11 +490,11 @@
   margin-top: 12px;
 }
 .confirm-box strong {
-  font-size: 11px;
+  font-size: var(--ui-type-body);
   font-weight: 400;
 }
 .confirm-box p {
-  font-size: 10px;
+  font-size: var(--ui-type-meta);
   margin-top: 8px;
 }
 .dialog-actions {
@@ -505,7 +506,7 @@
 .dialog-actions button {
   flex: 1 1 auto;
   width: auto;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
   justify-content: center;
 }
 .pair-code-row {
@@ -518,26 +519,23 @@
   min-width: 0;
   width: 0;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
 }
 .pair-code-row output {
   flex: 1;
   overflow-wrap: anywhere;
-  font-size: 12px;
+  font-size: var(--ui-type-control);
 }
 #pair-dialog label,
 #battle-dialog label {
   display: block;
   margin: 18px 0 8px;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
 }
 
 #pair-restore {
   margin-top: 20px;
-  font-size: 11px;
-}
-#backup-import {
-  margin-top: 8px;
+  font-size: var(--ui-type-body);
 }
 .sr-only {
   position: absolute;
@@ -563,7 +561,7 @@
     gap: 6px;
   }
   .web-dialog h3 {
-    font-size: 12px;
+    font-size: var(--ui-type-heading);
   }
 }
 
@@ -606,13 +604,8 @@
 #online-login {
   margin-bottom: 22px;
 }
-.account-connection {
-  display: grid;
-  gap: 12px;
-  margin: 16px 0;
-}
 #online-session-status {
-  font-size: 12px;
+  font-size: var(--ui-type-control);
 }
 .web-dialog .google-action {
   box-sizing: border-box;
@@ -640,21 +633,32 @@
 }
 #online-copies {
   min-width: 0;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 #online-copies legend,
 .web-dialog .backup-location {
-  margin-bottom: 6px;
-  font-size: 11px;
+  margin-bottom: 0;
+  font-size: var(--ui-type-label);
 }
 .backup-actions,
 .backup-section {
   display: grid;
   gap: 10px;
 }
-.backup-actions,
+.backup-actions {
+  margin-top: 12px;
+}
 .backup-section {
-  margin-top: 14px;
+  margin-top: 20px;
+  gap: 12px;
+}
+.backup-button-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.backup-button-row > button {
+  min-width: 0;
 }
 .online-backup-row {
   display: grid;
@@ -670,7 +674,7 @@
 }
 .online-backup-actions button {
   flex: 1 1 120px;
-  font-size: 11px;
+  font-size: var(--ui-type-body);
 }
 #online-backups:not(:empty) {
   margin-top: 14px;
@@ -688,11 +692,11 @@
 .account-benefits strong {
   display: block;
   margin-bottom: 6px;
-  font-size: 12px;
+  font-size: var(--ui-type-control);
 }
 .account-benefits p,
 .web-dialog .account-reassurance {
-  font-size: 11px;
+  font-size: var(--ui-type-body);
 }
 .web-dialog .account-reassurance {
   text-align: center;
@@ -702,11 +706,11 @@
   margin: 0;
 }
 
-.save-backups button {
+.web-dialog button:has(> .action-icon) {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
 }
 .action-icon {
   flex: 0 0 16px;
@@ -718,4 +722,82 @@
   margin-top: 22px;
   padding-top: 22px;
   border-top: 1px solid var(--muted);
+}
+
+.backup-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 2px solid var(--muted);
+  font-size: var(--ui-type-label);
+}
+.backup-result > span {
+  flex: 1;
+}
+.backup-result .text-action {
+  width: auto;
+  margin: 0;
+  padding-inline: 4px;
+}
+.backup-result .dialog-close {
+  flex: 0 0 var(--ui-control-height);
+  justify-content: center;
+  padding: 0;
+}
+#backup-result[hidden] {
+  display: none;
+}
+.flow-dialog .dialog-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#backup-import-dialog .dialog-body > p:empty,
+#account-switch-dialog .dialog-body > p:empty {
+  display: none;
+}
+#backup-preview {
+  overflow-wrap: anywhere;
+}
+
+#backup-import-dialog #backup-confirm {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.account-session-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.account-session-row #online-session-status {
+  margin: 0;
+  font-size: var(--ui-type-label);
+}
+
+.flow-dialog .dialog-body,
+.flow-dialog #backup-confirm,
+.flow-dialog #backup-picker {
+  display: grid;
+  gap: 16px;
+}
+.flow-dialog .dialog-actions {
+  margin-top: 0;
+}
+.flow-dialog .backup-preview-summary,
+.flow-dialog .backup-import-warning {
+  display: grid;
+  gap: 6px;
+}
+.flow-dialog .section-description {
+  margin-top: 0;
+}
+.account-settings h3 {
+  margin-bottom: 8px;
+}
+
+.flow-dialog .section-description:empty {
+  display: none;
 }

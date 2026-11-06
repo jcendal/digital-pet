@@ -1,0 +1,77 @@
+/* The desktop-host catalog keeps its own layout; these rules belong to the web. */
+.device:is(.dex, .history) .completion .micro,
+.device:is(.dex, .history) .detail-heading,
+.device:is(.dex, .history) .detail-id {
+  font-size: var(--ui-type-label);
+}
+.device:is(.dex, .history) .completion strong,
+.device:is(.dex, .history) .detail-name h2,
+.device:is(.dex, .history) .catalog-header h3,
+.device:is(.dex, .history) .journey-title {
+  font-size: var(--ui-type-heading);
+  line-height: 1.5;
+}
+.device:is(.dex, .history) .entry-name,
+.device:is(.dex, .history) .generation-title,
+.device:is(.dex, .history) .step-name {
+  font-size: var(--ui-type-name);
+  line-height: 1.5;
+}
+.device:is(.dex, .history) .generation-meta,
+.device:is(.dex, .history) .step-date {
+  font-size: var(--ui-type-meta);
+  line-height: var(--ui-line-height);
+}
+.device:is(.dex, .history) .utility,
+.device:is(.dex, .history) .switch button,
+.device:is(.dex, .history) .detail-nav button,
+.device:is(.dex, .history) .route {
+  min-height: var(--ui-control-height);
+  padding: var(--ui-control-padding);
+  font-size: var(--ui-type-control);
+  line-height: var(--ui-line-height);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.device:is(.dex, .history) input,
+.device:is(.dex, .history) select {
+  min-height: var(--ui-control-height);
+  font-size: var(--ui-type-input);
+}
+.device:is(.dex, .history) .toolbar .field {
+  grid-column: 1 / -1;
+}
+.device:is(.dex, .history) .entry {
+  min-height: var(--ui-control-height);
+  padding: 10px 8px;
+}
+.device:is(.dex, .history) .generation {
+  gap: 4px;
+}
+.device:is(.dex, .history) .completion {
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.device:is(.dex, .history) .completion > div:first-child {
+  gap: 8px;
+}
+.device:is(.dex, .history) .catalog-header {
+  align-items: center;
+  gap: 8px;
+}
+.device:is(.dex, .history) .catalog-header > span {
+  flex: none;
+  font-size: var(--ui-type-meta);
+}
+.device:is(.dex, .history) .panel-filters {
+  margin-bottom: 12px;
+}
+.device:is(.dex, .history) .entry:hover:not([aria-pressed="true"]) {
+  background: var(--lcd-edge);
+}
+.device:is(.dex, .history) .entry:focus-visible {
+  outline-color: var(--ink);
+}
+.device:is(.dex, .history) .entry[aria-pressed="true"]:focus-visible {
+  outline-color: var(--lcd);
+}

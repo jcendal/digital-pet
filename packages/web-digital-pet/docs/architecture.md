@@ -59,6 +59,31 @@ owning feature or entrypoint, using `client/styles` only for common web styles.
 Keep executable startup at the shell/frame entries, `server/main.ts`, the worker,
 and build/development command entrypoints.
 
+## Web visual contract
+
+`client/styles/tokens.css` defines the web typography roles: headings (16 px),
+entity names (14 px), body and action labels (12 px), field/tab labels (11 px),
+metadata (10 px), and text-entry fields (16 px). Language and theme selectors use
+the 12 px action-label role with an inset chevron. The device header, footer,
+and bottom navigation retain their own compact chrome scale. These roles also
+adapt the shared `--type-*` variables inside the web shell and its iframe bridge;
+the other hosts keep their original values.
+
+`frame.css` owns device geometry. `controls.css` owns common interaction states,
+disclosures, and web adaptations of shared controls and dialogs. Controls use a
+44 px minimum target; longer action labels may wrap. Primary actions are filled,
+secondary actions outlined, and destructive confirmation actions use a double
+border so their distinction also works in LCD. Selection, disabled state, and
+keyboard focus remain independent of these action variants. Scene interactions
+keep their spatial layout rather than becoming ordinary form buttons.
+
+`bridge/catalog.css` adapts Dex and History density, typography, and filters to
+the web. Their bounded catalog list remains independently scrollable so a large
+catalog does not push the selected detail hundreds of rows down the page.
+Feature styles own layout, not new arbitrary type scales. When adding controls,
+reuse the semantic tokens and verify Color/LCD, narrow screens, long labels,
+disabled/selected states, and keyboard focus before adding a new exception.
+
 ## Online transport layers
 
 `platform/online-wire.ts` owns the single physical connection, browser lock,
@@ -132,3 +157,18 @@ source/CSS files unreachable from the declared entrypoints. Ambient declarations
 are excluded from reachability checks. Source files outside the owning areas are
 rejected. This is a local dependency check, not a substitute for the workspace's
 shared-package boundary checks or browser tests.
+
+## Account and backup UX
+
+The first Google session automatically associates a local game only when it has
+no previous account or social data. Returning to the same account is a no-op.
+Changing account or migrating legacy contacts opens a dedicated confirmation;
+Options never exposes a second activation step. Confirmation checks the captured
+save identity again before committing, and cancelling preserves the local game.
+No sign-in or association uploads a backup.
+
+File imports use a preview dialog before replacing the game. The success notice
+owns Undo and disappears when dismissed or when Options closes. Import also offers
+Previous game, so recovery remains available after the notice is gone. Import and
+Undo validate the current save/account identity, and the previous save remains
+in local storage. Cloud restores use the same contextual success notice.

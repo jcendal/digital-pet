@@ -349,6 +349,9 @@ test("backup v4 exports both companions and restores them on another device", as
     await receiver.locator("#backup-restore").click()
     await expect.poll(async () => (await state(receiver)).partnerId).toBe(previous.partnerId)
     expect((await state(receiver)).reserve).toBeUndefined()
+    await receiver.locator("#options-dialog .dialog-close").click()
+    await openOptions(receiver)
+    await expect(receiver.locator("#backup-result")).toBeHidden()
   } finally {
     await context.close()
   }

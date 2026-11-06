@@ -260,12 +260,13 @@ body {
   margin: 0 0 8px;
   text-align: left;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--ui-type-label);
   color: var(--muted);
   border: 0;
   border-bottom: 2px dotted var(--line);
   background: transparent;
   cursor: pointer;
+  min-height: var(--ui-control-height);
 }
 #world-location:hover {
   color: var(--ink);
@@ -306,10 +307,10 @@ body {
   padding: 0 6px;
 }
 .pet-module #name {
-  font-size: 18px;
+  font-size: var(--ui-type-heading);
 }
 .pet-module #stage {
-  font-size: 14px;
+  font-size: var(--ui-type-label);
 }
 .pet-module .progress {
   height: auto;

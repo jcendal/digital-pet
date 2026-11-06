@@ -35,7 +35,9 @@ test("adoption preserves the existing local game, uploads only on request and re
     }
   })
   await page.goto("http://127.0.0.1:4177")
-  await expect(page.locator("#online-adopt")).toBeVisible()
+  await openOptions(page)
+  await expect(page.locator("#online-copies")).toBeVisible()
+  await expect(page.locator("#account-switch-dialog")).toBeHidden()
   expect(
     await page.evaluate(
       () =>
@@ -49,13 +51,27 @@ test("adoption preserves the existing local game, uploads only on request and re
         }),
     ),
   ).toBe("VersionError")
-  await page.locator("#online-adopt").click()
-  await expect(page.locator("#online-adopt")).toBeHidden()
+
   expect((await readPet(page)).partnerId).toBe("legacy-pet")
+  let listRequests = 0
+  page.on("request", (request) => {
+    if (request.method() === "GET" && new URL(request.url()).pathname === "/api/v1/me/backups") listRequests++
+  })
+  await expect(page.locator("#online-backups")).toBeHidden()
+  await expect(page.locator("#online-list")).toHaveText(/view/i)
   await page.locator("#online-list").click()
   await expect(page.locator("#online-backups")).toContainText(/no backups/i)
+  await expect(page.locator("#online-list")).toHaveText(/close/i)
+  await expect(page.locator("#online-list")).toHaveAttribute("aria-expanded", "true")
+  const requestsBeforeClose = listRequests
+  await page.locator("#online-list").click()
+  await expect(page.locator("#online-backups")).toBeHidden()
+  await expect(page.locator("#online-list")).toHaveText(/view/i)
+  await expect(page.locator("#online-list")).toHaveAttribute("aria-expanded", "false")
+  expect(listRequests).toBe(requestsBeforeClose)
   await page.locator("#online-save").click()
   await expect(page.locator(".online-backup-row")).toHaveCount(1)
+  await expect(page.locator("#online-list")).toHaveText(/close/i)
   await page.locator(".online-backup-row").scrollIntoViewIfNeeded()
   await page.screenshot({ path: testInfo.outputPath("account-backups-mobile.png") })
   await seedSocialPet(page, "new-local-pet", "4-001")
@@ -78,7 +94,7 @@ test("adoption preserves the existing local game, uploads only on request and re
   await page.locator(".online-backup-row button").last().click()
   await expect(page.locator("#online-status")).toBeEmpty()
   await expect(page.locator(".online-backup-row")).toHaveCount(1)
-  await page.locator(".online-backup-row button").first().click()
+  await page.locator(".online-backup-row button").last().click()
   await expect(page.locator(".online-backup-row")).toHaveCount(0)
   expect((await readPet(page)).partnerId).toBe("legacy-pet")
   expect(errors).toEqual([])
@@ -122,9 +138,9 @@ test("an old backup preview cannot overwrite the game after switching accounts",
       if (!(error instanceof Error) || error.message !== "unauthorized") throw error
     }
   })
-  await expect(page.locator("#online-adopt")).toBeVisible()
-  await page.locator("#online-adopt").click()
-  await expect(page.locator("#online-adopt")).toBeHidden()
+  await expect(page.locator("#account-switch-dialog")).toBeVisible()
+  await page.locator("#account-switch-confirm").click()
+  await expect(page.locator("#account-switch-dialog")).toBeHidden()
   await page.locator("#online-restore").click()
   await expect(page.locator("#online-status")).toContainText("changed")
   expect((await readPet(page)).partnerId).toBe("current-b")

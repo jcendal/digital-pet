@@ -1,0 +1,22 @@
+:root {
+  --ui-type-heading: 16px;
+  --ui-type-name: 14px;
+  --ui-type-body: 12px;
+  --ui-type-control: 12px;
+  --ui-type-label: 11px;
+  --ui-type-meta: 10px;
+  --ui-type-input: 16px;
+  --ui-control-height: 44px;
+  --ui-control-padding: 8px 12px;
+  --ui-line-height: 1.6;
+  --ui-dialog-border: 6px double var(--case-edge);
+  --ui-dialog-backdrop: #071211b8;
+  --ui-dialog-shadow: 0 10px 35px #0009;
+
+  /* Adapt shared views to the web without changing the other hosts. */
+  --type-small: var(--ui-type-meta);
+  --type-label: var(--ui-type-label);
+  --type-body: var(--ui-type-body);
+  --type-name: var(--ui-type-heading);
+  --type-title: var(--ui-type-heading);
+}

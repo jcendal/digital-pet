@@ -7,6 +7,8 @@
   overflow: hidden;
 }
 .social-scroll {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -15,19 +17,46 @@
   scrollbar-color: var(--muted) var(--line);
   padding: 0 4px 8px;
 }
+.social-scroll > section {
+  flex: none;
+}
+#social-friends:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+.social-friends-help {
+  margin-top: auto;
+  padding: 28px 8px 0;
+  text-align: center;
+}
+.social-friends-help .social-hint {
+  margin: 8px 0;
+}
+#social-network-status,
+#social-status {
+  flex: none;
+}
+.social-scroll:has(#social-friends:not([hidden])) > #social-network-status {
+  text-align: center;
+  padding-inline: 8px;
+}
+#social-status:empty {
+  display: none;
+}
 .social-device h2 {
-  font-size: 15px;
+  font-size: var(--ui-type-heading);
   margin: 10px 0 16px;
   font-weight: 400;
 }
 .social-device h3 {
-  font-size: 12px;
+  font-size: var(--ui-type-name);
   margin: 6px 0;
   font-weight: 400;
 }
 .social-hint {
-  font-size: 10px;
-  line-height: 1.8;
+  font-size: var(--ui-type-body);
+  line-height: var(--ui-line-height);
   color: var(--muted);
   overflow-wrap: anywhere;
   margin: 10px 0;
@@ -36,24 +65,24 @@
 #social-dialog button,
 #social-playback button {
   font: inherit;
-  font-size: 10px;
+  font-size: var(--ui-type-control);
   color: var(--ink);
   background: transparent;
   border: 2px solid var(--muted);
   min-height: 44px;
-  padding: 8px 12px;
+  padding: var(--ui-control-padding);
   cursor: pointer;
 }
 .social-device button.primary-action,
 #social-dialog button.primary-action,
 #social-playback button.primary-action {
-  background: var(--muted);
+  background: var(--ink);
   color: var(--lcd);
 }
 .social-device .dex-tabs button {
   border: 0;
   padding: 8px;
-  font-size: 10px;
+  font-size: var(--ui-type-label);
 }
 .social-device .dex-tabs button[aria-selected="true"] {
   background: var(--muted);
@@ -70,11 +99,12 @@
   border: 2px solid var(--muted);
   padding: 10px;
   margin: 10px 0;
+  font-size: var(--ui-type-input);
 }
 .social-device label,
 #social-dialog label {
   display: block;
-  font-size: 11px;
+  font-size: var(--ui-type-label);
   margin-top: 16px;
 }
 .social-device .social-portrait {
@@ -96,14 +126,14 @@
   overflow-wrap: anywhere;
 }
 .social-code {
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
   overflow-wrap: anywhere;
   margin: 4px 0;
 }
 .social-eyebrow {
   display: block;
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
   line-height: 1.7;
 }
@@ -125,16 +155,16 @@
 .social-code-bar {
   border-bottom: 4px solid var(--line);
   padding: 8px 0 14px;
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
 }
 .social-own-code {
   display: block;
-  font-size: 12px;
+  font-size: var(--ui-type-body);
   overflow-wrap: anywhere;
   line-height: 1.8;
 }
 .social-row .social-own-code {
-  font-size: 10px;
+  font-size: var(--ui-type-body);
 }
 .social-friend,
 .social-item {
@@ -146,7 +176,7 @@
   justify-content: space-between;
   gap: 8px;
   margin: 8px 0;
-  font-size: 8px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 .social-actions {
@@ -159,22 +189,16 @@
 .social-device .social-heading > button {
   position: relative;
   width: auto;
-  min-height: 30px;
-  padding: 6px 10px;
-  font-size: 9px;
-}
-.social-actions button::before,
-.social-heading > button::before {
-  content: "";
-  position: absolute;
-  inset: -7px 0;
+  min-height: var(--ui-control-height);
+  padding: var(--ui-control-padding);
+  font-size: var(--ui-type-control);
 }
 .social-device .social-remove {
   border: 0;
   min-width: 44px;
   min-height: 44px;
   padding: 4px;
-  font-size: 14px;
+  font-size: var(--ui-type-name);
 }
 .social-group {
   margin-top: 20px;
@@ -185,7 +209,7 @@
 .social-log-row {
   border-bottom: 2px dotted var(--line);
   padding: 14px 0;
-  font-size: 10px;
+  font-size: var(--ui-type-body);
   line-height: 1.8;
 }
 .social-profile-code {
@@ -227,14 +251,14 @@
   margin-bottom: 20px;
 }
 .social-device details {
-  border-top: 2px dotted var(--line);
-  padding: 12px 0;
+  border-top: 0;
+  padding: 0;
   margin-top: 16px;
 }
 .social-device summary {
-  font-size: 11px;
+  font-size: var(--ui-type-label);
   cursor: pointer;
-  min-height: 32px;
+  min-height: var(--ui-control-height);
 }
 .social-device .pair-code-row {
   margin: 12px 0;
@@ -245,7 +269,7 @@
 .social-device .connection-status,
 .social-device .setting-caption,
 .social-device .section-description {
-  font-size: 10px;
+  font-size: var(--ui-type-body);
   line-height: 1.8;
 }
 #social-dialog .social-portrait {
@@ -268,7 +292,7 @@
   padding: 20px;
 }
 #social-playback h2 {
-  font-size: 16px;
+  font-size: var(--ui-type-heading);
   padding-bottom: 16px;
   border-bottom: 2px solid var(--line);
 }
@@ -284,7 +308,7 @@
 }
 .social-exchange-participants strong {
   display: block;
-  font-size: 11px;
+  font-size: var(--ui-type-label);
   font-weight: 400;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -292,6 +316,7 @@
 }
 .social-exchange-participants .social-eyebrow {
   overflow-wrap: anywhere;
+  font-size: var(--ui-type-meta);
 }
 .social-exchange-direction {
   width: 20px;
@@ -328,19 +353,19 @@
   visibility: visible;
 }
 #social-playback .social-exchange-welcome h3 {
-  font-size: 16px;
+  font-size: var(--ui-type-heading);
   line-height: 1.5;
   overflow-wrap: anywhere;
   margin: 0 0 6px;
 }
 #social-playback .social-exchange-welcome p {
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 #social-playback #social-exchange-status {
   min-height: 36px;
   margin: 4px 0 12px;
-  font-size: 10px;
+  font-size: var(--ui-type-body);
   line-height: 1.8;
 }
 .social-exchange-actions {
@@ -374,7 +399,7 @@
   margin: 16px 0;
 }
 .social-offers legend {
-  font-size: 11px;
+  font-size: var(--ui-type-label);
 }
 #social-dialog .social-offer-option {
   position: relative;
@@ -393,6 +418,7 @@
 }
 #social-dialog .social-offer-option .social-eyebrow {
   color: inherit;
+  font-size: var(--ui-type-meta);
 }
 #social-dialog .social-offer-option .social-portrait {
   width: 56px;
@@ -417,11 +443,11 @@
 @media (max-width: 350px) {
   .social-device .brand,
   .social-device h1 {
-    font-size: 12px;
+    font-size: var(--ui-type-body);
   }
   .social-device .social-actions button {
     padding-inline: 7px;
-    font-size: 8px;
+    font-size: var(--ui-type-control);
   }
 }
 
@@ -430,14 +456,9 @@
   position: relative;
   width: auto;
   flex: none;
-  min-height: 30px;
-  padding: 6px 10px;
-  font-size: 9px;
-}
-.social-small-button::before {
-  content: "";
-  position: absolute;
-  inset: -7px 0;
+  min-height: var(--ui-control-height);
+  padding: var(--ui-control-padding);
+  font-size: var(--ui-type-control);
 }
 .social-hero,
 .social-profile-hero,
@@ -457,7 +478,7 @@
   height: 160px;
 }
 .social-device #social-current h3 {
-  font-size: 17px;
+  font-size: var(--ui-type-heading);
   margin: 10px 0;
 }
 .social-device #social-profile-companion {
@@ -465,6 +486,7 @@
 }
 .social-profile-hero .social-eyebrow {
   margin-top: 10px;
+  font-size: var(--ui-type-meta);
 }
 .social-device #social-choose-team {
   margin-bottom: 0;
@@ -472,7 +494,7 @@
 #social-arena-status {
   text-align: right;
   max-width: 48%;
-  font-size: 8px;
+  font-size: var(--ui-type-meta);
 }
 .social-arena-friend {
   padding: 16px 0;
@@ -497,7 +519,7 @@
   flex: none;
 }
 .social-device .social-code-bar .social-own-code {
-  font-size: 10px;
+  font-size: var(--ui-type-label);
   margin-top: 8px;
 }
 .social-input-row {
@@ -519,13 +541,13 @@
   border: 1px solid var(--muted);
   padding: 2px 3px;
   margin-left: 4px;
-  font-size: 8px;
+  font-size: var(--ui-type-meta);
 }
 .social-device .dex-tabs [aria-selected="true"] #social-count {
   border-color: currentColor;
 }
 #social-total {
-  font-size: 9px;
+  font-size: var(--ui-type-meta);
   color: var(--muted);
 }
 #social-alias-form > button {
@@ -538,7 +560,7 @@
   margin: 0 0 8px;
 }
 #social-dialog h3 {
-  font-size: 13px;
+  font-size: var(--ui-type-name);
   font-weight: 400;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -582,13 +604,13 @@
   margin-top: 10px;
 }
 .social-matchup-direction {
-  font-size: 12px;
+  font-size: var(--ui-type-body);
   color: var(--muted);
 }
 .social-history-note {
   border: 2px dotted var(--muted);
   padding: 12px;
-  font-size: 10px;
+  font-size: var(--ui-type-body);
   line-height: 1.9;
   color: var(--muted);
 }
@@ -613,7 +635,7 @@
 .social-offer-option strong {
   display: block;
   font-weight: 400;
-  font-size: 12px;
+  font-size: var(--ui-type-body);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -626,10 +648,10 @@
 }
 @media (max-width: 350px) {
   .social-device .social-heading h2 {
-    font-size: 12px;
+    font-size: var(--ui-type-heading);
   }
   .social-device .social-code-bar .social-own-code {
-    font-size: 8px;
+    font-size: var(--ui-type-label);
   }
   .social-code-bar {
     gap: 5px;
@@ -639,7 +661,7 @@
     height: 128px;
   }
   .social-matchup .social-eyebrow {
-    font-size: 8px;
+    font-size: var(--ui-type-meta);
   }
 }
 
@@ -663,7 +685,7 @@
 @media (max-width: 350px) {
   #social-dialog h2 {
     white-space: normal;
-    font-size: 16px;
+    font-size: var(--ui-type-heading);
   }
 }
 
@@ -684,7 +706,7 @@
 }
 #social-dialog .social-dialog-person h3 {
   margin: 4px 0;
-  font-size: 14px;
+  font-size: var(--ui-type-name);
 }
 #social-dialog .social-dialog-hero,
 #social-dialog .social-invitation-hero {
@@ -699,17 +721,18 @@
 }
 #social-dialog .social-dialog-hero h3,
 #social-dialog .social-invitation-hero h3 {
-  font-size: 21px;
+  font-size: var(--ui-type-heading);
   margin: 0;
 }
 #social-dialog .social-dialog-hero .social-hint {
   margin: 10px 0 0;
+  line-height: var(--ui-line-height);
 }
 #social-dialog .social-confirmation-lines {
   border-top: 2px dotted var(--line);
   padding: 12px 0;
   margin-top: 10px;
-  font-size: 10px;
+  font-size: var(--ui-type-body);
   line-height: 2;
   color: var(--muted);
 }
@@ -752,6 +775,7 @@
 .social-fighter-option .social-eyebrow {
   color: inherit;
   margin-top: 4px;
+  font-size: var(--ui-type-meta);
 }
 
 .social-empty {
@@ -769,8 +793,101 @@
 .social-empty h3,
 .social-empty .social-hint {
   margin: 0;
+  line-height: var(--ui-line-height);
 }
 .social-empty button {
   min-width: 120px;
   margin-top: 8px;
+}
+
+.battle-details-body {
+  display: grid;
+  gap: 16px;
+  padding: 16px 2px 4px;
+}
+.social-device .battle-details-body h3 {
+  margin: 0 0 10px;
+  font-size: var(--ui-type-label);
+  line-height: var(--ui-line-height);
+}
+.battle-code-option > label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: var(--ui-type-label);
+  line-height: var(--ui-line-height);
+}
+.battle-code-login {
+  padding: 16px 2px 4px;
+  text-align: center;
+}
+.battle-code-login p {
+  margin: 0 0 12px;
+  font-size: var(--ui-type-body);
+}
+.social-device .battle-code-login button {
+  width: auto;
+}
+#battle-code-controls[hidden],
+#battle-code-login[hidden] {
+  display: none;
+}
+.battle-code-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+.social-device .battle-code-control > input,
+.social-device .battle-code-control > output {
+  min-width: 0;
+  min-height: var(--ui-control-height);
+  margin: 0;
+  padding: 10px;
+  border: 2px solid var(--muted);
+  text-align: center;
+}
+.battle-code-control > output {
+  display: grid;
+  align-items: center;
+  background: var(--lcd-edge);
+  font-size: var(--ui-type-control);
+  overflow-wrap: anywhere;
+}
+.social-device .battle-code-control > button {
+  width: auto;
+  min-width: 82px;
+}
+.battle-details-body #battle-status:empty {
+  display: none;
+}
+.battle-rules ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--ui-type-body);
+  line-height: var(--ui-line-height);
+}
+.battle-rules li + li {
+  margin-top: 8px;
+}
+.battle-rewards {
+  margin: 0;
+  border-top: 2px solid var(--line);
+}
+.battle-rewards > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--line);
+  font-size: var(--ui-type-body);
+  line-height: var(--ui-line-height);
+}
+.battle-rewards dd {
+  margin: 0;
+  text-align: right;
+}
+.battle-rules .battle-rule-notes {
+  font-size: var(--ui-type-meta);
+  color: var(--muted);
 }

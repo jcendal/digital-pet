@@ -1,8 +1,11 @@
 import { IntlModule as languageIntl } from "@jcendal/digital-pet-intl"
 import { escapeHtml } from "@jcendal/digital-pet-webviews/shared/escape-html.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import { accountLoginMarkup, accountMarkup, actionIcon } from "./account-markup.ts"
+import { accountLoginMarkup, accountMarkup, accountSettingsMarkup, actionIcon } from "./account-markup.ts"
 import { legalLinksMarkup } from "./legal-markup.ts"
+
+const backupCopy = (key: string) =>
+  `<span data-i18n="web:backup.${key}">${escapeHtml(IntlModule.translate(`backup.${key}`))}</span>`
 
 const deviceIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 2h8v2H2zm0 2h2v12H2zm6 0h2v12H8zm-6 12h8v2H2zm2-3h4v2H4zm10-7h8v2h-8zm0 2h2v12h-2zm6 0h2v12h-2zm-6 12h8v2h-8zm2-3h4v2h-4zM10 8h4v2h-4zm0 4h4v2h-4z"/></svg>`
 const eggIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 2h4v2h-4zM8 4h2v4H8zm6 0h2v4h-2zM6 8h2v4H6zm10 0h2v4h-2zM4 12h2v6H4zm14 0h2v6h-2zM6 18h2v2H6zm10 0h2v2h-2zM8 20h8v2H8zM8 10h4v4H8zm4 6h4v2h-4z"/></svg>`
@@ -14,20 +17,21 @@ export const optionsMarkup = /* html */ `
     ${accountLoginMarkup}
     <section class="options-section language-section">
       <label class="section-heading" id="language-label" for="language-select" data-i18n="intl:language.label">${escapeHtml(languageIntl.translate("language.label"))}</label>
-      <select id="language-select" aria-labelledby="language-label">
+      <div class="select-control"><select id="language-select" aria-labelledby="language-label">
         ${["en", "ko", "es", "gl"].map((locale) => `<option value="${locale}">${escapeHtml(languageIntl.translate(`language.${locale}`))}</option>`).join("")}
-      </select>
+      </select></div>
     </section>
     <section class="options-section theme-section">
       <label class="section-heading" for="theme-select" data-i18n="web:theme.label">${escapeHtml(IntlModule.translate("theme.label"))}</label>
-      <select id="theme-select"><option value="lcd" data-i18n="web:theme.lcd">LCD</option><option value="color" data-i18n="web:theme.color">${escapeHtml(IntlModule.translate("theme.color"))}</option></select>
+      <div class="select-control"><select id="theme-select"><option value="lcd" data-i18n="web:theme.lcd">LCD</option><option value="color" data-i18n="web:theme.color">${escapeHtml(IntlModule.translate("theme.color"))}</option></select></div>
     </section>
 
     <fieldset id="new-partner-options"><legend class="sr-only" data-i18n="web:optionsMarkup.browserCompanionOptions">${escapeHtml(IntlModule.translate("optionsMarkup.browserCompanionOptions"))}</legend>
       <section class="new-partner-section"><div class="action-heading">${eggIcon}<div><h3 data-i18n="web:optionsMarkup.aNewJourney">${escapeHtml(IntlModule.translate("optionsMarkup.aNewJourney"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.startFreshKeepYourPastCompanions">${escapeHtml(IntlModule.translate("optionsMarkup.startFreshKeepYourPastCompanions"))}</p></div></div>
-        <button id="new-partner" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.startANewEgg">${escapeHtml(IntlModule.translate("optionsMarkup.startANewEgg"))}</span><span aria-hidden="true">+</span></button>
+        <button id="new-partner" class="wide-action" type="button">${actionIcon("add")}<span data-i18n="web:optionsMarkup.startANewEgg">${escapeHtml(IntlModule.translate("optionsMarkup.startANewEgg"))}</span></button>
       </section>
     </fieldset>
+    ${accountSettingsMarkup}
     <section class="save-backups" aria-labelledby="save-backups-title">
       <h3 id="save-backups-title" data-i18n="web:online.account">${escapeHtml(IntlModule.translate("online.account"))}</h3>
       <p class="section-description" data-i18n="web:online.localFirst">${escapeHtml(IntlModule.translate("online.localFirst"))}</p>
@@ -35,16 +39,20 @@ export const optionsMarkup = /* html */ `
     <fieldset id="browser-backup-options"><legend class="sr-only" data-i18n="web:optionsMarkup.backUpYourSave">${escapeHtml(IntlModule.translate("optionsMarkup.backUpYourSave"))}</legend>
       <div class="backup-section">
         <p id="backup-file-label" class="backup-location" hidden data-i18n="web:optionsMarkup.backUpYourSave">${escapeHtml(IntlModule.translate("optionsMarkup.backUpYourSave"))}</p>
-        <button id="backup-download" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.downloadBackup">${escapeHtml(IntlModule.translate("optionsMarkup.downloadBackup"))}</span>${actionIcon("download")}</button>
-        <button id="backup-import" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.importBackup">${escapeHtml(IntlModule.translate("optionsMarkup.importBackup"))}</span>${actionIcon("restore")}</button>
-        <input id="backup-file" class="sr-only" type="file" accept=".json,application/json" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.chooseADigitalPetBackup"))}" data-i18n-aria-label="web:optionsMarkup.chooseADigitalPetBackup">
-        <div id="backup-confirm" class="confirm-box" hidden><strong data-i18n="web:optionsMarkup.replaceThisBrowserSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceThisBrowserSave"))}</strong><p id="backup-preview"></p><p data-i18n="web:optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions">${escapeHtml(IntlModule.translate("optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions"))}</p><div class="dialog-actions"><button id="backup-accept" class="primary-action" type="button"><span data-i18n="web:optionsMarkup.replaceSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceSave"))}</span>${actionIcon("restore")}</button><button id="backup-cancel" type="button"><span data-i18n="web:optionsMarkup.cancel">${escapeHtml(IntlModule.translate("optionsMarkup.cancel"))}</span>${actionIcon("cancel")}</button></div></div>
-        <button id="backup-restore" class="text-action" type="button" hidden><span data-i18n="web:optionsMarkup.restorePreviousSave">${escapeHtml(IntlModule.translate("optionsMarkup.restorePreviousSave"))}</span>${actionIcon("restore")}</button>
+        <div class="backup-button-row">
+        <button id="backup-download" class="wide-action" type="button">${actionIcon("download")}<span data-i18n="web:optionsMarkup.downloadBackup">${escapeHtml(IntlModule.translate("optionsMarkup.downloadBackup"))}</span></button>
+        <button id="backup-import" class="wide-action" type="button">${actionIcon("import")}<span data-i18n="web:optionsMarkup.importBackup">${escapeHtml(IntlModule.translate("optionsMarkup.importBackup"))}</span></button>
+        </div>
+        <input id="backup-file" hidden type="file" accept=".json,application/json" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.chooseADigitalPetBackup"))}" data-i18n-aria-label="web:optionsMarkup.chooseADigitalPetBackup">
+        <div id="backup-result" class="backup-result" hidden>
+          <span id="backup-result-message" role="status">${backupCopy("imported")}</span>
+          <button id="backup-restore" class="text-action" type="button">${backupCopy("undo")}</button>
+          <button id="backup-result-close" class="dialog-close" type="button" aria-label="${escapeHtml(IntlModule.translate("backup.dismiss"))}" data-i18n-aria-label="web:backup.dismiss">✕</button>
+        </div>
       </div>
     </fieldset>
-    <button id="online-logout" class="text-action" type="button" hidden><span data-i18n="web:online.logout">${escapeHtml(IntlModule.translate("online.logout"))}</span>${actionIcon("logout")}</button>
     </section>
-    <section class="music-section"><button id="music-toggle" class="wide-action" type="button" aria-pressed="true" aria-describedby="music-status"><span data-i18n="web:music.label">${escapeHtml(IntlModule.translate("music.label"))}</span><span id="music-state" class="value-badge">${escapeHtml(IntlModule.translate("controller.on"))}</span></button><p id="music-status" class="setting-caption" role="status" data-i18n="web:music.tapToPlay">${escapeHtml(IntlModule.translate("music.tapToPlay"))}</p><p class="setting-caption" data-i18n="web:music.credit">${escapeHtml(IntlModule.translate("music.credit"))}</p></section>
+    <section class="music-section"><button id="music-toggle" class="wide-action" type="button" aria-pressed="true" aria-describedby="music-description music-status"><span data-i18n="web:music.label">${escapeHtml(IntlModule.translate("music.label"))}</span><span id="music-state" class="value-badge">${escapeHtml(IntlModule.translate("controller.on"))}</span></button><p id="music-description" class="setting-caption" data-i18n="web:music.description">${escapeHtml(IntlModule.translate("music.description"))}</p><p id="music-status" class="setting-caption" role="status" hidden></p></section>
     <section class="landscape-section"><button id="landscape-motion" class="wide-action" type="button" aria-pressed="false"><span data-i18n="web:optionsMarkup.movingLandscape">${escapeHtml(IntlModule.translate("optionsMarkup.movingLandscape"))}</span><span id="landscape-motion-state" class="value-badge" data-i18n="web:controller.off">${escapeHtml(IntlModule.translate("controller.off"))}</span></button></section>
     <section id="install-section" hidden>
       <button id="install-app" class="wide-action" type="button" data-i18n="web:installation.action">${escapeHtml(IntlModule.translate("installation.action"))}</button>
@@ -78,6 +86,22 @@ export const optionsMarkup = /* html */ `
   </div>
   <p id="options-status" class="dialog-feedback" role="status" aria-live="polite"></p>
   <footer class="options-legal">${legalLinksMarkup}</footer>
+</dialog>
+<dialog id="backup-import-dialog" class="web-dialog flow-dialog" aria-labelledby="backup-import-title">
+  <header class="dialog-head"><h2 id="backup-import-title">${backupCopy("title")}</h2><form method="dialog"><button class="dialog-close" id="backup-dialog-close" aria-label="${escapeHtml(IntlModule.translate("backup.dismiss"))}" data-i18n-aria-label="web:backup.dismiss">✕</button></form></header>
+  <div class="dialog-body">
+    <div id="backup-picker">
+      <p>${backupCopy("chooseHint")}</p>
+      <button id="backup-choose" class="wide-action" type="button">${actionIcon("import")}${backupCopy("file")}</button>
+      <button id="backup-previous" class="text-action" type="button" hidden>${backupCopy("previous")}</button>
+    </div>
+    <section id="backup-confirm" hidden>
+      <div class="backup-preview-summary"><strong id="backup-pet-name"></strong><p id="backup-preview" class="section-description"></p></div>
+      <div class="backup-import-warning"><p>${backupCopy("replaceWarning")}</p><p class="section-description">${backupCopy("keepPrevious")}</p></div>
+      <div class="dialog-actions"><button id="backup-cancel" type="button">${backupCopy("cancel")}</button><button id="backup-accept" class="primary-action" type="button">${actionIcon("import")}<span id="backup-accept-label" data-i18n="web:backup.import">${escapeHtml(IntlModule.translate("backup.import"))}</span></button></div>
+    </section>
+    <p id="backup-import-status" class="connection-status" role="status"></p>
+  </div>
 </dialog>
 <dialog id="pair-dialog" class="web-dialog" aria-labelledby="pair-title">
   <header class="dialog-head"><div><p class="dialog-eyebrow" data-i18n="web:optionsMarkup.connectDevices">${escapeHtml(IntlModule.translate("optionsMarkup.connectDevices"))}</p><h2 id="pair-title" data-i18n="web:controller.pairDevices">${escapeHtml(IntlModule.translate("controller.pairDevices"))}</h2></div><form method="dialog"><button class="dialog-close" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.closePairing"))}" data-i18n-aria-label="web:optionsMarkup.closePairing">✕</button></form></header>
