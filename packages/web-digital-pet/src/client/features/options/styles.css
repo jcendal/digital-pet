@@ -25,6 +25,29 @@
 .web-dialog::backdrop {
   background: #071211b8;
 }
+.account-legal,
+.options-legal {
+  font-size: 10px;
+  line-height: 1.6;
+}
+.account-legal {
+  margin-top: 8px;
+}
+.web-dialog .legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding-top: 6px;
+}
+.legal-links a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+.options-legal {
+  flex-shrink: 0;
+  padding: 8px 18px 12px;
+  border-top: 1px solid var(--case-edge);
+}
 .web-dialog h2 {
   margin: 0;
   font-size: 19px;
@@ -563,23 +586,136 @@
   outline-offset: 3px;
 }
 
+/* The public web app always plays the save on this device. */
+[data-save-host="browser"] #save-source-section {
+  display: none;
+}
+#options-dialog h3,
+#options-dialog button,
+#options-dialog .wide-action > span,
+#online-migration h2,
+#online-migration button {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+#options-dialog #online-login-hint {
+  margin: 0 0 10px;
+}
+#online-login {
+  margin-bottom: 22px;
+}
+.account-connection {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+#online-session-status {
+  font-size: 12px;
+}
+.web-dialog .google-action {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--lcd);
+  font: inherit;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+}
+.web-dialog .google-action:hover {
+  filter: brightness(1.08);
+}
+.web-dialog .google-action:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
 #online-copies {
   min-width: 0;
-  margin-top: 12px;
-  border: 1px solid var(--ink);
+  margin-top: 16px;
 }
-#online-account p {
-  overflow-wrap: anywhere;
-  line-height: 1.7;
+#online-copies legend,
+.web-dialog .backup-location {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.backup-actions,
+.backup-section {
+  display: grid;
+  gap: 10px;
+}
+.backup-actions,
+.backup-section {
+  margin-top: 14px;
 }
 .online-backup-row {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--ink);
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--muted);
 }
-.online-backup-row button {
-  margin: 4px;
+.online-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-#online-migration {
-  overflow: auto;
-  padding: 16px;
+.online-backup-actions button {
+  flex: 1 1 120px;
+  font-size: 11px;
+}
+#online-backups:not(:empty) {
+  margin-top: 14px;
+}
+#online-migration .dialog-body {
+  display: grid;
+  gap: 18px;
+}
+.account-benefits {
+  display: grid;
+  gap: 16px;
+  padding-block: 16px;
+  border-block: 1px solid var(--muted);
+}
+.account-benefits strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.account-benefits p,
+.web-dialog .account-reassurance {
+  font-size: 11px;
+}
+.web-dialog .account-reassurance {
+  text-align: center;
+}
+#online-migration .text-action,
+#online-logout {
+  margin: 0;
+}
+
+.save-backups button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.action-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+
+#online-login-legal:not([hidden]) + .language-section {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--muted);
 }

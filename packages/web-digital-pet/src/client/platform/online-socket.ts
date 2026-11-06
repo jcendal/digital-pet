@@ -9,7 +9,7 @@ type Listeners = {
   disconnected: () => void
   error: (message: string) => void
 }
-type Pending = { connection: OnlineConnection; requestId: string; code: string; attempts: number }
+type Pending = { connection: OnlineConnection; requestId: string; code: string; attempts: number; friend?: string }
 /** Feature-level logical channels; physical transport is owned exclusively by OnlineWire. */
 export class OnlineEndpoint implements WireListener {
   code = ""
@@ -95,13 +95,19 @@ export class OnlineEndpoint implements WireListener {
       entry.connection.fail(new Error("connection-timeout"))
       return
     }
-    this.write({ action: "open", namespace: this.namespace, code: entry.code, requestId: entry.requestId })
+    this.write({
+      action: "open",
+      namespace: this.namespace,
+      code: entry.code,
+      requestId: entry.requestId,
+      ...(entry.friend ? { friend: entry.friend } : {}),
+    })
   }
   async receive(value: Record<string, unknown>): Promise<void> {
     if (value.kind === "registered" && value.namespace === this.namespace && typeof value.code === "string") {
+      onlineWire.ready(this)
       if (this.code === value.code) return
       this.code = value.code
-      onlineWire.ready(this)
       this.listeners.ready(this.code)
       if (this.namespace === "battle") announceOnline("online-ready")
     } else if (value.kind === "opened" && typeof value.channel === "string" && typeof value.requestId === "string") {
@@ -144,10 +150,10 @@ export class OnlineEndpoint implements WireListener {
       }
     }
   }
-  connect(code: string): OnlineConnection {
+  connect(code: string, friend?: string): OnlineConnection {
     if (!this.connected) throw new Error("online.signIn")
     const connection = this.connection(code)
-    const entry = { connection, code, requestId: crypto.randomUUID(), attempts: 0 }
+    const entry = { connection, code, requestId: crypto.randomUUID(), attempts: 0, ...(friend ? { friend } : {}) }
     this.pending.set(entry.requestId, entry)
     this.request(entry)
     return connection

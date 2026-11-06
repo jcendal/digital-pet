@@ -2,10 +2,6 @@
 .social-device [hidden] {
   display: none;
 }
-.social-device .brand,
-.social-device h1 {
-  font-size: 14px;
-}
 .social-screen {
   gap: 12px;
   overflow: hidden;
@@ -647,11 +643,6 @@
   }
 }
 
-.social-device .footer {
-  font-size: 9px;
-  gap: 8px;
-}
-
 .social-matchup-direction svg {
   display: block;
   width: 18px;
@@ -761,4 +752,25 @@
 .social-fighter-option .social-eyebrow {
   color: inherit;
   margin-top: 4px;
+}
+
+.social-empty {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 42px 16px;
+  text-align: center;
+}
+.social-empty > svg {
+  width: 48px;
+  height: 48px;
+  color: var(--muted);
+}
+.social-empty h3,
+.social-empty .social-hint {
+  margin: 0;
+}
+.social-empty button {
+  min-width: 120px;
+  margin-top: 8px;
 }

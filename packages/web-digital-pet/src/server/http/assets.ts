@@ -16,6 +16,7 @@ const contentTypes: Record<string, string> = {
   ".ttf": "font/ttf",
   ".mp3": "audio/mpeg",
   ".webmanifest": "application/manifest+json",
+  ".pdf": "application/pdf",
 }
 
 export const serveAsset = async (
@@ -24,7 +25,12 @@ export const serveAsset = async (
   pathname: string,
   root: string,
 ): Promise<boolean> => {
-  if (!pathname.startsWith("/assets/") && pathname !== "/manifest.webmanifest" && pathname !== "/service-worker.js")
+  if (
+    !pathname.startsWith("/assets/") &&
+    pathname !== "/manifest.webmanifest" &&
+    pathname !== "/service-worker.js" &&
+    !/^\/legal\/(privacy|terms)\.pdf$/.test(pathname)
+  )
     return false
   const path = resolve(root, `.${decodeURIComponent(pathname)}`)
   if (pathname.startsWith("/assets/") && !path.startsWith(`${resolve(root, "assets")}${sep}`)) return false

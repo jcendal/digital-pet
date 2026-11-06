@@ -28,7 +28,8 @@ const hash = async (text: string): Promise<string> =>
     byte.toString(16).padStart(2, "0"),
   ).join("")
 
-export const initBrowserBattles = async (otherBusy: () => boolean): Promise<BrowserPairingControls> => {
+export type BrowserBattleControls = BrowserPairingControls & { challengeFriend(accountId: string): void }
+export const initBrowserBattles = async (otherBusy: () => boolean): Promise<BrowserBattleControls> => {
   const button = element<HTMLButtonElement>("battle-button")
   const dialog = element<HTMLDialogElement>("battle-dialog")
   const ownCode = element("battle-own-code")
@@ -60,7 +61,7 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   const update = (): void => {
     button.disabled = false
     button.title = enabled
-      ? IntlModule.translate("controller.playerBattle")
+      ? IntlModule.translate("social.title")
       : IntlModule.translate("controller.chooseThisBrowserInOptionsToBattle")
     request.disabled = !enabled || !ready || Boolean(session || playback || pending)
   }
@@ -392,6 +393,12 @@ export const initBrowserBattles = async (otherBusy: () => boolean): Promise<Brow
   update()
   if (pending && enabled) void resume()
   return {
+    challengeFriend(accountId) {
+      if (!enabled || !ready || session || playback || pending || otherBusy()) throw new Error("social.busy")
+      bind(transport.connect("", accountId), true)
+      open()
+      note(IntlModule.translate("controller.contactingTheOtherPlayer"))
+    },
     get busy() {
       return Boolean(session || playback || pending)
     },

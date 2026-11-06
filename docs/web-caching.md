@@ -93,7 +93,7 @@ copies the generated site to `dist-static`, excluding internal build manifests.
 Playwright checks the actual compiled worker in Chromium: shared view startup,
 world images, options, warm network requests, true offline navigation, 5xx recovery,
 waiting updates, preserved saves, failed installs, bypass rules, and future assets.
-It also checks the production local server and Vite development. CI runs these
-checks after building all apps. Tests use isolated browser contexts and an absent
+It also checks the production local server and Vite development. Run these checks
+locally on demand; GitHub Actions does not execute Playwright. Tests use isolated browser contexts and an absent
 SQLite path; they do not read the user's save. `PLAYWRIGHT_CHROMIUM_EXECUTABLE` can
 select an existing Chromium installation for local runs.

@@ -1,9 +1,11 @@
 import { expect, spyOn, test } from "bun:test"
 import { randomBytes } from "node:crypto"
+import { SocketAssembly } from "@jcendal/digital-pet-online/socket-rpc.ts"
 import { digest, type Session } from "../src/auth.ts"
 import { Notifications } from "../src/notifications.ts"
 import { RealtimeService } from "../src/realtime.ts"
 import { socketAction } from "../src/socket-action.ts"
+import { assertClientMessage, assertServerMessage, tradeResult } from "./contract-validation.ts"
 import { MemoryStore } from "./memory-store.ts"
 
 const setup = () => {
@@ -338,7 +340,7 @@ test("socket commands use the authenticated actor and the same application rules
       return true
     },
   }
-  const send = (accountId: string, type: string, input = {}) =>
+  const send = (accountId: string, type: string, input = {}, responseChunks = false) =>
     socialSocket(
       services,
       delivery,
@@ -348,6 +350,7 @@ test("socket commands use the authenticated actor and the same application rules
         requestId: "request",
         accountId,
         command: { type, input },
+        responseChunks,
       }),
     )
   await send("bob", "profile.rename", { alias: "Forged" })
@@ -356,6 +359,8 @@ test("socket commands use the authenticated actor and the same application rules
   expect(responses.at(-1)).toMatchObject({ status: 200, body: { id: "alice", alias: "Alice" } })
   await send("alice", "inbox.read")
   expect(responses.at(-1)).toMatchObject({ status: 413, body: { error: "http-required" } })
+  await send("alice", "inbox.read", {}, true)
+  expect(responses.at(-1)).toMatchObject({ status: 200, body: { relationships: [] } })
   const key = `sessions/${digest(handle)}`
   const stored = (await auth.get<Session>(key))!
   await auth.put(key, { ...stored.value, revoked: true }, stored.revision)
@@ -411,5 +416,223 @@ test("large committed socket results use an authorized HTTP read resource withou
     confirmed: ["bob", "alice"],
   })
   expect(data.writes).toBe(writes)
+  const assembly = new SocketAssembly()
+  let result: string | undefined
+  let frames = 0
+  await socialSocket(
+    services,
+    {
+      send: async (_connection, value) => {
+        const message = value as { kind: string; fragment: unknown }
+        expect(message.kind).toBe("response-part")
+        expect(Buffer.byteLength(JSON.stringify(value))).toBeLessThanOrEqual(24 * 1024)
+        result = assembly.add(message.fragment)
+        frames++
+        return true
+      },
+    },
+    "a",
+    JSON.stringify({ requestId: "chunked", accountId: "alice", responseChunks: true, command: read }),
+  )
+  expect(frames).toBeGreaterThan(1)
+  expect(JSON.parse(result!)).toMatchObject({ state: "committed", confirmed: ["bob", "alice"] })
+  expect(data.writes).toBe(writes)
   await expect(executeSocial(services, "mallory", read)).rejects.toThrow("forbidden")
+})
+
+test("fragmented valid trade commands cross Lambda instances and return schema-valid chunked results", async () => {
+  const { Accounts } = await import("../src/accounts.ts")
+  const { SocialService } = await import("../src/social.ts")
+  const { SocketRequests } = await import("../src/socket-requests.ts")
+  const { socialSocket } = await import("../src/social-socket.ts")
+  const { parseOffer } = await import("@jcendal/web-digital-pet/protocol/social")
+  const { service, data, connect } = setup()
+  await connect("alice", "a")
+  const social = new SocialService(data)
+  const services = { accounts: new Accounts(data), social, realtime: service }
+  const replicas = [new SocketRequests(data), new SocketRequests(data)]
+  const { id } = await social.invite("alice", "bob", "invite")
+  await social.decideInvitation("bob", id, "invite", "accepted")
+  const now = Date.now(),
+    createdAt = new Date(now).toISOString()
+  const offer = parseOffer({
+    slot: "principal",
+    revision: 0,
+    partner: {
+      partnerId: "long-history",
+      currentNodeId: "3-001",
+      createdAt,
+      lastTickAt: now,
+      gauge: 100,
+      isTerminal: false,
+      events: Array.from({ length: 256 }, () => ({ currentNodeId: "3-001", createdAt })),
+    },
+  })
+  const operation = `${now}-${crypto.randomUUID()}`
+  const destination = { installationId: "a", saveId: "save-a" }
+  await social.prepareTrade("bob", id, 1, operation, { installationId: "b", saveId: "save-b" }, offer)
+  const command = {
+    type: "trade.prepare",
+    input: { id: operation, relationship: id, generation: 1, destination, offer },
+  }
+  assertClientMessage({ action: "social", requestId: "whole", accountId: "alice", responseChunks: true, command })
+  // Exercise the fragmented path with a real, validated offer. Maximum game histories currently fit in
+  // one request frame, but the two participants' combined result needs multiple response frames.
+  const source = JSON.stringify(command),
+    midpoint = Math.floor(source.length / 2)
+  const parts = [source.slice(0, midpoint), source.slice(midpoint)].map((data, index) => ({ index, total: 2, data }))
+  const replies: Record<string, unknown>[] = []
+  const delivery = {
+    send: async (_connection: string, value: unknown) => {
+      assertServerMessage(value)
+      expect(Buffer.byteLength(JSON.stringify(value))).toBeLessThanOrEqual(24 * 1024)
+      replies.push(value as Record<string, unknown>)
+      return true
+    },
+  }
+  const send = async (index: number, replica: number) => {
+    const frame = {
+      action: "social",
+      requestId: "fragmented",
+      accountId: "alice",
+      responseChunks: true,
+      fragment: parts[index],
+    }
+    assertClientMessage(frame)
+    await socialSocket({ ...services, requests: replicas[replica]! }, delivery, "a", JSON.stringify(frame))
+  }
+  await socialSocket(
+    { ...services, requests: replicas[0]! },
+    delivery,
+    "a",
+    JSON.stringify({
+      action: "social",
+      requestId: "fragmented",
+      accountId: "alice",
+      responseChunks: true,
+      command: { type: "profile.read", input: {} },
+      fragment: parts[0],
+    }),
+  )
+  expect(replies).toEqual([
+    { kind: "response", requestId: "fragmented", status: 400, body: { error: "invalid-fragment" } },
+  ])
+  replies.length = 0
+  await send(1, 0)
+  await send(1, 1)
+  expect(replies).toHaveLength(0)
+  expect((await social.readTrade("alice", id, operation)).sides.alice).toBeUndefined()
+  await send(0, 1)
+  expect(replies.length).toBeGreaterThan(1)
+  const assembly = new SocketAssembly()
+  let assembled: string | undefined
+  for (const reply of [...replies].reverse()) {
+    expect(reply).toMatchObject({ kind: "response-part", requestId: "fragmented", status: 200 })
+    assembled = assembly.add(reply.fragment)
+  }
+  const trade = JSON.parse(assembled!)
+  expect(tradeResult(trade)).toBe(true)
+  expect(trade).toMatchObject({ id: operation, state: "pending", sides: { alice: { offer }, bob: { offer } } })
+  const count = replies.length
+  await send(0, 0)
+  expect(replies).toHaveLength(count)
+  expect((await social.inbox("alice")).relationships[0]!.value.trades).toHaveLength(1)
+})
+
+test("friend battles resolve the authenticated recipient and stop when friendship changes or the request expires", async () => {
+  const { SocialService } = await import("../src/social.ts")
+  const { service, data, connect, sent, advance } = setup()
+  const social = new SocialService(data)
+  await connect("alice", "a")
+  await connect("bob", "b")
+  await connect("mallory", "m")
+  await service.register("b", "battle")
+  await service.register("m", "battle")
+  await expect(service.open("a", "battle", "", "no-friend", "bob")).rejects.toThrow("not-friends")
+  const { id } = await social.invite("alice", "bob", "invitation")
+  await social.decideInvitation("bob", id, "invitation", "accepted")
+  await connect("bob", "b-second", "other-device")
+  await service.register("b-second", "battle")
+  await service.disconnect("b-second")
+  // A closed second device must not hide the original online device.
+  // The receiver's acceptance completes friendship for both accounts; no reciprocal decision exists.
+  expect((await social.inbox("alice")).relationships[0]?.value.active).toBe(true)
+  await expect(service.open("a", "transfer", "", "wrong-namespace", "bob")).rejects.toThrow("invalid-endpoint")
+  await expect(service.open("a", "battle", "", "wrong-recipient", "mallory")).rejects.toThrow("not-friends")
+  const channel = await service.open("a", "battle", "", "friend-request", "bob")
+  expect(sent.at(-1)).toMatchObject({ connection: "b", value: { kind: "incoming", channel } })
+  const replies: unknown[] = []
+  await socketAction(
+    service,
+    {
+      send: async (_connection, value) => {
+        replies.push(value)
+        return true
+      },
+    },
+    "a",
+    JSON.stringify({ action: "open", namespace: "battle", code: "", friend: "bob", requestId: "friend-request" }),
+  )
+  expect(replies).toEqual([{ kind: "opened", requestId: "friend-request", channel }])
+  const frame = { version: 1, channel, kind: "ack", sequence: 1 }
+  await service.relay("a", frame)
+  await social.remove("alice", id, 1)
+  await expect(service.relay("a", frame)).rejects.toThrow("not-friends")
+  await social.invite("alice", "bob", "again")
+  await social.decideInvitation("bob", id, "again", "accepted")
+  await expect(service.relay("a", frame)).rejects.toThrow("not-friends")
+  const next = await service.open("a", "battle", "", "next-request", "bob")
+  advance(120_001)
+  await expect(service.relay("b", { ...frame, channel: next })).rejects.toThrow("room-expired")
+  await service.disconnect("b")
+  await expect(service.open("a", "battle", "", "disconnected", "bob")).rejects.toThrow()
+})
+
+test("friend removal and the final battle report have one canonical decision", async () => {
+  const { SocialService } = await import("../src/social.ts")
+  for (const order of ["remove", "commit", "race"] as const) {
+    const { service, data, connect } = setup()
+    const social = new SocialService(data)
+    await connect("alice", "a")
+    await connect("bob", "b")
+    await service.register("b", "battle")
+    const { id } = await social.invite("alice", "bob", "invite")
+    await social.decideInvitation("bob", id, "invite", "accepted")
+    const channel = await service.open("a", "battle", "", "battle-request", "bob")
+    const a = { installationId: "a", saveId: "save-a" },
+      b = { installationId: "b", saveId: "save-b" }
+    await service.battleDecision("alice", channel, a, "a".repeat(64))
+    if (order === "remove") await social.remove("alice", id, 1)
+    if (order === "commit") await service.battleDecision("bob", channel, b, "a".repeat(64))
+    const [decision] = await Promise.all([
+      service.battleDecision("bob", channel, b, "a".repeat(64)),
+      social.remove("alice", id, 1),
+    ])
+    expect(decision.state).toBe(order === "commit" ? "committed" : "canceled")
+    expect((await service.battleDecision("alice", channel, a)).state).toBe(decision.state)
+    const inbox = JSON.stringify(await social.inbox("alice"))
+    expect(inbox).not.toContain('"battles"')
+  }
+})
+
+test("a committed friend battle recovers after failed publication, channel expiry and removal", async () => {
+  const { SocialService } = await import("../src/social.ts")
+  const { service, data, connect, advance } = setup()
+  const social = new SocialService(data)
+  await connect("alice", "a")
+  await connect("bob", "b")
+  await service.register("b", "battle")
+  const { id } = await social.invite("alice", "bob", "invite")
+  await social.decideInvitation("bob", id, "invite", "accepted")
+  const channel = await service.open("a", "battle", "", "battle-request", "bob")
+  const a = { installationId: "a", saveId: "save-a" },
+    b = { installationId: "b", saveId: "save-b" }
+  await service.battleDecision("alice", channel, a, "a".repeat(64))
+  data.failAt = data.writes + 2 // Relationship commit succeeds; publication of the terminal copy fails.
+  await expect(service.battleDecision("bob", channel, b, "a".repeat(64))).rejects.toThrow("Injected")
+  data.failAt = Infinity
+  await social.remove("alice", id, 1)
+  advance(300_000)
+  expect((await service.battleDecision("alice", channel, a)).state).toBe("committed")
+  expect((await service.battleDecision("bob", channel, b)).state).toBe("committed")
 })

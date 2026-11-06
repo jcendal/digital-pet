@@ -1,16 +1,22 @@
 import { expect, test } from "@playwright/test"
 import { openOptions } from "./helpers/navigation.ts"
 
-test("Dex tabs preserve filters, support keyboard navigation, history routes and browser Back", async ({
+test("Team opens first and tabs preserve filters, support keyboard navigation, history routes and browser Back", async ({
   page,
 }, testInfo) => {
-  await page.goto("/dex")
+  await page.goto("/")
+  await page.locator('a[data-page="dex"]').click()
   const dexTab = page.locator("#dex-dex-tab")
   const teamTab = page.locator("#dex-team-tab")
   const historyTab = page.locator("#dex-history-tab")
   const teamPanel = page.locator("#dex-team-panel")
   const dex = page.frameLocator('iframe[data-page="dex"]')
   const history = page.frameLocator('iframe[data-page="history"]')
+  await expect(teamTab).toHaveAttribute("aria-selected", "true")
+  await expect(page.getByRole("tab").first()).toHaveAttribute("id", "dex-team-tab")
+  await expect(page.locator('a[data-page="dex"]')).toHaveAccessibleName("TEAM")
+  await expect(teamPanel).toBeVisible()
+  await dexTab.click()
   await expect(dex.locator("#entries")).not.toBeEmpty()
   await expect(dexTab).toHaveAttribute("aria-selected", "true")
   await expect(teamTab).toHaveAttribute("tabindex", "-1")
@@ -20,14 +26,14 @@ test("Dex tabs preserve filters, support keyboard navigation, history routes and
   await dex.locator("#search").fill("Agumon")
   await dex.locator("#stage").selectOption("3")
   await dexTab.focus()
-  await dexTab.press("ArrowRight")
+  await dexTab.press("ArrowLeft")
   await expect(teamTab).toBeFocused()
   await expect(teamTab).toHaveAttribute("aria-selected", "true")
   await expect(dexTab).toHaveAttribute("tabindex", "-1")
   await expect(page).toHaveURL(/\/dex\?tab=team$/)
   await expect(teamPanel).toBeVisible()
   await expect(page.locator('iframe[data-page="dex"]')).not.toBeVisible()
-  await teamTab.press("ArrowRight")
+  await teamTab.press("End")
   await expect(historyTab).toBeFocused()
   await expect(historyTab).toHaveAttribute("aria-selected", "true")
   await expect(page).toHaveURL(/\/history$/)
@@ -35,6 +41,8 @@ test("Dex tabs preserve filters, support keyboard navigation, history routes and
   await expect(page.locator('iframe[data-page="dex"]')).not.toBeVisible()
   await expect(page.locator('a[data-page="dex"]')).toHaveAttribute("aria-current", "page")
   await historyTab.press("Home")
+  await expect(teamTab).toBeFocused()
+  await teamTab.press("ArrowRight")
   await expect(dexTab).toBeFocused()
   await expect(dex.locator("#search")).toHaveValue("Agumon")
   await expect(dex.locator("#stage")).toHaveValue("3")
@@ -42,13 +50,15 @@ test("Dex tabs preserve filters, support keyboard navigation, history routes and
   await dexTab.press("End")
   await expect(historyTab).toBeFocused()
   await historyTab.press("ArrowRight")
-  await expect(dexTab).toBeFocused()
-  await dexTab.press("ArrowLeft")
+  await expect(teamTab).toBeFocused()
+  await teamTab.press("ArrowLeft")
   await expect(historyTab).toBeFocused()
   await historyTab.press("ArrowLeft")
+  await expect(dexTab).toBeFocused()
+  await dexTab.press("ArrowLeft")
   await expect(teamTab).toBeFocused()
   await expect(teamPanel).toBeVisible()
-  await teamTab.press("ArrowLeft")
+  await teamTab.press("ArrowRight")
   await expect(dexTab).toBeFocused()
   await page.goBack()
   await expect(teamTab).toHaveAttribute("aria-selected", "true")
@@ -57,7 +67,7 @@ test("Dex tabs preserve filters, support keyboard navigation, history routes and
   await page.reload()
   await expect(teamTab).toHaveAttribute("aria-selected", "true")
   await expect(teamPanel).toBeVisible()
-  await teamTab.press("ArrowRight")
+  await teamTab.press("End")
   await expect(historyTab).toHaveAttribute("aria-selected", "true")
   await expect(history.locator("#generation-count")).not.toHaveText("00")
   for (const width of [320, 390]) {
@@ -76,20 +86,15 @@ test("Dex tabs preserve filters, support keyboard navigation, history routes and
   await expect(page.locator("#world-map-view")).toBeVisible()
 })
 
-test("save selectors stay square and evolution experience has no outer input border", async ({ page }, testInfo) => {
+test("hosted web hides save selectors and evolution experience has no outer input border", async ({
+  page,
+}, testInfo) => {
   await page.goto("/")
   await expect(page.frameLocator('iframe[data-page="sidebar"]').locator("#name")).not.toHaveText("")
   await openOptions(page)
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 800 })
-    for (const id of ["source-computer", "source-browser"]) {
-      const selector = page.locator(`#${id}`)
-      await selector.scrollIntoViewIfNeeded()
-      const box = await selector.boundingBox()
-      if (!box) throw new Error("Missing save selector")
-      expect(box.width).toBe(16)
-      expect(box.height).toBe(16)
-    }
+    await expect(page.locator("#save-source-section")).toBeHidden()
     const slider = page.locator("#experience-level")
     await slider.scrollIntoViewIfNeeded()
     for (const side of ["top", "right", "bottom", "left"]) await expect(slider).toHaveCSS(`border-${side}-width`, "0px")
@@ -101,4 +106,19 @@ test("save selectors stay square and evolution experience has no outer input bor
   await page.locator("#experience-level").focus()
   await page.locator("#experience-level").press("ArrowRight")
   await expect(page.locator("#experience-amount")).toHaveText("50%")
+})
+
+test("the local companion server retains accessible save-source controls", async ({ page }) => {
+  await page.goto("http://127.0.0.1:4176")
+  await openOptions(page)
+  await expect(page.locator("#save-source-section")).toBeVisible()
+  await page.setViewportSize({ width: 320, height: 800 })
+  for (const id of ["source-computer", "source-browser"]) {
+    const selector = page.locator(`#${id}`)
+    await selector.scrollIntoViewIfNeeded()
+    const box = await selector.boundingBox()
+    if (!box) throw new Error("Missing save selector")
+    expect(box.width).toBe(16)
+    expect(box.height).toBe(16)
+  }
 })

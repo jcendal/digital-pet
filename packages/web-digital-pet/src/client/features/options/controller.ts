@@ -23,6 +23,7 @@ import {
   SOURCE_PREFERENCE_KEY,
 } from "../../platform/save-source.ts"
 import { initOnlineAccount } from "../account/controller.ts"
+import type { BrowserBattleControls } from "../battle/controller.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { openNewEgg, registerTeamBusyGuard } from "../team/controller.ts"
 import { setVisualTheme, visualTheme } from "../theme/controller.ts"
@@ -84,7 +85,7 @@ export const initBrowserOptions = async (): Promise<void> => {
   const backupRestore = byId<HTMLButtonElement>("backup-restore")
   let pendingBackup: PetTransfer | null = null
   let pairing: BrowserPairingControls | undefined
-  let battles: BrowserPairingControls | undefined
+  let battles: BrowserBattleControls | undefined
   let social: BrowserPairingControls | undefined
   let available: boolean | null = null
   let source = resolveSaveSource(
@@ -148,6 +149,7 @@ export const initBrowserOptions = async (): Promise<void> => {
     computer.checked = source === "sqlite"
     browser.checked = source === "browser"
     fieldset.disabled = source !== "browser"
+    byId<HTMLFieldSetElement>("browser-backup-options").disabled = source !== "browser"
     newPartnerOptions.disabled = source !== "browser"
     byId("browser-options-hint").hidden = source === "browser"
     backupConfirm.hidden = true
@@ -356,7 +358,13 @@ export const initBrowserOptions = async (): Promise<void> => {
   }
   try {
     const module = await import("../social/controller.ts")
-    social = await module.initBrowserSocial(() => Boolean(pairing?.busy || battles?.busy))
+    social = await module.initBrowserSocial(
+      () => Boolean(pairing?.busy || battles?.busy),
+      (accountId) => {
+        if (!battles) throw new Error("social.offline")
+        battles.challengeFriend(accountId)
+      },
+    )
     social.setBrowserEnabled(source === "browser")
   } catch {
     byId("social-status").textContent = IntlModule.translate("social.offline")

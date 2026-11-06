@@ -21,6 +21,8 @@
     "jose": "6.2.14"
   },
   "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "aws-cdk": "2.1147.0",
     "aws-cdk-lib": "2.275.0",
     "constructs": "10.8.1"

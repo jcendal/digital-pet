@@ -33,7 +33,7 @@ export type OnlineTrade = {
   createdAt: number
   expiresAt: number
   state: "pending" | "committed" | "canceled"
-  sides: Record<string, { destination: Destination; offer: unknown; applied: boolean }>
+  sides: Record<string, { destination: Destination; offer: unknown; applied: boolean; abandoned?: boolean }>
   confirmed: string[]
 }
 export type OnlineChallenge = { id: string; sender: string; battleCode: string; createdAt: number; expiresAt: number }

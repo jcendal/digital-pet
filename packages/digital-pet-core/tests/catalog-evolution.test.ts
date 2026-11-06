@@ -1,16 +1,16 @@
 import { describe, expect, test } from "bun:test"
 
-import { type DigimonNode, loadDigimonCatalog, parseDigimonCatalog } from "@jcendal/digital-pet-core/data/catalog.ts"
-import { REVIEWED_DIGIMON_DATA } from "@jcendal/digital-pet-core/data/reviewed-digimon-data.ts"
-import type { DigimonNode as DomainDigimonNode } from "@jcendal/digital-pet-core/domain/digimon-node.ts"
+import { type DigimonNode, loadDigimonCatalog, parseDigimonCatalog } from "../src/data/catalog.ts"
+import { REVIEWED_DIGIMON_DATA } from "../src/data/reviewed-digimon-data.ts"
+import type { DigimonNode as DomainDigimonNode } from "../src/domain/digimon-node.ts"
 import {
   applyTokenProgress,
   resolveEvolutionBattle,
   STAGE_GAUGE_THRESHOLDS,
   type StageThresholds,
-} from "@jcendal/digital-pet-core/domain/evolution.ts"
-import type { Partner, PartnerProgression } from "@jcendal/digital-pet-core/domain/partner.ts"
-import { DIGIMON_STAGES, isDigimonStage } from "@jcendal/digital-pet-core/domain/stage.ts"
+} from "../src/domain/evolution.ts"
+import type { Partner, PartnerProgression } from "../src/domain/partner.ts"
+import { DIGIMON_STAGES, isDigimonStage } from "../src/domain/stage.ts"
 
 const noBattle = {
   pendingEvolutionTargetId: null,

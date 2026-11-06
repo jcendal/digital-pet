@@ -25,6 +25,7 @@ test("an idle signed-in game sends no HTTP polls or socket heartbeats and all fe
   await expect.poll(() => liveSockets).toBe(1)
   await page.waitForTimeout(500)
   expect(frames.some((frame) => JSON.parse(frame).action === "social")).toBe(true)
+  expect(requests.filter((request) => request.includes("/api/v1/"))).toEqual([])
   await page.clock.install()
   requests.length = 0
   frames.length = 0
@@ -54,22 +55,38 @@ test("a signed-out game does not repeatedly ask for a session", async ({ page })
   requests.length = 0
   await page.clock.runFor(120_000)
   expect(requests).toEqual([])
+  await page.locator("#online-later").click()
+  await page.locator("#battle-button").click()
+  await expect(page.locator("#social-network-status")).not.toContainText("another tab")
+  await expect(page.locator("#social-network-status")).toContainText("Connect your account")
 })
 
 test("notifications during a slow inbox read coalesce instead of queueing one sync per event", async ({ page }) => {
   await linkSocialPeers([page])
-  await page.goto("http://127.0.0.1:4177")
-  await chooseAlias(page, "BatchPlayer")
-  await page.waitForTimeout(500)
   let reads = 0
+  let holding = false
   let release!: () => void
   const held = new Promise<void>((resolve) => {
     release = resolve
   })
-  await page.route("**/api/v1/me/inbox?*", async (route) => {
-    if (++reads === 1) await held
-    await route.fallback()
+  await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
+    const server = client.connectToServer()
+    let blocked: string | undefined
+    client.onMessage((raw) => {
+      const message = JSON.parse(String(raw))
+      if (holding && message.command?.type === "inbox.read" && ++reads === 1) blocked = message.requestId
+      server.send(raw)
+    })
+    server.onMessage(async (raw) => {
+      const message = JSON.parse(String(raw))
+      if (blocked && message.requestId === blocked) await held
+      client.send(raw)
+    })
   })
+  await page.goto("http://127.0.0.1:4177")
+  await chooseAlias(page, "BatchPlayer")
+  await page.waitForTimeout(500)
+  holding = true
   await page.evaluate(() => window.dispatchEvent(new Event("digital-pet:online-social")))
   await expect.poll(() => reads).toBe(1)
   await page.evaluate(() => {
@@ -106,13 +123,18 @@ test("a tab waiting for the shared connection lock does not request tickets and 
     })
     await page.goto("http://127.0.0.1:4177")
     await page.bringToFront()
-    await chooseAlias(page, "WaitingPlayer")
     await page.waitForTimeout(1500)
     expect(tickets).toBe(0)
+    await page.locator("#battle-button").click()
+    await expect(page.locator("#social-network-status")).toContainText("another tab")
     await holder.evaluate(() => window.dispatchEvent(new Event("release-test-lock")))
     await page.bringToFront()
     await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
     expect(tickets).toBe(1)
+    const locks = await page.evaluate(() => navigator.locks.query())
+    expect(locks.held?.filter((lock) => lock.name === "digital-pet:online-wire")).toHaveLength(1)
+    expect(locks.held?.some((lock) => lock.name?.includes("social-endpoint"))).toBe(false)
+    await chooseAlias(page, "WaitingPlayer")
   } finally {
     await holder.close()
   }
@@ -147,4 +169,32 @@ test("the access expiry deadline renews the session and shared socket once", asy
   await page.clock.runFor(60_000)
   expect(refreshes).toBe(1)
   expect(sockets).toBe(2)
+})
+
+test("an unexpected socket close reconnects with a fresh ticket and one replacement connection", async ({ page }) => {
+  await linkSocialPeers([page])
+  let connections = 0
+  let tickets = 0
+  let disconnect: (() => void) | undefined
+  page.on("request", (request) => {
+    if (request.url().endsWith("/auth/ticket")) tickets++
+  })
+  await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {
+    connections++
+    const server = client.connectToServer()
+    disconnect = () => {
+      server.close()
+      client.close({ code: 1012, reason: "Test service restart" })
+    }
+  })
+  await page.goto("http://127.0.0.1:4177")
+  await chooseAlias(page, "ReconnectPlayer")
+  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+  expect(connections).toBe(1)
+  disconnect?.()
+  await expect.poll(() => connections).toBe(2)
+  await expect(page.locator("#battle-own-code")).toHaveText(/^\d{6}$/)
+  expect(tickets).toBe(2)
+  await page.waitForTimeout(500)
+  expect(connections).toBe(2)
 })

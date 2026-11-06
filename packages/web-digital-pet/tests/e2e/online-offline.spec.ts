@@ -7,6 +7,18 @@ test("mail survives both players closing; friendship removal cancels a pending g
   const alice = await contexts[0]!.newPage(),
     bob = await contexts[1]!.newPage()
   const { accounts } = await linkSocialPeers([alice, bob])
+  let inboxResponses = 0
+  alice.on("websocket", (socket) => {
+    const pending = new Set<string>()
+    socket.on("framesent", (frame) => {
+      const message = JSON.parse(String(frame.payload))
+      if (message.command?.type === "inbox.read") pending.add(message.requestId)
+    })
+    socket.on("framereceived", (frame) => {
+      const message = JSON.parse(String(frame.payload))
+      if (message.kind === "response" && pending.delete(message.requestId)) inboxResponses++
+    })
+  })
   try {
     await alice.goto("http://127.0.0.1:4177")
     await chooseAlias(alice, "Alice")
@@ -35,10 +47,9 @@ test("mail survives both players closing; friendship removal cancels a pending g
     // A duplicate push arriving between pointer down/up must not swallow the click.
     await alice.locator('[data-social-action="gift"]').hover()
     await alice.mouse.down()
-    await Promise.all([
-      alice.waitForResponse((response) => response.url().includes("/api/v1/me/inbox?") && response.ok()),
-      alice.evaluate(() => window.dispatchEvent(new Event("digital-pet:online-social"))),
-    ])
+    const before = inboxResponses
+    await alice.evaluate(() => window.dispatchEvent(new Event("digital-pet:online-social")))
+    await expect.poll(() => inboxResponses).toBeGreaterThan(before)
     await alice.waitForTimeout(100)
     await alice.mouse.up()
     await expect(alice.locator("#social-dialog")).toBeVisible()

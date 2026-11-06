@@ -28,6 +28,7 @@ import { IntlModule } from "../../../shared/i18n.ts"
 import { readArenaFighter, selectArenaFighter } from "../../persistence/arena-store.ts"
 import { readAdventureState, readLocalState, readPendingBattle } from "../../persistence/pet-store.ts"
 import { readSocial, saveAlias, updateSocial } from "../../persistence/social-store.ts"
+import { currentOnlineSession, onlineConfigured } from "../../platform/online-api.ts"
 import { browserSaveSelected, refreshBrowserViews } from "../../platform/save-source.ts"
 import type { BrowserPairingControls } from "../pairing/controller.ts"
 import { paintExchangeColors, themedExchangeArtwork } from "../theme/controller.ts"
@@ -53,7 +54,10 @@ const person = (alias: string, _nodeId: string | null, code: string) =>
 const navigate = (view: string) =>
   window.dispatchEvent(new CustomEvent("digital-pet:navigate", { detail: `/#${view}` }))
 
-export const initBrowserSocial = async (otherBusy: () => boolean): Promise<BrowserPairingControls> => {
+export const initBrowserSocial = async (
+  otherBusy: () => boolean,
+  challengeFriend: (accountId: string) => void,
+): Promise<BrowserPairingControls> => {
   let state: SocialState = await readSocial()
   let activeTrade: Trade | undefined
   let dialogOffers: { slot: Offer["slot"]; offer: Offer }[] = []
@@ -135,6 +139,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       })
   }
   const copy = async (value: string) => {
+    if (!ensureAccount()) return
     try {
       await navigator.clipboard.writeText(value)
       note(t("copied"))
@@ -142,7 +147,13 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       note(t("copyFailed"))
     }
   }
+  const ensureAccount = () => {
+    if (!onlineConfigured() || currentOnlineSession()) return true
+    el<HTMLDialogElement>("online-migration").showModal()
+    return false
+  }
   const ensureProfile = () => {
+    if (!ensureAccount()) return false
     if (state.profile) return true
     navigate("profile")
     note(t("chooseAlias"))
@@ -293,16 +304,28 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
             const ins = incoming.filter((r) => g.kinds.includes(r.event.kind))
             const outs = outgoing.filter((r) => g.kinds.includes(r.event.kind))
             const trade = g.key === "trades" ? activeTrade : undefined
-            const groupCount = ins.length + outs.length + (trade ? 1 : 0)
+            const lost = g.key === "trades" ? engine.recoveries : []
+            const groupCount = ins.length + outs.length + (trade ? 1 : 0) + lost.length
+            if (!groupCount) return ""
+            const lostItems = lost
+              .map(
+                (item) =>
+                  `<article class="social-item"><h3>${escapeHtml(item.alias)}</h3><p class="social-hint">${h("otherDeviceTrade")}</p><div class="social-actions">${action("recover-trade", "resolve", item.id)}</div></article>`,
+              )
+              .join("")
             const recovery = trade
               ? `<article class="social-item" data-pending-trade="${escapeHtml(trade.id)}"><h3>${escapeHtml(t("proposalFrom", { alias: state.friends[trade.code]?.profile.alias ?? t("player") }))}</h3><p class="social-hint">${h(online.has(trade.code) ? "waitingTrade" : "reconnectTrade")}</p><div class="social-actions">${action("reconnect", "retry", trade.code)}${!trade.coordinator && trade.phase === "prepared" ? action("abort-pending", "cancel", trade.id) : ""}</div></article>`
               : ""
-            return `<section class="social-group" data-social-group="${g.key}"><div class="social-heading"><h3>${h(g.key)}</h3><span class="social-eyebrow">${String(groupCount).padStart(2, "0")}</span></div>${ins.map((r) => activityItem(r)).join("")}${outs.map((r) => activityItem(r, true)).join("")}${recovery}${groupCount ? "" : `<p class="social-hint">${h(`empty${g.key[0]?.toUpperCase()}${g.key.slice(1)}`)}</p>`}</section>`
+            return `<section class="social-group" data-social-group="${g.key}"><div class="social-heading"><h3>${h(g.key)}</h3><span class="social-eyebrow">${String(groupCount).padStart(2, "0")}</span></div>${ins.map((r) => activityItem(r)).join("")}${outs.map((r) => activityItem(r, true)).join("")}${recovery}${lostItems}${groupCount ? "" : `<p class="social-hint">${h(`empty${g.key[0]?.toUpperCase()}${g.key.slice(1)}`)}</p>`}</section>`
           })
-          .join(""),
+          .join("") ||
+          `<div class="social-empty"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 2h12v2H2zM0 4h2v8H0zm14 0h2v8h-2zM2 12h12v2H2zM4 7h2v2H4zm2 2h2v2H6zm2-2h2v2H8zm2-2h2v2h-2z"/></svg><h3>${h("allCaughtUp")}</h3><p class="social-hint">${h("activityEmpty")}</p>${action("show-friends", "friends")}</div>`,
       )
-      el("social-count").textContent = String(count)
-      el("social-total").textContent = t("pendingTotal", { count: String(count).padStart(2, "0") })
+      const total = count + engine.recoveries.length
+      el("social-count").textContent = String(total)
+      el("social-total").textContent = t("pendingTotal", { count: String(total).padStart(2, "0") })
+      el("social-log-heading").hidden = state.log.length === 0
+      el("social-log").hidden = state.log.length === 0
       for (const button of Array.from(dialog.querySelectorAll<HTMLButtonElement>("[data-requires-online]"))) {
         button.disabled = !online.has(button.dataset.requiresOnline ?? "")
         if (button.dataset.onlineLabel)
@@ -318,8 +341,13 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
           )
           .join("") || `<p class="social-hint">${h("noLog")}</p>`
       const networkStatus = el("social-network-status")
-      networkStatus.hidden = !engine.otherTab
-      networkStatus.textContent = engine.otherTab ? t("anotherTab") : ""
+      const signedOut = onlineConfigured() && !currentOnlineSession()
+      networkStatus.hidden = !engine.otherTab && !signedOut
+      networkStatus.textContent = signedOut
+        ? IntlModule.translate("online.signIn")
+        : engine.otherTab
+          ? t("anotherTab")
+          : ""
       if (!browserSaveSelected()) note(t("browserOnly"))
       else if (el("social-status").textContent === t("browserOnly")) note("")
       const unplayed = Object.values(state.trades).find((trade) => trade.phase === "resolved" && !trade.played)
@@ -456,12 +484,28 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
       dialog.close()
       return
     }
+    if (kind === "show-friends") {
+      navigate("friends")
+      return
+    }
     if (kind === "invite") {
       await invite(id)
       return
     }
     if (!ensureProfile()) return
     if (!browserSaveSelected()) throw new Error("social.browserOnly")
+    if (kind === "recover-trade") {
+      modal(
+        t("otherDeviceTrade"),
+        `<p class="social-hint">${h("releaseTradeWarning")}</p><div class="social-dialog-actions">${action("release-trade", "forget", id)}${action("close", "cancel")}</div>`,
+      )
+      return
+    }
+    if (kind === "release-trade") {
+      await engine.releaseTrade(id)
+      dialog.close()
+      return
+    }
     if (kind === "retry") {
       await engine.deliver(id)
       return
@@ -552,11 +596,8 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     }
     if (kind === "send-challenge") {
       if (!engine.online.has(id) || otherBusy() || activeTrade) throw new Error("social.busy")
-      const code = el("battle-own-code").textContent ?? ""
-      if (!/^\d{6}$/.test(code)) throw new Error("social.offline")
-      await engine.sendEvent(id, { kind: "challenge", battleCode: code })
       dialog.close()
-      navigate("activity")
+      challengeFriend(engine.friendAccount(id))
       return
     }
     if (kind === "accept-challenge") {
@@ -699,6 +740,7 @@ export const initBrowserSocial = async (otherBusy: () => boolean): Promise<Brows
     run(async () => {
       const alias = el<HTMLInputElement>("social-alias").value.trim()
       if (!validAlias(alias)) throw new Error("social.aliasRule")
+      if (!ensureAccount()) return
       await saveAlias(alias)
       note(t("aliasSaved"))
       await engine.reconnect()

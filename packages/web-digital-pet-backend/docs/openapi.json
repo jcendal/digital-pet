@@ -1028,7 +1028,7 @@
     },
     "/api/v1/me/inbox": {
       "get": {
-        "summary": "Read a four-relationship mailbox page",
+        "summary": "Read a mailbox page bounded by relationship count and bytes",
         "operationId": "getApiVMeInbox",
         "security": [
           {
@@ -3429,6 +3429,147 @@
           }
         ]
       }
+    },
+    "/api/v1/relationships/{pair}/trades/{id}/release": {
+      "post": {
+        "summary": "Explicitly abandon this account\u2019s pending delivery from another save",
+        "operationId": "postApiVRelationshipsPairTradesIdRelease",
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; private no-store JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ok"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Origin, CSRF or ownership rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict; reconcile canonical state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Quota or rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Temporary failure; retry with same operation ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request or metadata budget exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pair",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RelationshipId"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Account-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current account; rejects stale-tab account switches."
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Must exactly match PUBLIC_ORIGIN."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationInput"
+              }
+            }
+          },
+          "x-maxBytes": 40960
+        }
+      }
     }
   },
   "components": {
@@ -3846,6 +3987,9 @@
             "$ref": "#/components/schemas/Offer"
           },
           "applied": {
+            "type": "boolean"
+          },
+          "abandoned": {
             "type": "boolean"
           }
         },

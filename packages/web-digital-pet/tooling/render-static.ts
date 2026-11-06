@@ -5,10 +5,12 @@ import { fileURLToPath } from "node:url"
 import { hasHostDatabase } from "../src/server/persistence/sqlite.ts"
 import { loadBuildResources } from "../src/server/rendering/build-resources.ts"
 import { renderPage, renderShell, stableStaticNonce } from "../src/server/rendering/pages.ts"
+import { exportLegalPages } from "./export-legal.ts"
 
 if (hasHostDatabase()) throw new Error("Static export requires browser mode without a host database")
 const root = fileURLToPath(new URL(".", import.meta.url))
 const output = resolve(root, "client")
+await exportLegalPages(resolve(root, ".."), output)
 const resources = await loadBuildResources(output, "browser")
 resources.views = {}
 await mkdir(resolve(output, "view"), { recursive: true })

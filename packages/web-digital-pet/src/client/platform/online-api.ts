@@ -103,7 +103,13 @@ export const onlineContext = async (): Promise<OnlineContext & { accountId: stri
 export const api = async <T>(path: string, method = "GET", body?: unknown, expectedAccount?: string): Promise<T> => {
   const active = await ensureOnlineSession()
   if (expectedAccount && active.accountId !== expectedAccount) throw new Error("online.saveChanged")
-  const command = method === "GET" ? undefined : socialCommandFor(method, path, body === undefined ? {} : record(body))
+  const url = new URL(path, window.location.origin)
+  const command = socialCommandFor(
+    method,
+    url.pathname,
+    body === undefined ? {} : record(body),
+    url.searchParams.get("after") ?? undefined,
+  )
   const rpc = command ? sendSocialCommand(active.accountId, command) : undefined
   const response = await (rpc ??
     fetch(path, {
@@ -140,8 +146,21 @@ export const api = async <T>(path: string, method = "GET", body?: unknown, expec
   return value as T
 }
 export const logoutOnline = async (): Promise<void> => {
-  await api("/auth/logout", "POST")
+  // Logging out needs the application's CSRF proof, not a fresh provider token.
+  const active = await loadOnlineSession()
+  if (active) {
+    const response = await fetch("/auth/logout", {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { "X-CSRF-Token": active.csrf },
+      signal: AbortSignal.timeout(15_000),
+    })
+    // Another tab may already have revoked the same session.
+    if (response.status !== 401) await decode(response)
+  }
   session = null
+  sessionLoaded = true
   changed()
 }
 export const newOperationId = (): string => `${Date.now()}-${crypto.randomUUID()}`

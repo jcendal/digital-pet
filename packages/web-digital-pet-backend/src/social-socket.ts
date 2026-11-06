@@ -1,5 +1,6 @@
 import { identifier, OnlineError, record } from "@jcendal/digital-pet-online/contracts.ts"
 import { parseSocialCommand } from "@jcendal/digital-pet-online/social-commands.ts"
+import { MAX_SOCKET_RESPONSE_BYTES, socketParts } from "@jcendal/digital-pet-online/socket-rpc.ts"
 import { reportFailure } from "./diagnostics.ts"
 import type { SocketDelivery } from "./realtime.ts"
 import { executeSocial, type SocialServices } from "./social-application.ts"
@@ -13,20 +14,28 @@ export const socialSocket = async (
   gatewayRequestId?: string,
 ): Promise<void> => {
   let requestId: string | undefined
+  let chunks = false
   let status = 200
   let body: unknown
   try {
     if (Buffer.byteLength(input) > 24 * 1024) throw new OnlineError("frame-too-large", 413)
     const message = record(JSON.parse(input))
     requestId = identifier(message.requestId)
+    chunks = message.responseChunks === true
     const actor = await services.realtime.identity(connectionId)
     if (message.accountId !== actor) throw new OnlineError("account-changed", 409)
-    const command = parseSocialCommand(message.command)
+    let commandInput = message.command
+    if (message.fragment !== undefined) {
+      if (message.command !== undefined || !chunks || !services.requests) throw new OnlineError("invalid-fragment")
+      commandInput = await services.requests.accept(connectionId, requestId, message.fragment)
+      if (commandInput === undefined) return
+    }
+    const command = parseSocialCommand(commandInput)
     const type = command.type
-    // Large paginated reads use HTTP; commands and live notifications use this socket.
-    if (type === "inbox.read") throw new OnlineError("http-required", 413)
+    // Retain compatibility with already-open tabs from the previous release.
+    if (!chunks && type === "inbox.read") throw new OnlineError("http-required", 413)
     body = await executeSocial(services, actor, command)
-    if (Buffer.byteLength(JSON.stringify(body)) > 23 * 1024) {
+    if (!chunks && Buffer.byteLength(JSON.stringify(body)) > 23 * 1024) {
       if (!type.startsWith("trade.")) throw new OnlineError("http-required", 413)
       // The mutation has committed. Return an authorized read resource, never ask to replay it.
       const relationship = identifier(record(command.input).relationship)
@@ -48,7 +57,18 @@ export const socialSocket = async (
     }
   }
   try {
-    await delivery.send(connectionId, { kind: "response", requestId, status, body })
+    if (chunks && Buffer.byteLength(JSON.stringify(body)) > 23 * 1024) {
+      const parts = socketParts(body, MAX_SOCKET_RESPONSE_BYTES)
+      // Bounded parallel delivery; the client assembles by index, not arrival order.
+      for (let offset = 0; offset < parts.length; offset += 4) {
+        const delivered = await Promise.all(
+          parts
+            .slice(offset, offset + 4)
+            .map((fragment) => delivery.send(connectionId, { kind: "response-part", requestId, status, fragment })),
+        )
+        if (delivered.some((sent) => !sent)) return
+      }
+    } else await delivery.send(connectionId, { kind: "response", requestId, status, body })
   } catch (error) {
     reportFailure("socket-response", error, { requestId: gatewayRequestId, connectionId, commandId: requestId })
     throw error

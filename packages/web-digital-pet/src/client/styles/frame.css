@@ -1,0 +1,62 @@
+/* Size the shared web frame from its available space, including inside iframes. */
+.device {
+  padding: 12px;
+}
+.device > .masthead {
+  flex: none;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 0 6px 10px;
+}
+.device > .masthead > .brand,
+.device > .masthead > h1 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.device > .masthead > .brand {
+  flex: 1;
+}
+.device > .masthead > h1 {
+  flex: 0 1 auto;
+}
+.device > .screen {
+  padding: 12px;
+}
+.device > .footer {
+  flex: none;
+  gap: 8px;
+  padding: 14px 6px 0;
+  font-size: 9px;
+  line-height: 16px;
+}
+.device > .footer > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.device > .footer > .case-dots {
+  flex: none;
+}
+@container game-frame (max-width: 400px) or (max-height: 682px) {
+  .device,
+  .device > .screen {
+    padding: 10px;
+  }
+}
+@container game-frame (max-height: 682px) {
+  .device > .masthead {
+    padding-bottom: 8px;
+  }
+  .device > .masthead > .brand,
+  .device > .masthead > h1 {
+    line-height: 1.2;
+  }
+  .device > .footer {
+    padding-top: 8px;
+  }
+}

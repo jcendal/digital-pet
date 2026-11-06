@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { CognitoProvider } from "../src/adapters/cognito.ts"
-import { AuthService, type IdentityProvider, type Tokens } from "../src/auth.ts"
+import { AuthService, type IdentityProvider, LOGIN_COOKIE, SESSION_COOKIE, type Tokens } from "../src/auth.ts"
 import { authHandler } from "../src/auth-http.ts"
 import { cookie, type HttpEvent, operationId, requireMutation } from "../src/http.ts"
 import { RealtimeService } from "../src/realtime.ts"
@@ -152,4 +152,26 @@ test("a failed refresh publication can retry after the claim expires within the 
   await auth.refresh(handle)
   expect(tokens).toEqual(["secret", "secret"])
   expect((await auth.session(handle)).accountId).toBe("account")
+})
+
+test("OAuth replacement revokes old sockets only after validating the new browser proof", async () => {
+  const { auth, store, login, state } = setup()
+  const old = await login()
+  const realtime = new RealtimeService(store, new MemoryStore(), { send: async () => true })
+  const ticket = await realtime.ticket(old.handle, "installation", old.session)
+  await realtime.connect("old-socket", ticket.ticket)
+  const handler = authHandler({ origin: "https://game.example", auth, realtime })
+  const started = await auth.login("Google")
+  const event: HttpEvent = {
+    rawPath: "/auth/callback",
+    headers: {},
+    cookies: [`${SESSION_COOKIE}=${old.handle}`, `${LOGIN_COOKIE}=${started.proof}`],
+    queryStringParameters: { state: "invalid-state", code: "code" },
+    requestContext: { http: { method: "GET" } },
+  }
+  expect((await handler(event)).statusCode).toBe(401)
+  expect(await realtime.identity("old-socket")).toBe("account")
+  event.queryStringParameters = { state: state(), code: "code" }
+  expect((await handler(event)).statusCode).toBe(302)
+  await expect(realtime.identity("old-socket")).rejects.toThrow("unauthorized")
 })

@@ -5,8 +5,14 @@ import type { Accounts } from "./accounts.ts"
 import { numberOf, operationId } from "./input.ts"
 import type { RealtimeService } from "./realtime.ts"
 import type { SocialService } from "./social.ts"
+import type { SocketRequests } from "./socket-requests.ts"
 
-export type SocialServices = { accounts: Accounts; social: SocialService; realtime: RealtimeService }
+export type SocialServices = {
+  accounts: Accounts
+  social: SocialService
+  realtime: RealtimeService
+  requests?: SocketRequests
+}
 
 /** Authenticated application operations shared by HTTP and WebSocket adapters. */
 export const executeSocial = async (
@@ -26,7 +32,7 @@ export const executeSocial = async (
       return services.accounts.find(boundedText(body.code, 16))
     case "inbox.read": {
       const page = await services.social.inbox(actor, typeof body.after === "string" ? body.after : "")
-      const ids = [...new Set(page.relationships.flatMap((pair) => pair.value.members))]
+      const ids = [...new Set(page.relationships.flatMap((pair) => pair.value.members))].filter((id) => id !== actor)
       const profiles = await Promise.all(ids.map((id) => services.accounts.ensure(id)))
       const online = (
         await Promise.all(ids.map(async (id) => ((await services.realtime.online(id)) ? id : null)))
@@ -117,6 +123,14 @@ export const executeSocial = async (
       return services.social.cancelTrade(actor, relationship, identifier(body.operation))
     case "trade.applied":
       await services.social.acknowledgeTrade(
+        actor,
+        relationship,
+        identifier(body.operation),
+        destinationOf(body.destination),
+      )
+      return { ok: true }
+    case "trade.release":
+      await services.social.releaseTrade(
         actor,
         relationship,
         identifier(body.operation),

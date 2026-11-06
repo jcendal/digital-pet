@@ -147,7 +147,10 @@ export const mergeOnlineRelationship = (
         )
       const side = trade.sides[context.accountId]
       const local = state.trades[trade.id]
-      if (trade.state === "committed" && side && sameDestination(side.destination, context)) {
+      if (side?.abandoned) {
+        if (local?.phase === "prepared") local.phase = "aborted"
+        if ((await resultOf(store.get(TRADE_LOCK_KEY))) === trade.id) store.delete(TRADE_LOCK_KEY)
+      } else if (trade.state === "committed" && side && sameDestination(side.destination, context)) {
         const key = onlineReceiptKey(context, "trade", trade.id)
         if (!(await resultOf(store.get(key)))) {
           if (!local || local.phase !== "prepared") throw new Error("online.recoveryRequired")

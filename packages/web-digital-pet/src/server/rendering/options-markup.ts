@@ -1,7 +1,8 @@
 import { IntlModule as languageIntl } from "@jcendal/digital-pet-intl"
 import { escapeHtml } from "@jcendal/digital-pet-webviews/shared/escape-html.ts"
 import { IntlModule } from "../../shared/i18n.ts"
-import { accountMarkup } from "./account-markup.ts"
+import { accountLoginMarkup, accountMarkup, actionIcon } from "./account-markup.ts"
+import { legalLinksMarkup } from "./legal-markup.ts"
 
 const deviceIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 2h8v2H2zm0 2h2v12H2zm6 0h2v12H8zm-6 12h8v2H2zm2-3h4v2H4zm10-7h8v2h-8zm0 2h2v12h-2zm6 0h2v12h-2zm-6 12h8v2h-8zm2-3h4v2h-4zM10 8h4v2h-4zm0 4h4v2h-4z"/></svg>`
 const eggIcon = /* html */ `<svg class="option-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 2h4v2h-4zM8 4h2v4H8zm6 0h2v4h-2zM6 8h2v4H6zm10 0h2v4h-2zM4 12h2v6H4zm14 0h2v6h-2zM6 18h2v2H6zm10 0h2v2h-2zM8 20h8v2H8zM8 10h4v4H8zm4 6h4v2h-4z"/></svg>`
@@ -10,31 +11,45 @@ export const optionsMarkup = /* html */ `
 <dialog id="options-dialog" class="web-dialog" aria-labelledby="options-title">
   <header class="dialog-head"><div><p class="dialog-eyebrow" data-i18n="web:optionsMarkup.digitalMonster">${escapeHtml(IntlModule.translate("optionsMarkup.digitalMonster"))}</p><h2 id="options-title" data-i18n="web:navigationMarkup.options">${escapeHtml(IntlModule.translate("navigationMarkup.options"))}</h2></div><form method="dialog"><button class="dialog-close" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.closeOptions"))}" data-i18n-aria-label="web:optionsMarkup.closeOptions">✕</button></form></header>
   <div class="dialog-body">
-    ${accountMarkup}
+    ${accountLoginMarkup}
     <section class="options-section language-section">
       <label class="section-heading" id="language-label" for="language-select" data-i18n="intl:language.label">${escapeHtml(languageIntl.translate("language.label"))}</label>
-      <p class="section-description" data-i18n="intl:language.description">${escapeHtml(languageIntl.translate("language.description"))}</p>
       <select id="language-select" aria-labelledby="language-label">
         ${["en", "ko", "es", "gl"].map((locale) => `<option value="${locale}">${escapeHtml(languageIntl.translate(`language.${locale}`))}</option>`).join("")}
       </select>
     </section>
     <section class="options-section theme-section">
       <label class="section-heading" for="theme-select" data-i18n="web:theme.label">${escapeHtml(IntlModule.translate("theme.label"))}</label>
-      <p class="section-description" data-i18n="web:theme.description">${escapeHtml(IntlModule.translate("theme.description"))}</p>
       <select id="theme-select"><option value="lcd" data-i18n="web:theme.lcd">LCD</option><option value="color" data-i18n="web:theme.color">${escapeHtml(IntlModule.translate("theme.color"))}</option></select>
     </section>
+
     <fieldset id="new-partner-options"><legend class="sr-only" data-i18n="web:optionsMarkup.browserCompanionOptions">${escapeHtml(IntlModule.translate("optionsMarkup.browserCompanionOptions"))}</legend>
       <section class="new-partner-section"><div class="action-heading">${eggIcon}<div><h3 data-i18n="web:optionsMarkup.aNewJourney">${escapeHtml(IntlModule.translate("optionsMarkup.aNewJourney"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.startFreshKeepYourPastCompanions">${escapeHtml(IntlModule.translate("optionsMarkup.startFreshKeepYourPastCompanions"))}</p></div></div>
         <button id="new-partner" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.startANewEgg">${escapeHtml(IntlModule.translate("optionsMarkup.startANewEgg"))}</span><span aria-hidden="true">+</span></button>
-        <p class="setting-caption" data-i18n="web:optionsMarkup.chooseEggAndSlot">${escapeHtml(IntlModule.translate("optionsMarkup.chooseEggAndSlot"))}</p>
       </section>
     </fieldset>
+    <section class="save-backups" aria-labelledby="save-backups-title">
+      <h3 id="save-backups-title" data-i18n="web:online.account">${escapeHtml(IntlModule.translate("online.account"))}</h3>
+      <p class="section-description" data-i18n="web:online.localFirst">${escapeHtml(IntlModule.translate("online.localFirst"))}</p>
+      ${accountMarkup}
+    <fieldset id="browser-backup-options"><legend class="sr-only" data-i18n="web:optionsMarkup.backUpYourSave">${escapeHtml(IntlModule.translate("optionsMarkup.backUpYourSave"))}</legend>
+      <div class="backup-section">
+        <p id="backup-file-label" class="backup-location" hidden data-i18n="web:optionsMarkup.backUpYourSave">${escapeHtml(IntlModule.translate("optionsMarkup.backUpYourSave"))}</p>
+        <button id="backup-download" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.downloadBackup">${escapeHtml(IntlModule.translate("optionsMarkup.downloadBackup"))}</span>${actionIcon("download")}</button>
+        <button id="backup-import" class="wide-action" type="button"><span data-i18n="web:optionsMarkup.importBackup">${escapeHtml(IntlModule.translate("optionsMarkup.importBackup"))}</span>${actionIcon("restore")}</button>
+        <input id="backup-file" class="sr-only" type="file" accept=".json,application/json" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.chooseADigitalPetBackup"))}" data-i18n-aria-label="web:optionsMarkup.chooseADigitalPetBackup">
+        <div id="backup-confirm" class="confirm-box" hidden><strong data-i18n="web:optionsMarkup.replaceThisBrowserSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceThisBrowserSave"))}</strong><p id="backup-preview"></p><p data-i18n="web:optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions">${escapeHtml(IntlModule.translate("optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions"))}</p><div class="dialog-actions"><button id="backup-accept" class="primary-action" type="button"><span data-i18n="web:optionsMarkup.replaceSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceSave"))}</span>${actionIcon("restore")}</button><button id="backup-cancel" type="button"><span data-i18n="web:optionsMarkup.cancel">${escapeHtml(IntlModule.translate("optionsMarkup.cancel"))}</span>${actionIcon("cancel")}</button></div></div>
+        <button id="backup-restore" class="text-action" type="button" hidden><span data-i18n="web:optionsMarkup.restorePreviousSave">${escapeHtml(IntlModule.translate("optionsMarkup.restorePreviousSave"))}</span>${actionIcon("restore")}</button>
+      </div>
+    </fieldset>
+    <button id="online-logout" class="text-action" type="button" hidden><span data-i18n="web:online.logout">${escapeHtml(IntlModule.translate("online.logout"))}</span>${actionIcon("logout")}</button>
+    </section>
     <section class="music-section"><button id="music-toggle" class="wide-action" type="button" aria-pressed="true" aria-describedby="music-status"><span data-i18n="web:music.label">${escapeHtml(IntlModule.translate("music.label"))}</span><span id="music-state" class="value-badge">${escapeHtml(IntlModule.translate("controller.on"))}</span></button><p id="music-status" class="setting-caption" role="status" data-i18n="web:music.tapToPlay">${escapeHtml(IntlModule.translate("music.tapToPlay"))}</p><p class="setting-caption" data-i18n="web:music.credit">${escapeHtml(IntlModule.translate("music.credit"))}</p></section>
-    <section class="landscape-section"><button id="landscape-motion" class="wide-action" type="button" aria-pressed="false"><span data-i18n="web:optionsMarkup.movingLandscape">${escapeHtml(IntlModule.translate("optionsMarkup.movingLandscape"))}</span><span id="landscape-motion-state" class="value-badge" data-i18n="web:controller.off">${escapeHtml(IntlModule.translate("controller.off"))}</span></button><p class="setting-caption" data-i18n="web:optionsMarkup.scrollsGentlyOppositeYourCompanionWalks">${escapeHtml(IntlModule.translate("optionsMarkup.scrollsGentlyOppositeYourCompanionWalks"))}</p></section>
+    <section class="landscape-section"><button id="landscape-motion" class="wide-action" type="button" aria-pressed="false"><span data-i18n="web:optionsMarkup.movingLandscape">${escapeHtml(IntlModule.translate("optionsMarkup.movingLandscape"))}</span><span id="landscape-motion-state" class="value-badge" data-i18n="web:controller.off">${escapeHtml(IntlModule.translate("controller.off"))}</span></button></section>
     <section id="install-section" hidden>
       <button id="install-app" class="wide-action" type="button" data-i18n="web:installation.action">${escapeHtml(IntlModule.translate("installation.action"))}</button>
     </section>
-    <section class="save-section"><h3 data-i18n="web:optionsMarkup.yourSave">${escapeHtml(IntlModule.translate("optionsMarkup.yourSave"))}</h3>
+    <section id="save-source-section" class="save-section"><h3 data-i18n="web:optionsMarkup.yourSave">${escapeHtml(IntlModule.translate("optionsMarkup.yourSave"))}</h3>
       <div class="save-choices">
         <label class="save-choice"><input id="source-computer" type="radio" name="save-source" value="sqlite"><span class="save-card"><span class="save-card-head"><strong data-i18n="web:optionsMarkup.computerSave">${escapeHtml(IntlModule.translate("optionsMarkup.computerSave"))}</strong><small id="computer-availability" class="save-badge"></small></span><small class="save-description" data-i18n="web:optionsMarkup.yourCompanionFromCursorOrOpencodeOnThis">${escapeHtml(IntlModule.translate("optionsMarkup.yourCompanionFromCursorOrOpencodeOnThis"))}</small></span></label>
         <p id="computer-connection-hint" class="hint" aria-live="polite"></p><button id="computer-retry" class="utility" type="button" hidden data-i18n="web:optionsMarkup.tryConnectingAgain">${escapeHtml(IntlModule.translate("optionsMarkup.tryConnectingAgain"))}</button>
@@ -45,7 +60,6 @@ export const optionsMarkup = /* html */ `
     </section>
     <fieldset id="browser-options"><legend class="sr-only" data-i18n="web:optionsMarkup.browserCompanionOptions">${escapeHtml(IntlModule.translate("optionsMarkup.browserCompanionOptions"))}</legend>
       <section class="growth-section"><div class="section-heading"><h3 data-i18n="web:optionsMarkup.experienceToEvolve">${escapeHtml(IntlModule.translate("optionsMarkup.experienceToEvolve"))}</h3><span id="experience-amount" class="value-badge">100%</span></div>
-        <p class="section-description" data-i18n="web:optionsMarkup.setThePaceOfYourCompanionSJourney">${escapeHtml(IntlModule.translate("optionsMarkup.setThePaceOfYourCompanionSJourney"))}</p>
         <div id="experience-control" class="experience-control" data-level="high">
           <label class="sr-only" for="experience-level" data-i18n="web:optionsMarkup.experienceToEvolve2">${escapeHtml(IntlModule.translate("optionsMarkup.experienceToEvolve2"))}</label>
           <input id="experience-level" class="experience-slider" type="range" min="0" max="2" step="1" value="2" aria-valuetext="High">
@@ -53,23 +67,17 @@ export const optionsMarkup = /* html */ `
         </div>
         <p id="experience-description" class="setting-caption"></p>
       </section>
-      <section class="devices-section"><div class="action-heading">${deviceIcon}<div><h3 data-i18n="web:optionsMarkup.connectDevices">${escapeHtml(IntlModule.translate("optionsMarkup.connectDevices"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.yourCompanionOnAnotherScreen">${escapeHtml(IntlModule.translate("optionsMarkup.yourCompanionOnAnotherScreen"))}</p></div></div>
+      <section class="devices-section"><div class="action-heading">${deviceIcon}<div><h3 data-i18n="web:optionsMarkup.connectDevices">${escapeHtml(IntlModule.translate("optionsMarkup.connectDevices"))}</h3></div></div>
         <div id="paired-device" class="paired-card" hidden><span class="card-label" data-i18n="web:optionsMarkup.pairedDevice">${escapeHtml(IntlModule.translate("optionsMarkup.pairedDevice"))}</span><p id="pair-linked"></p><button id="pair-sync" class="primary-action" type="button" disabled><span data-i18n="web:optionsMarkup.syncCompanion">${escapeHtml(IntlModule.translate("optionsMarkup.syncCompanion"))}</span><span aria-hidden="true">↓</span></button><p class="setting-caption" data-i18n="web:optionsMarkup.bringsTheOtherDeviceSSaveHereWith">${escapeHtml(IntlModule.translate("optionsMarkup.bringsTheOtherDeviceSSaveHereWith"))}</p></div>
         <button id="pair-button" class="wide-action" type="button"><span id="pair-button-label" data-i18n="web:controller.pairDevices">${escapeHtml(IntlModule.translate("controller.pairDevices"))}</span><span aria-hidden="true">→</span></button>
         <button id="pair-forget" class="text-action" type="button" hidden data-i18n="web:optionsMarkup.forgetPairedDevice">${escapeHtml(IntlModule.translate("optionsMarkup.forgetPairedDevice"))}</button>
         <p id="pair-summary" class="connection-status" role="status" aria-live="polite"></p>
       </section>
-      <section class="backup-section"><h3 data-i18n="web:optionsMarkup.backUpYourSave">${escapeHtml(IntlModule.translate("optionsMarkup.backUpYourSave"))}</h3><p class="section-description" data-i18n="web:optionsMarkup.keepACopyOfYourCompanionOutsideThis">${escapeHtml(IntlModule.translate("optionsMarkup.keepACopyOfYourCompanionOutsideThis"))}</p>
-        <button id="backup-download" class="wide-action" type="button" data-i18n="web:optionsMarkup.downloadBackup">${escapeHtml(IntlModule.translate("optionsMarkup.downloadBackup"))}</button>
-        <button id="backup-import" class="wide-action" type="button" data-i18n="web:optionsMarkup.importBackup">${escapeHtml(IntlModule.translate("optionsMarkup.importBackup"))}</button>
-        <input id="backup-file" class="sr-only" type="file" accept=".json,application/json" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.chooseADigitalPetBackup"))}" data-i18n-aria-label="web:optionsMarkup.chooseADigitalPetBackup">
-        <div id="backup-confirm" class="confirm-box" hidden><strong data-i18n="web:optionsMarkup.replaceThisBrowserSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceThisBrowserSave"))}</strong><p id="backup-preview"></p><p data-i18n="web:optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions">${escapeHtml(IntlModule.translate("optionsMarkup.yourCurrentSaveCanBeRestoredFromOptions"))}</p><div class="dialog-actions"><button id="backup-accept" class="primary-action" type="button" data-i18n="web:optionsMarkup.replaceSave">${escapeHtml(IntlModule.translate("optionsMarkup.replaceSave"))}</button><button id="backup-cancel" type="button" data-i18n="web:optionsMarkup.cancel">${escapeHtml(IntlModule.translate("optionsMarkup.cancel"))}</button></div></div>
-        <button id="backup-restore" class="text-action" type="button" hidden data-i18n="web:optionsMarkup.restorePreviousSave">${escapeHtml(IntlModule.translate("optionsMarkup.restorePreviousSave"))}</button>
-        <p class="setting-caption" data-i18n="web:optionsMarkup.updatesKeepYourBrowserSaveADownloadedBackup">${escapeHtml(IntlModule.translate("optionsMarkup.updatesKeepYourBrowserSaveADownloadedBackup"))}</p>
-      </section>
+
     </fieldset>
   </div>
   <p id="options-status" class="dialog-feedback" role="status" aria-live="polite"></p>
+  <footer class="options-legal">${legalLinksMarkup}</footer>
 </dialog>
 <dialog id="pair-dialog" class="web-dialog" aria-labelledby="pair-title">
   <header class="dialog-head"><div><p class="dialog-eyebrow" data-i18n="web:optionsMarkup.connectDevices">${escapeHtml(IntlModule.translate("optionsMarkup.connectDevices"))}</p><h2 id="pair-title" data-i18n="web:controller.pairDevices">${escapeHtml(IntlModule.translate("controller.pairDevices"))}</h2></div><form method="dialog"><button class="dialog-close" aria-label="${escapeHtml(IntlModule.translate("optionsMarkup.closePairing"))}" data-i18n-aria-label="web:optionsMarkup.closePairing">✕</button></form></header>

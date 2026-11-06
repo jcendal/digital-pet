@@ -5,7 +5,7 @@ import { linkSocialPeers } from "./helpers/social-peers.ts"
 test.describe("iOS presentation", () => {
   test.use({ userAgent: devices["iPhone 13"].userAgent, locale: "es-ES" })
 
-  test("Safari hides unsupported installation and battle controls have room in portrait and landscape", async ({
+  test("the iOS user agent hides unsupported installation and battle controls fit both orientations", async ({
     page,
   }, testInfo) => {
     const errors: string[] = []
@@ -62,7 +62,9 @@ test.describe("iOS presentation", () => {
   })
 })
 
-test("restoring a cached page and a socket failure recover both authenticated transports", async ({ page }) => {
+test("restoring a cached page and a socket failure recover battle and transfer over one connection", async ({
+  page,
+}) => {
   await linkSocialPeers([page])
   const sockets: Array<{ client: WebSocketRoute; server: WebSocketRoute }> = []
   await page.routeWebSocket("ws://127.0.0.1:4178/socket*", (client) => {

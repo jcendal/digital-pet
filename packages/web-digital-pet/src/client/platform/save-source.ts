@@ -17,6 +17,7 @@ export const isBrowserSaveSelected = (preferred: string | null, active: string |
   preferred === "browser" || (preferred !== "sqlite" && active === "browser")
 
 export const browserSaveSelected = (): boolean =>
+  document.documentElement.dataset.saveHost === "browser" ||
   isBrowserSaveSelected(localStorage.getItem(SOURCE_PREFERENCE_KEY), localStorage.getItem(ACTIVE_SOURCE_KEY))
 
 export const refreshBrowserViews = (): void => {

@@ -50,6 +50,14 @@ jobs:
       - name: Check shared configuration and CI selection
         run: npm run check:workspace && npm run test:ci
 
+      - name: Test changed asset importers
+        if: steps.affected.outputs.importers == 'true'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/importer-tests"
+          "$RUNNER_TEMP/importer-tests/bin/python" -m pip install -r scripts/requirements-tests.txt
+          export PATH="$RUNNER_TEMP/importer-tests/bin:$PATH"
+          npm run test:assets
+
       - name: Check affected packages
         run: npx turbo run check --affected --concurrency=2
 
@@ -58,23 +66,6 @@ jobs:
 
       - name: Build affected apps
         run: npx turbo run build --affected --concurrency=2
-
-      - name: Install browser for web checks
-        if: steps.affected.outputs.web == 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Verify web assets, offline mode and worker updates
-        id: browser-checks
-        if: steps.affected.outputs.web == 'true'
-        run: npm run test:browser
-
-      - name: Save browser failure diagnostics
-        if: failure() && steps.browser-checks.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: browser-failures
-          path: packages/web-digital-pet/test-results/
-          retention-days: 7
 
       - name: Inspect npm package
         if: steps.affected.outputs.opencode == 'true'

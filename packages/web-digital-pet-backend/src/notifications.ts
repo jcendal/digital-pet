@@ -1,4 +1,5 @@
 import type { OnlineRelationship } from "@jcendal/digital-pet-online/social.ts"
+import type { BattleRelationship } from "./battle-decisions.ts"
 import type { RealtimeService } from "./realtime.ts"
 import type { ObjectStore } from "./store.ts"
 
@@ -13,8 +14,12 @@ export class Notifications {
     const recipients = new Set<string>()
     let topic: "social" | "battle" = "social"
     if (key.startsWith("relationships/")) {
-      const pair = await this.store.get<OnlineRelationship>(key)
+      const pair = await this.store.get<BattleRelationship>(key)
       for (const member of pair?.value.members ?? []) recipients.add(member)
+      if (Object.keys(pair?.value.battles ?? {}).length)
+        await Promise.all(
+          [...recipients].map((account) => this.realtime.notify(account, "battle", `${key}:${revision}`)),
+        )
     } else if (key.startsWith("battle-decisions/")) {
       const decision = await this.store.get<{ members: Array<{ accountId: string }> }>(key)
       for (const member of decision?.value.members ?? []) recipients.add(member.accountId)

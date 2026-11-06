@@ -78,7 +78,9 @@
               "PROD",
               "DIGITAL_PET_DATABASE_PATH",
               "GITHUB_OUTPUT",
-              "GITHUB_EVENT_PATH"
+              "GITHUB_EVENT_PATH",
+              "TURBO_SCM_BASE",
+              "TURBO_SCM_HEAD"
             ]
           }
         }

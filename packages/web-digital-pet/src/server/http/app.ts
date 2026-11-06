@@ -7,6 +7,7 @@ import { buildEggCollectionModel } from "@jcendal/digital-pet-webviews/panels/te
 import { buildTeamPanelModel } from "@jcendal/digital-pet-webviews/panels/team/team-model.ts"
 import { buildWorldPanelModel } from "@jcendal/digital-pet-webviews/panels/world/world-model.ts"
 import { IntlModule } from "../../shared/i18n.ts"
+import { legalSlug, renderLegalPage } from "../legal/page.ts"
 import { hasHostDatabase, readArchive, readBossVictories, readTeam } from "../persistence/sqlite.ts"
 import type { WebResources } from "../rendering/build-resources.ts"
 import { dexModel, historyModel, sidebarData } from "../rendering/host-models.ts"
@@ -42,6 +43,8 @@ export const createWebHandler = (resources: WebResources, clientRoot?: string) =
       if (request.method !== "GET")
         return send(response, 405, "text/plain; charset=utf-8", IntlModule.translate("app.methodNotAllowed"))
       if (clientRoot && (await serveAsset(request, response, url.pathname, clientRoot))) return
+      const legal = legalSlug(url.pathname)
+      if (legal) return send(response, 200, "text/html; charset=utf-8", renderLegalPage(legal))
       if (url.pathname === "/api/mode") {
         return send(
           response,

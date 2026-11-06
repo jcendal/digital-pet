@@ -1,5 +1,6 @@
 import { type BackupSummary, MAX_BACKUP_BYTES } from "@jcendal/digital-pet-online/contracts.ts"
 import { type PetTransfer, parsePetTransfer, TRANSFER_VERSION } from "../../../domain/transfer/protocol.ts"
+import { ACTION_ICON_PATHS, type ActionIcon } from "../../../shared/action-icons.ts"
 import { IntlModule } from "../../../shared/i18n.ts"
 import { resultOf } from "../../persistence/database.ts"
 import {
@@ -45,16 +46,28 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
     const context = await readOnlineContext()
     const bound = Boolean(session && session.accountId === context.accountId)
     el("online-login").hidden = Boolean(session)
+    el("online-login-hint").hidden = Boolean(session)
+    el("online-login-legal").hidden = Boolean(session)
+    el("online-connection").hidden = !session || bound
+    el("online-session-status").hidden = !context.accountId || bound
+    el("backup-file-label").hidden = !session
     el("online-logout").hidden = !session
     el("online-adopt").hidden = !session || bound
     el("online-adopt-hint").hidden = !session || bound
+    el("online-copies").hidden = !bound
     el<HTMLFieldSetElement>("online-copies").disabled = !bound || !browserSaveSelected()
-    if (!working)
-      status(t(!session ? "signIn" : bound ? "connected" : context.accountId ? "differentAccount" : "adoptHint"))
+    el("online-session-status").textContent = t(
+      !session ? "signIn" : bound ? "connected" : context.accountId ? "differentAccount" : "adoptHint",
+    )
   }
   const run = (task: () => Promise<void>) => {
     if (working) return
     working = true
+    el("online-account").setAttribute("aria-busy", "true")
+    const controls = ["online-save", "online-list", "online-adopt", "online-logout"].map((id) =>
+      el<HTMLButtonElement>(id),
+    )
+    for (const control of controls) control.disabled = true
     status(t("working"))
     void task()
       .catch((error: unknown) => {
@@ -70,6 +83,8 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
       })
       .finally(() => {
         working = false
+        el("online-account").setAttribute("aria-busy", "false")
+        for (const control of controls) control.disabled = false
       })
   }
   const upload = async (intent: Upload) => {
@@ -107,18 +122,34 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
     )
     const root = el("online-backups")
     root.replaceChildren()
-    for (const item of [...data.backups, ...data.pending]) {
+    for (const item of [...data.backups, ...data.pending].sort((a, b) => b.createdAt - a.createdAt)) {
       const row = document.createElement("div")
       row.className = "online-backup-row"
       const label = document.createElement("p")
-      label.textContent = `${item.label} · ${new Date(item.createdAt).toLocaleString(IntlModule.locale)}`
-      row.append(label)
-      const button = (key: string, action: () => Promise<void>) => {
+      label.textContent = new Date(item.createdAt).toLocaleString(IntlModule.locale)
+      const state = document.createElement("p")
+      state.className = "setting-caption"
+      state.textContent = t("status" in item ? "pending" : "ready")
+      const actions = document.createElement("div")
+      actions.className = "online-backup-actions"
+      row.append(label, state, actions)
+      const button = (key: ActionIcon | "confirmDelete", action: () => Promise<void>) => {
         const control = document.createElement("button")
         control.type = "button"
-        control.textContent = t(key)
+        const text = document.createElement("span")
+        text.textContent = t(key)
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        icon.setAttribute("class", "action-icon")
+        icon.setAttribute("viewBox", "0 0 16 16")
+        icon.setAttribute("aria-hidden", "true")
+        icon.setAttribute("focusable", "false")
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+        path.setAttribute("fill", "currentColor")
+        path.setAttribute("d", ACTION_ICON_PATHS[key === "confirmDelete" ? "delete" : key])
+        icon.append(path)
+        control.append(text, icon)
         control.addEventListener("click", () => run(action))
-        row.append(control)
+        actions.append(control)
       }
       if (!("status" in item))
         button("preview", async () => {
@@ -158,16 +189,24 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
           await list()
         })
       button("delete", async () => {
-        await api(`/api/v1/me/backups/${item.id}`, "DELETE", {}, context.accountId)
-        await onlineTransaction(async (store) => {
-          store.delete(uploadKey(context.accountId, item.id))
+        actions.replaceChildren()
+        state.textContent = t("deletePrompt")
+        button("confirmDelete", async () => {
+          await api(`/api/v1/me/backups/${item.id}`, "DELETE", {}, context.accountId)
+          await onlineTransaction(async (store) => {
+            store.delete(uploadKey(context.accountId, item.id))
+          })
+          await list()
+          status(t("deleted"))
         })
-        await list()
+        button("cancel", list)
+        actions.querySelector<HTMLButtonElement>("button:last-child")?.focus()
+        status("")
       })
       root.append(row)
     }
     if (!root.childElementCount) root.textContent = t("noCopies")
-    status(t("connected"))
+    status("")
   }
   el("online-adopt").addEventListener("click", () =>
     run(async () => {
@@ -251,7 +290,7 @@ export const initOnlineAccount = async (otherBusy: () => boolean): Promise<void>
         .then(refresh)
         .catch(() => {})
   })
-  el("online-later").addEventListener("click", () => localStorage.setItem("online:migration-dismissed", "1"))
+  el("online-migration").addEventListener("close", () => localStorage.setItem("online:migration-dismissed", "1"))
   await readOnlineContext()
   try {
     const active = await loadOnlineSession()

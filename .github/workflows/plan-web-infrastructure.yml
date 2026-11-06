@@ -51,3 +51,5 @@ jobs:
           role-to-assume: ${{ vars.BACKEND_DEPLOY_ROLE_ARN }}
       - name: Review infrastructure without deployment
         run: npm run backend -- plan --environment "$DEPLOY_ENV"
+      - name: Review CDK hosting change set without applying it
+        run: npm run backend -- cdn-plan --environment "$DEPLOY_ENV"

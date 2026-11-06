@@ -48,14 +48,13 @@ delivery/storage clients. HTTP authorization middleware is shared, while routing
 and service construction remain separate. Bundle tests check the retained modules.
 
 Offer payloads allow 32 KiB and HTTP JSON bodies allow 40 KiB, preserving valid
-256-event partner histories. Socket envelopes retain their smaller limits; a large
-request uses HTTP, and a large committed trade reply returns an authorized HTTP
-read location instead of replaying the mutation. Copies retain their separate
+256-event partner histories. Socket envelopes retain their smaller limits; large
+commands and replies use bounded JSON fragments, assembled before application. Copies retain their separate
 4 MiB signed S3 upload limit.
 
 Registration retries stop after three unanswered attempts on one physical socket,
-then replace it using exponential reconnect delays capped at 30 seconds. A physical
-open alone does not reset backoff: attached endpoints must register successfully.
+then replace it using exponential reconnect delays capped at 30 seconds. PartySocket resets reconnect backoff only after ten seconds of uptime;
+retries use a randomized initial delay and are capped at 30 seconds.
 Channel resume also has three attempts; expired/forbidden channel errors identify
 the channel and terminate it immediately. Transient errors keep bounded retries.
 Unscoped socket errors trigger connection recovery. Healthy idle connections send
@@ -93,9 +92,12 @@ are the minimal metadata needed for those explicitly requested online operations
   rules. `OnlineEndpoint` and `OnlineConnection` represent logical channels;
   `OnlineWire` alone owns the physical socket, reconnects and browser lock.
 - `online-api` owns authenticated requests; `online-rpc` is an injected transport
-  port, avoiding an API/socket import cycle. Social mutations use the socket when
-  connected. HTTPS is available before dispatch if disconnected or oversized;
-  a sent mutation is never automatically replayed over another transport.
+  port, avoiding an API/socket import cycle. All social reads and mutations use
+  the socket. `partysocket/ws` owns native-WebSocket reconnection with fresh tickets;
+  it requires no PartyKit hosting. Its outgoing buffer is disabled. `p-queue` bounds
+  RPC concurrency to four, with at most 32 total requests and a 25-second deadline
+  including connection/queue wait. Disconnect/account changes cancel outstanding
+  work; neither library replays a sent social command. There is no HTTP fallback.
 - Backend HTTP and WebSocket adapters authenticate their respective envelopes,
   then call `executeSocial`. This application layer owns validation and dispatch
   to `Accounts`, `SocialService` and `RealtimeService`, independent of HTTP events.
@@ -104,22 +106,31 @@ are the minimal metadata needed for those explicitly requested online operations
   Game rules and animations stay in the existing shared/web domain packages.
 
 A socket social request has `{ action: "social", requestId, accountId, command:
-{ type, input } }`. Replies are `{ kind: "response", requestId, status, body }`.
+{ type, input }, responseChunks: true }`. Replies are `{ kind: "response", requestId, status, body }`.
 The actor is derived from the connection's current session on **every command**;
 `accountId` is only an expected-identity guard. Commands reuse the HTTP validators
 and operation IDs. A request ID correlates a response; it is not an idempotency key.
-Requests are bounded to 24 KiB and response bodies to 23 KiB. A committed trade
-result exceeding that budget returns status 303 with its authorized HTTP read
-resource; the client reads it without repeating the mutation. Larger payloads and
-paginated inboxes use HTTPS. Unknown/invalid commands cannot bypass membership,
+Each envelope is bounded to 24 KiB. Larger commands replace `command` with
+`fragment: { index, total, data }`; the server authenticates every fragment and
+assembles up to 48 KiB under `realtime/requests/<connection-hash>/<requestId>`.
+Conditional S3 writes admit the complete command once across Lambda instances.
+Partial requests expire logically after 60 seconds; the existing one-day realtime
+lifecycle removes the objects. Fragments never use an in-memory Lambda queue.
+Replies larger than 23 KiB use `kind: "response-part"` and the same fragment shape;
+the client accepts out-of-order fragments up to 5 MiB. Gateway sends run in batches
+of four. This also covers paginated inbox reads. Old tabs without `responseChunks`
+retain their prior HTTP/303 compatibility until reloaded; deploy backend first.
+A crash after admission but before domain commit still requires normal recovery
+using the existing operation ID, not blind transport replay.
+Unknown/invalid commands cannot bypass membership,
 quota, destination or consent checks. An ambiguous response is recovered from the
 canonical decision and local intent, never by generating a second operation ID.
 
 The socket also carries existing `register`, `open`, `resume`, and `relay` actions.
 Notifications contain only `{ kind: "changed", topic: "social" | "battle", eventId }`.
 They invalidate local projections; they never apply gifts, trades or battle rewards.
-Authentication, manual snapshot controls, direct S3 transfers and inbox reads stay
-on HTTPS. Routing all bytes through WebSocket would add size and recovery problems.
+Authentication, manual snapshot controls and direct S3 file transfers stay on
+HTTPS. Gameplay, social reads, mutations and notifications use the shared socket.
 
 ## Authentication
 
@@ -127,7 +138,9 @@ Google is the sole provider; scopes are exactly `openid email`. Cognito Essentia
 supports refresh-token rotation. The browser uses authorization code + PKCE, nonce
 and a one-use, browser-bound OAuth state. The backend verifies Cognito signatures,
 issuer, audience/client, token use, subject, expiry and nonce before issuing an
-opaque `__Host-` HttpOnly, Secure, SameSite=Lax cookie. Provider tokens stay out of
+opaque `__Host-` HttpOnly, Secure, SameSite=Lax cookie. A successful OAuth
+callback revokes the session cookie it replaces, so already-open sockets from
+that browser cannot keep issuing commands under the previous account. Provider tokens stay out of
 JavaScript, localStorage, game files, URLs and logs. Refresh tokens are encrypted
 with KMS using the session digest as encryption context.
 
@@ -175,8 +188,9 @@ an empty reference, but cannot acknowledge an undiscoverable decision.
 
 The visible leader tab reconciles on connection/reconnection, foreground/online,
 opening a social view and committed-change notifications. There is **no periodic
-inbox polling**. Inbox pages contain at most four relationship objects plus public
-profiles and live availability. Notifications are deduplicated and coalesced; a
+inbox polling**. Inbox pages contain at most sixteen relationship objects, with a
+3 MiB relationship payload budget, plus public profiles and live availability.
+The actor's own profile/presence is omitted from those repeated lookups. Notifications are deduplicated and coalesced; a
 slow sync gets one pending follow-up rather than one queued read per event. A
 known pending operation's deadline schedules one reconciliation; failures get
 bounded recovery retries. No sender socket is required to deliver acknowledged
@@ -200,6 +214,21 @@ committed exchanges remain recoverable until participants acknowledge local
 application. Local application and its receipt share one IndexedDB transaction.
 Receipts are scoped to account, installation and save identity.
 
+A renewed friendship generation can start new exchanges while an older committed
+exchange awaits its original device. The older decision remains recoverable and
+is never undone. Within the same generation, the existing pending-application
+guard remains in place. Activity exposes an explicit recovery action when this
+account's committed delivery belongs to another installation/save. It recommends
+finishing on the original device; confirming abandonment releases only this
+account's delivery, preserving the other participant's committed offer. It does
+not reconstruct a lost local game. The original save cannot use this action.
+
+Canceled and fully applied exchanges immediately discard their large offer
+payloads. Private receipts retain the operation ID, state, offer hash and original
+destinations for 28 days, so retries cannot recreate or alter a finished exchange.
+Pending and committed-unapplied offers remain available. Receipts never appear in
+public inbox projections.
+
 Gifts are limited to one per sender/friend/server UTC day. They can be sent while
 the recipient is offline. Collection requires an online claim, then applies the
 existing local food eligibility rules. Removing friendship cancels pending gifts
@@ -222,6 +251,8 @@ two pinned members and a 15-minute negotiation lifetime. Resumption changes only
 same account/installation's connection. A browser-wide lock allows one physical
 socket per installation; battle and transfer are logical namespaces on it. A
 BroadcastChannel forwards invalidations across tabs, not private game payloads.
+Social reconciliation follows the shared socket owner; there is no independent
+social lock that could elect a different tab and deadlock both features.
 Hidden pages release the socket. Local lock acquisition retries do not call AWS.
 
 API Gateway closes idle sockets after ten minutes and any socket after two hours.
@@ -246,6 +277,13 @@ hash. One canonical S3 record commits only matching reports from both channel
 members and binds their save destinations. Pending reports cancel after 120 seconds.
 Committed reports survive live routing expiry. After reload the local intent reads
 the decision and enters the existing pending-battle/playback/reward receipt system.
+For friend battles, the canonical decision lives in the relationship record so
+friend removal and the final report contend on the same conditional write. Removal
+cancels pending decisions; it preserves already committed results. A durable routing
+record precedes that write and permits recovery if publication of the terminal copy
+fails, even after the live channel expires. Unpublished commits are never pruned;
+published decisions remain in the relationship beyond all in-flight invocations.
+Private battle state is excluded from public inbox responses.
 This is agreement recovery, not a server-owned game simulation.
 
 ## Bounds and verification
@@ -267,3 +305,23 @@ canonical cancellation, backup publication/deletion, reconnect binding, reordere
 protocol messages and actual browser flows through test HTTP/WebSocket adapters.
 Real Google, IAM, S3 CORS/conditional requests, CDN routing, mobile suspend and costs
 require verification against the deployed production services. Local validation does not claim to test AWS.
+
+## Friend requests and direct friend battles
+
+A friendship invitation becomes active for both accounts when its recipient
+accepts; the sender never confirms it again. Both clients reconcile the canonical
+relationship through the existing socket notification/inbox flow.
+
+New friend battles use one realtime `open` command with `namespace: battle`, an
+empty `code`, and the authenticated friend's account ID. The server resolves the
+friend's most recently registered live endpoint (skipping closed/revoked devices)
+and checks the active relationship. The endpoint index is bounded to eight devices,
+matching the existing subscription limit. It binds the
+channel to the original accounts/installations and friendship generation. The
+sender immediately enters the normal battle negotiation; the recipient accepts
+once. Closing the sender's waiting dialog cancels that negotiation. Friend channels
+expire after two minutes, and relay rejects removed/recreated friendships or a
+disconnected participant. No social-mail challenge or periodic polling is created.
+Code-based battles retain their existing recipient confirmation. The old social
+challenge handler remains compatible with already-open clients; those old notices
+expire after two minutes.

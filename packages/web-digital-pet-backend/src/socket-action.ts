@@ -31,8 +31,9 @@ export const socketAction = async (
       const channel = await service.open(
         connectionId,
         boundedText(body.namespace, 16),
-        boundedText(body.code, 16),
+        body.friend !== undefined && body.code === "" ? "" : boundedText(body.code, 16),
         requestId,
+        body.friend === undefined ? undefined : identifier(body.friend),
       )
       await delivery.send(connectionId, { kind: "opened", requestId, channel })
     } else if (body.action === "resume") {

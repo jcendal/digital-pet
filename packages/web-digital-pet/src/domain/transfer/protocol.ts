@@ -172,7 +172,8 @@ export const parsePetTransfer = (input: unknown, maxBytes = MAX_TRANSFER_BYTES):
     else throw new Error(IntlModule.translate("protocol.theReceivedSaveHasInvalidFood"))
   }
   if (state.retiredPartners !== undefined) {
-    if (!Array.isArray(state.retiredPartners) || state.retiredPartners.length > 128)
+    // The game keeps the complete archive. The envelope's byte limit bounds parsing.
+    if (!Array.isArray(state.retiredPartners))
       throw new Error(IntlModule.translate("protocol.theReceivedSaveHasAnInvalidArchive"))
     retiredPartners = state.retiredPartners.map((partner) => {
       if (
